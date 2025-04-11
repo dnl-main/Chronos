@@ -8,6 +8,7 @@ import Med from '../../assets/overlay/med.png';
 import File from '../../assets/overlay/file.png';
 import Replace from '../../assets/overlay/replace.png';
 import Close from '../../assets/overlay/close.png';
+import { handleAuthToken } from '../../utils/timeout';
 
 const CertificateUser = () => {
   const [showMedcertOverlay, setShowMedcertOverlay] = useState(false);
@@ -18,7 +19,6 @@ const CertificateUser = () => {
   const [filePreview, setFilePreview] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
-  const navigate = useNavigate();
 
   const handleUploadMoreClick = () => {
     setShowMedcertOverlay(true);
@@ -85,41 +85,69 @@ const CertificateUser = () => {
   };
 
   //token
-   // State for user and UI
-   const [user, setUser] = useState(null);
-   const [loading, setLoading] = useState(false);
-   const [error, setError] = useState(null);
- 
-   // Fetch user data on mount
-   useEffect(() => {
-     const token = localStorage.getItem('token');
-     const storedUser = localStorage.getItem('user');
- 
-     if (!token) {
-       navigate('/login');
-       return;
-     }
- 
-     if (storedUser) {
-       setUser(JSON.parse(storedUser));
-     } else {
-       fetchUserData(token);
-     }
-   }, [navigate]);
- 
-   const fetchUserData = async (token) => {
-     try {
-       const response = await axios.get(`${apiUrl}/user`, {
-         headers: { Authorization: `Bearer ${token}` },
-       });
-       setUser(response.data);
-       localStorage.setItem('user', JSON.stringify(response.data));
-     } catch (error) {
-       console.error('Failed to fetch user data:', error);
-       navigate('/login');
-     }
-   };
+  const navigate = useNavigate();
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);  // Start as loading
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+
+    // If no token, navigate to login immediately
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+
+      // If role is not 'user', navigate to login
+      if (parsedUser.role !== 'user') {
+        navigate('/login');
+        return;
+      }
+
+      setUser(parsedUser);
+    } else {
+      fetchUserData(token);
+    }
+
+    // Call handleAuthToken to check for token expiry and handle logout if necessary
+    handleAuthToken(token, storedUser ? JSON.parse(storedUser) : null, navigate);
+
+    // Stop loading after check
+    setLoading(false);
+  }, [navigate]);
+
+  const fetchUserData = async (token) => {
+    try {
+      const response = await axios.get(`${apiUrl}/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const userData = response.data;
+
+      if (userData.role !== 'user') {
+        navigate('/login');  // Redirect if role is not 'user'
+        return;
+      }
+
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
+
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      navigate('/login');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return null;  // Or a loader component if needed
+  }
   return (
     <div className="container">
       <h1>Certificate</h1>

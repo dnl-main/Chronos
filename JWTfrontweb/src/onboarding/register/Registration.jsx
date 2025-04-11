@@ -4,7 +4,7 @@
   import calendar_week from '../../assets/icons/calendar_week.png';
   import axios from 'axios';
   import { useNavigate } from 'react-router-dom';
-  
+  import { handleAuthToken } from '../../utils/timeout';
   const Registration = () => {
     const navigate = useNavigate();
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -42,40 +42,69 @@
       birthday: '',
     });
   
-    // State for user and UI
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-  
-    // Fetch user data on mount
-    useEffect(() => {
-      const token = localStorage.getItem('token');
-      const storedUser = localStorage.getItem('user');
-  
-      if (!token) {
+
+//token
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);  // Start as loading
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+
+    // If no token, navigate to login immediately
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+
+      // If role is not 'user', navigate to login
+      if (parsedUser.role !== 'user') {
         navigate('/login');
         return;
       }
-  
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      } else {
-        fetchUserData(token);
+
+      setUser(parsedUser);
+    } else {
+      fetchUserData(token);
+    }
+
+    // Call handleAuthToken to check for token expiry and handle logout if necessary
+    handleAuthToken(token, storedUser ? JSON.parse(storedUser) : null, navigate);
+
+    // Stop loading after check
+    setLoading(false);
+  }, [navigate]);
+
+  const fetchUserData = async (token) => {
+    try {
+      const response = await axios.get(`${apiUrl}/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const userData = response.data;
+
+      if (userData.role !== 'user') {
+        navigate('/login');  // Redirect if role is not 'user'
+        return;
       }
-    }, [navigate]);
-  
-    const fetchUserData = async (token) => {
-      try {
-        const response = await axios.get(`${apiUrl}/user`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUser(response.data);
-        localStorage.setItem('user', JSON.stringify(response.data));
-      } catch (error) {
-        console.error('Failed to fetch user data:', error);
-        navigate('/login');
-      }
-    };
+
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
+
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      navigate('/login');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return null;  // Or a loader component if needed
+  }
   
     // Fetch regions
     useEffect(() => {

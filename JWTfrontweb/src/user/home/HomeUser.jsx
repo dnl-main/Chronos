@@ -2,43 +2,70 @@ import React, { useEffect, useState } from 'react';
 import './homeUser.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { handleAuthToken } from '../../utils/timeout';
 
 const HomeUser = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null); // State to hold user data
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  // Fetch or load user data on component mount
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user'); // Assuming user data is stored as JSON
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);  // Start as loading
 
-    if (!token) {
-      navigate('/login'); // Redirect if no token
+useEffect(() => {
+  const token = localStorage.getItem('token');
+  const storedUser = localStorage.getItem('user');
+  handleAuthToken(token, storedUser ? JSON.parse(storedUser) : null, navigate);
+  if (!token) {
+    navigate('/login');
+    return;
+  }
+
+  if (storedUser) {
+    const parsedUser = JSON.parse(storedUser);
+
+    // If role is not 'user', navigate to login
+    if (parsedUser.role !== 'user') {
+      navigate('/login');
       return;
     }
 
-    if (storedUser) {
-      setUser(JSON.parse(storedUser)); // Parse stored user data
-    } else {
-      // Optionally fetch user data from backend if not stored
-      fetchUserData(token);
-    }
-  }, [navigate]);
+    setUser(parsedUser);
+  } else {
+    fetchUserData(token);
+  }
 
-  const fetchUserData = async (token) => {
-    try {
-      const response = await axios.get(`${apiUrl}/user`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setUser(response.data);
-      localStorage.setItem('user', JSON.stringify(response.data)); // Cache it
-    } catch (error) {
-      console.error('Failed to fetch user data:', error);
-      navigate('/login'); // Redirect on error (e.g., invalid token)
+  // Stop loading after check
+  setLoading(false);
+
+}, [navigate]);
+
+const fetchUserData = async (token) => {
+  try {
+    const response = await axios.get(`${apiUrl}/user`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const userData = response.data;
+
+    if (userData.role !== 'user') {
+      navigate('/login');  // Redirect if role is not 'user'
+      return;
     }
-  };
+
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+
+  } catch (error) {
+    console.error('Failed to fetch user data:', error);
+    navigate('/login');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+if (loading) {
+  return null;  
+}
 
   const handleLogout = async () => {
     try {
