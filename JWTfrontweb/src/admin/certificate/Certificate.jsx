@@ -27,6 +27,10 @@ const Certificate = () => {
   
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
+      if (parsedUser.role === 'user') {
+        navigate('/homeuser');
+        return;
+      }
       if (parsedUser.role !== 'admin') {
         navigate('/login');
         return;
@@ -46,6 +50,10 @@ const Certificate = () => {
   
       const userData = response.data;
   
+      if (userData.role === 'user') {
+        navigate('/homeuser');
+        return;
+      }
       if (userData.role !== 'admin') {
         navigate('/login');
         return;
