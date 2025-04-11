@@ -1,0 +1,24 @@
+# Enable RewriteEngine
+RewriteEngine On
+
+# Set the base path for the app (change to the correct path if necessary)
+RewriteBase /
+
+# If the requested file is not a physical file or directory, redirect to index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
+
+# Optional: Prevent directory browsing
+Options -Indexes
+
+# Optional: Add cache control headers for static assets (images, JS, CSS)
+<FilesMatch "\.(jpg|jpeg|png|gif|css|js|woff|woff2|ttf|eot|svg|ico)$">
+    Header set Cache-Control "max-age=31536000, public"
+</FilesMatch>
+
+# Optional: Prevent access to sensitive files
+<FilesMatch "(^\.|\.htaccess|\.env)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

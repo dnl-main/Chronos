@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+
+.all {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px; /* Default base font size */
+  box-sizing: border-box;
+  /* width: 1440px;
+  height: 1024px; */
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* main color */
+  --primary-color: #00889a;
+  --secondary-color: #f5f6fa;
+  --black-color: #14181f;
+  --white-color: #ffffff;
+
+  --primary-color-opacity-10: rgba(0, 136, 154, 0.1);
+  --secondary-color-opacity-10: rgba(245, 246, 250, 0.1); 
+  --black-color-opacity-10: rgba(20, 24, 31, 0.1); 
+  --white-color-opacity-10: rgba(255, 255, 255, 0.1); 
+
+  --primary-color-opacity-15: rgba(0, 136, 154, 0.15);
+  --secondary-color-opacity-15: rgba(245, 246, 250, 0.15); 
+  --black-color-opacity-15: rgba(20, 24, 31, 0.15); 
+  --white-color-opacity-15: rgba(255, 255, 255, 0.15); 
+
+  --primary-color-opacity-30: rgba(0, 136, 154, 0.3);
+  --secondary-color-opacity-30: rgba(245, 246, 250, 0.3); 
+  --black-color-opacity-30: rgba(20, 24, 31, 0.3); 
+  --white-color-opacity-30: rgba(255, 255, 255, 0.3); 
+
+  --primary-color-opacity-45: rgba(0, 136, 154, 0.45);
+  --secondary-color-opacity-45: rgba(245, 246, 250, 0.45); 
+  --black-color-opacity-45: rgba(20, 24, 31, 0.45); 
+  --white-color-opacity-45: rgba(255, 255, 255, 0.45); 
+
+  --primary-color-opacity-60: rgba(0, 136, 154, 0.6);
+  --secondary-color-opacity-60: rgba(245, 246, 250, 0.6); 
+  --black-color-opacity-60: rgba(20, 24, 31, 0.6); 
+  --white-color-opacity-60: rgba(255, 255, 255, 0.6); 
+
+  --primary-color-opacity-75: rgba(0, 136, 154, 0.75);
+  --secondary-color-opacity-75: rgba(245, 246, 250, 0.75); 
+  --black-color-opacity-75: rgba(20, 24, 31, 0.75); 
+  --white-color-opacity-75: rgba(255, 255, 255, 0.75); 
+
+  /* indicator color */
+  --red-indicator: #fa6464;
+  --green-indicator: #36c081;
+  --yellow-indicator: #ffdc6c;
+  --blue-indicator: #4c79d3;
+
+  --red-indicator-opacity-30: rgba(250, 100, 100, 0.3);
+  --green-indicator-opacity-30: rgba(54, 192, 129, 0.3);
+  --yellow-indicator-opacity-30: rgba(255, 220, 108, 0.3); 
+  --blue-indicator-opacity-30: rgba(76, 121, 211, 0.3); 
+
+  --red-indicator-opacity-45: rgba(250, 100, 100, 0.45);
+  --green-indicator-opacity-45: rgba(54, 192, 129, 0.45);
+  --yellow-indicator-opacity-45: rgba(255, 220, 108, 0.45); 
+  --blue-indicator-opacity-45: rgba(76, 121, 211, 0.45); 
+
+  --red-indicator-opacity-60: rgba(250, 100, 100, 0.6);
+  --green-indicator-opacity-60: rgba(54, 192, 129, 0.6);
+  --yellow-indicator-opacity-60: rgba(255, 220, 108, 0.6); 
+  --blue-indicator-opacity-60: rgba(76, 121, 211, 0.6); 
+
+  /* Font settings */
+  --font-family: 'Inter', sans-serif;
+  --font-accent: "Bricolage Grotesque", serif;
+  
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+ 
+  /* Font sizes */
+  --font-size-12: 1rem;       /* 12px */
+  --font-size-16: 1.333rem;   /* 16px */
+  --font-size-20: 1.667rem;   /* 20px */
+  --font-size-24: 2rem;       /* 24px */
+  --font-size-28: 2.333rem;   /* 28px */
+  --font-size-32: 2.667rem;   /* 32px */
+  --font-size-36: 3rem;       /* 36px */
+  --font-size-40: 3.333rem;   /* 40px */
+  --font-size-44: 3.667rem;   /* 44px */
+  --font-size-48: 4rem;       /* 48px */
+  --font-size-52: 4.333rem;   /* 52px */
+  --font-size-56: 4.667rem;   /* 56px */
+  --font-size-60: 5rem;       /* 60px */
+  --font-size-64: 5.333rem;   /* 64px */
+  --font-size-68: 5.667rem;   /* 68px */
+  --font-size-72: 6rem;       /* 72px */
+  --font-size-76: 6.333rem;   /* 76px */
+  --font-size-80: 6.667rem;   /* 80px */
+
+  
+  /* Sizing based on 4-pixel rule */
+  --spacing-unit: 4px;
+
+  --border-width-2: 2px;
+  --border-style-solid: solid;
+  --border-color-20: rgba(0, 136, 154, 0.3);
+}
+
+/* Ensure the design screen size is respected */
+body {
+  font-family: var(--font-family);
+}
+
+
+
+/* Example usage of spacing 
+.container {
+  padding: calc(4 * var(--spacing-unit));  16px padding
+  margin: calc(2 * var(--spacing-unit)); 8px margin
+}
+
+Example typography 
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-bold);
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+*/
