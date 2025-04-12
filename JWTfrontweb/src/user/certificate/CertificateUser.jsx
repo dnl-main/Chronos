@@ -219,14 +219,15 @@ const CertificateUser = () => {
 
               {previewUrl && (
                 <div className="pdf-preview-container">
-                  <h3 className="pdf-preview-title">PDF Preview:</h3>
+                  <h3 className="pdf-preview-title"></h3>
                   <iframe
+                  h3="PDF Preview"
                     src={previewUrl}
                     title="PDF Preview"
                     className="pdf-preview-frame"
-                    width="100%"
+                    width="600px"
                     height="400px"
-                    style={{ border: '1px solid #ccc', borderRadius: '8px', marginTop: '1rem' }}
+                    style={{ border: '1px solid #000', borderRadius: '8px', marginTop: '1rem' }}
                   />
                 </div>
               )}

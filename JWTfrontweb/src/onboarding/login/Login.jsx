@@ -64,6 +64,10 @@ const Login = () => {
         alert('Something went wrong. Please try again.');
       }
     }
+    
+  };
+  const handleSignupClick = () => {
+    navigate('/signup'); // Navigates to signup.jsx
   };
   
   
@@ -136,7 +140,7 @@ const Login = () => {
 
           <div className="login-right-signup">
             <p className="login-right-signup-text">Don't have an account yet?&nbsp;</p>
-            <button id="signup-button">Sign up</button>
+            <button id="signup-button"onClick={handleSignupClick}>Sign up</button>
           </div>
         </div>
       </div>
