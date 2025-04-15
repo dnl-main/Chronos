@@ -39,7 +39,7 @@ const Login = () => {
   
         // Conditionally navigate based on role and region
         if (response.data.user.role === 'admin') {
-          navigate('/HomeAdmin'); // Redirect to admin dashboard
+          navigate('/Home'); // Redirect to admin dashboard
         } else if (response.data.user.region) {
           navigate('/HomeUser'); // Navigate to home user if region exists
         } else {
@@ -64,13 +64,12 @@ const Login = () => {
         alert('Something went wrong. Please try again.');
       }
     }
-    
+
   };
-  const handleSignupClick = () => {
+  
+  const handleSignup = () => {
     navigate('/signup'); // Navigates to signup.jsx
   };
-  
-  
   
   
   return (
@@ -140,7 +139,7 @@ const Login = () => {
 
           <div className="login-right-signup">
             <p className="login-right-signup-text">Don't have an account yet?&nbsp;</p>
-            <button id="signup-button"onClick={handleSignupClick}>Sign up</button>
+            <button id="signup-button" onClick={handleSignup}>Sign up</button>
           </div>
         </div>
       </div>

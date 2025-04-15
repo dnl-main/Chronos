@@ -12,7 +12,7 @@ import Notebook from '../../assets/icons/Notebook.svg?react';
 
 const Certificate = () => {
   const [overlayContent, setOverlayContent] = useState(null);
-  const navigate = useNavigate(); // remove if already declared higher
+  const navigate = useNavigate(); 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   
@@ -69,58 +69,65 @@ const Certificate = () => {
     }
   };
   
-  // 🛑 BLOCK RENDER UNTIL CHECK IS COMPLETE
+  // 🛑 BLOCK RENDER TO
   if (loading) {
-    return null; // or a loader component if you want
+    return null; 
   }
    
    
   return (
     <div className="certificate">
-      <Navbar />
-      <Sidebar />
-      <div className="certificate-box">
-        <main className="certificate-box-in">
-          <header className="certificate-header">
-            <Notebook 
-              style={{ width: '32px', height: '32px', '--stroke-width': '4px' }} 
-            />
-            <p>Certificate tracking</p>
-          </header>
-          
-          <section className="certificate-tabs">
-            <button className="certificate-tabs-all">
-              <Circle_Primary style={{ width: '20px', height: '20px' }} />
-              <p>All</p>
-            </button>
-            <button className="certificate-tabs-complete">
-              <Circle_Primary style={{ width: '20px', height: '20px' }} />
-              <p>Complete</p>
-            </button>
-            <button className="certificate-tabs-incomplete">
-              <Circle_Primary style={{ width: '20px', height: '20px' }} />
-              <p>Incomplete</p>
-            </button>
-          </section>
-          
-          <section className="certificate-categories">
-            <p>Name and position</p>
-            <p>Medical</p>
-            <p>Training</p>
-            <p>Certificate</p>
-            <p>Training 2</p>
-          </section>
+    <Navbar />
+    <Sidebar />
+    <div className="certificate-box">
+    <main className="certificate-box-in">
+      <header className="certificate-header">
+        <Notebook 
+          style={{ 
+            color: "var(--black-color)", 
+            width: "32px", 
+            height: "32px", 
+            "--stroke-width": "4px" 
+          }} 
+        />
+        <p>Certificate tracking</p> 
+      </header> {/* certificate-header */}
+        
+      <section className="certificate-tabs">
+        <button className="certificate-tabs-all">
+          <Circle_Primary style={{ color: "var(--white-color)", width: "20px", height: "20px" }} />
+          <p>All</p>
+        </button> {/* certificate-tabs-all */}
 
-          <section className="certificate-cards">
-            <CertificateCard />
-            <CertificateCard />
-            <CertificateCard />
-          </section>
-        </main>
-      </div>
-      {overlayContent && <div className="overlay-container">{overlayContent}</div>}
-    </div>
-  );
+        <button className="certificate-tabs-complete">
+          <Circle_Primary style={{ color: "var(--primary-color)", width: "20px", height: "20px" }} />
+          <p>Complete</p>
+        </button> {/* certificate-tabs-complete */}
+        
+        <button className="certificate-tabs-incomplete">
+          <Circle_Primary style={{ color: "var(--primary-color)", width: "20px", height: "20px" }} />
+          <p>Incomplete</p>
+        </button> {/* certificate-tabs-incomplete */}
+      </section> {/* certificate-tabs */}
+
+      <section className="certificate-categories">
+        <p>Name and position</p>
+        <p>Medical</p>
+        <p>Training</p>
+        <p>Certificate</p>
+        <p>Required</p>
+      </section> {/* certificate-categories */}
+
+      <section className="certificate-cards">
+        <CertificateCard />
+        <CertificateCard />
+        <CertificateCard />
+        
+      </section> {/* certificate-cards */}
+    </main> {/* certificate-box-in */}
+    </div> {/* certificate-box */}
+  </div>
+);
 };
 
 export default Certificate;

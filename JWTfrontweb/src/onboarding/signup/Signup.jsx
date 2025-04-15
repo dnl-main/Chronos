@@ -61,7 +61,7 @@ const Signup = () => {
     // }
   
    
-    const role = formData.email.endsWith('@friendmar.com') ? 'admin' : 'user';
+    const role = formData.email.endsWith('@friendmar.com.ph') ? 'admin' : 'user';
     const dataToSend = {
       ...formData,
       middle_name: formData.middle_name.trim() === '' ? null : formData.middle_name.trim(),
@@ -96,10 +96,6 @@ const Signup = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleLoginClick = () => {
-    navigate('/login'); 
   };
   
   return (
@@ -223,7 +219,7 @@ const Signup = () => {
 
           <div className="signup-right-login">
             <p className="signup-right-login-text">Already have an account? &nbsp;</p>
-            <button className="signup-right-login-button"onClick={handleLoginClick}>Log in</button>
+            <button className="signup-right-login-button">Log in</button>
           </div>
         </div>
       </div>
