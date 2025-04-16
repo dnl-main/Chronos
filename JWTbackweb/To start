@@ -1,0 +1,14 @@
+For laravel
+
+cd JWTbackweb
+composer i
+
+link for composer
+https://getcomposer.org/download/
+
+For react
+cd JWTfrontweb
+npm i
+
+link for nodejs
+https://nodejs.org/en/download
