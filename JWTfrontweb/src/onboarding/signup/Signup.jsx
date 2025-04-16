@@ -61,7 +61,7 @@ const Signup = () => {
     // }
   
    
-    const role = formData.email.endsWith('@friendmar.com') ? 'admin' : 'user';
+    const role = formData.email.endsWith('@friendmar.com.ph') ? 'admin' : 'user';
     const dataToSend = {
       ...formData,
       middle_name: formData.middle_name.trim() === '' ? null : formData.middle_name.trim(),

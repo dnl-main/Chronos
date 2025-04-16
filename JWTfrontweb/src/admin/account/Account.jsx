@@ -1,9 +1,9 @@
-import React from 'react';
 import './account.css';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Navbar } from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
 import Calendar from '../../assets/icons/Calendar.svg';
-import More_Grid_Big from '../../assets/icons/More_Grid_Big.svg';
 import Phone from '../../assets/icons/Phone.svg';
 import Mail from '../../assets/icons/Mail.svg';
 import Suitcase from '../../assets/icons/Suitcase.svg';
@@ -18,9 +18,72 @@ import Edit_Pencil_01 from '../../assets/icons/Edit_Pencil_01.svg?react';
 import landing_dp_1 from '../../assets/profiles/landing_dp_1.png';
 
 import LabelIcon from '../../assets/icons/Label.svg?react';
+import More_Grid_Big from '../../assets/icons/More_Grid_Big.svg?react';
 
 
 const Account = () => {
+   const [overlayContent, setOverlayContent] = useState(null);
+    const navigate = useNavigate(); 
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    
+    useEffect(() => {
+      const token = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+    
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+    
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser.role === 'user') {
+          navigate('/homeuser');
+          return;
+        }
+        if (parsedUser.role !== 'admin') {
+          navigate('/login');
+          return;
+        }
+        setUser(parsedUser);
+        setLoading(false);
+      } else {
+        fetchUserData(token);
+      }
+    }, [navigate]);
+    
+    const fetchUserData = async (token) => {
+      try {
+        const response = await axios.get(`${apiUrl}/user`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+    
+        const userData = response.data;
+    
+        if (userData.role === 'user') {
+          navigate('/homeuser');
+          return;
+        }
+        if (userData.role !== 'admin') {
+          navigate('/login');
+          return;
+        }
+    
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+        navigate('/login');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+//BLOCK TO
+    if (loading) {
+      return null; 
+    }
   return (
     <div className="account">
       
@@ -30,7 +93,14 @@ const Account = () => {
         <div className="account-box-in">
           <main className="account-box-in-card">
             <header className="account-box-in-card-header">
-              <img src={More_Grid_Big} className="" alt="more icon" />
+<More_Grid_Big 
+              style={{ 
+                color: "var(--black-color)", 
+                width: "32px", 
+                height: "32px", 
+                "--stroke-width": "1.5px" 
+              }} 
+            />
               <p>Account</p> 
             </header> {/* account-box-in-card-header */}
 
@@ -69,7 +139,7 @@ const Account = () => {
                     <div className="account-box-in-card-main-info-right-job-title">
                       {/* <img src={Label} className="" alt="Label icon" /> */}
                       <LabelIcon className="label-icon" />
-                      <p>Trainee 4th engineer</p>
+                      <p>Fleet Crew Manager</p>
                     </div> {/* account-box-in-card-main-info-right-job-title */}
                   </div> {/* account-box-in-card-main-info-right-job */}
 

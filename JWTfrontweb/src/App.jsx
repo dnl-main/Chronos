@@ -38,7 +38,7 @@ function App() {
       <Router>
         <Routes>
           {/* Admin Routes */}
-          <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/account" element={<Account />} />
           <Route path="/notification" element={<Notification />} />
           <Route path="/availability" element={<Availability />} />
@@ -49,7 +49,7 @@ function App() {
           <Route path="/sidebar" element={<Sidebar />} />
 
           {/* Onboarding Routes */}
-          <Route path="/landing" element={<Landing />} />
+          <Route path="/" element={<Landing />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />} />

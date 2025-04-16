@@ -8,7 +8,6 @@ import Bell from '../../../assets/icons/Bell.svg?react';
 import Note_Search from '../../../assets/icons/Note_Search.svg?react';
 
 const CertificateCard = () => {
-  
   return (
 <main className="certificate-cards-card">
             <section className="certificate-cards-card-indicator">

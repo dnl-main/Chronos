@@ -7,8 +7,9 @@ import landingLaptop from '../../assets/overlay/landingLaptop.png';
 import landing_dp_1 from '../../assets/profiles/landing_dp_1.png';
 import landing_dp_2 from '../../assets/profiles/landing_dp_2.png';
 import landing_dp_3 from '../../assets/profiles/landing_dp_3.png';
-
+import { useNavigate } from 'react-router-dom';
 const Landing = () => {
+  const navigate = useNavigate();
   return (
     
     <div className="landing">
@@ -35,8 +36,8 @@ const Landing = () => {
         </div> {/* landing-left-header */}
 
         <div className="landing-left-buttons">
-          <button className="landing-left-buttons-sign_up">Sign up for free</button>
-          <button className="landing-left-buttons-log_in">Log in</button>
+        <button className="landing-left-buttons-sign_up"  onClick={() => navigate('/signup')}>Sign up for free</button>
+        <button className="landing-left-buttons-log_in"  onClick={() => navigate('/login')} >Log in</button>
         </div> {/* landing-left-buttons */}
 
         <div className="landing-left-reviews">
