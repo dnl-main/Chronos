@@ -36,12 +36,12 @@ const Sidebar = () => {
 
       localStorage.removeItem('token'); // Clear token
       localStorage.removeItem('user'); // Clear user data
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       console.error('Logout failed:', error);
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      navigate('/login');
+      navigate('/');
     }
   };
   return (

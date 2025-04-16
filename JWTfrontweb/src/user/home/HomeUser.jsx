@@ -78,7 +78,7 @@ if (loading) {
 
       if (!token) {
         console.warn('No token found, logging out anyway.');
-        navigate('/login');
+        navigate('/');
         return;
       }
 
@@ -90,12 +90,12 @@ if (loading) {
 
       localStorage.removeItem('token'); // Clear token
       localStorage.removeItem('user'); // Clear user data
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       console.error('Logout failed:', error);
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      navigate('/login');
+      navigate('/');
     }
   };
   
