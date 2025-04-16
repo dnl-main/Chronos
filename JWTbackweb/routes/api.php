@@ -13,17 +13,17 @@ Route::get('/test', function () {
 
 Route::post('/signup', [AuthController::class, 'signup']);  // Route for user signup
 Route::post('/login', [AuthController::class, 'login']);    // Route for user login
-Route::middleware('auth:api')->post('/registration', [AuthController::class, 'registration']); // Registration after login
-Route::middleware('auth:api')->get('/user', [AuthController::class, 'getUser']);
-
-// Route for logging out, which will invalidate the JWT token
-Route::middleware('auth:api')->post('/logout', function (Request $request) {
-    auth()->logout();  // Logs out the user by invalidating the JWT token
+Route::middleware('jwt.auth')->post('/registration', [AuthController::class, 'registration']);
+Route::middleware('jwt.auth')->get('/user', [AuthController::class, 'getUser']);
+Route::middleware('jwt.auth')->post('/logout', function (Request $request) {
+    auth()->logout();
     return response()->json([
         'status' => true,
         'message' => 'Logged out successfully.',
     ]);
 });
+
+
 
 //Upload Handling Route
 Route::post('/upload-pdf', [UploadController::class, 'upload']);

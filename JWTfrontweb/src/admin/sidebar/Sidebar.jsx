@@ -17,6 +17,7 @@ import Book from '../../assets/icons/Book.svg?react';
 
 const Sidebar = () => {
   const navigate = useNavigate()
+  const apiUrl = import.meta.env.VITE_API_URL;
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
