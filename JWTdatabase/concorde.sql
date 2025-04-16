@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 16, 2025 at 06:26 AM
+-- Generation Time: Apr 16, 2025 at 07:15 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -77,8 +77,8 @@ INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
 ('laravel_cache_b82890ffd935769bcf1f4b53754b53ab:timer', 'i:1744467707;', 1744467707),
 ('laravel_cache_c4cd9b883e7c9ae5c5b47b99ee625f34', 'i:2;', 1744338184),
 ('laravel_cache_c4cd9b883e7c9ae5c5b47b99ee625f34:timer', 'i:1744338183;', 1744338184),
-('laravel_cache_c62803873ba74986f5e8e1614440489f', 'i:1;', 1744776753),
-('laravel_cache_c62803873ba74986f5e8e1614440489f:timer', 'i:1744776753;', 1744776753),
+('laravel_cache_c62803873ba74986f5e8e1614440489f', 'i:1;', 1744778338),
+('laravel_cache_c62803873ba74986f5e8e1614440489f:timer', 'i:1744778338;', 1744778338),
 ('laravel_cache_E1v8LW2IeP5WZMnY', 'a:1:{s:11:\"valid_until\";i:1744353223;}', 1745562823),
 ('laravel_cache_eTt9XSZxT0zXKgvh', 'a:1:{s:11:\"valid_until\";i:1744677814;}', 1745887474),
 ('laravel_cache_f71ec158c3e8f7e04b2cf9386a4b8372', 'i:1;', 1744776814),
@@ -337,17 +337,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `first_name`, `middle_name`, `last_name`, `email`, `password`, `mobile`, `remember_token`, `created_at`, `updated_at`, `region`, `province`, `city`, `barangay`, `street`, `zip_code`, `building_number`, `birthday`, `position`, `secondary_position`, `gender`, `civil_status`, `role`) VALUES
-(10, 'Ian Kenneth', 'Ramirez', 'Sianghio', 'kennethsianghio756@gmail.com', '$2y$12$DZnguFK8myUqKY1hbu.QUeROlvtjERHe54HA6eKILBGuaqe3g9FDK', '09761465526', NULL, '2025-04-02 22:57:01', '2025-04-10 00:00:18', '130000000', NULL, '137502000', 'Santolan', 'M.H Del Pilar St', '1473', '128', NULL, NULL, NULL, 'Male', 'Single', 'user'),
-(22, 'jemaica', 'd', 'de honor', 'jessaabejo01@gmail.com', '$2y$12$Wyz1xdN7YcInfgBfw9FFgeHYu34vF8gGN40TAeNYywpFUipyXeCBO', '09458470981', NULL, '2025-04-11 02:16:01', '2025-04-11 02:16:01', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'user'),
-(23, 'Charisse', 'Aguinaldo', 'Cho', 'cheaguinaldocho@gmail.com', '$2y$12$7gz1EKGesU5pqyniru80huEnM1w6uHOHeDafStRXYhJKVyuk.wiuK', '09757723783', NULL, '2025-04-11 02:16:22', '2025-04-11 02:18:54', 'CALABARZON', NULL, 'Angono', 'Mahabang Parang', 'Block 9 Lot 22', '1930', 'Block 9 Lot 22 Zen Residences', '2002-11-30', 'Chief Engineer', 'Trainee 4th Engineer', 'Female', 'Single', 'user'),
-(24, 'jemaica', 'd', 'de honor', 'dehonorjemaica20@gmail.com', '$2y$12$C630oMaRf4hyJnzDQyxl5.P52mDLP0JSM65QYuFK7XCRv5H0YQe3u', '09618244282', NULL, '2025-04-11 02:21:00', '2025-04-11 02:23:20', 'National Capital Region', NULL, 'City of Caloocan', 'Barangay 131', 'Binhagan', '1404', '706', '2025-04-04', 'chief engr', 'traineee', 'f', 'single', 'user'),
-(25, 'Pedrico', 'Juan', 'Gonzales', 'Ilovebiryani@gaysex.com', '$2y$12$jHNHwd9cQutKV8fCt2Oh5e8SIIZ6lFw92PcKsqgmQPNmBEvKZsaW2', '0969420911', NULL, '2025-04-11 02:25:20', '2025-04-11 02:29:49', 'Zamboanga Peninsula', NULL, 'Tigbao', 'New Tuburan', 'M.H Del Pilar St', '1473', '128', '1972-12-22', 'CEO', 'COO', 'Male', 'Single', 'user'),
-(26, 'Angela', 'Fajardo', 'Guilaran', 'angela@gmail.com', '$2y$12$.nNktiR0KvQrpWQ/fmvcM.a9P5sLTghFbkSLBv7dfUMAGzBelJW2S', '1234', NULL, '2025-04-11 05:38:34', '2025-04-11 05:59:00', 'National Capital Region', NULL, 'City of Malabon', 'Santolan', '111', '1473', '111', '2011-11-11', 'CEO', 'COO', 'Female', 'Single', 'user'),
-(28, 'Angelica', 'Victoria', 'Manalastas', 'avmanalastas@gmail.com', '$2y$12$JcgRk23pEvhSlEWCiUyAkuoqHSNTA3wc0YQUYpdVGP9sUsMucNFby', '89012424908', NULL, '2025-04-11 06:17:47', '2025-04-11 06:18:37', 'National Capital Region', NULL, 'City of Malabon', 'Santolan', 'M.H Del Pilar St', '1473', '128', '2099-11-11', 'CEO', 'COO', 'Female', 'Single', 'user'),
-(29, 'Aica', 'D', 'De Honor', 'jemaicadehonor20@gmail.com', '$2y$12$GXfM59ROzP74UmDDDA4pxeM4Ea/Wtmv34Oan3pF3BFuPfGx2eAmOK', '1234668912', NULL, '2025-04-12 13:21:14', '2025-04-12 13:21:14', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'user'),
-(31, 'Charisse', 'Cho', 'Aguinaldo', 'buttonbano@friendmar.com.ph', '$2y$12$i3R9SWVumLUWspxCZp5Ht.gCWFhjvlZNHLn85KQzByzHKR9vbESba', '69696969', NULL, '2025-04-15 06:12:11', '2025-04-15 06:12:11', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin'),
-(32, 'Charisse', 'Aguinaldo', 'Cho', 'charissecho007@gmail.com', '$2y$12$vyz1IpMV72j9Zex8T7DFc.CuZXxs/BtI8lfnS.83VMCOmYbelsd2u', '09366991160', NULL, '2025-04-15 07:53:58', '2025-04-15 07:55:39', 'CALABARZON', NULL, 'Angono', 'Mahabang Parang', 'Blk 9 Lot 22 Zen Residences East Brgy Mahabang Parang Angono Rizal', '1930', 'Blk 9 Lot 22 Zen Residences East Brgy Mahabang Parang Angono Rizal', '2002-11-30', 'dfdsf', 'fyufguj', 'female', 'single', 'user'),
-(33, 'Rhovelyn', 'Briones', 'Garcia', 'rhov@gmail.com', '$2y$12$ble2AQ3XjUopHp7PkMLKA.KmYsplPk0vi.QOFxHvm4Mn6DxrFFQIa', '1234255', NULL, '2025-04-15 08:05:08', '2025-04-15 08:05:08', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'user');
+(10, 'Ian Kenneth', 'Ramirez', 'Sianghio', 'kennethsianghio756@gmail.com', '$2y$12$DZnguFK8myUqKY1hbu.QUeROlvtjERHe54HA6eKILBGuaqe3g9FDK', '09761465526', NULL, '2025-04-02 22:57:01', '2025-04-10 00:00:18', '130000000', NULL, '137502000', 'Santolan', 'M.H Del Pilar St', '1473', '128', NULL, NULL, NULL, 'Male', 'Single', 'user');
 
 --
 -- Indexes for dumped tables
