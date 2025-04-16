@@ -237,7 +237,7 @@ const Registration = () => {
           setUser(response.data.user);
         }
         alert('Registered successfully!');
-        navigate('/HomeUser');
+        navigate('/user/HomeUser');
       } else {
         setError('Register update failed. Please try again.');
       }
@@ -267,7 +267,7 @@ const Registration = () => {
       // Check if user is admin or already has a region
       if (parsedUser.role === 'admin' || parsedUser.region) {
         setLoading(false);
-        navigate('/HomeUser'); // Redirect to home or dashboard if admin or has region
+        navigate('/user/HomeUser'); // Redirect to home or dashboard if admin or has region
         return;
       }
   

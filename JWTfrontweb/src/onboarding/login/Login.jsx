@@ -12,6 +12,7 @@ const Login = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -39,9 +40,9 @@ const Login = () => {
   
         // Conditionally navigate based on role and region
         if (response.data.user.role === 'admin') {
-          navigate('/Admin/Home'); // Redirect to admin dashboard
+          navigate('/admin/Home'); // Redirect to admin dashboard
         } else if (response.data.user.region) {
-          navigate('/HomeUser'); // Navigate to home user if region exists
+          navigate('/user/HomeUser'); // Navigate to home user if region exists
         } else {
           navigate('/Registration'); // Redirect to registration if region is null
         }
@@ -104,18 +105,40 @@ const Login = () => {
                   onChange={(e) => setEmail(e.target.value)}
                 />    
               </div>
-              <div className="login-right-form-password">
-                <label htmlFor="login-password-id">Password</label>
-                <input 
-                  type="password"
-                  id="login-password-id"
-                  name="login-password"
-                  placeholder="Enter your password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
+              <div className="login-right-form-password" style={{ position: 'relative', width: '100%' }}>
+      <label htmlFor="login-password-id">Password</label>
+      
+      <input 
+        type={showPassword ? 'text' : 'password'} 
+        id="login-password-id"
+        name="login-password"
+        placeholder="Enter your password"
+        required
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        style={{
+          width: '100%',
+          paddingRight: '40px' 
+        }}
+      />
+
+      <div
+        onClick={() => setShowPassword(!showPassword)}
+        style={{
+          position: 'absolute',
+          right: '15px',
+          top: '55px',
+          transform: 'translateY(-50%)',
+          cursor: 'pointer',
+          height: '20px',
+          width: '20px',
+          borderRadius: '50%',
+          backgroundColor: showPassword ? '#00889a' : '#ccc',
+          zIndex: 1
+        }}
+        title={showPassword ? 'Hide password' : 'Show password'}
+      />
+    </div>
               <div className="login-right-options">
                 <div className="login-right-options-remember">
                   <input type="checkbox" id="remember-checkbox-id" name="remember-checkbox" />

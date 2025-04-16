@@ -28,7 +28,7 @@ const Availability = () => {
 		if (storedUser) {
 		  const parsedUser = JSON.parse(storedUser);
 		  if (parsedUser.role === 'user') {
-			navigate('/homeuser');
+			navigate('/user/homeuser');
 			return;
 		  }
 		  if (parsedUser.role !== 'admin') {
@@ -51,7 +51,7 @@ const Availability = () => {
 		  const userData = response.data;
 	  
 		  if (userData.role === 'user') {
-			navigate('/homeuser');
+			navigate('/user/homeuser');
 			return;
 		  }
 		  if (userData.role !== 'admin') {

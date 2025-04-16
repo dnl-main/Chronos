@@ -29,7 +29,7 @@ import CSLogin from './deprecated/caseStudy/CSLogin';
 
 // Layouts
 import Admin from './layouts/Admin';
-//import UserLayout from './layouts/UserLayout';
+import User from './layouts/User';
 
 function App() {
   return (
@@ -37,7 +37,7 @@ function App() {
       <Router>
         <Routes>
           {/* Admin Routes with Layout */}
-          <Route path="/Admin" element={<Admin />}>
+          <Route path="/admin" element={<Admin />}>
             <Route path="home" element={<Home />} />
             <Route path="account" element={<Account />} />
             <Route path="notification" element={<Notification />} />
@@ -56,7 +56,7 @@ function App() {
          
 
           {/* User Routes with Layout */}
-          <Route>
+            <Route path= "/user" element={<User />}>
             <Route path="accountUser" element={<AccountUser />} />
             <Route path="certificateUser" element={<CertificateUser />} />
             <Route path="UploadCertificate" element={<UploadCertificate />} />
