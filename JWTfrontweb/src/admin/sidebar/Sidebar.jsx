@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './sidebar.css';
 import House_01 from '../../assets/icons/House_01.svg';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 
 import Calendar from '../../assets/icons/Calendar.svg';
@@ -14,6 +16,7 @@ import Book from '../../assets/icons/Book.svg?react';
 
 
 const Sidebar = () => {
+  const navigate = useNavigate()
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
