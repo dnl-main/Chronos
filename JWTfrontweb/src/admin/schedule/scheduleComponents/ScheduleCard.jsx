@@ -30,7 +30,7 @@ const ScheduleCard = ({user}) => {
 			<section className="schedule-today-cards-card-profile">
 				<Circle_Primary className="schedule-today-cards-card-profile-svg" />
 				<div className="schedule-today-cards-card-profile-info">
-					<p className="schedule-today-cards-card-profile-info-text">{user?.name || "Loading..."}</p>
+					<p className="schedule-today-cards-card-profile-info-text">{user ? `${user.first_name} ${user.middle_name?.charAt(0)}. ${user.last_name}` : "Loading..."}</p>
 					<div className="schedule-today-cards-card-profile-info-job">
 						<Circle_Primary style={{ color: "var(--primary-color)", width: "32px", height: "32px" }} />
 						<p>Chief Engineer</p>
