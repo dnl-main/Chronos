@@ -1,4 +1,3 @@
-import React from 'react';
 import './notificationCard.css';
 
 import Calendar_Event from '../../../assets/icons/Calendar_Event.svg?react';
@@ -6,9 +5,11 @@ import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
 import Edit_Pencil_01 from '../../../assets/icons/Edit_Pencil_01.svg?react';
 import Calendar_Week from '../../../assets/icons/Calendar_Week.svg?react';
 import Clock from '../../../assets/icons/Clock.svg?react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
-const NotificationCard = () => {
+const NotificationCard = () => {     
   return (
 					<main className="notification-cards-card">
             <section className="notification-cards-card-indicator">

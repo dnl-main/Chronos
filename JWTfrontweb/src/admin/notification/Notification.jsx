@@ -1,4 +1,3 @@
-import React from 'react';
 import './notification.css';
 // nav
 import { Navbar } from '../navbar/Navbar';
@@ -10,7 +9,71 @@ import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Edit_Pencil_01 from '../../assets/icons/Edit_Pencil_01.svg?react';
 import Bell from '../../assets/icons/Bell.svg?react';
 
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+
 const Notification = () => {
+    const [overlayContent, setOverlayContent] = useState(null);
+    const navigate = useNavigate(); 
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    
+    useEffect(() => {
+      const token = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+    
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+    
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser.role === 'user') {
+          navigate('/homeuser');
+          return;
+        }
+        if (parsedUser.role !== 'admin') {
+          navigate('/login');
+          return;
+        }
+        setUser(parsedUser);
+        setLoading(false);
+      } else {
+        fetchUserData(token);
+      }
+    }, [navigate]);
+    
+    const fetchUserData = async (token) => {
+      try {
+        const response = await axios.get(`${apiUrl}/user`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+    
+        const userData = response.data;
+    
+        if (userData.role === 'user') {
+          navigate('/homeuser');
+          return;
+        }
+        if (userData.role !== 'admin') {
+          navigate('/login');
+          return;
+        }
+    
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+        navigate('/login');
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (loading) { //BLOCK TO
+      return null; 
+    }
   return (
     <div className="notification">
     <Navbar />

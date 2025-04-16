@@ -67,7 +67,7 @@ const fetchUserData = async (token) => {
   }
 };
 
-
+//BLOCK TO
 if (loading) {
   return null;  
 }

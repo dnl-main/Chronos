@@ -69,7 +69,7 @@ const Certificate = () => {
     }
   };
   
-  // 🛑 BLOCK RENDER TO
+ //BLOCK TO
   if (loading) {
     return null; 
   }

@@ -79,7 +79,7 @@ const Home = () => {
       }
     };
     
-    // 🛑 BLOCK RENDER TO
+//BLOCK TO
     if (loading) {
       return null; 
     }

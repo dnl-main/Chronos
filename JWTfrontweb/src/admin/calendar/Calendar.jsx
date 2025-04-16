@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './calendar.css';
+import { Navbar } from '../navbar/Navbar';
+import Sidebar from '../sidebar/Sidebar';
 
 const Calendar = () => {
     const [overlayContent, setOverlayContent] = useState(null);
@@ -61,13 +63,15 @@ const Calendar = () => {
       }
     };
     
-    // 🛑 BLOCK RENDER TO
+//BLOCK TO
     if (loading) {
       return null; 
     }
      
   return (
     <div className="calendar">
+          <Navbar />
+          <Sidebar />
       <h1>Calendar</h1>
     </div>
   );
