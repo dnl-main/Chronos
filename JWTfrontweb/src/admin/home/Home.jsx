@@ -339,7 +339,7 @@ const Home = () => {
           </header> {/* home-bot-header */}
 
           <div className="home-bot-cards">
-            <ScheduleCard />
+            <ScheduleCard user={user} />
             <ScheduleCard />
             <ScheduleCard />
 

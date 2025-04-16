@@ -6,7 +6,7 @@ import Mail from '../../../assets/icons/Mail.svg?react';
 import Edit_Pencil_01 from '../../../assets/icons/Edit_Pencil_01.svg?react';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
 
-const ScheduleCard = () => {
+const ScheduleCard = ({user}) => {
   return (
 		<main className="schedule-today-cards-card">
 			<section className="schedule-today-cards-card-indicator">
@@ -30,7 +30,7 @@ const ScheduleCard = () => {
 			<section className="schedule-today-cards-card-profile">
 				<Circle_Primary className="schedule-today-cards-card-profile-svg" />
 				<div className="schedule-today-cards-card-profile-info">
-					<p className="schedule-today-cards-card-profile-info-text">Juan Dela R. Cruz</p>
+					<p className="schedule-today-cards-card-profile-info-text">{user?.name || "Loading..."}</p>
 					<div className="schedule-today-cards-card-profile-info-job">
 						<Circle_Primary style={{ color: "var(--primary-color)", width: "32px", height: "32px" }} />
 						<p>Chief Engineer</p>
