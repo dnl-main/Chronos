@@ -98,6 +98,10 @@ const Signup = () => {
     }
   };
   
+  const handleLoginClick = () => {
+    navigate('/login'); 
+  };
+
   return (
     <div className="signup">
       <div className="signup-left">
@@ -219,7 +223,7 @@ const Signup = () => {
 
           <div className="signup-right-login">
             <p className="signup-right-login-text">Already have an account? &nbsp;</p>
-            <button className="signup-right-login-button">Log in</button>
+            <button className="signup-right-login-button" onClick={handleLoginClick}>Log in</button>
           </div>
         </div>
       </div>

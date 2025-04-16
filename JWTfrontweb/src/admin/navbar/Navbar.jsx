@@ -31,7 +31,7 @@ export const Navbar = () => {
         </div> {/* navbar-main-search */}
 
         <div className="navbar-main-notification">
-          <Link to="/notification">
+          <Link to="/admin/notification">
             
               <Bell 
                 style={{ 
@@ -45,7 +45,7 @@ export const Navbar = () => {
         </div> {/* navbar-main-notification */}
 
         <div className="navbar-main-account">
-          <Link to="/account"> 
+          <Link to="/admin/account"> 
             <User_Circle 
               style={{ 
                 color: "var(--primary-color)", 

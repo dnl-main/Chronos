@@ -52,26 +52,26 @@ const Sidebar = () => {
     </div> {/* sidebar-logo */}
 
     <div className="sidebar-buttons">
-      <Link to="/home">
+      <Link to="/admin/home">
         <button>
           <img src={House_01} className="" alt="home icon" />
         </button>
       </Link>
 
       
-      <Link to="/availability">
+      <Link to="/admin/availability">
         <button>
           <Users style={{ width: "32px", height: "32px", color: "#00889a", strokeWidth: 2 }} />
         </button>
       </Link>
       
-      <Link to="/calendar">
+      <Link to="/admin/calendar">
         <button>
           <img src={Calendar} className="" alt="calendar icon" />
         </button>
       </Link>
       
-      <Link to="/certificate">
+      <Link to="/admin/certificate">
       <button>
         <Notebook 
           style={{ 
@@ -84,7 +84,7 @@ const Sidebar = () => {
         </button>
       </Link>
 
-      <Link to="/schedule">
+      <Link to="/admin/schedule">
         <button>  
           <Book 
             style={{ 

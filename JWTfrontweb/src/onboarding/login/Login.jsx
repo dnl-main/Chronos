@@ -39,7 +39,7 @@ const Login = () => {
   
         // Conditionally navigate based on role and region
         if (response.data.user.role === 'admin') {
-          navigate('/Home'); // Redirect to admin dashboard
+          navigate('/admin/Home'); // Redirect to admin dashboard
         } else if (response.data.user.region) {
           navigate('/HomeUser'); // Navigate to home user if region exists
         } else {
