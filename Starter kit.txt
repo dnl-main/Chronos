@@ -5,6 +5,8 @@ npm i
 cd ..
 cd JWTbackweb
 composer i
+git remote remove origin
+
 
 
 import concorde.sql in phpmyadmin from JWTdatabase 
