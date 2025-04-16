@@ -21,10 +21,11 @@ const Sidebar = () => {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
+      console.log(import.meta.env.VITE_API_BASE_URL);
 
       if (!token) {
         console.warn('No token found, logging out anyway.');
-        navigate('/login');
+        navigate('/');
         return;
       }
 
@@ -48,11 +49,11 @@ const Sidebar = () => {
   <div className="sidebar">
     <div className="sidebar-logo">
       
-      <Link to="/">
+   
         <button onClick={handleLogout}>
           <img src={concorde_logo} className="" alt="Search icon" />
         </button>
-      </Link>
+   
     </div> {/* sidebar-logo */}
 
     <div className="sidebar-buttons">
