@@ -25,7 +25,7 @@ const Home = () => {
     const navigate = useNavigate(); 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-    const apiUrl = import.meta.env.VITE_API_URL;
+    const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
     
     useEffect(() => {
