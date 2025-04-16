@@ -20,8 +20,12 @@ paste this env
 #FOR LOCAL DEV php artisan serve AND
 VITE_API_BASE_URL=http://127.0.0.1:8000/api
 
-Composer Link
+>Composer Link
 https://getcomposer.org/download/
 
-Node Link
+>Node Link
 https://nodejs.org/en/download
+
+>Total File Size
+PS C:\xampp\htdocs\Capstone\Ian> "{0:N2} MB" -f ((Get-ChildItem -Recurse | Measure-Object -Property Length -Sum).Sum / 1MB)
+120.41 MB
