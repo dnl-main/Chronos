@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { Navbar } from '../admin/navbar/Navbar';
 import Sidebar from '../admin/sidebar/Sidebar';
 
-const AdminLayout = () => {
+const Admin = () => {
   return (
     <div className="admin-layout">
       <Navbar />
@@ -15,4 +15,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default Admin;

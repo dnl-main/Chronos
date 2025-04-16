@@ -28,7 +28,7 @@ const Login = () => {
       // Step 2: Check for token and user data
       if (response.data.status && response.data.token) {
         // Check if the email domain is "@friendlymar.com"
-        if (email.endsWith('@friendmar.com')) {
+        if (email.endsWith('@friendmar.com.ph')) {
           response.data.user.role = 'admin'; // Assign 'admin' role to this user
         }
   
@@ -39,7 +39,7 @@ const Login = () => {
   
         // Conditionally navigate based on role and region
         if (response.data.user.role === 'admin') {
-          navigate('/admin/Home'); // Redirect to admin dashboard
+          navigate('/Admin/Home'); // Redirect to admin dashboard
         } else if (response.data.user.region) {
           navigate('/HomeUser'); // Navigate to home user if region exists
         } else {

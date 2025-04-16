@@ -37,7 +37,7 @@ function App() {
       <Router>
         <Routes>
           {/* Admin Routes with Layout */}
-          <Route path="/admin" element={<Admin />}>
+          <Route path="/Admin" element={<Admin />}>
             <Route path="home" element={<Home />} />
             <Route path="account" element={<Account />} />
             <Route path="notification" element={<Notification />} />
@@ -46,6 +46,14 @@ function App() {
             <Route path="certificate" element={<Certificate />} />
             <Route path="schedule" element={<Schedule />} />
           </Route>
+
+          {/* DEFINE DITO ADMIN FOR NO LAYOUTS */}
+          {/* 
+          <Route path="/admin/test1" element={<Test1 />} />
+          <Route path="/admin/test2" element={<Test2 />} />
+          <Route path="/admin/test3" element={<Test3 />} /> 
+          */}
+         
 
           {/* User Routes with Layout */}
           <Route>
