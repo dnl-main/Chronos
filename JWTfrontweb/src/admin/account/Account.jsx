@@ -22,69 +22,87 @@ import More_Grid_Big from '../../assets/icons/More_Grid_Big.svg?react';
 
 
 const Account = () => {
-   const [overlayContent, setOverlayContent] = useState(null);
-    const navigate = useNavigate(); 
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    
-    useEffect(() => {
-      const token = localStorage.getItem('token');
-      const storedUser = localStorage.getItem('user');
-    
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-    
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        if (parsedUser.role === 'user') {
-          navigate('/user/homeuser');
-          return;
-        }
-        if (parsedUser.role !== 'admin') {
+      const [overlayContent, setOverlayContent] = useState(null);
+      const navigate = useNavigate(); 
+      const [user, setUser] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  
+      
+      useEffect(() => {
+        const token = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
+      
+        if (!token) {
           navigate('/login');
           return;
         }
-        setUser(parsedUser);
-        setLoading(false);
-      } else {
-        fetchUserData(token);
-      }
-    }, [navigate]);
-    
-    const fetchUserData = async (token) => {
-      try {
-        const response = await axios.get(`${apiUrl}/user`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-    
-        const userData = response.data;
-    
-        if (userData.role === 'user') {
-          navigate('/user/homeuser');
-          return;
+      
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          if (parsedUser.role === 'user') {
+            navigate('/user/homeuser');
+            return;
+          }
+          if (parsedUser.role !== 'admin') {
+            navigate('/login');
+            return;
+          }
+          setUser(parsedUser);
+          setLoading(false);
+        } else {
+          fetchUserData(token);
         }
-        if (userData.role !== 'admin') {
+      }, [navigate]);
+      
+      const fetchUserData = async (token) => {
+        try {
+          const response = await axios.get(`${apiUrl}/user`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+      
+          const userData = response.data;
+      
+          if (userData.role === 'user') {
+            navigate('/user/homeuser');
+            return;
+          }
+          if (userData.role !== 'admin') {
+            navigate('/login');
+            return;
+          }
+      
+          setUser(userData);
+          localStorage.setItem('user', JSON.stringify(userData));
+        } catch (error) {
+          console.error('Failed to fetch user data:', error);
           navigate('/login');
-          return;
+        } finally {
+          setLoading(false);
         }
-    
-        setUser(userData);
-        localStorage.setItem('user', JSON.stringify(userData));
-      } catch (error) {
-        console.error('Failed to fetch user data:', error);
-        navigate('/login');
-      } finally {
-        setLoading(false);
+      };
+      
+  //BLOCK TO
+      if (loading) {
+        return null; 
       }
-    };
-    
-//BLOCK TO
-    if (loading) {
-      return null; 
-    }
 
+      //Phone Handling
+      let formattedPhone = 'N/A';
+
+      if (user?.mobile) {
+        const rawPhone = user.mobile;
+        const cleaned = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
+      
+        // Format only if length is enough
+        if (cleaned.length >= 10) {
+          formattedPhone = `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`;
+        } else {
+          formattedPhone = cleaned; 
+        }
+      }
+      
+      
     
   return (
     <div className="account">
@@ -116,16 +134,16 @@ const Account = () => {
 
               <section className="account-box-in-card-main-info">
                 <div className="account-box-in-card-main-info-left">
-                  <p className="account-box-in-card-main-info-left-text">Sarah A. Mayers</p>
+                  <p className="account-box-in-card-main-info-left-text">{user ? `${user.first_name} ${user.middle_name?.charAt(0)}. ${user.last_name}` : "Loading..."}</p>
                   <div className="account-box-in-card-main-info-left-contact">
                     <div className="account-box-in-card-main-info-left-contact-email">
                       <img src={Mail} className="" alt="email icon" />
-                      <p>smayers@gmail.com</p>
+                      <p>{user ? `${user.email}`:"Loading..."}</p>
                     </div> {/* account-box-in-card-main-info-left-contact-email */}
 
                     <div className="account-box-in-card-main-info-left-contact-mobile">
                       <img src={Phone} className="" alt="phone icon" />
-                      <p>(+62) 921-123-4567</p>
+                      <p>(+63){formattedPhone}</p>
                     </div> {/* account-box-in-card-main-info-left-contact-mobile */}
                   </div> {/* account-box-in-card-main-info-left-contact */}
                 </div> {/* account-box-in-card-main-info-left */}
@@ -141,7 +159,7 @@ const Account = () => {
                     <div className="account-box-in-card-main-info-right-job-title">
                       {/* <img src={Label} className="" alt="Label icon" /> */}
                       <LabelIcon className="label-icon" />
-                      <p>Fleet Crew Manager</p>
+                      <p>{user.role}</p>      {/* PALITAN TO WITH ACTUAL TITLE */}
                     </div> {/* account-box-in-card-main-info-right-job-title */}
                   </div> {/* account-box-in-card-main-info-right-job */}
 
