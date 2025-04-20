@@ -19,6 +19,9 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault(); // Prevent form from submitting and refreshing
     //  the page
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
     setError(null); // Clear previous errors
   
     try {

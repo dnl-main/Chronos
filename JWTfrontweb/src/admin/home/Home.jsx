@@ -89,8 +89,8 @@ const Home = () => {
   
   return (
     <div className="home">
-    <Navbar />
-    <Sidebar />
+    {/* <Navbar /> i uncomment if user navbar is okay na
+    <Sidebar /> */}
     <div className="home-box">
       <main className="home-box-in">
         <div className="home-top">

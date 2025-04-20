@@ -121,6 +121,7 @@ if (loading) {
 
   return (
   <div className="homeUser">
+    {/* change this to user */}
     <Navbar />
     <Sidebar />
     <div className="homeUser-box">
