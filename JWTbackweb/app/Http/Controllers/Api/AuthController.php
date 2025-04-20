@@ -21,6 +21,7 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'mobile' => 'required|string|max:20|unique:users',
             'password' => 'required|string|min:6',
+            'availability' => 'nullable|string',
             'role' => 'required|string|in:user,admin', // Validate role field (user or admin)
         ]);
 
@@ -30,7 +31,6 @@ class AuthController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
-        $availability = $request->role === 'admin' ? null : 'Available';
 
         // Create the user with role
         $user = User::create([
@@ -41,7 +41,8 @@ class AuthController extends Controller
             'mobile' => $request->mobile,
             'password' => Hash::make($request->password), // Hash the password
             'role' => $request->role, // Store role (either 'user' or 'admin')
-            'availability' => $availability,
+            'availability' => $request->availability,
+            
         ]);
 
         // Generate JWT token
@@ -172,6 +173,9 @@ if ($validator->fails()) {
     // Use the names directly from the frontend data (no API call required)
     $regionName = $request->input('region');
     $provinceName = $request->input('province');
+    if ($provinceName === 'MM') {
+        $provinceName = 'Metro Manila'; // Adjusting to a readable name for consistency
+    }
     $cityName = $request->input('city');
     $barangayName = $request->input('barangay');
 
