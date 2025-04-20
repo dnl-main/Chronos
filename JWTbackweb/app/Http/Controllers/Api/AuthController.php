@@ -30,6 +30,7 @@ class AuthController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
+        $availability = $request->role === 'admin' ? null : 'Available';
 
         // Create the user with role
         $user = User::create([
@@ -40,6 +41,7 @@ class AuthController extends Controller
             'mobile' => $request->mobile,
             'password' => Hash::make($request->password), // Hash the password
             'role' => $request->role, // Store role (either 'user' or 'admin')
+            'availability' => $availability,
         ]);
 
         // Generate JWT token

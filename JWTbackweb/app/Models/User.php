@@ -18,7 +18,7 @@ class User extends Authenticatable implements JWTSubject // Implement JWTSubject
     protected $fillable = [
         'first_name', 'middle_name', 'last_name', 'email', 'mobile', 'password',
         'region', 'barangay', 'city', 'street', 'zip_code', 'building_number',
-        'birthday', 'position', 'secondary_position', 'gender', 'civil_status','role'
+        'birthday', 'position', 'secondary_position', 'gender', 'civil_status','role','availability', 
     ];
     
     /**
@@ -42,6 +42,12 @@ class User extends Authenticatable implements JWTSubject // Implement JWTSubject
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    protected static function booted()
+    {
+        static::creating(function ($user) {
+            $user->availability = $user->role === 'admin' ? null : 'Available';
+        });
     }
 
     /**
