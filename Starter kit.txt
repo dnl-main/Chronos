@@ -1,4 +1,4 @@
-git clone --single-branch --branch Layoutfix https://github.com/Ian-nwb/Concorde-Web.git
+git clone --single-branch --branch Easterfixes https://github.com/Ian-nwb/Concorde-Web.git
 cd Concorde-Web
 cd JWTfrontweb 
 npm i
