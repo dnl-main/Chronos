@@ -14,11 +14,16 @@ import concorde.sql in phpmyadmin from JWTdatabase
 change frontend env to local
 paste this env
 
-#FOR WEB HOSTING php artisan serve --host=0.0.0.0 --port=8000 AND
+# FOR WEB HOSTING php artisan serve --host=0.0.0.0 --port=8000 AND
 #VITE_API_BASE_URL=http://112.203.155.181:8000/api
 
-#FOR LOCAL DEV php artisan serve AND
+# FOR LOCAL DEV php artisan serve AND
 VITE_API_BASE_URL=http://127.0.0.1:8000/api
+
+change backend env to local
+paste this env to respective position
+# APP_URL=http://112.203.155.181
+APP_URL=http://127.0.0.1
 
 >Composer Link
 https://getcomposer.org/download/
