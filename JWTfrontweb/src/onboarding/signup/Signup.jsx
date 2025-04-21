@@ -7,8 +7,8 @@ import signup_auth from '../../assets/overlay/signup_auth.png';
 
 const Signup = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [formData, setFormData] = useState({
     first_name: '',
     middle_name: '',
@@ -19,72 +19,84 @@ const Signup = () => {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   // Validate password and confirm password
-  // const validatePassword = (password, confirmPassword) => {
-  //   let errors = {};
+  const validatePassword = (password, confirmPassword) => {
+    let errors = {};
 
-  //   if (password.length < 8) {
-  //     errors.length = "Password must be at least 8 characters long.";
-  //   }
-  //   if (!/[A-Z]/.test(password)) {
-  //     errors.uppercase = "Password must contain at least one uppercase letter.";
-  //   }
-  //   if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-  //     errors.specialChar = "Password must contain at least one special character.";
-  //   }
-  //   if (confirmPassword && confirmPassword !== password) {
-  //     errors.match = "Passwords do not match.";
-  //   }
+    if (password.length < 8) {
+      errors.password = 'Password must be at least 8 characters long.';
+    }
+    if (!/[A-Z]/.test(password)) {
+      errors.password = errors.password
+        ? `${errors.password} Must contain at least one uppercase letter.`
+        : 'Password must contain at least one uppercase letter.';
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      errors.password = errors.password
+        ? `${errors.password} Must contain at least one special character.`
+        : 'Password must contain at least one special character.';
+    }
+    if (confirmPassword !== password) {
+      errors.confirmPassword = 'Passwords do not match.';
+    }
 
-  //   return errors;
-  // };
+    return errors;
+  };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === 'password') {
+      setPassword(value);
+    } else if (name === 'confirmPassword') {
+      setConfirmPassword(value);
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setErrors({}); // Clear previous errors
-    console.log("Clicked")
-  
-    // // Validate passwords
-    // const validationErrors = validatePassword(password, confirmPassword);
-    // if (Object.keys(validationErrors).length > 0) {
-    //   setErrors(validationErrors);
-    //   setLoading(false);
-    //   return;
-    // }
-  
-   
+    setErrors({});
+
+    // Validate passwords
+    const validationErrors = validatePassword(password, confirmPassword);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setLoading(false);
+      return;
+    }
+
     const role = formData.email.endsWith('@friendmar.com.ph') ? 'admin' : 'user';
     const isAdmin = formData.email.endsWith('@friendmar.com.ph');
     const availability = isAdmin ? null : 'Available';
     const dataToSend = {
       ...formData,
+      password, // Use password from state
       middle_name: formData.middle_name.trim() === '' ? null : formData.middle_name.trim(),
       role,
       availability,
     };
-  
+
     try {
       const response = await axios.post(`${apiUrl}/signup`, dataToSend);
       alert('Signup Successful!');
       console.log('Response:', response.data);
-  
+
       setFormData({ first_name: '', middle_name: '', last_name: '', email: '', mobile: '', password: '' });
-  
+      setPassword('');
+      setConfirmPassword('');
+
       // Redirect based on role (admin vs user)
       if (role === 'admin') {
         navigate('/admin/home');
       } else {
         navigate('/login');
       }
-  
     } catch (error) {
       if (error.response) {
         console.log('Error:', error.response.data);
@@ -100,9 +112,9 @@ const Signup = () => {
       setLoading(false);
     }
   };
-  
+
   const handleLoginClick = () => {
-    navigate('/login'); 
+    navigate('/login');
   };
 
   return (
@@ -190,24 +202,76 @@ const Signup = () => {
               {errors.mobile && <p className="error-message">{errors.mobile[0]}</p>}
             </div>
 
-            <div className="signup-right-form-password">
+            <div className="signup-right-form-password" style={{ position: 'relative' }}>
               <label>Password</label>
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 name="password"
-                value={formData.password}
+                value={password}
                 onChange={handleChange}
                 placeholder="Enter your password"
                 required
+                style={{
+                  width: '100%',
+                  paddingRight: '40px',
+                }}
               />
-              {errors.password && <p className="error-message">{errors.password[0]}</p>}
+              <div
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '15px',
+                  top: '55px',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer',
+                  height: '20px',
+                  width: '20px',
+                  borderRadius: '50%',
+                  backgroundColor: showPassword ? '#00889a' : '#ccc',
+                  zIndex: 1,
+                }}
+                title={showPassword ? 'Hide password' : 'Show password'}
+              />
+              {errors.password && <p className="error-message">{errors.password}</p>}
             </div>
-            
+
+            <div className="signup-right-form-password" style={{ position: 'relative' }}>
+              <label>Confirm Password</label>
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirm your password"
+                required
+                style={{
+                  width: '100%',
+                  paddingRight: '40px',
+                }}
+              />
+              <div
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '15px',
+                  top: '55px',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer',
+                  height: '20px',
+                  width: '20px',
+                  borderRadius: '50%',
+                  backgroundColor: showConfirmPassword ? '#00889a' : '#ccc',
+                  zIndex: 1,
+                }}
+                title={showConfirmPassword ? 'Hide password' : 'Show password'}
+              />
+              {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
+            </div>
 
             <div className="signup-right-terms">
               <div className="signup-right-terms-checkbox">
                 <input type="checkbox" id="terms" required />
-                <label htmlFor="terms">By signing up I agree with &nbsp;</label>
+                <label htmlFor="terms">By signing up I agree with </label>
               </div>
               <div className="signup-right-terms-content">
                 <button type="button" id="terms-content">
@@ -225,7 +289,7 @@ const Signup = () => {
           </form>
 
           <div className="signup-right-login">
-            <p className="signup-right-login-text">Already have an account? &nbsp;</p>
+            <p className="signup-right-login-text">Already have an account? </p>
             <button className="signup-right-login-button" onClick={handleLoginClick}>Log in</button>
           </div>
         </div>
