@@ -26,6 +26,12 @@ https://getcomposer.org/download/
 >Node Link
 https://nodejs.org/en/download
 
+before composer setup
+Go to
+C:\ProgramFiles\php\8.46\php.ini
+remove ;
+;extension=fileinfo
+
 >Total File Size
 PS C:\xampp\htdocs\Capstone\Ian> "{0:N2} MB" -f ((Get-ChildItem -Recurse | Measure-Object -Property Length -Sum).Sum / 1MB)
 120.41 MB

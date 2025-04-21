@@ -172,7 +172,7 @@ const HomeUser = () => {
                   title="Save status"
                 >
                   <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "20px", height: "20px" }} />
-                  {statusLoading && <span>Saving...</span>}
+                  {statusLoading && <h6>Saving...</h6>}
                 </button>
               </div>
             </div>

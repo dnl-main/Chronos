@@ -164,7 +164,7 @@ const Login = () => {
 
           <div className="login-right-signup">
             <p className="login-right-signup-text">Don't have an account yet? </p>
-            <button id="signup-button" onClick={handleSignup}>Sign up</button>
+            <button id="signup-button" onClick={handleSignup}> Sign up</button>
           </div>
         </div>
       </div>
