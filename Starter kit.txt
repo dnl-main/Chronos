@@ -5,7 +5,7 @@ npm i
 cd ..
 cd JWTbackweb
 composer i
-git remote remove origin
+
 
 
 
