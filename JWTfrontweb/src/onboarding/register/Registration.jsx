@@ -440,7 +440,6 @@ const Registration = () => {
                         placeholder="Enter your building number"
                         value={formData.building_number}
                         onChange={handleChange}
-                        required
                       />
                     </div> {/* registration-container-column-form-address-content-right-alike */}
                   </div> {/* registration-container-column-form-address-content-right */}
@@ -533,7 +532,7 @@ const Registration = () => {
                   name="register"
                   disabled={loading}
                 >
-                  {loading ? 'Registering...' : 'Register'}
+                
                 </button>
               </div> {/* registration-container-submit */}
             </form> {/* registration-container-column-form */}
