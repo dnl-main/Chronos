@@ -35,9 +35,8 @@ const User = () => {
 
   return (
     <div className="user-layout">
-      {/* Uncomment below if you want to show them */}
-      {/* <NavbarUser />
-      <SidebarUser /> */}
+      <NavbarUser />
+      <SidebarUser />
       <div className="content">
         <Outlet />
       </div>

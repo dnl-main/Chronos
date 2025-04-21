@@ -93,7 +93,7 @@ const Signup = () => {
 
       // Redirect based on role (admin vs user)
       if (role === 'admin') {
-        navigate('/admin/home');
+        navigate('/login');
       } else {
         navigate('/login');
       }
