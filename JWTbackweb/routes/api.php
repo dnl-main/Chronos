@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\PSGCController;
-
+use App\Http\Controllers\StatusController;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
@@ -23,7 +23,10 @@ Route::middleware('jwt.auth')->post('/logout', function (Request $request) {
     ]);
 });
 
-
+//Availability Status
+Route::middleware('auth:api')->group(function () {
+    Route::patch('/user/availability', [StatusController::class, 'updateAvailability']);
+});
 
 //Upload Handling Route
 Route::post('/upload-pdf', [UploadController::class, 'upload']);

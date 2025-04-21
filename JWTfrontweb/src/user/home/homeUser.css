@@ -177,3 +177,17 @@
         .homeUser-top-core-right-down-btn { background-color: lightcyan;
 					display: flex;
 				 } 
+
+				 .status-select {
+					padding: 4px;
+					border: 1px solid var(--black-color-opacity-30);
+					border-radius: 4px;
+					background: #fff;
+					font-size: 14px;
+					color: var(--black-color-opacity-60);
+					cursor: pointer;
+				  }
+				  .status-select:focus {
+					outline: none;
+					border-color: var(--black-color-opacity-60);
+				  }
