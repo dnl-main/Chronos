@@ -31,6 +31,8 @@ import CSLogin from './deprecated/caseStudy/CSLogin';
 import Admin from './layouts/Admin';
 import User from './layouts/User';
 
+//Component
+import Wrapper from './components/Wrapper';
 function App() {
   return (
     <div className="all">
@@ -66,8 +68,18 @@ function App() {
 
           {/* Onboarding Routes - no layout (no white flash) */}
           <Route path="/" element={<Landing />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={
+            <Wrapper>
+            <Signup />
+            </Wrapper>
+            } 
+            />
+
+          <Route path="/login" element={  
+            <Wrapper>
+            <Login />
+            </Wrapper>}
+             />
           <Route path="/registration" element={<Registration />} />
 
           {/* Case Study Routes - no layout */}

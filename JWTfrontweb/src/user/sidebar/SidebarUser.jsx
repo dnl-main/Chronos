@@ -11,7 +11,7 @@ const SidebarUser = () => {
     <div className="sidebarUser">
       <div className="sidebarUser-logo">
         <button>
-          <Link to="/landing">
+          <Link to="/">
             <img src={concorde_logo} className="" alt="main icon" />
           </Link>
         </button>
