@@ -155,7 +155,7 @@ const Login = () => {
               </div>
               <div className="login-right-button">
                 <button type="submit" id="login-submit-button-id" name="login-button">
-                  Log in
+                {loading ? 'Logging in...' : 'Login'}
                 </button>
               </div>
             </form>
