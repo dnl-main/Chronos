@@ -134,7 +134,7 @@ if (loading) {
             <div className="homeUser-top-header-right-status">
               <main className="homeUser-top-header-right-status-in">
                 <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "20px", height: "20px" }} />
-                <p>Available</p>
+                <p>{user.availability}</p>
               </main> {/* homeUser-top-header-right-status-in */}
             </div> {/* homeUser-top-header-right-status */}
 
