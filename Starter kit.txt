@@ -7,10 +7,8 @@ cd JWTbackweb
 composer i
 
 
-
-
 import concorde.sql in phpmyadmin from JWTdatabase 
-
+--------
 change frontend env to local
 paste this env
 
@@ -19,7 +17,7 @@ paste this env
 
 # FOR LOCAL DEV php artisan serve AND
 VITE_API_BASE_URL=http://127.0.0.1:8000/api
-
+--------
 change backend env to local
 paste this env to respective position
 # APP_URL=http://112.203.155.181
@@ -37,6 +35,3 @@ C:\ProgramFiles\php\8.46\php.ini
 remove ;
 ;extension=fileinfo
 
->Total File Size
-PS C:\xampp\htdocs\Capstone\Ian> "{0:N2} MB" -f ((Get-ChildItem -Recurse | Measure-Object -Property Length -Sum).Sum / 1MB)
-120.41 MB
