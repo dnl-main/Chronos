@@ -4,52 +4,52 @@
 	height: 100%;
 	width: 100%;
 	background-color: var(--white-color);
-  }
-  
-  .landing-left {
+}
+
+.landing-left {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
 	row-gap: 88px;
 	padding-left: 80px;
 	padding-top: 60px;
-  }
-  
-  .landing-left-logo {
+}
+
+.landing-left-logo {
 	margin-bottom: 80px;
-  }
-  
-  .landing-left-logo img {
+}
+
+.landing-left-logo img {
 	height: 24px;
 	width: auto;
-  }
-  
-  .landing-left-header {
+}
+
+.landing-left-header {
 	display: flex;
 	flex-direction: column;
 	line-height: 1.2;
 	row-gap: 40px;
-  }
-  
-  .landing-left-header-heading {
+}
+
+.landing-left-header-heading {
 	font-family: var(--font-accent);
 	font-weight: var(--font-weight-regular);
 	font-size: var(--font-size-60);
-  }
-  
-  .landing-left-header-sub {
+}
+
+.landing-left-header-sub {
 	font-weight: var(--font-weight-regular);
 	font-size: var(--font-size-16);
-  }
-  
-  .landing-left-buttons {
+}
+
+.landing-left-buttons {
 	display: flex;
 	flex-direction: row;
 	column-gap: 20px;
 	margin-bottom: 40px;
-  }
-  
-  .landing-left-buttons-sign_up {
+}
+
+.landing-left-buttons-sign_up {
 	all: unset;
 	height: 48px;
 	width: 220px;
@@ -60,9 +60,9 @@
 	color: var(--white-color);
 	font-weight: var(--font-weight-semibold);
 	font-size: var(--font-size-16);
-  }
-  
-  .landing-left-buttons-log_in {
+}
+
+.landing-left-buttons-log_in {
 	all: unset;
 	height: 48px;
 	width: 220px;
@@ -73,288 +73,272 @@
 	color: var(--primary-color);
 	font-weight: var(--font-weight-medium);
 	font-size: var(--font-size-16);
-  }
-  
-  .landing-left-reviews {
+}
+
+.landing-left-reviews {
 	display: flex;
 	flex-direction: column;
 	row-gap: 40px;
-  }
-  
-  .landing-left-reviews-rating {
+}
+
+.landing-left-reviews-rating {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-  }
-  
-  .landing-left-reviews-rating-img {
+}
+
+.landing-left-reviews-rating-img {
 	display: flex;
 	flex-direction: row;
 	width: fit-content;
-  }
-  
-  .landing-left-reviews-rating-img img {
+}
+
+.landing-left-reviews-rating-img img {
 	position: relative;
 	height: 48px;
 	width: auto;
 	border: 3px solid var(--white-color);
 	border-radius: 100px;
-  }
-  
-  .landing-left-reviews-rating-img img:nth-child(2) {
+}
+
+.landing-left-reviews-rating-img img:nth-child(2) {
 	transform: translateX(-12px);
-  }
-  
-  .landing-left-reviews-rating-img img:nth-child(3) {
+}
+
+.landing-left-reviews-rating-img img:nth-child(3) {
 	transform: translateX(-24px);
-  }
-  
-  .landing-left-reviews-rating-value {
+}
+
+.landing-left-reviews-rating-value {
 	display: flex;
 	flex-direction: column;
-  }
-  
-  .landing-left-reviews-rating-value-star {
+}
+
+.landing-left-reviews-rating-value-star {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	column-gap: 8px;
-  }
-  
-  .landing-left-reviews-rating-value-star img {
+}
+
+.landing-left-reviews-rating-value-star img {
 	height: 12px;
 	width: auto;
-  }
-  
-  .landing-left-reviews-rating-value-star-all {
+}
+
+.landing-left-reviews-rating-value-star-all {
 	font-weight: var(--font-weight-semibold);
 	font-size: var(--font-size-12);
-  }
-  
-  .landing-left-reviews-rating-value-star-total {
+}
+
+.landing-left-reviews-rating-value-star-total {
 	color: var(--black-color-opacity-45);
 	font-weight: var(--font-weight-regular);
 	font-size: var(--font-size-12);
-  }
-  
-  .landing-left-reviews-result {
+}
+
+.landing-left-reviews-result {
 	display: flex;
 	flex-direction: row;
 	column-gap: 32px;
-  }
-  
-  .landing-left-reviews-result-efficiency {
+}
+
+.landing-left-reviews-result-efficiency {
 	display: flex;
 	column-gap: 20px;
 	width: 200px;
-  }
-  
-  .landing-left-reviews-result-efficiency-text {
+}
+
+.landing-left-reviews-result-efficiency-text {
 	display: flex;
 	flex-direction: column;
-  }
-  
-  .landing-left-reviews-result-delay {
+}
+
+.landing-left-reviews-result-delay {
 	display: flex;
 	column-gap: 20px;
 	width: 200px;
-  }
-  
-  .landing-left-reviews-result-delay-text {
+}
+
+.landing-left-reviews-result-delay-text {
 	display: flex;
 	flex-direction: column;
-  }
-  
-  .landing-left-reviews-result-accuracy {
+}
+
+.landing-left-reviews-result-accuracy {
 	display: flex;
 	column-gap: 20px;
-  }
-  
-  .landing-left-reviews-result-accuracy-text {
+
+}
+
+.landing-left-reviews-result-accuracy-text {
 	display: flex;
 	flex-direction: column;
-  }
-  
-  .landing-left-reviews-result-separator {
+}
+
+.landing-left-reviews-result-separator {
 	height: 80px;
 	width: 8px;
 	background: linear-gradient(to bottom, rgba(0, 136, 154, 0.5) 0%, rgba(0, 136, 154, 0) 100%);
-  }
-  
-  .landing-left-reviews-result-text-big {
+}
+
+.landing-left-reviews-result-text-big {
 	font-weight: var(--font-weight-semibold);
 	font-size: var(--font-size-20);
-  }
-  
-  .landing-left-reviews-result-text-small {
+}
+
+.landing-left-reviews-result-text-small {
 	color: var(--black-color-opacity-60);
 	font-weight: var(--font-weight-regular);
 	font-size: var(--font-size-12);
-  }
-  
-  .landing-right {
+}
+
+.landing-right {
 	display: flex;
 	align-items: center;
 	justify-content: right;
-	width: 30%;
+	
 	height: auto;
-  }
-  
-  .landing-right-laptop {
+}
+
+.landing-right-laptop {
 	position: absolute;
 	z-index: 3;
-	max-width: 100%; /* Make image responsive within its container */
-	height: auto;
-  }
-  
-  .landing-right-bg {
+}
+
+.landing-right-bg {
 	height: auto;
 	display: block;
 	padding: 20px;
-	max-width: 100%; /* Make image responsive */
-	height: auto;
-  }
-  
-  /* Media Queries */
-  
-  /* For tablets (typically 768px width and below) */
-  @media (max-width: 768px) {
-	.landing {
-	  flex-direction: column; /* Stack left and right sections */
-	  align-items: center; /* Center items horizontally */
-	}
-  
+}
+
+
+@media (max-width: 1360px) {
 	.landing-left {
-	  width: 90%; /* Take up more width */
-	  padding-left: 0;
-	  padding-top: 40px;
-	  align-items: center; /* Center content */
-	  row-gap: 40px;
-	  text-align: center; /* Center text */
+		padding-left: 30px; 
 	}
-  
-	.landing-left-logo {
-	  margin-bottom: 40px;
-	}
-  
-	.landing-left-header {
-	  row-gap: 20px;
-	}
-  
+
 	.landing-left-header-heading {
-	  font-size: var(--font-size-48);
+		font-size: 48px; 
 	}
-  
-	.landing-left-buttons {
-	  flex-direction: column; /* Stack buttons */
-	  align-items: center;
-	  row-gap: 15px;
-	  margin-bottom: 30px;
-	}
-  
+
 	.landing-left-buttons-sign_up,
 	.landing-left-buttons-log_in {
-	  width: 100%; /* Full width buttons */
+		width: 190px; 
 	}
-  
-	.landing-left-reviews {
-	  align-items: center;
-	  row-gap: 20px;
+}
+
+@media (max-width: 1020px) {
+	.landing {
+		width: auto;
+		column-gap: 20px;
 	}
-  
-	.landing-left-reviews-rating {
-	  justify-content: center;
-	}
-  
-	.landing-left-reviews-result {
-	  flex-direction: column;
-	  align-items: center;
-	  row-gap: 20px;
-	}
-  
-	.landing-left-reviews-result > div {
-	  width: 100%;
-	  display: flex;
-	  flex-direction: column;
-	  align-items: center;
-	  text-align: center;
-	}
-  
-	.landing-left-reviews-result-separator {
-	  display: none; /* Hide separator */
-	}
-  
-	.landing-right {
-	  width: 80%;
-	  justify-content: center;
-	  margin-top: 40px;
-	}
-  
-	.landing-right-laptop {
-	  position: static; /* Flow with the content */
-	  max-width: 80%;
-	}
-  
-	.landing-right-bg {
-	  max-width: 80%;
-	}
-  }
-  
-  /* For phones (typically 480px width and below) */
-  @media (max-width: 480px) {
 	.landing-left {
-	  width: 95%;
-	  padding-top: 20px;
-	  row-gap: 30px;
+		padding-left: 25px; 
+		width: 500px;
 	}
-  
-	.landing-left-logo {
-	  margin-bottom: 30px;
-	}
-  
-	.landing-left-header-heading {
-	  font-size: var(--font-size-24);
-	}
-  
-	.landing-left-header-sub {
-	  font-size: var(--font-size-14);
-	}
-
-	.landing-left-buttons-sign_up {
-		font-size: var(--font-size-14);
-		height: 32px;
-		width: 120px;
-	}
-	.landing-left-buttons-log_in {
-		font-size: var(--font-size-14);
-		height: 32px;
-		width: 120px;
-	}
-
-  
-	.landing-left-reviews-rating-img img {
-	  height: 36px;
-	}
-  
-	.landing-left-reviews-result-text-big {
-	  font-size: var(--font-size-18);
-	}
-  
-	.landing-left-reviews-result-text-small {
-	  font-size: var(--font-size-10);
-	}
-  
 	.landing-right {
-	  width: 95%;
-	  margin-top: 30px;
+		width: 500x;
 	}
-  
-	.landing-right-laptop {
-	  max-width: 95%;
+	.landing-left-header-heading {
+		font-size: 32px; 
 	}
-  
+
+	.landing-left-buttons-sign_up,
+	.landing-left-buttons-log_in {
+		width: 180px; 
+	}
+}
+
+@media (max-width: 992px) {
+	.landing {
+		flex-direction: column;
+	}
+
+	.landing-left,
+	.landing-right {
+		text-align: center;
+		align-items: center;
+	}
+
+	.landing-left-reviews-rating {
+		margin-left: 25px;
+		padding-left: 25px;
+	}
 	.landing-right-bg {
-	  max-width: 95%;
+		width: 510px;
 	}
-  }
-  /* Removed: Your existing CSS, Prevents extra spacing issues, Added: max-width: 100% to landing-right-laptop and landing-right-bg to make them initially responsive */
+
+	.landing-left-header-heading {
+		font-size: 40px; 
+	}
+
+	.landing-left-buttons {
+		flex-direction: column;
+		gap: 15px; 
+	}
+}
+
+@media (max-width: 768px) {
+	.landing {
+		flex-direction: column;
+	}
+	.landing-left {
+		padding-left: 15px;
+		padding-top: 15px;
+		row-gap: 90px;
+	}
+
+	.landing-left-header-heading {
+		font-size: 32px; 
+	}
+
+	.landing-left-reviews {
+		margin-left: 80px;
+	}
+
+	.landing-left-reviews-result {
+		margin-left: 32px;;
+	}
+
+	
+	.landing-left-reviews-result-separator{
+		display: inline;
+	}
+
+	
+}
+
+@media (max-width: 576px) {
+
+	.landing-left {
+		padding-left: auto;
+	}
+
+	.landing-left-buttons-sign_up, .landing-left-buttons-log_in {
+		width: 180px;
+	}
+
+	.landing-left-header-sub {
+		font-size: 14px;
+	}
+
+	.landing-left-reviews {
+        margin-left: 0;
+	}
+
+	.landing-right {
+		display: none ;
+	}
+
+	.landing-left-reviews-result {
+		text-align: start;
+		flex-direction: column;
+		margin-left: -32px;
+	}
+
+	.landing-left-reviews-rating {
+		margin-left: 0;
+		padding-left: 0;
+	}
+}

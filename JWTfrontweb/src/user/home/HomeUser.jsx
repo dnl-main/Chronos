@@ -300,9 +300,9 @@ const HomeUser = () => {
       </div> {/* homeUser-top */}
 
           <div className="homeUser-bot">
-          <button onClick={handleLogout} className="logout-btn">
+          {/* <button onClick={handleLogout} className="logout-btn">
             <i className="fa-solid fa-right-from-bracket"></i> Logout
-          </button>
+          </button> */}
           </div> {/* homeUser-bot */}
           </main> {/* homeUser-box-in */}
         </div> {/* homeUser-box */}

@@ -31,15 +31,30 @@ import CSLogin from './deprecated/caseStudy/CSLogin';
 import Admin from './layouts/Admin';
 import User from './layouts/User';
 
-//Component
+// Component
 import Wrapper from './components/Wrapper';
+
 function App() {
   return (
     <div className="all">
       <Router>
         <Routes>
-          {/* Admin Routes with Layout */}
-          <Route path="/admin" element={<Admin />}>
+          {/* Admin Routes with Layout, Wrapped */}
+          <Route
+            path="/admin"
+            element={
+              <Wrapper>
+                <Admin />
+              </Wrapper>
+            }
+          >
+            
+          {/* DEFINE DITO ADMIN FOR NO LAYOUTS */}
+          {/* 
+          <Route path="/admin/test1" element={<Test1 />} />
+          <Route path="/admin/test2" element={<Test2 />} />
+          <Route path="/admin/test3" element={<Test3 />} /> 
+          */}
             <Route path="home" element={<Home />} />
             <Route path="account" element={<Account />} />
             <Route path="notification" element={<Notification />} />
@@ -49,16 +64,15 @@ function App() {
             <Route path="schedule" element={<Schedule />} />
           </Route>
 
-          {/* DEFINE DITO ADMIN FOR NO LAYOUTS */}
-          {/* 
-          <Route path="/admin/test1" element={<Test1 />} />
-          <Route path="/admin/test2" element={<Test2 />} />
-          <Route path="/admin/test3" element={<Test3 />} /> 
-          */}
-         
-
-          {/* User Routes with Layout */}
-            <Route path= "/user" element={<User />}>
+          {/* User Routes with Layout, Wrapped */}
+          <Route
+            path="/user"
+            element={
+              <Wrapper>
+                <User />
+              </Wrapper>
+            }
+          >
             <Route path="accountUser" element={<AccountUser />} />
             <Route path="certificateUser" element={<CertificateUser />} />
             <Route path="UploadCertificate" element={<UploadCertificate />} />
@@ -66,21 +80,32 @@ function App() {
             <Route path="notificationUser" element={<NotificationUser />} />
           </Route>
 
-          {/* Onboarding Routes - no layout (no white flash) */}
+          {/* Onboarding Routes */}
           <Route path="/" element={<Landing />} />
-          <Route path="/signup" element={
-            <Wrapper>
-            <Signup />
-            </Wrapper>
-            } 
-            />
-
-          <Route path="/login" element={  
-            <Wrapper>
-            <Login />
-            </Wrapper>}
-             />
-          <Route path="/registration" element={<Registration />} />
+          <Route
+            path="/signup"
+            element={
+              <Wrapper>
+                <Signup />
+              </Wrapper>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <Wrapper>
+                <Login />
+              </Wrapper>
+            }
+          />
+          <Route
+            path="/registration"
+            element={
+              <Wrapper>
+                <Registration />
+              </Wrapper>
+            }
+          />
 
           {/* Case Study Routes - no layout */}
           <Route path="/caseStudy" element={<CaseStudy />} />
