@@ -85,9 +85,8 @@ function App() {
           <Route
             path="/signup"
             element={
-              <Wrapper>
-                <Signup />
-              </Wrapper>
+            <Signup />
+             
             }
           />
           <Route

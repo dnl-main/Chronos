@@ -55,18 +55,37 @@ const Wrapper = ({ children }) => {
 
       // Security checks
       if (role === 'user') {
+        // For new users without region, clear token and redirect to /login on /registration
+        if (location.pathname === '/registration' && !hasRegion) {
+          console.log('New user on /registration without region, clearing localStorage and redirecting to /login');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          navigate('/login', { replace: true });
+          setIsLoading(false);
+          return;
+        }
+
         // Block user routes if no region
         if (location.pathname.startsWith('/user/') && !hasRegion) {
-          console.log('User has no region, redirecting to /registration');
-          navigate('/registration', { replace: true });
+          console.log('User has no region, redirecting to /login and clearing localStorage');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          navigate('/login', { replace: true });
           setIsLoading(false);
           return;
         }
 
         // Block admin routes for users
         if (location.pathname.startsWith('/admin/')) {
-          console.log('User trying to access admin routes, redirecting to /user/homeuser');
-          navigate(hasRegion ? '/user/homeuser' : '/registration', { replace: true });
+          console.log('User trying to access admin routes, redirecting');
+          if (!hasRegion) {
+            console.log('User has no region, clearing localStorage');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            navigate('/login', { replace: true });
+          } else {
+            navigate('/user/homeuser', { replace: true });
+          }
           setIsLoading(false);
           return;
         }
@@ -94,8 +113,15 @@ const Wrapper = ({ children }) => {
           console.log('Admin on auth page, redirecting to /admin/home');
           navigate('/admin/home', { replace: true });
         } else if (role === 'user') {
-          console.log('User on auth page, redirecting to:', hasRegion ? '/user/homeuser' : '/registration');
-          navigate(hasRegion ? '/user/homeuser' : '/registration', { replace: true });
+          console.log('User on auth page, redirecting to:', hasRegion ? '/user/homeuser' : '/login');
+          if (!hasRegion) {
+            console.log('User has no region, clearing localStorage');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+          }
+          navigate(hasRegion ? '/user/homeuser' : '/login', { replace: true });
+          setIsLoading(false);
+          return;
         }
       }
 
@@ -111,7 +137,7 @@ const Wrapper = ({ children }) => {
 
   if (isLoading) {
     console.log('Wrapper is loading, preventing render for path:', location.pathname);
-    return <div>Loading...</div>; // Or a spinner component
+    return <div>Loading...</div>;
   }
 
   console.log('Wrapper rendering children for path:', location.pathname);
