@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import Spinner from './Spinner.jsx';
 
 const Wrapper = ({ children }) => {
   const navigate = useNavigate();
@@ -65,6 +66,19 @@ const Wrapper = ({ children }) => {
           return;
         }
 
+        // Redirect /user to /user/homeuser if user has region
+        if (location.pathname === '/user' || location.pathname === '/user/') {
+          console.log('User accessing /user, redirecting to:', hasRegion ? '/user/homeuser' : '/login');
+          if (!hasRegion) {
+            console.log('User has no region, clearing localStorage');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+          }
+          navigate(hasRegion ? '/user/homeuser' : '/login', { replace: true });
+          setIsLoading(false);
+          return;
+        }
+
         // Block user routes if no region
         if (location.pathname.startsWith('/user/') && !hasRegion) {
           console.log('User has no region, redirecting to /login and clearing localStorage');
@@ -90,6 +104,14 @@ const Wrapper = ({ children }) => {
           return;
         }
       } else if (role === 'admin') {
+        // Redirect /admin to /admin/home
+        if (location.pathname === '/admin' || location.pathname === '/admin/') {
+          console.log('Admin accessing /admin, redirecting to /admin/home');
+          navigate('/admin/home', { replace: true });
+          setIsLoading(false);
+          return;
+        }
+
         // Block user routes for admins
         if (location.pathname.startsWith('/user/')) {
           console.log('Admin trying to access user routes, redirecting to /admin/home');
@@ -137,7 +159,7 @@ const Wrapper = ({ children }) => {
 
   if (isLoading) {
     console.log('Wrapper is loading, preventing render for path:', location.pathname);
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
   console.log('Wrapper rendering children for path:', location.pathname);
