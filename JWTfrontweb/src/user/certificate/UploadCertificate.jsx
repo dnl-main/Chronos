@@ -5,10 +5,10 @@ import './UploadCertificate.css';
 
 import Back from '../../assets/overlay/back.png';
 import Upload from '../../assets/overlay/Upload.png';
-import Med from '../../assets/overlay/med.png';
-import File from '../../assets/overlay/file.png';
-import Replace from '../../assets/overlay/replace.png';
-import Close from '../../assets/overlay/close.png';
+import Med from '../../assets/overlay/Med.png';
+import File from '../../assets/overlay/File.png';
+import Replace from '../../assets/overlay/Replace.png';
+import Close from '../../assets/overlay/Close.png';
 
 
 const UploadCertificate = () => {
