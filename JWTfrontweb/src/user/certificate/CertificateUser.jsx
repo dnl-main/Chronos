@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './certificateUser.css';
+import './CertificateUser.css';
 
 import Back from '../../assets/overlay/back.png';
-import Upload from '../../assets/overlay/upload.png';
-import Med from '../../assets/overlay/med.png';
-import File from '../../assets/overlay/file.png';
-import Replace from '../../assets/overlay/replace.png';
+import Upload from '../../assets/overlay/Upload.png';
+import Med from '../../assets/overlay/Med.png';
+import File from '../../assets/overlay/File.png';
+import Replace from '../../assets/overlay/Replace.png';
 import Close from '../../assets/overlay/close.png';
 import { handleAuthToken } from '../../utils/timeout';
 
