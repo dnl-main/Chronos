@@ -4,7 +4,7 @@ import './UploadCertificate.css';
 
 
 import Back from '../../assets/overlay/back.png';
-import Upload from '../../assets/overlay/upload.png';
+import Upload from '../../assets/overlay/Upload.png';
 import Med from '../../assets/overlay/med.png';
 import File from '../../assets/overlay/file.png';
 import Replace from '../../assets/overlay/replace.png';
