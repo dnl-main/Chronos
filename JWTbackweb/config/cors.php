@@ -43,12 +43,16 @@ return [
     |
     | List the origins that are allowed to make requests to your API. 
     | Replace `http://localhost:5173` with your front-end URL.
+
+    add ngrok url my nigga
     |
     */
 
     'allowed_origins' => [
     'http://112.203.155.181',
     'http://localhost:5173',
+    'https://concorde-web.vercel.app',
+    'https://1ba4-110-54-166-143.ngrok-free.app',
     ],
 
     /*
