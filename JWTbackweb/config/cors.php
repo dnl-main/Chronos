@@ -52,7 +52,7 @@ return [
     'http://112.203.155.181',
     'http://localhost:5173',
     'https://concorde-web.vercel.app',
-    'https://085f-2001-4451-4758-cb00-6cc3-404a-65e3-ae9a.ngrok-free.app',
+    'https://5e24-2001-4451-4758-cb00-6cc3-404a-65e3-ae9a.ngrok-free.app',
     ],
 
     /*
