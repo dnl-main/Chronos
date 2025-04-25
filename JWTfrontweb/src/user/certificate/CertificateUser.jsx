@@ -1,5 +1,5 @@
 import React from 'react';
-import './certificateUser.css';
+import './CertificateUser.css';
 import { useNavigate } from 'react-router-dom';
 import{ useState} from 'react'
 import { useEffect } from 'react';
