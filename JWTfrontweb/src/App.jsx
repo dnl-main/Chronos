@@ -19,7 +19,8 @@ import Landing from './onboarding/landing/Landing';
 // User Components
 import AccountUser from './user/account/AccountUser';
 import CertificateUser from './user/certificate/CertificateUser';
-import UploadCertificate from './user/certificate/UploadCertificate';
+import CertificateUserCard from './user/certificate/certificateCard/CertificateUserCard';
+// import UploadCertificate from './user/certificate/UploadCertificate';
 import HomeUser from './user/home/HomeUser';
 import NotificationUser from './user/notification/NotificationUser';
 
@@ -74,8 +75,8 @@ function App() {
             }
           >
             <Route path="accountUser" element={<AccountUser />} />
-            <Route path="certificateUser" element={<CertificateUser />} />
-            <Route path="UploadCertificate" element={<UploadCertificate />} />
+            <Route path="certificateUserCard" element={<CertificateUserCard />} />
+            <Route path="CertificateUser" element={<CertificateUser />} />
             <Route path="homeUser" element={<HomeUser />} />
             <Route path="notificationUser" element={<NotificationUser />} />
           </Route>

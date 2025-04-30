@@ -58,6 +58,11 @@
   --yellow-indicator: #ffdc6c;
   --blue-indicator: #4c79d3;
 
+  --red-indicator-opacity-15: rgba(250, 100, 100, 0.15);
+  --green-indicator-opacity-15: rgba(54, 192, 129, 0.15);
+  --yellow-indicator-opacity-15: rgba(255, 220, 108, 0.15); 
+  --blue-indicator-opacity-15: rgba(76, 121, 211, 0.15); 
+
   --red-indicator-opacity-30: rgba(250, 100, 100, 0.3);
   --green-indicator-opacity-30: rgba(54, 192, 129, 0.3);
   --yellow-indicator-opacity-30: rgba(255, 220, 108, 0.3); 
@@ -87,6 +92,8 @@
   --font-weight-black: 900;
  
   /* Font sizes */
+  --font-size-4: 0.333rem;    /* 4px */
+  --font-size-8: 0.667rem;    /* 8px */
   --font-size-12: 1rem;       /* 12px */
   --font-size-16: 1.333rem;   /* 16px */
   --font-size-20: 1.667rem;   /* 20px */
@@ -116,9 +123,9 @@
 }
 
 /* Ensure the design screen size is respected */
-body {
+/* body {
   font-family: var(--font-family);
-}
+} */
 
 
 
