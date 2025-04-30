@@ -1,4 +1,4 @@
-git clone --single-branch --branch MemberBranch https://github.com/Ian-nwb/Concorde-Web.git
+git clone --single-branch --branch 23-04-2025 https://github.com/Ian-nwb/Concorde-Web.git
 cd Concorde-Web
 cd JWTfrontweb 
 npm i
