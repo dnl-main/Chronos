@@ -6,32 +6,40 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\PSGCController;
 use App\Http\Controllers\StatusController;
+use App\Http\Controllers\AppointmentController;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
 });
 
-Route::post('/signup', [AuthController::class, 'signup']);  // Route for user signup
-Route::post('/login', [AuthController::class, 'login']);    // Route for user login
-Route::middleware('jwt.auth')->post('/registration', [AuthController::class, 'registration']);
-Route::middleware('jwt.auth')->get('/user', [AuthController::class, 'getUser']);
-Route::middleware('jwt.auth')->post('/logout', function (Request $request) {
-    auth()->logout();
-    return response()->json([
-        'status' => true,
-        'message' => 'Logged out successfully.',
-    ]);
-});
+// Auth Routes
+Route::post('/signup', [AuthController::class, 'signup']);
+Route::post('/login', [AuthController::class, 'login']);
 
-//Availability Status
-Route::middleware('auth:api')->group(function () {
+Route::middleware('jwt.auth')->group(function () {
+    Route::post('/registration', [AuthController::class, 'registration']);
+    Route::get('/user', [AuthController::class, 'getUser']);
+    Route::post('/logout', function (Request $request) {
+        auth()->logout();
+        return response()->json([
+            'status' => true,
+            'message' => 'Logged out successfully.',
+        ]);
+    });
+
+    // Availability Status
     Route::patch('/user/availability', [StatusController::class, 'updateAvailability']);
+
+    // Appointment Routes
+    Route::get('/appointment', [AppointmentController::class, 'index']);
+    Route::post('/appointment', [AppointmentController::class, 'store']);
+    Route::delete('/appointment', [AppointmentController::class, 'destroy']);
 });
 
-//Upload Handling Route
+// File Upload
 Route::post('/upload-pdf', [UploadController::class, 'upload']);
 
-//PSGC Do not touch
+// PSGC Routes
 Route::get('/regions', [PSGCController::class, 'getRegions']);
 Route::get('/provinces', [PSGCController::class, 'getProvinces']);
 Route::get('/cities-municipalities', [PSGCController::class, 'getCitiesMunicipalities']);

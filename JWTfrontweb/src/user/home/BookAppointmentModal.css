@@ -1,0 +1,105 @@
+.modal-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 720px;
+  background-color: #ffffff;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 16px;
+}
+
+.close-btn {
+  background-color: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: #777;
+  cursor: pointer;
+  position: absolute;
+  top: 20px;
+  right: 24px;
+}
+
+.appointment-content {
+  display: flex;
+  gap: 32px;
+}
+
+.calendar {
+  flex: 1;
+  background-color: #f7fafd;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.scheduler {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 4px;
+}
+
+input[type="time"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.input-display {
+  background: #eef2f5;
+  padding: 10px;
+  font-size: 15px;
+  border-radius: 8px;
+  color: #333;
+}
+
+button {
+  background-color: #00a9ff;
+  color: rgb(133, 131, 131);
+  font-size: 16px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #008bcf;
+}
+
+/* Optional: highlight selected day in calendar */
+.calendar .selected-day {
+  background-color: #00a9ff;
+  color: white;
+  border-radius: 50%;
+  padding: 8px;
+}
