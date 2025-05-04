@@ -8,6 +8,7 @@ import { handleAuthToken } from '../../utils/timeout';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Clock from '../../assets/icons/Clock.svg?react';
 import BookAppointmentModal from '../../user/home/BookAppointmentModal';
+import Spinner from '../../components/Spinner'; // Adjust the import path as needed
 
 const HomeUser = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const HomeUser = () => {
   const [appointmentDate, setAppointmentDate] = useState('');
   const [appointmentStartTime, setAppointmentStartTime] = useState('');
   const [appointmentEndTime, setAppointmentEndTime] = useState('');
+  const [appointmentLoading, setAppointmentLoading] = useState(true);
 
   const statusOptions = ['On Board', 'Available', 'Vacation'];
 
@@ -31,17 +33,20 @@ const HomeUser = () => {
         setAppointmentDate('');
         setAppointmentStartTime('');
         setAppointmentEndTime('');
+        setAppointmentLoading(false);
         return;
       }
 
       try {
+        console.time('fetchAppointment');
         console.log('Fetching appointment with token:', token);
         const response = await axios.get(`${apiUrl}/appointment`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log('API response:', response.data);
+        console.timeEnd('fetchAppointment');
 
-        const appointment = response.data.appointment || response.data; // Fallback to response.data if appointment is not nested
+        const appointment = response.data.appointment || response.data;
         if (appointment && appointment.date) {
           setAppointmentDate(appointment.date || '');
           setAppointmentStartTime(appointment.startTime || appointment.start_time || '');
@@ -62,6 +67,8 @@ const HomeUser = () => {
         setAppointmentDate('');
         setAppointmentStartTime('');
         setAppointmentEndTime('');
+      } finally {
+        setAppointmentLoading(false);
       }
     };
 
@@ -283,7 +290,7 @@ const HomeUser = () => {
                   title="Save status"
                 >
                   <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                  {statusLoading ? 'Saving...' : 'Save'}
+                  {statusLoading}
                 </button> {/* homeUser-top-header-right-btn */}
               </div> {/* homeUser-top-header-right */}
             </div> {/* homeUser-top-header */}
@@ -295,109 +302,117 @@ const HomeUser = () => {
                   <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
                 </div> {/* homeUser-top-core-left-header */}
 
-                <div className="homeUser-top-core-left-heading">
-                  {appointmentDate ? (
-                    <p style={{ fontWeight: '600', fontSize: '1.1rem' }}>You have an appointment</p>
-                  ) : (
-                    <p style={{ color: '#888', fontSize: '1.1rem' }}>No appointment scheduled</p>
-                  )}
-                </div>
-
-                <div className="homeUser-top-core-left-date">
-                  {appointmentDate ? (
-                    <div className="homeUser-top-core-left-date-cal">
-                      <p className="homeUser-top-core-left-date-cal-regular">
-                        {new Date(appointmentDate).toLocaleString('en-US', { month: 'short' }).toUpperCase()}
-                      </p>
-                      <p className="homeUser-top-core-left-date-cal-semibold">
-                        {new Date(appointmentDate).getDate()}
-                      </p>
+                {appointmentLoading ? (
+                  <div className="homeUser-top-core-left-loading" style={{ padding: '1rem', textAlign: 'center' }}>
+                    <Spinner />
+                  </div>
+                ) : (
+                  <>
+                    <div className="homeUser-top-core-left-heading">
+                      {appointmentDate ? (
+                        <p style={{ fontWeight: '600', fontSize: '1.1rem' }}>You have an appointment</p>
+                      ) : (
+                        <p style={{ color: '#888', fontSize: '1.1rem' }}>No appointment scheduled</p>
+                      )}
                     </div>
-                  ) : (
-                    <div className="homeUser-top-core-left-date-cal">
-                      <p className="homeUser-top-core-left-date-cal-regular">---</p>
-                      <p className="homeUser-top-core-left-date-cal-semibold">--</p>
-                    </div>
-                  )}
 
-                  <div className="homeUser-top-core-left-date-data">
-                    {appointmentDate ? (
-                      <>
-                        <div className="homeUser-top-core-left-date-data-text">
-                          <p className="homeUser-top-core-left-date-data-text-regular">{appointmentDate}</p>
-                          <p className="homeUser-top-core-left-date-data-text-light">
-                            {new Date(appointmentDate).toLocaleDateString('en-US', { weekday: 'long' })}
+                    <div className="homeUser-top-core-left-date">
+                      {appointmentDate ? (
+                        <div className="homeUser-top-core-left-date-cal">
+                          <p className="homeUser-top-core-left-date-cal-regular">
+                            {new Date(appointmentDate).toLocaleString('en-US', { month: 'short' }).toUpperCase()}
+                          </p>
+                          <p className="homeUser-top-core-left-date-cal-semibold">
+                            {new Date(appointmentDate).getDate()}
                           </p>
                         </div>
-
-                        <div className="homeUser-top-core-left-date-data-cards">
-                          <div className="homeUser-top-core-left-date-data-cards-start">
-                            <Clock
-                              style={{
-                                width: '24px',
-                                height: '24px',
-                                '--stroke-color': 'var(--black-color-opacity-30)',
-                                '--stroke-width': '5px',
-                              }}
-                            />
-                            <div className="homeUser-top-core-left-date-data-cards-start-text">
-                              <p className="homeUser-top-core-left-date-data-cards-start-text-light">Starts at</p>
-                              <p className="homeUser-top-core-left-date-data-cards-start-text-medium">
-                                {formatTime(appointmentStartTime)}
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="homeUser-top-core-left-date-data-cards-end">
-                            <Clock
-                              style={{
-                                width: '24px',
-                                height: '24px',
-                                '--stroke-color': 'var(--black-color-opacity-30)',
-                                '--stroke-width': '5px',
-                              }}
-                            />
-                            <div className="homeUser-top-core-left-date-data-cards-end-text">
-                              <p className="homeUser-top-core-left-date-data-cards-end-text-light">Ends at</p>
-                              <p className="homeUser-top-core-left-date-data-cards-end-text-medium">
-                                {formatTime(appointmentEndTime)}
-                              </p>
-                            </div>
-                          </div>
+                      ) : (
+                        <div className="homeUser-top-core-left-date-cal">
+                          <p className="homeUser-top-core-left-date-cal-regular">---</p>
+                          <p className="homeUser-top-core-left-date-cal-semibold">--</p>
                         </div>
+                      )}
 
-                        <button
-                          onClick={handleDeleteAppointment}
-                          style={{
-                            marginTop: '1rem',
-                            padding: '8px 12px',
-                            background: '#f44336',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          Delete Appointment
-                        </button>
-                      </>
-                    ) : (
-                      <p style={{ padding: '1rem', fontStyle: 'italic' }}>
-                        You have no scheduled appointment yet.
-                      </p>
-                    )}
-                  </div> {/* homeUser-top-core-left-date-data */}
-                </div> {/* homeUser-top-core-left-date */}
+                      <div className="homeUser-top-core-left-date-data">
+                        {appointmentDate ? (
+                          <>
+                            <div className="homeUser-top-core-left-date-data-text">
+                              <p className="homeUser-top-core-left-date-data-text-regular">{appointmentDate}</p>
+                              <p className="homeUser-top-core-left-date-data-text-light">
+                                {new Date(appointmentDate).toLocaleDateString('en-US', { weekday: 'long' })}
+                              </p>
+                            </div>
 
-                <div className="homeUser-top-core-left-btn">
-                  <button
-                    className="homeUser-top-core-left-btn-button"
-                    onClick={() => setIsModalOpen(true)}
-                  >
-                    <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                    <p>Set appointment</p>
-                  </button>
-                </div>
+                            <div className="homeUser-top-core-left-date-data-cards">
+                              <div className="homeUser-top-core-left-date-data-cards-start">
+                                <Clock
+                                  style={{
+                                    width: '24px',
+                                    height: '24px',
+                                    '--stroke-color': 'var(--black-color-opacity-30)',
+                                    '--stroke-width': '5px',
+                                  }}
+                                />
+                                <div className="homeUser-top-core-left-date-data-cards-start-text">
+                                  <p className="homeUser-top-core-left-date-data-cards-start-text-light">Starts at</p>
+                                  <p className="homeUser-top-core-left-date-data-cards-start-text-medium">
+                                    {formatTime(appointmentStartTime)}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="homeUser-top-core-left-date-data-cards-end">
+                                <Clock
+                                  style={{
+                                    width: '24px',
+                                    height: '24px',
+                                    '--stroke-color': 'var(--black-color-opacity-30)',
+                                    '--stroke-width': '5px',
+                                  }}
+                                />
+                                <div className="homeUser-top-core-left-date-data-cards-end-text">
+                                  <p className="homeUser-top-core-left-date-data-cards-end-text-light">Ends at</p>
+                                  <p className="homeUser-top-core-left-date-data-cards-end-text-medium">
+                                    {formatTime(appointmentEndTime)}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <button
+                              onClick={handleDeleteAppointment}
+                              style={{
+                                marginTop: '1rem',
+                                padding: '8px 12px',
+                                background: '#f44336',
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              Delete Appointment
+                            </button>
+                          </>
+                        ) : (
+                          <p style={{ padding: '1rem', fontStyle: 'italic' }}>
+                            You have no scheduled appointment yet.
+                          </p>
+                        )}
+                      </div> {/* homeUser-top-core-left-date-data */}
+                    </div> {/* homeUser-top-core-left-date */}
+
+                    <div className="homeUser-top-core-left-btn">
+                      <button
+                        className="homeUser-top-core-left-btn-button"
+                        onClick={() => setIsModalOpen(true)}
+                      >
+                        <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
+                        <p>Set appointment</p>
+                      </button>
+                    </div>
+                  </>
+                )}
               </div> {/* homeUser-top-core-left */}
 
               <div className="homeUser-top-core-right">
