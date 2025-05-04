@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 20, 2025 at 01:20 PM
+-- Generation Time: May 04, 2025 at 08:28 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,29 @@ SET time_zone = "+00:00";
 --
 -- Database: `concorde`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `appointments`
+--
+
+CREATE TABLE `appointments` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `date` date DEFAULT NULL,
+  `start_time` time DEFAULT NULL,
+  `end_time` time DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `appointments`
+--
+
+INSERT INTO `appointments` (`id`, `user_id`, `date`, `start_time`, `end_time`, `created_at`, `updated_at`) VALUES
+(9, 10, '2025-05-11', '10:00:00', '12:00:00', '2025-05-04 03:25:25', '2025-05-04 03:25:25');
 
 -- --------------------------------------------------------
 
@@ -45,8 +68,8 @@ INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
 ('laravel_cache_0c56ddc300bf1b54fde4ce628798bca9', 'i:3;', 1744468286),
 ('laravel_cache_0c56ddc300bf1b54fde4ce628798bca9:timer', 'i:1744468286;', 1744468286),
 ('laravel_cache_1ekrOMbFGz6o4bsu', 'a:1:{s:11:\"valid_until\";i:1744271724;}', 1745480604),
-('laravel_cache_21c7ea48997eeecf541f9afb4a8bfc81', 'i:1;', 1744784925),
-('laravel_cache_21c7ea48997eeecf541f9afb4a8bfc81:timer', 'i:1744784925;', 1744784925),
+('laravel_cache_21c7ea48997eeecf541f9afb4a8bfc81', 'i:2;', 1746337753),
+('laravel_cache_21c7ea48997eeecf541f9afb4a8bfc81:timer', 'i:1746337753;', 1746337753),
 ('laravel_cache_2349c132703f77ebad49ef92fbe804f8', 'i:4;', 1744464130),
 ('laravel_cache_2349c132703f77ebad49ef92fbe804f8:timer', 'i:1744464130;', 1744464130),
 ('laravel_cache_2d36c12b5a60f340c2ce81ac1e6f943b', 'i:2;', 1745147082),
@@ -64,6 +87,8 @@ INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
 ('laravel_cache_51e331c8866e23cab0d39d2b17735cfd', 'i:2;', 1744338260),
 ('laravel_cache_51e331c8866e23cab0d39d2b17735cfd:timer', 'i:1744338259;', 1744338259),
 ('laravel_cache_6y5JpF0QaQT0ErbM', 'a:1:{s:11:\"valid_until\";i:1744272571;}', 1745481631),
+('laravel_cache_70b661b8cad946c4e4fc2ee3ae234c78', 'i:1;', 1745467716),
+('laravel_cache_70b661b8cad946c4e4fc2ee3ae234c78:timer', 'i:1745467716;', 1745467716),
 ('laravel_cache_73651a8e661cbf3b5a812bc846be2b2d', 'i:1;', 1744704113),
 ('laravel_cache_73651a8e661cbf3b5a812bc846be2b2d:timer', 'i:1744704113;', 1744704113),
 ('laravel_cache_76c17abbdefe3a13bf1dec1559ea2c26', 'i:14;', 1744634875),
@@ -77,10 +102,12 @@ INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
 ('laravel_cache_985TMwDk8g1rkPtF', 'a:1:{s:11:\"valid_until\";i:1744534274;}', 1745743935),
 ('laravel_cache_9c0cf6bf330264a57e4f7f1afda95151', 'i:2;', 1744808994),
 ('laravel_cache_9c0cf6bf330264a57e4f7f1afda95151:timer', 'i:1744808994;', 1744808994),
-('laravel_cache_a75f3f172bfb296f2e10cbfc6dfc1883', 'i:1;', 1744782156),
-('laravel_cache_a75f3f172bfb296f2e10cbfc6dfc1883:timer', 'i:1744782156;', 1744782156),
+('laravel_cache_a75f3f172bfb296f2e10cbfc6dfc1883', 'i:2;', 1746340059),
+('laravel_cache_a75f3f172bfb296f2e10cbfc6dfc1883:timer', 'i:1746340059;', 1746340059),
 ('laravel_cache_akrQXZFqr4hBx0BM', 'a:1:{s:11:\"valid_until\";i:1744338703;}', 1745548363),
 ('laravel_cache_AmAEMCImTvsKBzS4', 'a:1:{s:11:\"valid_until\";i:1744338851;}', 1745548451),
+('laravel_cache_b6abf90ae0f53645fa4fe745d8ace3f4', 'i:2;', 1746337608),
+('laravel_cache_b6abf90ae0f53645fa4fe745d8ace3f4:timer', 'i:1746337608;', 1746337608),
 ('laravel_cache_b7kWFAi0uVkWYlB0', 'a:1:{s:11:\"valid_until\";i:1744350219;}', 1745559879),
 ('laravel_cache_b82890ffd935769bcf1f4b53754b53ab', 'i:5;', 1744467707),
 ('laravel_cache_b82890ffd935769bcf1f4b53754b53ab:timer', 'i:1744467707;', 1744467707),
@@ -220,7 +247,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (6, '2025_04_02_005901_modify_name_columns_in_users_table', 1),
 (7, '2025_04_07_045241_add_role_to_users_table', 2),
 (9, '2025_04_10_021203_create_certificates_table', 3),
-(10, '2025_04_20_191013_add_availability_to_users_table', 4);
+(10, '2025_04_20_191013_add_availability_to_users_table', 4),
+(11, '2025_05_02_133908_create_appointments_table', 5);
 
 -- --------------------------------------------------------
 
@@ -329,7 +357,7 @@ CREATE TABLE `users` (
   `gender` varchar(255) DEFAULT NULL,
   `civil_status` varchar(255) DEFAULT NULL,
   `role` varchar(255) NOT NULL DEFAULT 'user',
-  `availability` varchar(255) NOT NULL DEFAULT 'Available'
+  `availability` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -337,18 +365,22 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `first_name`, `middle_name`, `last_name`, `email`, `password`, `mobile`, `created_at`, `updated_at`, `region`, `province`, `city`, `barangay`, `street`, `zip_code`, `building_number`, `birthday`, `position`, `secondary_position`, `gender`, `civil_status`, `role`, `availability`) VALUES
-(10, 'Ian Kenneth', 'Ramirez', 'Sianghio', 'kennethsianghio756@gmail.com', '$2y$12$DZnguFK8myUqKY1hbu.QUeROlvtjERHe54HA6eKILBGuaqe3g9FDK', '09761465526', '2025-04-02 22:57:01', '2025-04-10 00:00:18', '130000000', NULL, '137502000', 'Santolan', 'M.H Del Pilar St', '1473', '128', NULL, NULL, NULL, 'Male', 'Single', 'user', 'Available'),
-(34, 'Zalzal', 'The Great', 'Aku', 'zalzalaku@friendmar.com.ph', '$2y$12$pHrR0qvyaJ2gNZFsGoT9IewvGQaQY6k0Theuf/FymhaQBBQGVHjJe', '1234', '2025-04-16 05:23:50', '2025-04-16 05:23:50', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin', 'Available'),
-(35, 'kingina', 'mo', 'talaga', 'kingina@gmail.utot', '$2y$12$O4IjtN8BXFwdnsW0Aena4.AWLnMshlUGTRq87jhHPskWp2uNrSrf2', '0999', '2025-04-20 09:20:12', '2025-04-20 09:20:12', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'user', 'Available'),
-(36, 'bb', 'bb', 'bb', 'tangina@friendmar.com.ph', '$2y$12$JT/xguwzuzjEc90fjrPkiuT/kii8n6NTKhm9pfKkSu.9JFZG/Ilxu', '00', '2025-04-20 09:25:45', '2025-04-20 09:25:45', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin', 'Available'),
+(10, 'Ian Kenneth', 'Ramirez', 'Sianghio', 'kennethsianghio756@gmail.com', '$2y$12$DZnguFK8myUqKY1hbu.QUeROlvtjERHe54HA6eKILBGuaqe3g9FDK', '09761465526', '2025-04-02 22:57:01', '2025-05-04 05:40:02', '130000000', NULL, '137502000', 'Santolan', 'M.H Del Pilar St', '1473', '128', NULL, NULL, NULL, 'Male', 'Single', 'user', 'Vacation'),
 (37, 'Angela', 'Fajardo', 'Guilaran', 'ian@friendmar.com.ph', '$2y$12$rSHTNEj8wXjrl7b3holuDOk6TLYqca8IaGQCHx76hK/xMOuFhnx9.', '09761465527', '2025-04-20 09:28:32', '2025-04-20 09:28:32', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin', 'Available'),
-(38, 'nnn', 'nn', 'nn', 'kingina@friendmar.com.ph', '$2y$12$7SJWnqoUtODW7gUjFSqVZOPEKcWX82BW/DgKmHYmBh7KtKpHkhaoq', '54', '2025-04-20 09:28:42', '2025-04-20 09:28:42', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin', 'Available'),
-(39, 'Angela', 'Fajardo', 'Guilaran', 'angela@friendmar.com.ph', '$2y$12$2zLbhKy55WTemXxJMKMRm.9l8Pb87rHyrHNJkhJ7j8Gd4I6m6zHsG', '12345', '2025-04-20 09:29:35', '2025-04-20 09:29:35', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin', 'Available'),
-(40, 'Tyler', 'Creator', 'Batungbakal', '1@friendmar.com.ph', '$2y$12$nMkYPPgc6PncANVtLZXyq.FeBI4v7Dosl8.h0JdUxTL4tO4DdUsqS', '42069', '2025-04-20 10:01:20', '2025-04-20 10:01:20', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin', 'Available');
+(43, 'Drew Djorn', 'G.', 'Calagos', 'ddjrnclgs@gmail.com', '$2y$12$jIau7u4I6PZYy6tynjSuV.lh2Az0E8E6fwNOyQ3mZtn7OS2Dm8N46', '09123456789', '2025-04-27 05:38:24', '2025-04-27 05:38:24', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'user', 'Available'),
+(44, 'A', 'F', 'G', 'meaboo@gmail.com', '$2y$12$Aiq0cCVq9z42oNSkwhyD/.9Ji7z7OskZ5S5/eDncSVi8QWr1QWFi6', '911', '2025-04-30 12:37:40', '2025-04-30 12:37:40', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'user', 'Available'),
+(45, 'Tyler', 'The', 'Creator', 'tyler@creator.com', '$2y$12$o9xyi9UbQH5I4pieVqv54ONzvOmUDQn4Lo7SjSFwf.MvSXKtp6H7u', '42069', '2025-05-02 10:59:41', '2025-05-04 03:51:52', 'National Capital Region', 'Metro Manila', 'City of Valenzuela', 'Marulas', 'Mh deeaplasdasd', '1473', '15151', '2222-02-22', 'Racist', 'CEO', 'Female', 'Single', 'user', 'Available');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `appointments`
+--
+ALTER TABLE `appointments`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `appointments_user_id_foreign` (`user_id`);
 
 --
 -- Indexes for table `cache`
@@ -430,6 +462,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `appointments`
+--
+ALTER TABLE `appointments`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
 -- AUTO_INCREMENT for table `certificates`
 --
 ALTER TABLE `certificates`
@@ -451,7 +489,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -463,11 +501,17 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `appointments`
+--
+ALTER TABLE `appointments`
+  ADD CONSTRAINT `appointments_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `certificates`
