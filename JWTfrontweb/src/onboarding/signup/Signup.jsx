@@ -221,7 +221,7 @@ const Signup = () => {
                 style={{
                   position: 'absolute',
                   right: '15px',
-                  top: '55px',
+                  top: '60px',
                   transform: 'translateY(-50%)',
                   cursor: 'pointer',
                   height: '20px',
@@ -254,7 +254,7 @@ const Signup = () => {
                 style={{
                   position: 'absolute',
                   right: '15px',
-                  top: '55px',
+                  top: '60px',
                   transform: 'translateY(-50%)',
                   cursor: 'pointer',
                   height: '20px',

@@ -3,19 +3,16 @@ import './homeUser.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { handleAuthToken } from '../../utils/timeout';
-// import { Navbar } from '../../admin/navbar/Navbar';
-// import Sidebar from '../../admin/sidebar/Sidebar';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Clock from '../../assets/icons/Clock.svg?react';
 import BookAppointmentModal from '../../user/home/BookAppointmentModal';
-import Spinner from '../../components/Spinner'; // Adjust the import path as needed
+import Spinner from '../../components/Spinner';
 
 const HomeUser = () => {
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [statusLoading, setStatusLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [appointmentDate, setAppointmentDate] = useState('');
@@ -124,27 +121,30 @@ const HomeUser = () => {
     setSelectedStatus(e.target.value);
   };
 
-  const handleSaveStatus = async () => {
-    setStatusLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.patch(
-        `${apiUrl}/user/availability`,
-        { availability: selectedStatus },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      const updatedUser = response.data.user;
-      setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      console.log('Status updated:', updatedUser.availability);
-      alert('Status changed Successfully');
-    } catch (error) {
-      console.error('Failed to update status:', error.response?.data || error.message);
-      alert(error.response?.data.message || 'Failed to update status');
-    } finally {
-      setStatusLoading(false);
-    }
-  };
+  useEffect(() => {
+    const saveStatus = async () => {
+      if (!user || selectedStatus === user.availability) return;
+
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.patch(
+          `${apiUrl}/user/availability`,
+          { availability: selectedStatus },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const updatedUser = response.data.user;
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        console.log('Status auto-saved:', updatedUser.availability);
+        alert('Status updated successfully');
+      } catch (error) {
+        console.error('Failed to auto-save status:', error.response?.data || error.message);
+        alert(error.response?.data.message || 'Failed to update status');
+      }
+    };
+
+    saveStatus();
+  }, [selectedStatus, user]);
 
   const handleLogout = async () => {
     try {
@@ -220,22 +220,6 @@ const HomeUser = () => {
     }
   };
 
-  // const handlePdfUpload = async (e) => {
-  //   const file = e.target.files[0];
-  //   const formData = new FormData();
-  //   formData.append('file', file);
-  //   try {
-  //     const response = await axios.post(`${apiUrl}/upload-pdf`, formData, {
-  //       headers: { 'Content-Type': 'multipart/form-data' },
-  //     });
-  //     alert('Upload successful!');
-  //     console.log(response.data);
-  //   } catch (error) {
-  //     console.error(error.response?.data);
-  //     alert('Upload failed');
-  //   }
-  // };
-
   if (loading) {
     return null;
   }
@@ -249,7 +233,7 @@ const HomeUser = () => {
               <div className="homeUser-top-header-left">
                 <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
                 <header>Home</header>
-              </div> {/* homeUser-top-header-left */}
+              </div>
 
               {isModalOpen && (
                 <BookAppointmentModal
@@ -283,24 +267,15 @@ const HomeUser = () => {
                     </select>
                   </main>
                 </div>
-                <button
-                  className="homeUser-top-header-right-btn"
-                  onClick={handleSaveStatus}
-                  disabled={statusLoading || selectedStatus === user.availability}
-                  title="Save status"
-                >
-                  <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                  {statusLoading}
-                </button> {/* homeUser-top-header-right-btn */}
-              </div> {/* homeUser-top-header-right */}
-            </div> {/* homeUser-top-header */}
+              </div>
+            </div>
 
             <div className="homeUser-top-core">
               <div className="homeUser-top-core-left">
                 <div className="homeUser-top-core-left-header">
                   <header>Scheduled appointment</header>
                   <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                </div> {/* homeUser-top-core-left-header */}
+                </div>
 
                 {appointmentLoading ? (
                   <div className="homeUser-top-core-left-loading" style={{ padding: '1rem', textAlign: 'center' }}>
@@ -350,7 +325,7 @@ const HomeUser = () => {
                                     width: '24px',
                                     height: '24px',
                                     '--stroke-color': 'var(--black-color-opacity-30)',
-                                    '--stroke-width': '5px',
+                                    '--stroke-width': '5px'
                                   }}
                                 />
                                 <div className="homeUser-top-core-left-date-data-cards-start-text">
@@ -367,7 +342,7 @@ const HomeUser = () => {
                                     width: '24px',
                                     height: '24px',
                                     '--stroke-color': 'var(--black-color-opacity-30)',
-                                    '--stroke-width': '5px',
+                                    '--stroke-width': '5px'
                                   }}
                                 />
                                 <div className="homeUser-top-core-left-date-data-cards-end-text">
@@ -399,8 +374,8 @@ const HomeUser = () => {
                             You have no scheduled appointment yet.
                           </p>
                         )}
-                      </div> {/* homeUser-top-core-left-date-data */}
-                    </div> {/* homeUser-top-core-left-date */}
+                      </div>
+                    </div>
 
                     <div className="homeUser-top-core-left-btn">
                       <button
@@ -413,13 +388,13 @@ const HomeUser = () => {
                     </div>
                   </>
                 )}
-              </div> {/* homeUser-top-core-left */}
+              </div>
 
               <div className="homeUser-top-core-right">
                 <div className="homeUser-top-core-right-header">
                   <header>Certificate upload</header>
                   <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                </div> {/* homeUser-top-core-right-header */}
+                </div>
 
                 <div className="homeUser-top-core-right-progress">
                   <div className="homeUser-top-core-right-progress-text">
@@ -427,55 +402,53 @@ const HomeUser = () => {
                     <div className="homeUser-top-core-right-progress-text-box">
                       <p className="homeUser-top-core-right-progress-text-box-regular">75% complete</p>
                       <p className="homeUser-top-core-right-progress-text-box-light">3 out of 4 uploaded</p>
-                    </div> {/* homeUser-top-core-right-progress-text-box */}
-                  </div> {/* homeUser-top-core-right-progress-text */}
+                    </div>
+                  </div>
 
                   <div className="homeUser-top-core-right-progress-bar">
-                    <div className="homeUser-top-core-right-progress-bar-primary"></div> {/* homeUser-top-core-right-progress-bar-primary */}
-                  </div> {/* homeUser-top-core-right-progress-bar */}
-                </div> {/* homeUser-top-core-right-progress */}
+                    <div className="homeUser-top-core-right-progress-bar-primary"></div>
+                  </div>
+                </div>
 
                 <div className="homeUser-top-core-right-up">
                   <div className="homeUser-top-core-right-up-desc">
                     <div className="homeUser-top-core-right-up-desc-header">
                       <p>file upload</p>
                       <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                    </div> {/* homeUser-top-core-right-up-desc-header */}
+                    </div>
                     <p className="homeUser-top-core-right-up-desc-light">Select the type of certificate</p>
-                  </div> {/* homeUser-top-core-right-up-desc */}
+                  </div>
 
                   <button className="homeUser-top-core-right-up-btn">
                     <div className="homeUser-top-core-right-up-btn-header">
                       <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
                       <p>Medical</p>
-                    </div> {/* homeUser-top-core-right-up-btn-header */}
+                    </div>
                     <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                  </button> {/* homeUser-top-core-right-up-btn */}
-                </div> {/* homeUser-top-core-right-up */}
+                  </button>
+                </div>
 
                 <div className="homeUser-top-core-right-down">
                   <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
                   <div className="homeUser-top-core-right-down-text">
                     <p className="homeUser-top-core-right-down-text-bold">Choose a file to upload</p>
                     <p className="homeUser-top-core-right-down-text-light">JPEG, PNG, and PDF formats, up to 50 MB</p>
-                  </div> {/* homeUser-top-core-right-down-text */}
+                  </div>
 
                   <button className="homeUser-top-core-right-down-btn">
                     <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
                     <p>Browse files</p>
-                  </button> {/* homeUser-top-core-right-down-btn */}
-                </div> {/* homeUser-top-core-right-down */}
-              </div> {/* homeUser-top-core-right */}
-            </div> {/* homeUser-top-core */}
-          </div> {/* homeUser-top */}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <div className="homeUser-bot">
-            {/* <button onClick={handleLogout} className="logout-btn">
-            <i className="fa-solid fa-right-from-bracket"></i> Logout
-          </button> */}
-          </div> {/* homeUser-bot */}
-        </main> {/* homeUser-box-in */}
-      </div> {/* homeUser-box */}
+            {/* Logout button remains commented out */}
+          </div>
+        </main>
+      </div>
     </div>
   );
 };
