@@ -129,24 +129,6 @@ const Wrapper = ({ children }) => {
         return;
       }
 
-      // Redirect from auth pages
-      if (location.pathname === '/login' || location.pathname === '/signup') {
-        if (role === 'admin') {
-          console.log('Admin on auth page, redirecting to /admin/home');
-          navigate('/admin/home', { replace: true });
-        } else if (role === 'user') {
-          console.log('User on auth page, redirecting to:', hasRegion ? '/user/homeuser' : '/login');
-          if (!hasRegion) {
-            console.log('User has no region, clearing localStorage');
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-          }
-          navigate(hasRegion ? '/user/homeuser' : '/login', { replace: true });
-          setIsLoading(false);
-          return;
-        }
-      }
-
       setIsLoading(false);
     } catch (err) {
       console.error('Error decoding token:', err);

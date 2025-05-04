@@ -292,6 +292,7 @@ const Registration = () => {
   }
 
   return (
+    <div className="registration-wrapper">
     <div className="registration">
       <div className="registration-header">
         <div className="registration-header-padding">
@@ -532,13 +533,14 @@ const Registration = () => {
                   name="register"
                   disabled={loading}
                 >
-                
+                {loading ? "Registering..." : "Register"}
                 </button>
               </div> {/* registration-container-submit */}
             </form> {/* registration-container-column-form */}
           </div> {/* registration-container-column */}
         </div> {/* registration-container-padding */}
       </div> {/* registration-container */}
+    </div>
     </div>
   );
 };

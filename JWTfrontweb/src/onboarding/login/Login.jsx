@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './login.css';
@@ -14,51 +14,69 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [hasPreFilled, setHasPreFilled] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if (savedEmail && !hasPreFilled) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+      setHasPreFilled(true);
+    }
+  }, []);
+
+  const handleRememberMeChange = (e) => {
+    const isChecked = e.target.checked;
+    setRememberMe(isChecked);
+    if (!isChecked) {
+      localStorage.removeItem('rememberedEmail');
+    }
+  };
+
   const handleLogin = async (e) => {
-    e.preventDefault(); // Prevent form from submitting and refreshing the page
+    e.preventDefault();
     localStorage.removeItem('token');
     localStorage.removeItem('user');
 
-    setError(''); // Clear previous errors
-    setLoading(true); // Set loading to true during request
+    setError('');
+    setLoading(true);
 
     try {
-      // Step 1: Send login request with email and password
-      console.log('Sending login request:', { email, password }); // Debug payload
+      console.log('Sending login request:', { email, password });
       const response = await axios.post(`${apiUrl}/login`, { email, password });
 
-      // Step 2: Check for token and user data
       if (response.data.status && response.data.token) {
-        // Check if the email domain is "@friendmar.com.ph"
         if (email.endsWith('@friendmar.com.ph')) {
-          response.data.user.role = 'admin'; // Assign 'admin' role to this user
+          response.data.user.role = 'admin';
         }
 
-        // Store token and user data in localStorage
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         console.log('Login successful:', response.data.message);
 
-        // Conditionally navigate based on role and region
+        if (rememberMe) {
+          localStorage.setItem('rememberedEmail', email);
+        }
+
         if (response.data.user.role === 'admin') {
-          navigate('/admin/home'); // Redirect to admin dashboard
+          navigate('/admin/home');
         } else if (response.data.user.region) {
-          navigate('/user/homeUser'); // Navigate to home user if region exists
+          navigate('/user/homeUser');
         } else {
-          navigate('/Registration'); // Redirect to registration if region is null
+          navigate('/Registration');
         }
       } else {
         setError('Invalid credentials or incomplete response. Please try again.');
         alert('Invalid credentials. Please check your email and password and try again.');
       }
     } catch (error) {
-      console.error('Login failed:', error); // Log full error
+      console.error('Login failed:', error);
       if (error.response) {
-        console.log('Response data:', error.response.data); // Log backend response
-        console.log('Status code:', error.response.status); // Log status code
+        console.log('Response data:', error.response.data);
+        console.log('Status code:', error.response.status);
         setError(error.response.data.message || 'Login failed. Please check your credentials.');
         alert(error.response.data.message || 'Login failed. Please check your credentials.');
       } else if (error.request) {
@@ -69,12 +87,12 @@ const Login = () => {
         alert('Something went wrong. Please try again.');
       }
     } finally {
-      setLoading(false); // Reset loading state after request completes
+      setLoading(false);
     }
   };
 
   const handleSignup = () => {
-    navigate('/signup'); // Navigates to signup.jsx
+    navigate('/signup');
   };
 
   return (
@@ -96,7 +114,7 @@ const Login = () => {
           </div>
 
           <div className="login-right-form">
-            <form id="login-form" className="login-right-form-form" onSubmit={handleLogin}>
+            <form id="login-form" className="login-right-form-form" onSubmit={handleLogin} autocomplete="off">
               <div className="login-right-form-email">
                 <label htmlFor="login-email-id">Email</label>
                 <input 
@@ -107,6 +125,7 @@ const Login = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  autocomplete="off"
                 />    
               </div>
               <div className="login-right-form-password" style={{ position: 'relative', width: '100%' }}>
@@ -123,6 +142,7 @@ const Login = () => {
                     width: '100%',
                     paddingRight: '40px' 
                   }}
+                  autocomplete="new-password"
                 />
                 <div
                   onClick={() => setShowPassword(!showPassword)}
@@ -143,7 +163,13 @@ const Login = () => {
               </div>
               <div className="login-right-options">
                 <div className="login-right-options-remember">
-                  <input type="checkbox" id="remember-checkbox-id" name="remember-checkbox" />
+                  <input 
+                    type="checkbox" 
+                    id="remember-checkbox-id" 
+                    name="remember-checkbox" 
+                    checked={rememberMe}
+                    onChange={handleRememberMeChange}
+                  />
                   <label htmlFor="remember-checkbox-id">Remember me</label>
                 </div>
                 <div className="login-right-options-forgot">
