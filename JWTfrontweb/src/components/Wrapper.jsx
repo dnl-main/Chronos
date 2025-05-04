@@ -6,13 +6,12 @@ import Spinner from './Spinner.jsx';
 const Wrapper = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoading, setIsLoading] = useState(true); // Prevent rendering until checks complete
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    console.log('Wrapper useEffect running for path:', location.pathname);
-
-    const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
+  const checkToken = () => {
+    console.log('Checking token for path:', location.pathname);
+    const token = sessionStorage.getItem('token');
+    const storedUser = sessionStorage.getItem('user');
 
     if (!token) {
       console.log('No token found, redirecting to /login');
@@ -28,9 +27,9 @@ const Wrapper = ({ children }) => {
       const currentTime = Date.now() / 1000;
 
       if (decoded.exp && decoded.exp < currentTime) {
-        console.log('Token expired, clearing localStorage');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        console.log('Token expired in Wrapper, exp:', decoded.exp, 'currentTime:', currentTime);
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
         navigate('/login', { replace: true });
         setIsLoading(false);
         return;
@@ -56,46 +55,42 @@ const Wrapper = ({ children }) => {
 
       // Security checks
       if (role === 'user') {
-        // For new users without region, clear token and redirect to /login on /registration
         if (location.pathname === '/registration' && !hasRegion) {
-          console.log('New user on /registration without region, clearing localStorage and redirecting to /login');
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          console.log('New user on /registration without region, clearing sessionStorage and redirecting to /login');
+          sessionStorage.removeItem('token');
+          sessionStorage.removeItem('user');
           navigate('/login', { replace: true });
           setIsLoading(false);
           return;
         }
 
-        // Redirect /user to /user/homeuser if user has region
         if (location.pathname === '/user' || location.pathname === '/user/') {
           console.log('User accessing /user, redirecting to:', hasRegion ? '/user/homeuser' : '/login');
           if (!hasRegion) {
-            console.log('User has no region, clearing localStorage');
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            console.log('User has no region, clearing sessionStorage');
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('user');
           }
           navigate(hasRegion ? '/user/homeuser' : '/login', { replace: true });
           setIsLoading(false);
           return;
         }
 
-        // Block user routes if no region
         if (location.pathname.startsWith('/user/') && !hasRegion) {
-          console.log('User has no region, redirecting to /login and clearing localStorage');
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          console.log('User has no region, redirecting to /login and clearing sessionStorage');
+          sessionStorage.removeItem('token');
+          sessionStorage.removeItem('user');
           navigate('/login', { replace: true });
           setIsLoading(false);
           return;
         }
 
-        // Block admin routes for users
         if (location.pathname.startsWith('/admin/')) {
           console.log('User trying to access admin routes, redirecting');
           if (!hasRegion) {
-            console.log('User has no region, clearing localStorage');
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            console.log('User has no region, clearing sessionStorage');
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('user');
             navigate('/login', { replace: true });
           } else {
             navigate('/user/homeuser', { replace: true });
@@ -104,7 +99,6 @@ const Wrapper = ({ children }) => {
           return;
         }
       } else if (role === 'admin') {
-        // Redirect /admin to /admin/home
         if (location.pathname === '/admin' || location.pathname === '/admin/') {
           console.log('Admin accessing /admin, redirecting to /admin/home');
           navigate('/admin/home', { replace: true });
@@ -112,7 +106,6 @@ const Wrapper = ({ children }) => {
           return;
         }
 
-        // Block user routes for admins
         if (location.pathname.startsWith('/user/')) {
           console.log('Admin trying to access user routes, redirecting to /admin/home');
           navigate('/admin/home', { replace: true });
@@ -120,10 +113,9 @@ const Wrapper = ({ children }) => {
           return;
         }
       } else {
-        // Invalid or missing role
-        console.log('Invalid role, clearing localStorage');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        console.log('Invalid role, clearing sessionStorage');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
         navigate('/login', { replace: true });
         setIsLoading(false);
         return;
@@ -132,11 +124,17 @@ const Wrapper = ({ children }) => {
       setIsLoading(false);
     } catch (err) {
       console.error('Error decoding token:', err);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
       navigate('/login', { replace: true });
       setIsLoading(false);
     }
+  };
+
+  useEffect(() => {
+    checkToken();
+    const intervalId = setInterval(checkToken, 10000); // Check every 10 seconds
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, [navigate, location]);
 
   if (isLoading) {

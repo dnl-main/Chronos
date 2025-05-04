@@ -21,7 +21,7 @@ const BookAppointmentModal = ({
     }
 
     const formattedDate = date.toISOString().split('T')[0];
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
     try {

@@ -24,7 +24,7 @@ const HomeUser = () => {
 
   useEffect(() => {
     const fetchAppointment = async () => {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (!token) {
         console.log('No token found, clearing appointment states');
         setAppointmentDate('');
@@ -73,8 +73,8 @@ const HomeUser = () => {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
+    const token = sessionStorage.getItem('token');
+    const storedUser = sessionStorage.getItem('user');
     handleAuthToken(token, storedUser ? JSON.parse(storedUser) : null, navigate);
     if (!token) {
       navigate('/login');
@@ -108,7 +108,7 @@ const HomeUser = () => {
       }
       setUser(userData);
       setSelectedStatus(userData.availability || 'Available');
-      localStorage.setItem('user', JSON.stringify(userData));
+      sessionStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
       console.error('Failed to fetch user data:', error);
       navigate('/login');
@@ -126,7 +126,7 @@ const HomeUser = () => {
       if (!user || selectedStatus === user.availability) return;
 
       try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         const response = await axios.patch(
           `${apiUrl}/user/availability`,
           { availability: selectedStatus },
@@ -134,7 +134,7 @@ const HomeUser = () => {
         );
         const updatedUser = response.data.user;
         setUser(updatedUser);
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+        sessionStorage.setItem('user', JSON.stringify(updatedUser));
         console.log('Status auto-saved:', updatedUser.availability);
         alert('Status updated successfully');
       } catch (error) {
@@ -148,7 +148,7 @@ const HomeUser = () => {
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (!token) {
         console.warn('No token found, logging out anyway.');
         navigate('/');
@@ -159,13 +159,13 @@ const HomeUser = () => {
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
       navigate('/');
     } catch (error) {
       console.error('Logout failed:', error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
       navigate('/');
     }
   };
@@ -186,7 +186,7 @@ const HomeUser = () => {
       endTime: appointmentEndTime,
     };
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const response = await axios.post(
         `${apiUrl}/appointment`,
         appointment,
@@ -206,7 +206,7 @@ const HomeUser = () => {
 
   const handleDeleteAppointment = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       await axios.delete(`${apiUrl}/appointment`, {
         headers: { Authorization: `Bearer ${token}` },
       });

@@ -21,8 +21,8 @@ const HomeUser = () => {
 
 
 useEffect(() => {
-  const token = localStorage.getItem('token');
-  const storedUser = localStorage.getItem('user');
+  const token = sessionStorage.getItem('token');
+  const storedUser = sessionStorage.getItem('user');
   handleAuthToken(token, storedUser ? JSON.parse(storedUser) : null, navigate);
   if (!token) {
     navigate('/login');
@@ -62,7 +62,7 @@ const fetchUserData = async (token) => {
     }
 
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    sessionStorage.setItem('user', JSON.stringify(userData));
 
   } catch (error) {
     console.error('Failed to fetch user data:', error);
@@ -79,7 +79,7 @@ if (loading) {
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
 
       if (!token) {
         console.warn('No token found, logging out anyway.');
@@ -93,13 +93,13 @@ if (loading) {
         },
       });
 
-      localStorage.removeItem('token'); // Clear token
-      localStorage.removeItem('user'); // Clear user data
+      sessionStorage.removeItem('token'); // Clear token
+      sessionStorage.removeItem('user'); // Clear user data
       navigate('/');
     } catch (error) {
       console.error('Logout failed:', error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
       navigate('/');
     }
   };

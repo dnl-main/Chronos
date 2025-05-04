@@ -38,8 +38,9 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    // Clear sessionStorage instead of localStorage
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
 
     setError('');
     setLoading(true);
@@ -53,8 +54,9 @@ const Login = () => {
           response.data.user.role = 'admin';
         }
 
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        // Store token and user in sessionStorage instead of localStorage
+        sessionStorage.setItem('token', response.data.token);
+        sessionStorage.setItem('user', JSON.stringify(response.data.user));
         console.log('Login successful:', response.data.message);
 
         if (rememberMe) {

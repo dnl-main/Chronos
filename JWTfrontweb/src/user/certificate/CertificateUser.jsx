@@ -18,8 +18,8 @@ const CertificateUser = () => {
   const [loading, setLoading] = useState(true);  // Start as loading
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
+    const token = sessionStorage.getItem('token');
+    const storedUser = sessionStorage.getItem('user');
 
     // If no token, navigate to login immediately
     if (!token) {
@@ -62,7 +62,7 @@ const CertificateUser = () => {
       }
 
       setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+      sessionStorage.setItem('user', JSON.stringify(userData));
 
     } catch (error) {
       console.error('Failed to fetch user data:', error);

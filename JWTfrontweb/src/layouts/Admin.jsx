@@ -8,7 +8,7 @@ const Admin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     if (!token) {
       navigate('/login');
@@ -21,14 +21,14 @@ const Admin = () => {
 
       if (decoded.exp < now) {
         // Token has expired
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
         navigate('/login');
       }
     } catch (error) {
       console.error('Invalid token:', error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
       navigate('/login');
     }
   }, [navigate]);
