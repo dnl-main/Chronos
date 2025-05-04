@@ -14,13 +14,20 @@ const BookAppointmentModal = ({
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
 
+  const formatLocalDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleBook = async () => {
     if (!date || !startTime || !endTime) {
       alert('Please complete all fields before booking.');
       return;
     }
 
-    const formattedDate = date.toISOString().split('T')[0];
+    const formattedDate = formatLocalDate(date);
     const token = sessionStorage.getItem('token');
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
