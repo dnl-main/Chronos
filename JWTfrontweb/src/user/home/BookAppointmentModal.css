@@ -92,9 +92,6 @@ button {
   transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #008bcf;
-}
 
 /* Optional: highlight selected day in calendar */
 .calendar .selected-day {
