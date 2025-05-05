@@ -44,7 +44,7 @@ return [
     | List the origins that are allowed to make requests to your API. 
     | Replace `http://localhost:5173` with your front-end URL.
 
-    add ngrok url my nigga
+    add ngrok url 
     |
     */
 
