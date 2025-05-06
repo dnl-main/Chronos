@@ -384,7 +384,7 @@ const HomeUser = () => {
                            className="homeUser-top-core-left-btn-button"
                     >
                     <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                    Set Appointment
+                    SET APPOINTMENT
                     </button>
                     )}
                     </div>

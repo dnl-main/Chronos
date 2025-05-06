@@ -16,8 +16,66 @@ class AppointmentController extends Controller
     public function index()
     {
         $user = JWTAuth::user();
+
+        if ($user->role === 'admin') {
+            // For admins, return all appointments with user details
+            $appointments = Appointment::with('user')->get()->map(function ($appointment) {
+                return [
+                    'id' => $appointment->id,
+                    'user_id' => $appointment->user_id,
+                    'date' => $appointment->date,
+                    'start_time' => $appointment->start_time,
+                    'end_time' => $appointment->end_time,
+                    'status' => $this->getAppointmentStatus($appointment),
+                    'user' => $appointment->user ? [
+                        'first_name' => $appointment->user->first_name,
+                        'middle_name' => $appointment->user->middle_name,
+                        'last_name' => $appointment->user->last_name,
+                        'email' => $appointment->user->email,
+                        'mobile' => $appointment->user->mobile,
+                        'position' => $appointment->user->position,
+                    ] : null,
+                ];
+            });
+            return response()->json($appointments, 200);
+        }
+
+        // For non-admins, return their own appointment
         $appointment = Appointment::where('user_id', $user->id)->first();
-        return response()->json($appointment ?: [], 200);
+        if ($appointment) {
+            return response()->json([
+                'id' => $appointment->id,
+                'user_id' => $appointment->user_id,
+                'date' => $appointment->date,
+                'start_time' => $appointment->start_time,
+                'end_time' => $appointment->end_time,
+                'status' => $this->getAppointmentStatus($appointment),
+                'user' => [
+                    'first_name' => $user->first_name,
+                    'middle_name' => $user->middle_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'mobile' => $user->mobile,
+                    'position' => $user->position,
+                ],
+            ], 200);
+        }
+
+        return response()->json([], 200);
+    }
+
+    private function getAppointmentStatus($appointment)
+    {
+        $today = now()->startOfDay();
+        $appointmentDate = \Carbon\Carbon::parse($appointment->date)->startOfDay();
+
+        if ($appointmentDate->isToday()) {
+            return 'today';
+        } elseif ($appointmentDate->isPast()) {
+            return 'completed';
+        } else {
+            return 'upcoming';
+        }
     }
 
     public function store(Request $request)
@@ -44,13 +102,11 @@ class AppointmentController extends Controller
 
     public function show($id)
     {
-        // Not needed for single appointment per user
         return response()->json(['message' => 'Method not implemented'], 501);
     }
 
     public function update(Request $request, $id)
     {
-        // Not needed for single appointment per user
         return response()->json(['message' => 'Method not implemented'], 501);
     }
 

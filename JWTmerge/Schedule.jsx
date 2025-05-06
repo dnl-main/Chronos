@@ -5,9 +5,6 @@ import './schedule.css';
 
 import { Navbar } from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
-// import Phone from '../../assets/icons/Phone.svg?react';
-// import Mail from '../../assets/icons/Mail.svg?react';
-// import Edit_Pencil_01 from '../../assets/icons/Edit_Pencil_01.svg?react';
 import ScheduleCard from './scheduleComponents/ScheduleCard';
 import Spinner from '../../components/Spinner';
 
@@ -21,6 +18,7 @@ const Schedule = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeFilter, setActiveFilter] = useState('all');
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
@@ -87,8 +85,38 @@ const Schedule = () => {
     }
   };
 
+  const filterAppointments = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    switch (activeFilter) {
+      case 'today':
+        return appointments.filter(appointment => {
+          const appointmentDate = new Date(appointment.date);
+          appointmentDate.setHours(0, 0, 0, 0);
+          return appointmentDate.getTime() === today.getTime();
+        });
+      case 'upcoming':
+        return appointments.filter(appointment => {
+          const appointmentDate = new Date(appointment.date);
+          return appointmentDate > today && appointment.status !== 'completed';
+        });
+      case 'completed':
+        return appointments.filter(appointment => appointment.status === 'completed');
+      case 'all':
+      default:
+        return appointments;
+    }
+  };
+
+  const handleFilterChange = (filter) => {
+    setActiveFilter(filter);
+  };
+
   if (loading) return <Spinner />;
   if (error) return <div className="schedule-error">{error}</div>;
+
+  const filteredAppointments = filterAppointments();
 
   return (
     <div className="schedule">
@@ -105,37 +133,65 @@ const Schedule = () => {
             />
             <p>Scheduled appointments</p>
           </header>
-		  <section className="schedule-tabs">
-					<button className="schedule-tabs-all">
-						<Circle_Primary style={{ color: "var(--white-color)", width: "20px", height: "20px" }} />
-						<p>All</p>
-					</button> {/* schedule-tabs-all */}
+          <section className="schedule-tabs">
+            <button 
+              className={`schedule-tabs-all ${activeFilter === 'all' ? 'active' : ''}`}
+              onClick={() => handleFilterChange('all')}
+            >
+              <Circle_Primary 
+                style={{ 
+                  color: activeFilter === 'all' ? 'var(--white-color)' : 'var(--primary-color)', 
+                  width: '20px', 
+                  height: '20px' 
+                }} 
+              />
+              <p>All</p>
+            </button>
+            <button 
+              className={`schedule-tabs-today ${activeFilter === 'today' ? 'active' : ''}`}
+              onClick={() => handleFilterChange('today')}
+            >
+              <Circle_Primary 
+                style={{ 
+                  color: activeFilter === 'today' ? 'var(--white-color)' : 'var(--primary-color)', 
+                  width: '20px', 
+                  height: '20px' 
+                }} 
+              />
+              <p>Today</p>
+            </button>
+            <button 
+              className={`schedule-tabs-upcoming ${activeFilter === 'upcoming' ? 'active' : ''}`}
+              onClick={() => handleFilterChange('upcoming')}
+            >
+              <Circle_Primary 
+                style={{ 
+                  color: activeFilter === 'upcoming' ? 'var(--white-color)' : 'var(--primary-color)', 
+                  width: '20px', 
+                  height: '20px' 
+                }} 
+              />
+              <p>Upcoming</p>
+            </button>
+            <button 
+              className={`schedule-tabs-completed ${activeFilter === 'completed' ? 'active' : ''}`}
+              onClick={() => handleFilterChange('completed')}
+            >
+              <Circle_Primary 
+                style={{ 
+                  color: activeFilter === 'completed' ? 'var(--white-color)' : 'var(--primary-color)', 
+                  width: '20px', 
+                  height: '20px' 
+                }} 
+              />
+              <p>Completed</p>
+            </button>
+          </section>
 
-					<button className="schedule-tabs-today">
-						<Circle_Primary style={{ color: "var(--primary-color)", width: "20px", height: "20px" }} />
-						<p>Today</p>
-					</button> {/* schedule-tabs-today */}
-
-					<button className="schedule-tabs-upcoming">
-						<Circle_Primary style={{ color: "var(--primary-color)", width: "20px", height: "20px" }} />
-						<p>Upcoming</p>
-					</button> {/* schedule-tabs-upcoming */}
-
-					<button className="schedule-tabs-completed">
-						<Circle_Primary style={{ color: "var(--primary-color)", width: "20px", height: "20px" }} />
-						<p>Completed</p>
-					</button> {/* schedule-tabs-completed */}
-				</section> {/* schedule-tabs */}
-
-				<header className="schedule-header-today">
-					<p>Today</p>
-				</header> {/* schedule-header-today */}
-
-
-          <section className="schedule-today">
-            <div className="schedule-today-cards">
-              {appointments.length > 0 ? (
-                appointments.map((appointment) => (
+          <section className="schedule-content">
+            <div className="schedule-cards">
+              {filteredAppointments.length > 0 ? (
+                filteredAppointments.map((appointment) => (
                   <ScheduleCard
                     key={appointment.id}
                     appointment={appointment}
@@ -143,23 +199,12 @@ const Schedule = () => {
                   />
                 ))
               ) : (
-                <p>No appointments found.</p>
+                <p>No appointments found</p>
               )}
             </div>
           </section>
-		  <header className="schedule-header-completed">
-					<p>Completed</p>
-				</header> {/* schedule-header-completed */}
-
-				<section className="schedule-completed">
-					<div className="schedule-completed-cards">
-						<ScheduleCard />
-    
-						</div> {/* schedule-completed-cards */}
-						</section> {/* schedule-completed */}
-		</main>
+        </main>
       </div>
-	  
     </div>
   );
 };
