@@ -30,6 +30,14 @@ const ScheduleCard = ({ appointment, user }) => {
   const startTime = formatTime(appointment.start_time);
   const endTime = formatTime(appointment.end_time);
 
+     let formattedPhone = 'N/A';
+  if (user?.mobile) {
+    const rawPhone = user.mobile;
+    const cleaned = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
+    formattedPhone = cleaned.length >= 10
+      ? `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`
+      : cleaned;
+  }
   return (
     <main className="schedule-today-cards-card">
       <section className="schedule-today-cards-card-indicator"></section>
@@ -64,7 +72,7 @@ const ScheduleCard = ({ appointment, user }) => {
       <section className="schedule-today-cards-card-contact">
         <div className="schedule-today-cards-card-contact-mobile">
           <Phone className="schedule-today-cards-card-contact-mobile-svg" />
-          <p>(+63){user.mobile || 'N/A'}</p>
+          <p>{formattedPhone ? `(+63)${formattedPhone}` : 'Loading...'}</p>
         </div>
 
         <div className="schedule-today-cards-card-contact-email">

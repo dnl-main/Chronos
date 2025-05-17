@@ -1,43 +1,553 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './accountUser.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+
+import Phone from '../../assets/icons/Phone.svg';
+import Mail from '../../assets/icons/Mail.svg';
+import Suitcase from '../../assets/icons/Suitcase.svg';
+import Edit_Pencil_Line_01 from '../../assets/icons/Edit_Pencil_Line_01.svg';
+import User_Square from '../../assets/icons/User_Square.svg';
+import Calendar_Week from '../../assets/icons/Calendar_Week.svg';
+import landing_dp_1 from '../../assets/profiles/landing_dp_1.png';
+import Edit_Pencil_01 from '../../assets/icons/Edit_Pencil_01.svg';
+import LabelIcon from '../../assets/icons/Label.svg?react';
+import More_Grid_Big from '../../assets/icons/More_Grid_Big.svg?react';
+
+import ResetPassword from './accountComponents/ResetPassword';
+import ChangeProfilePicture from './accountComponents/ChangeProfilePicture';
 
 const AccountUser = () => {
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [showChangeProfilePicture, setShowChangeProfilePicture] = useState(false);
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [isEditingPersonalDetails, setIsEditingPersonalDetails] = useState(false);
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const [personalDetails, setPersonalDetails] = useState({
+    position: '',
+    secondary_position: '',
+    gender: '',
+    civil_status: '',
+    birthday: '',
+  });
+  const [originalPersonalDetails, setOriginalPersonalDetails] = useState(null);
+  const isModified = JSON.stringify(personalDetails) !== JSON.stringify(originalPersonalDetails);
+
+  const [addressDetails, setAddressDetails] = useState({
+    province: '',
+    barangay: '',
+    region: '',
+    street: '',
+    city: '',
+    zip_code: '',
+    building_number: '',
+  });
+  const [originalAddressDetails, setOriginalAddressDetails] = useState(null);
+  const isAddressModified = JSON.stringify(addressDetails) !== JSON.stringify(originalAddressDetails);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        setLoading(true);
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          return;
+        }
+
+        const response = await axios.get(`${apiUrl}/user`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = response.data;
+
+        const birthday = data.birthday
+          ? new Date(data.birthday).toISOString().split('T')[0]
+          : '';
+
+        const details = {
+          position: data.position || '',
+          secondary_position: data.secondary_position || '',
+          gender: data.gender || '',
+          civil_status: data.civil_status || '',
+          birthday,
+        };
+
+        const address = {
+          province: data.province || '',
+          barangay: data.barangay || '',
+          region: data.region || '',
+          street: data.street || '',
+          city: data.city || '',
+          zip_code: data.zip_code || '',
+          building_number: data.building_number || '',
+        };
+
+        setUser(data);
+        setPersonalDetails(details);
+        setOriginalPersonalDetails(details);
+        setAddressDetails(address);
+        setOriginalAddressDetails(address);
+      } catch (error) {
+        alert('Failed to fetch user: ' + error.message);
+        setError('Failed to load user data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [apiUrl, navigate]);
+
+  const validateAddress = (address) => {
+    const requiredFields = ['province', 'barangay', 'region', 'street', 'city', 'zip_code', 'building_number'];
+    const errors = [];
+    requiredFields.forEach((field) => {
+      if (!address[field]) {
+        errors.push(`${field.charAt(0).toUpperCase() + field.slice(1)} is required.`);
+      }
+    });
+    return errors;
+  };
+
+  const validatePersonalDetails = (details) => {
+    const requiredFields = ['gender', 'civil_status', 'birthday'];
+    const errors = [];
+    requiredFields.forEach((field) => {
+      if (!details[field]) {
+        errors.push(`${field.charAt(0).toUpperCase() + field.slice(1)} is required.`);
+      }
+    });
+    return errors;
+  };
+
   const handleLogout = async () => {
     try {
+      setLoading(true);
       const token = sessionStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;
       }
-      await axios.post(
-        `${apiUrl}/logout`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.post(`${apiUrl}/logout`, {}, { headers: { Authorization: `Bearer ${token}` } });
     } catch (error) {
-      console.error('Logout failed:', error);
+      alert('Logout failed: ' + error.message);
     } finally {
+      setLoading(false);
       sessionStorage.removeItem('token');
-      sessionStorage.removeItem('user');
       navigate('/login');
     }
   };
 
+  const saveAddress = async (newAddress) => {
+    const errors = validateAddress(newAddress);
+    if (errors.length > 0) {
+      setError(errors.join(' '));
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      setSuccess(null);
+      const token = sessionStorage.getItem('token');
+      const response = await axios.put(`${apiUrl}/user/update-address`, newAddress, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser((prevUser) => ({
+        ...prevUser,
+        ...response.data.user,
+      }));
+      setOriginalAddressDetails(newAddress);
+      const successMessage = response.data.message || 'Address updated successfully!';
+      setSuccess(successMessage);
+      alert(successMessage);
+    } catch (error) {
+      const errorMessage = error.response?.data?.errors
+        ? Object.values(error.response.data.errors).flat().join(' ')
+        : error.message;
+      alert('Failed to save address: ' + errorMessage);
+      setError('Failed to save address: ' + errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const savePersonalDetails = async (details) => {
+    const errors = validatePersonalDetails(details);
+    if (errors.length > 0) {
+      setError(errors.join(' '));
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      setSuccess(null);
+      const token = sessionStorage.getItem('token');
+      const response = await axios.put(`${apiUrl}/user/update-personal`, details, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser((prevUser) => ({
+        ...prevUser,
+        ...response.data.user,
+      }));
+      setOriginalPersonalDetails(details);
+      const successMessage = response.data.message || 'Personal details updated successfully!';
+      setSuccess(successMessage);
+      alert(successMessage);
+    } catch (error) {
+      const errorMessage = error.response?.data?.errors
+        ? Object.values(error.response.data.errors).flat().join(' ')
+        : error.message;
+      alert('Failed to save personal details: ' + errorMessage);
+      setError('Failed to save personal details: ' + errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddressChange = (e) => {
+    const { name, value } = e.target;
+    setAddressDetails((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePersonalDetailsChange = (e) => {
+    const { name, value } = e.target;
+    setPersonalDetails((prev) => ({ ...prev, [name]: value }));
+  };
+  let formattedPhone = 'Loading...';
+  if (user?.mobile) {
+    const rawPhone = user.mobile;
+    const cleaned = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
+    formattedPhone = cleaned.length >= 10
+      ? `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`
+      : cleaned;
+  }
+
   return (
-    <div className="account-user">
-      <button
-        onClick={handleLogout}
-        className="logout-btn"
-        style={{ backgroundColor: '#00889a' }}
-        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#00889a')}
-      >
-        <i className="fa-solid fa-right-from-bracket"></i> Logout
-      </button>
+    <div className="accountUser">
+      <div className="accountUser-box">
+        <div className="accountUser-box-in">
+          <main className="accountUser-box-in-card">
+            <header className="accountUser-box-in-card-header">
+              <div className="accountUser-box-in-card-header-left">
+                <More_Grid_Big
+                  style={{
+                    color: 'var(--black-color)',
+                    width: '32px',
+                    height: '32px',
+                    '--stroke-width': '1.5px',
+                  }}
+                />
+                <p className="accountUser-box-in-card-header-left-semi">Account</p>
+              </div>
+              <button
+                className="accountUser-box-in-card-header-btn"
+                onClick={handleLogout}
+                disabled={loading}
+              >
+                <p>{'Logout'}</p>
+              </button>
+            </header>
+            <main className="accountUser-box-in-card-main">
+              <img src={landing_dp_1} className="accountUser-box-in-card-main-dp" alt="profile" />
+              <section className="accountUser-box-in-card-main-bg" />
+              <section className="accountUser-box-in-card-main-info">
+                <div className="accountUser-box-in-card-main-info-left">
+                  <p className="accountUser-box-in-card-main-info-left-text">
+                    {user ? `${user.first_name}${user.middle_name ? ` ${user.middle_name.charAt(0)}.` : ''} ${user.last_name}` : 'Loading...'}
+                  </p>
+                  <div className="accountUser-box-in-card-main-info-left-contact">
+                    <div className="accountUser-box-in-card-main-info-left-contact-email">
+                      <img src={Mail} alt="email icon" />
+                      <p>{user?.email || 'Loading...'}</p>
+                    </div>
+                    <div className="accountUser-box-in-card-main-info-left-contact-mobile">
+                      <img src={Phone} alt="phone icon" />
+                 <p>{formattedPhone ? `(+63)${formattedPhone}` : 'Loading...'}</p>
+                   </div>
+                  </div>
+                </div>
+                <div className="accountUser-box-in-card-main-info-right">
+                  <div className="accountUser-box-in-card-main-info-right-job">
+                    <div className="accountUser-box-in-card-main-info-right-job-header">
+                      <img src={Suitcase} alt="Suitcase icon" />
+                      <p>Job Title</p>
+                    </div>
+                    <div className="accountUser-box-in-card-main-info-right-job-title">
+                      <LabelIcon className="label-icon" />
+                      <p>{user?.position || 'Loading...'}</p>
+                    </div>
+                    {personalDetails.secondary_position && (
+                      <div className="accountUser-box-in-card-main-info-right-job-title">
+                        <LabelIcon className="label-icon" />
+                        <p>{personalDetails.secondary_position}</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="accountUser-box-in-card-main-info-right-buttons">
+                    <button
+                      className="accountUser-box-in-card-main-info-right-buttons-password"
+                      onClick={() => setShowResetPassword(true)}
+                      disabled={loading}
+                    >
+                      <img src={Edit_Pencil_Line_01} alt="edit icon" />
+                      <p>Change password</p>
+                    </button>
+                    <button
+                      className="accountUser-box-in-card-main-info-right-buttons-profile"
+                      onClick={() => setShowChangeProfilePicture(true)}
+                      disabled={loading}
+                    >
+                      <img src={Edit_Pencil_01} alt="edit icon" />
+                      <p>Edit profile</p>
+                    </button>
+                  </div>
+                </div>
+              </section>
+            </main>
+          </main>
+          <main className="accountUser-box-in-forms">
+            <section className="accountUser-box-in-forms-address">
+              <div className="accountUser-box-in-forms-address-header">
+                <img src={Calendar_Week} alt="calendar icon" />
+                <p>Home address</p>
+              </div>
+              <form className="accountUser-box-in-forms-address-form">
+                {error && <div className="error-message">{error}</div>}
+                {success && <div className="success-message">{success}</div>}
+                <div className="accountUser-box-in-forms-address-form-left">
+                  <div className="accountUser-box-in-forms-address-form-left-fields">
+                    <label>Province</label>
+                    <input
+                      type="text"
+                      name="province"
+                      value={addressDetails.province}
+                      readOnly={!isEditingAddress}
+                      onChange={handleAddressChange}
+                    />
+                  </div>
+                  <div className="accountUser-box-in-forms-address-form-left-fields">
+                    <label>Barangay</label>
+                    <input
+                      type="text"
+                      name="barangay"
+                      value={addressDetails.barangay}
+                      readOnly={!isEditingAddress}
+                      onChange={handleAddressChange}
+                    />
+                  </div>
+                  <div className="accountUser-box-in-forms-address-form-left-fields">
+                    <label>Region</label>
+                    <input
+                      type="text"
+                      name="region"
+                      value={addressDetails.region}
+                      readOnly={!isEditingAddress}
+                      onChange={handleAddressChange}
+                    />
+                  </div>
+                  <div className="accountUser-box-in-forms-address-form-left-fields">
+                    <label>Street</label>
+                    <input
+                      type="text"
+                      name="street"
+                      value={addressDetails.street}
+                      readOnly={!isEditingAddress}
+                      onChange={handleAddressChange}
+                    />
+                  </div>
+                </div>
+                <div className="accountUser-box-in-forms-address-form-right">
+                  <div className="accountUser-box-in-forms-address-form-right-fields">
+                    <label>City</label>
+                    <input
+                      type="text"
+                      name="city"
+                      value={addressDetails.city}
+                      readOnly={!isEditingAddress}
+                      onChange={handleAddressChange}
+                    />
+                  </div>
+                  <div className="accountUser-box-in-forms-address-form-right-fields">
+                    <label>Zip code</label>
+                    <input
+                      type="text"
+                      name="zip_code"
+                      value={addressDetails.zip_code}
+                      readOnly={!isEditingAddress}
+                      onChange={handleAddressChange}
+                    />
+                  </div>
+                  <div className="accountUser-box-in-forms-address-form-right-fields">
+                    <label>Building no.</label>
+                    <input
+                      type="text"
+                      name="building_number"
+                      value={addressDetails.building_number}
+                      readOnly={!isEditingAddress}
+                      onChange={handleAddressChange}
+                    />
+                  </div>
+                </div>
+              </form>
+              <div className="accountUser-box-in-forms-address-button">
+                {!isEditingAddress ? (
+                  <button type="button" onClick={() => setIsEditingAddress(true)} disabled={loading}>
+                    <img src={Edit_Pencil_Line_01} alt="edit icon" />
+                    <p>Edit Address</p>
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className="cancel-btn"
+                      onClick={() => {
+                        setAddressDetails(originalAddressDetails);
+                        setIsEditingAddress(false);
+                        setError(null);
+                        setSuccess(null);
+                      }}
+                      disabled={loading}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="confirm-btn"
+                      disabled={!isAddressModified || loading}
+                      onClick={() => {
+                        saveAddress(addressDetails);
+                        setIsEditingAddress(false);
+                      }}
+                    >
+                      {loading ? 'Saving...' : 'Confirm'}
+                    </button>
+                  </>
+                )}
+              </div>
+            </section>
+            <section className="accountUser-box-in-forms-personal">
+              <div className="accountUser-box-in-forms-personal-header">
+                <img src={User_Square} className="delete" alt="calendar icon" />
+                <p>Personal details</p>
+              </div>
+              <form className="accountUser-box-in-forms-personal-form">
+                {error && <div className="error-message">{error}</div>}
+                {success && <div className="success-message">{success}</div>}
+                <div className="accountUser-box-in-forms-personal-form-top">
+                  <div className="accountUser-box-in-forms-personal-form-top-left">
+                    <div className="accountUser-box-in-forms-personal-form-top-left-fields">
+                      <label>Position:</label>
+                      <input
+                        type="text"
+                        name="position"
+                        value={personalDetails.position}
+                        readOnly={!isEditingPersonalDetails}
+                        onChange={handlePersonalDetailsChange}
+                      />
+                    </div>
+                    <div className="accountUser-box-in-forms-personal-form-top-left-fields">
+                      <label>Gender:</label>
+                      <input
+                        type="text"
+                        name="gender"
+                        value={personalDetails.gender}
+                        readOnly={!isEditingPersonalDetails}
+                        onChange={handlePersonalDetailsChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="accountUser-box-in-forms-personal-form-top-right">
+                    <div className="accountUser-box-in-forms-personal-form-top-right-fields">
+                      <label>Secondary Position:</label>
+                      <input
+                        type="text"
+                        name="secondary_position"
+                        value={personalDetails.secondary_position}
+                        readOnly={!isEditingPersonalDetails}
+                        onChange={handlePersonalDetailsChange}
+                      />
+                    </div>
+                    <div className="accountUser-box-in-forms-personal-form-top-right-fields">
+                      <label>Civil Status:</label>
+                      <input
+                        type="text"
+                        name="civil_status"
+                        value={personalDetails.civil_status}
+                        readOnly={!isEditingPersonalDetails}
+                        onChange={handlePersonalDetailsChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="accountUser-box-in-forms-personal-form-bottom">
+                  <label>Birthday:</label>
+                  <input
+                    type="date"
+                    name="birthday"
+                    value={personalDetails.birthday}
+                    readOnly={!isEditingPersonalDetails}
+                    onChange={handlePersonalDetailsChange}
+                  />
+                </div>
+              </form>
+              <div className="accountUser-box-in-forms-personal-button">
+                {!isEditingPersonalDetails ? (
+                  <button onClick={() => setIsEditingPersonalDetails(true)} disabled={loading}>
+                    <img src={Edit_Pencil_Line_01} alt="edit icon" />
+                    <p>Edit Details</p>
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className="cancel-btn"
+                      onClick={() => {
+                        setPersonalDetails(originalPersonalDetails);
+                        setIsEditingPersonalDetails(false);
+                        setError(null);
+                        setSuccess(null);
+                      }}
+                      disabled={loading}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="confirm-btn"
+                      disabled={!isModified || loading}
+                      onClick={() => {
+                        savePersonalDetails(personalDetails);
+                        setIsEditingPersonalDetails(false);
+                      }}
+                    >
+                      {loading ? 'Saving...' : 'Confirm'}
+                    </button>
+                  </>
+                )}
+              </div>
+            </section>
+          </main>
+        </div>
+      </div>
+      {showResetPassword && <ResetPassword closeResetPassword={setShowResetPassword} />}
+      {showChangeProfilePicture && (
+        <ChangeProfilePicture
+          onClose={setShowChangeProfilePicture}
+          onSave={(file) => {
+            setShowChangeProfilePicture(false);
+          }}
+        />
+      )}
     </div>
   );
 };

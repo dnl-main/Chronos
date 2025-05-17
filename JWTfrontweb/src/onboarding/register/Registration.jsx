@@ -204,7 +204,7 @@ const Registration = () => {
       !selectedCity ||
       !selectedBarangay
     ) {
-      setError('Please fill in all required fields.');
+      alert('Please fill in all required fields.');
       setLoading(false);
       return;
     }
@@ -241,12 +241,11 @@ const Registration = () => {
         alert('Registered successfully!');
         navigate('/user/HomeUser');
       } else {
-        setError('Register update failed. Please try again.');
+        alert('Register update failed. Please try again.');
       }
     } catch (err) {
       console.error('Register update failed:', err);
-      const errorMessage = err.response?.data?.message || 'Register failed. Please try again.';
-      setError(errorMessage);
+      const errorMessage = err.response?.data?.message;
       alert(errorMessage);
     } finally {
       setLoading(false);

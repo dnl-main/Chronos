@@ -5,6 +5,7 @@ import './signup.css';
 import concorde from '../../assets/logo/concorde.png';
 import signup_auth from '../../assets/overlay/signup_auth.png';
 
+
 const Signup = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const [password, setPassword] = useState('');
@@ -116,6 +117,18 @@ const Signup = () => {
   const handleLoginClick = () => {
     navigate('/login');
   };
+
+  //modal
+const [isModalVisible, setIsModalVisible] = useState(false);
+
+const openModal = () => {
+  setIsModalVisible(true);
+};
+
+const closeModal = () => {
+  setIsModalVisible(false);
+};
+
 
   return (
     <div className="signup">
@@ -268,17 +281,48 @@ const Signup = () => {
               {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
             </div>
 
+              {/*TNC*/}
             <div className="signup-right-terms">
               <div className="signup-right-terms-checkbox">
                 <input type="checkbox" id="terms" required />
                 <label htmlFor="terms">By signing up I agree with </label>
               </div>
               <div className="signup-right-terms-content">
-                <button type="button" id="terms-content">
-                  Terms and Conditions <span style={{ color: 'red' }}>*</span>
+                <button type="button" id="terms-content" onClick={openModal}>
+                   Terms and Conditions <span style={{ color: 'red' }}>*</span>
                 </button>
               </div>
             </div>
+
+            {/* Terms and Conditions Modal */}
+            {isModalVisible && (
+              <div className="modal-tnc-overlay">
+             <div className="modal-tnc-content">
+              <h2>Terms and Conditions</h2>
+              <p>
+                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+                ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
+                in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+                officia deserunt mollit anim id est laborum.
+              </p>
+              <p>
+                More filler text here. You can add more paragraphs as needed.
+                Remember to replace this with your actual terms.
+              </p>
+              
+              <button onClick={closeModal}>Close</button>
+          </div>
+        </div>
+      )}
+        
+        
+
+  
+
+
 
             {/* Signup Button */}
             <div className="signup-right-button">

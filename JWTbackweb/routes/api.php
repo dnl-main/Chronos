@@ -7,6 +7,7 @@ use App\Http\Controllers\UploadController;
 use App\Http\Controllers\PSGCController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\ChangePasswordController;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
@@ -27,6 +28,10 @@ Route::middleware('jwt.auth')->group(function () {
         ]);
     });
 
+    // User Update Routes
+    Route::put('/user/update-address', [AuthController::class, 'updateAddress']);
+    Route::put('/user/update-personal', [AuthController::class, 'updatePersonal']);
+
     // Availability Status
     Route::patch('/user/availability', [StatusController::class, 'updateAvailability']);
 
@@ -34,6 +39,9 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('/appointment', [AppointmentController::class, 'index']);
     Route::post('/appointment', [AppointmentController::class, 'store']);
     Route::delete('/appointment', [AppointmentController::class, 'destroy']);
+
+    // Change Password
+    Route::post('/change-password', [ChangePasswordController::class, 'changePassword']);
 });
 
 // File Upload

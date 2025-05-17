@@ -5,9 +5,6 @@ import './schedule.css';
 
 import { Navbar } from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
-// import Phone from '../../assets/icons/Phone.svg?react';
-// import Mail from '../../assets/icons/Mail.svg?react';
-// import Edit_Pencil_01 from '../../assets/icons/Edit_Pencil_01.svg?react';
 import ScheduleCard from './scheduleComponents/ScheduleCard';
 import Spinner from '../../components/Spinner';
 
@@ -21,6 +18,7 @@ const Schedule = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedTab, setSelectedTab] = useState('all');
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
@@ -45,7 +43,6 @@ const Schedule = () => {
 
   const fetchUserData = async (token) => {
     try {
-      console.log('Fetching user data from:', `${apiUrl}/user`);
       const response = await axios.get(`${apiUrl}/user`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -68,11 +65,9 @@ const Schedule = () => {
   const fetchAppointments = async (token) => {
     try {
       setError(null);
-      console.log('Fetching appointments from:', `${apiUrl}/appointment`);
       const response = await axios.get(`${apiUrl}/appointment`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log('Appointments response:', response.data);
       setAppointments(Array.isArray(response.data) ? response.data : [response.data].filter(Boolean));
     } catch (error) {
       console.error('Failed to fetch appointments:', error);
@@ -87,8 +82,13 @@ const Schedule = () => {
     }
   };
 
+  const today = new Date().toISOString().split('T')[0];
+
   if (loading) return <Spinner />;
   if (error) return <div className="schedule-error">{error}</div>;
+
+
+
 
   return (
     <div className="schedule">
@@ -105,61 +105,90 @@ const Schedule = () => {
             />
             <p>Scheduled appointments</p>
           </header>
-		  <section className="schedule-tabs">
-					<button className="schedule-tabs-all">
-						<Circle_Primary style={{ color: "var(--white-color)", width: "20px", height: "20px" }} />
-						<p>All</p>
-					</button> {/* schedule-tabs-all */}
 
-					<button className="schedule-tabs-today">
-						<Circle_Primary style={{ color: "var(--primary-color)", width: "20px", height: "20px" }} />
-						<p>Today</p>
-					</button> {/* schedule-tabs-today */}
-
-					<button className="schedule-tabs-upcoming">
-						<Circle_Primary style={{ color: "var(--primary-color)", width: "20px", height: "20px" }} />
-						<p>Upcoming</p>
-					</button> {/* schedule-tabs-upcoming */}
-
-					<button className="schedule-tabs-completed">
-						<Circle_Primary style={{ color: "var(--primary-color)", width: "20px", height: "20px" }} />
-						<p>Completed</p>
-					</button> {/* schedule-tabs-completed */}
-				</section> {/* schedule-tabs */}
-
-				<header className="schedule-header-today">
-					<p>Today</p>
-				</header> {/* schedule-header-today */}
-
-
-          <section className="schedule-today">
-            <div className="schedule-today-cards">
-              {appointments.length > 0 ? (
-                appointments.map((appointment) => (
-                  <ScheduleCard
-                    key={appointment.id}
-                    appointment={appointment}
-                    user={appointment.user}
-                  />
-                ))
-              ) : (
-                <p>No appointments found.</p>
-              )}
-            </div>
+          {/* Tabs */}
+          <section className="schedule-tabs">
+            <button
+              className={`schedule-tabs-all ${selectedTab === 'all' ? 'schedule-tab-active' : ''}`}
+              onClick={() => setSelectedTab('all')}
+            >
+              <Circle_Primary style={{ width: "20px", height: "20px" }} />
+              <p>All</p>
+            </button>
+            <button
+              className={`schedule-tabs-today ${selectedTab === 'today' ? 'schedule-tab-active' : ''}`}
+              onClick={() => setSelectedTab('today')}
+            >
+              <Circle_Primary style={{ width: "20px", height: "20px" }} />
+              <p>Today</p>
+            </button>
+            <button
+              className={`schedule-tabs-upcoming ${selectedTab === 'upcoming' ? 'schedule-tab-active' : ''}`}
+              onClick={() => setSelectedTab('upcoming')}
+            >
+              <Circle_Primary style={{ width: "20px", height: "20px" }} />
+              <p>Upcoming</p>
+            </button>
+            <button
+              className={`schedule-tabs-completed ${selectedTab === 'completed' ? 'schedule-tab-active' : ''}`}
+              onClick={() => setSelectedTab('completed')}
+            >
+              <Circle_Primary style={{ width: "20px", height: "20px" }} />
+              <p>Completed</p>
+            </button>
           </section>
-		  <header className="schedule-header-completed">
-					<p>Completed</p>
-				</header> {/* schedule-header-completed */}
 
-				<section className="schedule-completed">
-					<div className="schedule-completed-cards">
-						<ScheduleCard />
-    
-						</div> {/* schedule-completed-cards */}
-						</section> {/* schedule-completed */}
-		</main>
+          {/* Today Section */}
+          {(selectedTab === 'today' || selectedTab === 'all') && (
+            <>
+              <header className="schedule-header-today">
+                <p>Today</p>
+              </header>
+              <section className="schedule-today">
+                <div className="schedule-today-cards">
+                  {appointments
+                    .filter(app => app.date === today && app.status !== 'completed')
+                    .map(app => (
+                      <ScheduleCard key={app.id} appointment={app} user={app.user} />
+                    ))}
+                </div>
+              </section>
+            </>
+          )}
+
+          {/* Upcoming Section */}
+          {(selectedTab === 'upcoming' || selectedTab === 'all') && (
+            <>
+              <header className="schedule-header-today">
+                <p>Upcoming</p>
+              </header>
+              <section className="schedule-today">
+                <div className="schedule-today-cards">
+                  {appointments
+                    .filter(app => app.date > today && app.status !== 'completed')
+                    .map(app => (
+                      <ScheduleCard key={app.id} appointment={app} user={app.user} />
+                    ))}
+                </div>
+              </section>
+            </>
+          )}
+
+          {/* Completed Section */}
+          {(selectedTab === 'all' || selectedTab === 'completed') && (
+            <>
+              <header className="schedule-header-completed">
+                <p>Completed</p>
+              </header>
+              <section className="schedule-today">
+                <div className="schedule-today-cards">
+                  <p style={{ color: '#888', padding: '1rem' }}>No results found.</p>
+                </div>
+              </section>
+            </>
+          )}
+        </main>
       </div>
-	  
     </div>
   );
 };

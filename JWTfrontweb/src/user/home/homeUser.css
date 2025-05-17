@@ -47,29 +47,49 @@
       color: var(--black-color);
 			column-gap: 2vh;
 		} 
-    .homeUser-top-header-right { 
-			/* background-color: mistyrose;  */
+     .homeUser-top-header-right { 
 			display: flex;
 			align-items: center;
 			font-weight: var(--font-weight-medium);
-      font-size: var(--font-size-16);
-      color: var(--black-color);
+			font-size: var(--font-size-16);
+			color: var(--black-color);
 			column-gap: 2vh;
 		} 
 			.homeUser-top-header-right-status {
 				background-color: var(--white-color);
 				padding: 0.8vh;
 				border-radius: 500px;
+				border: 1px solid #9E9E9E;
 			}
 				.homeUser-top-header-right-status-in {
-					background-color: var(--green-indicator-opacity-15);
 					display: flex;
 					justify-content: center;
 					align-items: center;
 					column-gap: 1vh;
 					padding: 1vh 2vh;
-					border-radius: 500px;
 				}
+
+				.status-available {
+					background-color: #28a745; 
+					color: black;
+					padding: 4px 8px;
+					border-radius: 4px;
+				  }
+				  
+				  .status-onboard {
+					background-color: #ffc107;
+					color: black;
+					padding: 4px 8px;
+					border-radius: 4px;
+				  }
+				  
+				  .status-vacation {
+					background-color: #dc3545; 
+					color: black;
+					padding: 4px 8px;
+					border-radius: 4px;
+				  }
+				  
 			.homeUser-top-header-right-btn {
 				background-color: slategrey;
 				all: unset;

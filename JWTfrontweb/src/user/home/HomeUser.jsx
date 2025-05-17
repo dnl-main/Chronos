@@ -26,7 +26,6 @@ const HomeUser = () => {
     const fetchAppointment = async () => {
       const token = sessionStorage.getItem('token');
       if (!token) {
-        console.log('No token found, clearing appointment states');
         setAppointmentDate('');
         setAppointmentStartTime('');
         setAppointmentEndTime('');
@@ -35,26 +34,16 @@ const HomeUser = () => {
       }
 
       try {
-        console.time('fetchAppointment');
-        console.log('Fetching appointment with token:', token);
         const response = await axios.get(`${apiUrl}/appointment`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log('API response:', response.data);
-        console.timeEnd('fetchAppointment');
 
         const appointment = response.data.appointment || response.data;
         if (appointment && appointment.date) {
           setAppointmentDate(appointment.date || '');
           setAppointmentStartTime(appointment.startTime || appointment.start_time || '');
           setAppointmentEndTime(appointment.endTime || appointment.end_time || '');
-          console.log('Appointment set:', {
-            date: appointment.date,
-            startTime: appointment.startTime || appointment.start_time,
-            endTime: appointment.endTime || appointment.end_time,
-          });
         } else {
-          console.log('No appointment found in response, clearing states');
           setAppointmentDate('');
           setAppointmentStartTime('');
           setAppointmentEndTime('');
@@ -135,7 +124,6 @@ const HomeUser = () => {
         const updatedUser = response.data.user;
         setUser(updatedUser);
         sessionStorage.setItem('user', JSON.stringify(updatedUser));
-        console.log('Status auto-saved:', updatedUser.availability);
         alert('Status updated successfully');
       } catch (error) {
         console.error('Failed to auto-save status:', error.response?.data || error.message);
@@ -150,20 +138,14 @@ const HomeUser = () => {
     try {
       const token = sessionStorage.getItem('token');
       if (!token) {
-        console.warn('No token found, logging out anyway.');
         navigate('/');
         return;
       }
-      await axios.post(
-        `${apiUrl}/logout`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.post(`${apiUrl}/logout`, {}, { headers: { Authorization: `Bearer ${token}` } });
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
       navigate('/');
     } catch (error) {
-      console.error('Logout failed:', error);
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
       navigate('/');
@@ -187,11 +169,9 @@ const HomeUser = () => {
     };
     try {
       const token = sessionStorage.getItem('token');
-      const response = await axios.post(
-        `${apiUrl}/appointment`,
-        appointment,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await axios.post(`${apiUrl}/appointment`, appointment, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const savedAppointment = response.data.appointment;
       setAppointmentDate(savedAppointment.date || '');
       setAppointmentStartTime(savedAppointment.startTime || '');
@@ -220,9 +200,7 @@ const HomeUser = () => {
     }
   };
 
-  if (loading) {
-    return null;
-  }
+  if (loading) return null;
 
   return (
     <div className="homeUser">
@@ -231,7 +209,7 @@ const HomeUser = () => {
           <div className="homeUser-top">
             <div className="homeUser-top-header">
               <div className="homeUser-top-header-left">
-                <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
+                <Circle_Primary style={{ width: '20px', height: '20px' }} />
                 <header>Home</header>
               </div>
 
@@ -245,18 +223,36 @@ const HomeUser = () => {
               )}
 
               <div className="homeUser-top-header-right">
-                <div className="homeUser-top-header-right-status">
+                <div
+                  className="homeUser-top-header-right-status"
+                  style={{
+                    backgroundColor:
+                      selectedStatus === 'Available'
+                        ? '#36C081'
+                        : selectedStatus === 'On Board'
+                        ? '#FFDC6C'
+                        : selectedStatus === 'Vacation'
+                        ? '#FA6464'
+                        : '#fff',
+                    borderRadius: '50px',
+                    padding: '6px',
+                    transition: 'background-color 0.3s ease',
+                  }}
+                >
                   <main className="homeUser-top-header-right-status-in">
-                    <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
+                    <Circle_Primary style={{ width: '20px', height: '20px' }} />
                     <select
                       value={selectedStatus}
                       onChange={handleStatusChange}
                       style={{
-                        padding: '4px',
-                        border: '1px solid #ccc',
+                        padding: '4px 8px',
+                        border: 'none',
                         borderRadius: '4px',
-                        background: '#fff',
-                        fontSize: '14px',
+                        backgroundColor: 'inherit',
+                        color: '#000',
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
                       }}
                     >
                       {statusOptions.map((status) => (
@@ -325,7 +321,7 @@ const HomeUser = () => {
                                     width: '24px',
                                     height: '24px',
                                     '--stroke-color': 'var(--black-color-opacity-30)',
-                                    '--stroke-width': '5px'
+                                    '--stroke-width': '5px',
                                   }}
                                 />
                                 <div className="homeUser-top-core-left-date-data-cards-start-text">
@@ -342,7 +338,7 @@ const HomeUser = () => {
                                     width: '24px',
                                     height: '24px',
                                     '--stroke-color': 'var(--black-color-opacity-30)',
-                                    '--stroke-width': '5px'
+                                    '--stroke-width': '5px',
                                   }}
                                 />
                                 <div className="homeUser-top-core-left-date-data-cards-end-text">
@@ -378,15 +374,15 @@ const HomeUser = () => {
                     </div>
 
                     <div className="homeUser-top-core-left-btn">
-                    {!appointmentDate && (
-                    <button
-                      onClick={() => setIsModalOpen(true)}
-                           className="homeUser-top-core-left-btn-button"
-                    >
-                    <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                    Set Appointment
-                    </button>
-                    )}
+                      {!appointmentDate && (
+                        <button
+                          onClick={() => setIsModalOpen(true)}
+                          className="homeUser-top-core-left-btn-button"
+                        >
+                          <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
+                          Set Appointment
+                        </button>
+                      )}
                     </div>
                   </>
                 )}
@@ -447,7 +443,7 @@ const HomeUser = () => {
           </div>
 
           <div className="homeUser-bot">
-            {/* Logout button remains commented out */}
+           
           </div>
         </main>
       </div>

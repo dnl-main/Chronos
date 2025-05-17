@@ -223,6 +223,31 @@ body {
   text-align: center;
 }
 
+
+/*MODAL CSS*/
+.modal-tnc-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's on top */
+}
+
+.modal-tnc-content {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 80%; /* Adjust as needed */
+  max-height: 80%;
+  overflow-y: auto; /* For long content, make it scrollable */
+}
+
 /* 🔁 Responsive Styles */
 
 /* Tablet: Stacks vertically */
@@ -281,4 +306,21 @@ body {
   .signup-right-header-main {
     font-size: var(--font-size-20);
   }
+
+  .modal-tnc-overlay{
+    position: fixed;
+    width: auto;
+    height: auto;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-tnc-content{
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+  }
+  
 }
