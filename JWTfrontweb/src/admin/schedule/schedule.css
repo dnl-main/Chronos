@@ -119,11 +119,11 @@
 }
 
 .schedule-today-cards-card-indicator {
-	width: 25px;
-	height: 185px;
-	border-top-left-radius: 10px;
-	border-bottom-left-radius: 10px;
-	
+	width: 1.5rem; 
+	height: 20vh; 
+	border-top-left-radius: 0.5rem;
+	border-bottom-left-radius: 0.5rem;
+	flex-shrink: 0;
 }
 
 .schedule-today-cards-card-indicator.gray {
