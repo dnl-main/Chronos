@@ -7,7 +7,9 @@ import Edit_Pencil_01 from '../../../assets/icons/Edit_Pencil_01.svg?react';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
 
 const ScheduleCard = ({ appointment, user }) => {
+  console.log('ScheduleCard props:', { appointment, user });
   if (!appointment || !user) {
+    console.log('Loading due to missing props');
     return <p>Loading...</p>;
   }
 
@@ -30,7 +32,7 @@ const ScheduleCard = ({ appointment, user }) => {
   const startTime = formatTime(appointment.start_time);
   const endTime = formatTime(appointment.end_time);
 
-     let formattedPhone = 'N/A';
+  let formattedPhone = 'N/A';
   if (user?.mobile) {
     const rawPhone = user.mobile;
     const cleaned = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
@@ -60,7 +62,7 @@ const ScheduleCard = ({ appointment, user }) => {
         <Circle_Primary className="schedule-today-cards-card-profile-svg" />
         <div className="schedule-today-cards-card-profile-info">
           <p className="schedule-today-cards-card-profile-info-text">
-            {`${user.first_name} ${user.middle_name?.charAt(0) || ''}. ${user.last_name}`}
+            {`${user.first_name}${user.middle_name ? ` ${user.middle_name.charAt(0)}.` : ''} ${user.last_name}`}
           </p>
           <div className="schedule-today-cards-card-profile-info-job">
             <Circle_Primary style={{ color: "var(--primary-color)", width: "32px", height: "32px" }} />
