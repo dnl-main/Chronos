@@ -1,17 +1,24 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import App from './App.jsx';
 import axios from 'axios';
-import Cookies from 'js-cookie';
-// Set CSRF token for all axios requests
-axios.defaults.baseURL = 'http://127.0.0.1:8000'; // Set your Laravel API base URL here
-axios.defaults.withCredentials = true; // Ensure cookies are sent with the request
 
-// Automatically set the CSRF token from the cookie for every request
-axios.defaults.headers.common['X-XSRF-TOKEN'] = Cookies.get('XSRF-TOKEN');
+
+const apiUrl = import.meta.env.VITE_API_BASE_URL;
+
+
+axios.defaults.baseURL = `${apiUrl}/api`;
+axios.interceptors.request.use((config) => {
+  const token = sessionStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
-  </StrictMode>,
-)
+  </StrictMode>
+);
