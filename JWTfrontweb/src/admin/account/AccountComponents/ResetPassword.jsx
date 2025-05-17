@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './resetPassword.css';
+import './resetpassword.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
