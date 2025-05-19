@@ -1,18 +1,14 @@
 import './account.css';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // ✅ FIX: Missing import
+import axios from 'axios';
 
 import { Navbar } from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
-import Calendar from '../../assets/icons/Calendar.svg';
 import Phone from '../../assets/icons/Phone.svg';
 import Mail from '../../assets/icons/Mail.svg';
 import Suitcase from '../../assets/icons/Suitcase.svg';
 import Edit_Pencil_Line_01 from '../../assets/icons/Edit_Pencil_Line_01.svg';
-import User_Square from '../../assets/icons/User_Square.svg';
-import Calendar_Week from '../../assets/icons/Calendar_Week.svg';
-
 import Edit_Pencil_01 from '../../assets/icons/Edit_Pencil_01.svg?react';
 import LabelIcon from '../../assets/icons/Label.svg?react';
 import More_Grid_Big from '../../assets/icons/More_Grid_Big.svg?react';
@@ -22,71 +18,103 @@ import ResetPassword from './AccountComponents/ResetPassword';
 import landing_dp_1 from '../../assets/profiles/landing_dp_1.png';
 
 const Account = () => {
-  const [overlayContent, setOverlayContent] = useState(null);
+  const navigate = useNavigate();
+  const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
+  const storageUrl = import.meta.env.VITE_STORAGE_BASE_URL || 'http://127.0.0.1:8000/storage';
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showResetPassword, setShowResetPassword] = useState(false); // ✅ FIXED
-  const [showChangeProfilePicture, setShowChangeProfilePicture] = useState(false); // ✅ FIXED
-
-  const navigate = useNavigate();
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [showChangeProfilePicture, setShowChangeProfilePicture] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token');
-    const storedUser = sessionStorage.getItem('user');
+    const fetchUserData = async () => {
+      try {
+        setLoading(true);
+        const token = sessionStorage.getItem('token');
+        const storedUser = sessionStorage.getItem('user');
 
-    if (!token) {
-      navigate('/login');
-      return;
-    }
+        if (!token) {
+          navigate('/login');
+          return;
+        }
 
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      if (parsedUser.role === 'user') {
-        navigate('/user/homeuser');
-        return;
-      }
-      if (parsedUser.role !== 'admin') {
+        let userData = storedUser ? JSON.parse(storedUser) : null;
+
+        if (userData) {
+          if (userData.role === 'user') {
+            navigate('/user/homeuser');
+            return;
+          }
+          if (userData.role !== 'admin') {
+            navigate('/login');
+            return;
+          }
+        } else {
+          const response = await axios.get(`${apiUrl}/user`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          userData = response.data;
+
+          if (userData.role === 'user') {
+            navigate('/user/homeuser');
+            return;
+          }
+          if (userData.role !== 'admin') {
+            navigate('/login');
+            return;
+          }
+          sessionStorage.setItem('user', JSON.stringify(userData));
+        }
+
+        // Fetch profile picture
+        const profilePictureResponse = await axios.get(`${apiUrl}/user/profile-picture`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setUser({
+          ...userData,
+          profile_picture: profilePictureResponse.data.path || null,
+        });
+      } catch (error) {
+        console.log('Fetch User Error:', error.response?.data, error.message);
+        alert('Failed to fetch user: ' + error.message);
+        setError('Failed to load user data. Please try again.');
         navigate('/login');
-        return;
+      } finally {
+        setLoading(false);
       }
-      setUser(parsedUser);
-      setLoading(false);
-    } else {
-      fetchUserData(token);
-    }
-  }, [navigate]);
+    };
 
-  const fetchUserData = async (token) => {
+    fetchUserData();
+  }, [apiUrl, navigate]);
+
+  const handleLogout = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/user`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const userData = response.data;
-
-      if (userData.role === 'user') {
-        navigate('/user/homeuser');
-        return;
-      }
-      if (userData.role !== 'admin') {
+      setLoading(true);
+      const token = sessionStorage.getItem('token');
+      if (!token) {
         navigate('/login');
         return;
       }
-
-      setUser(userData);
-      sessionStorage.setItem('user', JSON.stringify(userData));
+      await axios.post(`${apiUrl}/logout`, {}, { headers: { Authorization: `Bearer ${token}` } });
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
-      navigate('/login');
+      alert('Logout failed: ' + error.message);
     } finally {
       setLoading(false);
+      sessionStorage.clear();
+      navigate('/login');
     }
   };
 
-  const handleLogout = () => {
-    sessionStorage.clear();
-    navigate('/login');
+  const handleProfilePictureSave = (profilePictureUrl) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      profile_picture: profilePictureUrl,
+    }));
+    setShowChangeProfilePicture(false);
+     window.location.reload(); // Refresh the page after successful upload
   };
 
   if (loading) return null;
@@ -109,35 +137,45 @@ const Account = () => {
           <main className="account-box-in-card">
             <header className="account-box-in-card-header">
               <div className="account-box-in-card-header-left">
-                <More_Grid_Big style={{ color: "var(--black-color)", width: "32px", height: "32px", "--stroke-width": "1.5px" }} />
+                <More_Grid_Big
+                  style={{ color: 'var(--black-color)', width: '32px', height: '32px', '--stroke-width': '1.5px' }}
+                />
                 <p>Account</p>
               </div>
-              <button className="account-box-in-card-header-btn" onClick={handleLogout}>
+              <button
+                className="account-box-in-card-header-btn"
+                onClick={handleLogout}
+                disabled={loading}
+              >
                 <p>Logout</p>
               </button>
             </header>
 
             <main className="account-box-in-card-main">
               <img
-                src={landing_dp_1}
+                src={user?.profile_picture ? `${storageUrl}/${user.profile_picture}` : landing_dp_1}
                 className="account-box-in-card-main-dp"
                 alt="profile"
-                onClick={() => setShowChangeProfilePicture(true)} // Optional profile pic click handler
+                onError={(e) => {
+                  console.log('Image Load Error:', e);
+                  e.target.src = landing_dp_1;
+                  setError('Failed to load profile picture.');
+                }}
               />
               <section className="account-box-in-card-main-bg" />
               <section className="account-box-in-card-main-info">
                 <div className="account-box-in-card-main-info-left">
                   <p className="account-box-in-card-main-info-left-text">
-                    {user ? `${user.first_name} ${user.middle_name?.charAt(0)}. ${user.last_name}` : "Loading..."}
+                    {user ? `${user.first_name}${user.middle_name ? ` ${user.middle_name.charAt(0)}.` : ''} ${user.last_name}` : 'Loading...'}
                   </p>
                   <div className="account-box-in-card-main-info-left-contact">
                     <div className="account-box-in-card-main-info-left-contact-email">
                       <img src={Mail} alt="email icon" />
-                      <p>{user?.email || "Loading..."}</p>
+                      <p>{user?.email || 'Loading...'}</p>
                     </div>
                     <div className="account-box-in-card-main-info-left-contact-mobile">
                       <img src={Phone} alt="phone icon" />
-                      <p>{formattedPhone ? `(+63)${formattedPhone}` : 'Loading...'}</p>
+                      <p>{formattedPhone ? `(+63)${formattedPhone}` : 'N/A'}</p>
                     </div>
                   </div>
                 </div>
@@ -158,16 +196,18 @@ const Account = () => {
                     <button
                       className="account-box-in-card-main-info-right-buttons-password"
                       onClick={() => setShowResetPassword(true)}
+                      disabled={loading}
                     >
                       <img src={Edit_Pencil_Line_01} alt="password icon" />
                       <p>Change password</p>
                     </button>
 
-                   <button
-                      className="accountUser-box-in-card-main-info-right-buttons-profile"
+                    <button
+                      className="account-box-in-card-main-info-right-buttons-profile"
                       onClick={() => setShowChangeProfilePicture(true)}
+                      disabled={loading}
                     >
-                      <img src={Edit_Pencil_Line_01} alt="Edit icon" />
+                      <img src={Edit_Pencil_01} alt="edit icon" />
                       <p>Edit profile</p>
                     </button>
                   </div>
@@ -184,10 +224,7 @@ const Account = () => {
       {showChangeProfilePicture && (
         <ChangeProfilePicture
           onClose={() => setShowChangeProfilePicture(false)}
-          onSave={(file) => {
-            console.log("Uploaded file:", file);
-            setShowChangeProfilePicture(false);
-          }}
+          onSave={handleProfilePictureSave}
         />
       )}
     </div>

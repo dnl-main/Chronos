@@ -56,3 +56,6 @@ Change cors.php to ngrok url/apI
     'https://concorde-web.vercel.app',
     'https:INSERT_HERE_ngrok-free.app',
     ],
+
+#BEFORE RUNNING PHP ARTISAN SERVE (NEW CLONE)
+php artisan storage:link

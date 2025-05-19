@@ -9,7 +9,7 @@ import Suitcase from '../../assets/icons/Suitcase.svg';
 import Edit_Pencil_Line_01 from '../../assets/icons/Edit_Pencil_Line_01.svg';
 import User_Square from '../../assets/icons/User_Square.svg';
 import Calendar_Week from '../../assets/icons/Calendar_Week.svg';
-import landing_dp_1 from '../../assets/profiles/landing_dp_1.png';
+import defaultdp from '../../assets/profiles/defaultdp.png';
 import Edit_Pencil_01 from '../../assets/icons/Edit_Pencil_01.svg';
 import LabelIcon from '../../assets/icons/Label.svg?react';
 import More_Grid_Big from '../../assets/icons/More_Grid_Big.svg?react';
@@ -19,7 +19,8 @@ import ChangeProfilePicture from './accountComponents/ChangeProfilePicture';
 
 const AccountUser = () => {
   const navigate = useNavigate();
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
+  const storageUrl = import.meta.env.VITE_STORAGE_BASE_URL || 'http://127.0.0.1:8000/storage';
 
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [showChangeProfilePicture, setShowChangeProfilePicture] = useState(false);
@@ -90,12 +91,21 @@ const AccountUser = () => {
           building_number: data.building_number || '',
         };
 
-        setUser(data);
+        // Fetch profile picture from profile_pictures table
+        const profilePictureResponse = await axios.get(`${apiUrl}/user/profile-picture`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setUser({
+          ...data,
+          profile_picture: profilePictureResponse.data.path || null,
+        });
         setPersonalDetails(details);
         setOriginalPersonalDetails(details);
         setAddressDetails(address);
         setOriginalAddressDetails(address);
       } catch (error) {
+        console.log('Fetch User Error:', error.response?.data, error.message);
         alert('Failed to fetch user: ' + error.message);
         setError('Failed to load user data. Please try again.');
       } finally {
@@ -174,7 +184,7 @@ const AccountUser = () => {
         ? Object.values(error.response.data.errors).flat().join(' ')
         : error.message;
       alert('Failed to save address: ' + errorMessage);
-      setError('Failed to save address: ' + errorMessage);
+
     } finally {
       setLoading(false);
     }
@@ -208,7 +218,6 @@ const AccountUser = () => {
         ? Object.values(error.response.data.errors).flat().join(' ')
         : error.message;
       alert('Failed to save personal details: ' + errorMessage);
-      setError('Failed to save personal details: ' + errorMessage);
     } finally {
       setLoading(false);
     }
@@ -223,6 +232,16 @@ const AccountUser = () => {
     const { name, value } = e.target;
     setPersonalDetails((prev) => ({ ...prev, [name]: value }));
   };
+
+  const handleProfilePictureSave = (profilePictureUrl) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      profile_picture: profilePictureUrl,
+    }));
+    setShowChangeProfilePicture(false);
+    window.location.reload(); // Refresh the page after successful upload
+  };
+
   let formattedPhone = 'Loading...';
   if (user?.mobile) {
     const rawPhone = user.mobile;
@@ -258,7 +277,15 @@ const AccountUser = () => {
               </button>
             </header>
             <main className="accountUser-box-in-card-main">
-              <img src={landing_dp_1} className="accountUser-box-in-card-main-dp" alt="profile" />
+              <img
+                src={user?.profile_picture ? `${storageUrl}/${user.profile_picture}` : defaultdp}
+                className="accountUser-box-in-card-main-dp"
+                alt="profile"
+                onError={(e) => {
+                  console.log('Image Load Error:', e);
+                  e.target.src = defaultdp;
+                }}
+              />
               <section className="accountUser-box-in-card-main-bg" />
               <section className="accountUser-box-in-card-main-info">
                 <div className="accountUser-box-in-card-main-info-left">
@@ -272,8 +299,8 @@ const AccountUser = () => {
                     </div>
                     <div className="accountUser-box-in-card-main-info-left-contact-mobile">
                       <img src={Phone} alt="phone icon" />
-                 <p>{formattedPhone ? `(+63)${formattedPhone}` : 'Loading...'}</p>
-                   </div>
+                      <p>{formattedPhone ? `(+63)${formattedPhone}` : 'Loading...'}</p>
+                    </div>
                   </div>
                 </div>
                 <div className="accountUser-box-in-card-main-info-right">
@@ -524,7 +551,7 @@ const AccountUser = () => {
                     <button
                       type="button"
                       className="confirm-btn"
-                      disabled={!isModified || loading}
+                      disabled={(!isModified || loading) && !error}
                       onClick={() => {
                         savePersonalDetails(personalDetails);
                         setIsEditingPersonalDetails(false);
@@ -543,9 +570,7 @@ const AccountUser = () => {
       {showChangeProfilePicture && (
         <ChangeProfilePicture
           onClose={setShowChangeProfilePicture}
-          onSave={(file) => {
-            setShowChangeProfilePicture(false);
-          }}
+          onSave={handleProfilePictureSave}
         />
       )}
     </div>

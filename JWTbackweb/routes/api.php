@@ -8,6 +8,7 @@ use App\Http\Controllers\PSGCController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\ProfilePicController;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
@@ -39,6 +40,10 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('/appointment', [AppointmentController::class, 'index']);
     Route::post('/appointment', [AppointmentController::class, 'store']);
     Route::delete('/appointment', [AppointmentController::class, 'destroy']);
+
+    // Profile Picture Upload
+    Route::post('/user/upload-profile-picture', [ProfilePicController::class, 'upload']);
+    Route::get('/user/profile-picture', [ProfilePicController::class, 'getProfilePicture']);
 
     // Change Password
     Route::post('/change-password', [ChangePasswordController::class, 'changePassword']);
