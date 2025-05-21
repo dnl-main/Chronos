@@ -45,6 +45,7 @@ const Schedule = () => {
     try {
       const response = await axios.get(`${apiUrl}/user`, {
         headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true, // Enable credentials
       });
       const userData = response.data;
       if (userData.role !== 'admin') {
@@ -67,6 +68,7 @@ const Schedule = () => {
       setError(null);
       const response = await axios.get(`${apiUrl}/appointment`, {
         headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true, // Enable credentials
       });
       setAppointments(Array.isArray(response.data) ? response.data : [response.data].filter(Boolean));
     } catch (error) {
@@ -86,9 +88,6 @@ const Schedule = () => {
 
   if (loading) return <Spinner />;
   if (error) return <div className="schedule-error">{error}</div>;
-
-
-
 
   return (
     <div className="schedule">
