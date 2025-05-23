@@ -63,9 +63,6 @@
         width: 20px;
       }
       
-
-      
-
         .availability-box-in-tabs-all {
           /* background-color: mediumblue; */
           all: unset;
@@ -73,8 +70,8 @@
           flex-direction: row;
           justify-content: start;
           align-items: center;
-          background-color: var(--primary-color);
-          color: var(--white-color);
+          background-color: white;
+          color: #00899A;
           font-weight: var(--font-weight-regular);
           font-size: var(--font-size-16);
           border: 2px solid var(--primary-color-opacity-15);
@@ -100,7 +97,7 @@
 					padding: 1vh 1.2vw;
           cursor: pointer;
         }
-        .availability-box-in-tabs-complete {
+        .availability-box-in-tabs-vacation {
           /* background-color: cornflowerblue; */
           all: unset;
           display: flex;
@@ -117,7 +114,7 @@
 					padding: 1vh 1.2vw;
           cursor: pointer;
         }
-        .availability-box-in-tabs-incomplete {
+        .availability-box-in-tabs-on-board {
           /* background-color: dodgerblue; */
           all: unset;
           display: flex;
@@ -180,4 +177,55 @@
       row-gap: 2.4vh;
     }
 
-      
+.availability-box-in-tabs .active-tab {
+  background-color: #00899A;
+  color: white;
+}
+
+.availability-box-in-cards-card-availability-bg {
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Background colors */
+.availability-box-in-cards-card-availability-bg.available {
+  background-color: #d4edda; /* light green */
+}
+
+.availability-box-in-cards-card-availability-bg.on-board {
+  background-color: #fff3cd; /* light yellow */
+}
+
+.availability-box-in-cards-card-availability-bg.vacation {
+  background-color: #f8d7da; /* light red */
+}
+
+.availability-box-in-cards-card-availability-bg.unknown {
+  background-color: #e2e3e5; /* light gray fallback */
+}
+
+/* Circle colors */
+.availability-circle {
+  width: 28px;
+  height: 28px;
+}
+
+.availability-circle.available {
+  color: green;
+}
+
+.availability-circle.on-board {
+  color: gold;
+}
+
+.availability-circle.vacation {
+  color: red;
+}
+
+.availability-circle.unknown {
+  color: gray;
+}
+

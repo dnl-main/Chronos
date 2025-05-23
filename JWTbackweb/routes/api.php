@@ -9,6 +9,7 @@ use App\Http\Controllers\StatusController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\ProfilePicController;
+use App\Http\Controllers\CrewController;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
@@ -47,6 +48,9 @@ Route::middleware('jwt.auth')->group(function () {
 
     // Change Password
     Route::post('/change-password', [ChangePasswordController::class, 'changePassword']);
+
+    // Crew Controller
+    Route::get('/crew-members', [CrewController::class, 'getCrewMembers']);
 });
 
 // File Upload

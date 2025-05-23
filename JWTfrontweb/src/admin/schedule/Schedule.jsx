@@ -31,10 +31,14 @@ const Schedule = () => {
 
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-      if (parsedUser.role !== 'admin') {
-        navigate(parsedUser.role === 'user' ? '/user/homeuser' : '/login');
-        return;
-      }
+      		  if (parsedUser.role === 'user') {
+			navigate('/user/homeuser');
+			return;
+		  }
+		  if (parsedUser.role !== 'admin') {
+			navigate('/login');
+			return;
+		  }
       fetchAppointments(token);
     } else {
       fetchUserData(token);
