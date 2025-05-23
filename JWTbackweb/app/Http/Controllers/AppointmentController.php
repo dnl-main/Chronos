@@ -34,6 +34,8 @@ class AppointmentController extends Controller
                         'email' => $appointment->user->email,
                         'mobile' => $appointment->user->mobile,
                         'position' => $appointment->user->position,
+                        'secondary_position' => $appointment->user->secondary_position,
+                        'availability' => $appointment->user->availability,
                     ] : null,
                 ];
             });

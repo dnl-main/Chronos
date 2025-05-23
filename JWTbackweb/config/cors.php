@@ -50,11 +50,11 @@ return [
 
     'allowed_origins' => [
     // 'http://112.203.155.181',
-    // 'http://localhost:5173',
+    'http://localhost:5173',
     // 'http://localhost:3000',
     //Uncomment for local dev
-    'https://concorde-web.vercel.app',
-    'https://heroic-sensible-buzzard.ngrok-free.app',
+    //'https://concorde-web.vercel.app',
+    //'https://heroic-sensible-buzzard.ngrok-free.app',
     ],
 
     /*

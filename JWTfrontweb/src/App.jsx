@@ -9,6 +9,8 @@ import Calendar from './admin/calendar/Calendar';
 import Certificate from './admin/certificate/Certificate';
 import Notification from './admin/notification/Notification';
 import Schedule from './admin/schedule/Schedule';
+import ManageAppointment from './admin/appointment/ManageAppointment';
+import ScheduleCard from './admin/schedule/scheduleComponents/ScheduleCard';
 
 // Onboarding Components
 import Signup from './onboarding/signup/Signup';
@@ -20,6 +22,7 @@ import Landing from './onboarding/landing/Landing';
 import AccountUser from './user/account/AccountUser';
 import CertificateUser from './user/certificate/CertificateUser';
 import CertificateUserCard from './user/certificate/certificateCard/CertificateUserCard';
+
 // import UploadCertificate from './user/certificate/UploadCertificate';
 import HomeUser from './user/home/HomeUser';
 import NotificationUser from './user/notification/NotificationUser';
@@ -63,6 +66,10 @@ function App() {
             <Route path="calendar" element={<Calendar />} />
             <Route path="certificate" element={<Certificate />} />
             <Route path="schedule" element={<Schedule />} />
+<Route path="schedule-card" element={<ScheduleCard />} />
+<Route path="manage-appointment" element={<ManageAppointment />} />
+
+
           </Route>
 
           {/* User Routes with Layout, Wrapped */}

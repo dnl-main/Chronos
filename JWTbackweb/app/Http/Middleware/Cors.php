@@ -12,8 +12,8 @@ class Cors
         // Get the origin from the request
         $origin = $request->headers->get('Origin');
 
-        // Define allowed origins in config or hardcoded for testing
-        $allowedOrigins = config('cors.allowed_origins', ['https://concorde-web.vercel.app']);
+        // Define allowed origins from config
+        $allowedOrigins = config('cors.allowed_origins', []);
 
         // Check if the origin is allowed
         $allowOrigin = in_array($origin, $allowedOrigins, true) ? $origin : null;
