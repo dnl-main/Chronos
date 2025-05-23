@@ -13,14 +13,31 @@ const AvailabilityCard = ({ data }) => {
     : 'Loading...';
 
   const availabilityMap = {
-    available: { text: 'Available', color: 'var(--green-indicator)' },
-    vacation: { text: 'Vacation', color: 'var(--red-indicator)' },
-    'on-board': { text: 'On Board', color: 'var(--yellow-indicator)' },
+    available: {
+      text: 'Available',
+      color: 'var(--green-indicator)',
+      bgColor: 'var(--green-indicator-opacity-15)',
+    },
+    vacation: {
+      text: 'Vacation',
+      color: 'var(--red-indicator)',
+      bgColor: 'var(--red-indicator-opacity-15)',
+    },
+    'on-board': {
+      text: 'On Board',
+      color: 'var(--yellow-indicator)',
+      bgColor: 'var(--yellow-indicator-opacity-15)',
+    },
   };
 
-  const availability = availabilityMap[data.availability?.toLowerCase()] || {
+  const normalizeAvailability = (value) => value?.toLowerCase().replace(/\s+/g, '-');
+
+  const availabilityKey = normalizeAvailability(data.availability);
+
+  const availability = availabilityMap[availabilityKey] || {
     text: data.availability || 'Unknown',
     color: 'var(--yellow-indicator)',
+    bgColor: 'var(--yellow-indicator-opacity-15)',
   };
 
   const certificate = 'Incomplete';
@@ -52,7 +69,11 @@ const AvailabilityCard = ({ data }) => {
       </div>
 
       <div className="availability-box-in-cards-card-availability">
-        <div className="availability-box-in-cards-card-availability-bg">
+        {/* ✅ Apply dynamic backgroundColor using availability.bgColor */}
+        <div 
+          className="availability-box-in-cards-card-availability-bg"
+          style={{ backgroundColor: availability.bgColor || 'transparent' }}
+        >
           <Circle_Primary style={{ color: availability.color, width: '28px', height: '28px' }} />
           <p>{availability.text}</p>
         </div>

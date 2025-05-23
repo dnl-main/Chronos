@@ -4,6 +4,9 @@ import './calendar.css';
 import { Navbar } from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
 
+
+import ManageAppointment from '../appointment/ManageAppointment';
+
 const Calendar = () => {
     const [overlayContent, setOverlayContent] = useState(null);
     const navigate = useNavigate(); 
@@ -73,6 +76,7 @@ const Calendar = () => {
           <Navbar />
           <Sidebar />
       <h1>Calendar</h1>
+      <ManageAppointment />
     </div>
   );
 };
