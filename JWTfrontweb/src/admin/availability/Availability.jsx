@@ -93,8 +93,7 @@ const Availability = () => {
 
   return (
     <div className="availability">
-      <Navbar />
-      <Sidebar />
+  
 
       <div className="availability-box">
         <main className="availability-box-in">
