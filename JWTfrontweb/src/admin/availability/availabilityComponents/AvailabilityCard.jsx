@@ -8,18 +8,14 @@ import Mail from '../../../assets/icons/Mail.svg?react';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
 
 const AvailabilityCard = ({ data }) => {
-  // Combine first_name, middle_name, and last_name like ScheduleCard
   const fullName = data
     ? `${data.first_name} ${data.middle_name?.charAt(0)}. ${data.last_name}`
     : 'Loading...';
 
-  // Map availability to display text and color
   const availabilityMap = {
     available: { text: 'Available', color: 'var(--green-indicator)' },
-    complete: { text: 'Complete', color: 'var(--blue-indicator)' },
-    incomplete: { text: 'Incomplete', color: 'var(--red-indicator)' },
-    new: { text: 'New', color: 'var(--yellow-indicator)' },
-    'on vacation': { text: 'On Vacation', color: 'var(--yellow-indicator)' },
+    vacation: { text: 'Vacation', color: 'var(--red-indicator)' },
+    'on-board': { text: 'On Board', color: 'var(--yellow-indicator)' },
   };
 
   const availability = availabilityMap[data.availability?.toLowerCase()] || {
@@ -27,7 +23,6 @@ const AvailabilityCard = ({ data }) => {
     color: 'var(--yellow-indicator)',
   };
 
-  // Hardcode certificate
   const certificate = 'Incomplete';
 
   return (
