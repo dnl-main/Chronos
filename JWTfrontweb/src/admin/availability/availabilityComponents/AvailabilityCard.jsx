@@ -17,16 +17,19 @@ const AvailabilityCard = ({ data }) => {
       text: 'Available',
       color: 'var(--green-indicator)',
       bgColor: 'var(--green-indicator-opacity-15)',
+      indicatorColor: 'var(--green-indicator-opacity-60)',
     },
     vacation: {
       text: 'Vacation',
-      color: 'var(--red-indicator)',
-      bgColor: 'var(--red-indicator-opacity-15)',
+      color: 'var(--yellow-indicator)',
+      bgColor: 'var(--yellow-indicator-opacity-15)',
+      indicatorColor: 'var(--yellow-indicator-opacity-60)'
     },
     'on-board': {
       text: 'On Board',
-      color: 'var(--yellow-indicator)',
-      bgColor: 'var(--yellow-indicator-opacity-15)',
+      color: 'var(--red-indicator)',
+      bgColor: 'var(--red-indicator-opacity-15)',
+      indicatorColor: 'var(--red-indicator-opacity-60)'
     },
   };
 
@@ -44,7 +47,10 @@ const AvailabilityCard = ({ data }) => {
 
   return (
     <main className="availability-box-in-cards-card">
-      <div className="availability-box-in-cards-card-indicator"></div>
+      <div 
+        className="availability-box-in-cards-card-indicator"
+        style={{ backgroundColor: availability.indicatorColor }}
+      ></div>
 
       <div className="availability-box-in-cards-card-profile">
         <Circle_Primary className="availability-box-in-cards-card-profile-svg" />
