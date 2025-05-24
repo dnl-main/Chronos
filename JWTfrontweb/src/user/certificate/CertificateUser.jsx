@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import{ useState} from 'react'
 import { useEffect } from 'react';
 import { handleAuthToken } from '../../utils/timeout';
+import axios from 'axios';
 
 
 import CertificateUserCard from './certificateCard/CertificateUserCard';
@@ -49,32 +50,43 @@ const CertificateUser = () => {
   }, [navigate]);
 
   const fetchUserData = async (token) => {
-    try {
-      const response = await axios.get(`${apiUrl}/user`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  try {
+    const response = await axios.get(`${apiUrl}/user`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-      const userData = response.data;
+    const userData = response.data;
 
-      if (userData.role !== 'user') {
-        navigate('/login');  // Redirect if role is not 'user'
-        return;
-      }
-
-      setUser(userData);
-      sessionStorage.setItem('user', JSON.stringify(userData));
-
-    } catch (error) {
-      console.error('Failed to fetch user data:', error);
+    if (userData.role !== 'user') {
       navigate('/login');
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
+
+    setUser(userData);
+    sessionStorage.setItem('user', JSON.stringify(userData));  // Make data available globally
+  } catch (error) {
+    console.error('Failed to fetch user data:', error);
+    navigate('/login');
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Store certificate data per card
+const [certData, setCertData] = useState([]);
+
+const handleCardDataChange = (index, data) => {
+  const updated = [...certData];
+  updated[index] = data;
+  setCertData(updated);
+};
+
 
   if (loading) {
     return null;  // Or a loader component if needed
   }
+
+  
   return (
     <div className="certificateUser">
     <div className="certificateUser-box">
@@ -89,11 +101,22 @@ const CertificateUser = () => {
         <div className="certificateUser-top-core">
           <p className="certificateUser-top-core-medium">List of certificates</p>
           <div className="certificateUser-top-core-cards">
-            <CertificateUserCard />
-            <CertificateUserCard />
-            <CertificateUserCard />
-            <CertificateUserCard />
-          </div> {/* certificateUser-top-core-cards */}
+  {[0, 1, 2, 3].map((i) => (
+    <div key={i}>
+      <CertificateUserCard onFileDataChange={(data) => handleCardDataChange(i, data)} />
+
+      {certData[i]?.uploadedFile && (
+        <CertificateCard
+          user={`${user.firstName} ${user.middleName?.[0] || ''}. ${user.lastName}`}
+          position={user.position}
+          uploadedFile={certData[i].uploadedFile}
+          expiryDate={certData[i].expiryDate}
+        />
+      )}
+    </div>
+  ))}
+</div>
+
         </div> {/* certificateUser-top-core */}
 
         <div className="certificateUser-top-btn">
@@ -105,7 +128,6 @@ const CertificateUser = () => {
       </div> {/* certificateUser-top */}
 
       <div className="certificateUser-bot">
-        <p>bot</p>
       </div> {/* certificateUser-bot */}
     </main> {/* certificateUser-box-in */}
     </div> {/* certificateUser-box */}

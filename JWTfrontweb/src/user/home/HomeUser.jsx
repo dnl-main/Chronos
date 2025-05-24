@@ -19,9 +19,47 @@ const HomeUser = () => {
   const [appointmentStartTime, setAppointmentStartTime] = useState('');
   const [appointmentEndTime, setAppointmentEndTime] = useState('');
   const [appointmentLoading, setAppointmentLoading] = useState(true);
+  const [certificateName, setCertificateName] = useState('');
+  const [certificateType, setCertificateType] = useState('');
+  const [expirationDate, setExpirationDate] = useState('');
+  const [file, setFile] = useState(null);
+  const [progress, setProgress] = useState({ percentage: 0, uploaded: 0, total: 4 });
+  const [certificateLoading, setCertificateLoading] = useState(true);
 
   const statusOptions = ['On Board', 'Available', 'Vacation'];
+  const certificateTypes = ['Medical', 'Professional', 'Academic', 'Other'];
 
+  // Fetch user certificates
+  useEffect(() => {
+    const fetchCertificates = async () => {
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        setProgress({ percentage: 0, uploaded: 0, total: 4 });
+        setCertificateLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${apiUrl}/certificates`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const certificates = response.data.certificates || [];
+        const uploaded = certificates.length;
+        const total = 4; // Adjust based on your requirements
+        const percentage = Math.round((uploaded / total) * 100);
+        setProgress({ percentage, uploaded, total });
+      } catch (error) {
+        console.error('Failed to fetch certificates:', error.response?.data || error.message);
+        alert(error.response?.data.message || 'Failed to load certificates');
+      } finally {
+        setCertificateLoading(false);
+      }
+    };
+
+    fetchCertificates();
+  }, []);
+
+  // Existing useEffect for appointments
   useEffect(() => {
     const fetchAppointment = async () => {
       const token = sessionStorage.getItem('token');
@@ -61,6 +99,7 @@ const HomeUser = () => {
     fetchAppointment();
   }, []);
 
+  // Existing useEffect for user data
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     const storedUser = sessionStorage.getItem('user');
@@ -197,6 +236,49 @@ const HomeUser = () => {
     } catch (error) {
       console.error('Failed to delete appointment:', error.response?.data || error.message);
       alert(error.response?.data.message || 'Failed to delete appointment');
+    }
+  };
+
+  // Handle certificate upload
+  const handleCertificateSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!file || !certificateName || !certificateType) {
+      alert('Please fill all required fields and select a file.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('certificate_name', certificateName);
+    formData.append('certificate_type', certificateType);
+    if (expirationDate) {
+      formData.append('expiration_date', expirationDate);
+    }
+
+    try {
+      const token = sessionStorage.getItem('token');
+      const response = await axios.post(`${apiUrl}/upload-certificate`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      alert('Certificate uploaded successfully!');
+      setCertificateName('');
+      setCertificateType('');
+      setExpirationDate('');
+      setFile(null);
+
+      // Update progress
+      const uploaded = progress.uploaded + 1;
+      const total = progress.total;
+      const percentage = Math.round((uploaded / total) * 100);
+      setProgress({ percentage, uploaded, total });
+    } catch (error) {
+      console.error('Failed to upload certificate:', error.response?.data || error.message);
+      alert(error.response?.data.message || 'Failed to upload certificate');
     }
   };
 
@@ -394,57 +476,99 @@ const HomeUser = () => {
                   <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
                 </div>
 
-                <div className="homeUser-top-core-right-progress">
-                  <div className="homeUser-top-core-right-progress-text">
-                    <p className="homeUser-top-core-right-progress-text-light">Your progress</p>
-                    <div className="homeUser-top-core-right-progress-text-box">
-                      <p className="homeUser-top-core-right-progress-text-box-regular">75% complete</p>
-                      <p className="homeUser-top-core-right-progress-text-box-light">3 out of 4 uploaded</p>
+                {certificateLoading ? (
+                  <div className="homeUser-top-core-right-loading" style={{ padding: '1rem', textAlign: 'center' }}>
+                    <Spinner />
+                  </div>
+                ) : (
+                  <>
+                    <div className="homeUser-top-core-right-progress">
+                      <div className="homeUser-top-core-right-progress-text">
+                        <p className="homeUser-top-core-right-progress-text-light">Your progress</p>
+                        <div className="homeUser-top-core-right-progress-text-box">
+                          <p className="homeUser-top-core-right-progress-text-box-regular">{progress.percentage}% complete</p>
+                          <p className="homeUser-top-core-right-progress-text-box-light">{progress.uploaded} out of {progress.total} uploaded</p>
+                        </div>
+                      </div>
+
+                      <div className="homeUser-top-core-right-progress-bar">
+                        <div
+                          className="homeUser-top-core-right-progress-bar-primary"
+                          style={{ width: `${progress.percentage}%` }}
+                        ></div>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="homeUser-top-core-right-progress-bar">
-                    <div className="homeUser-top-core-right-progress-bar-primary"></div>
-                  </div>
-                </div>
+                    <form onSubmit={handleCertificateSubmit} className="homeUser-top-core-right-form">
+                      <div className="homeUser-top-core-right-up">
+                        <div className="homeUser-top-core-right-up-desc">
+                          <div className="homeUser-top-core-right-up-desc-header">
+                            <p>File upload</p>
+                            <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
+                          </div>
+                          <p className="homeUser-top-core-right-up-desc-light"></p>
+                        </div>
 
-                <div className="homeUser-top-core-right-up">
-                  <div className="homeUser-top-core-right-up-desc">
-                    <div className="homeUser-top-core-right-up-desc-header">
-                      <p>file upload</p>
-                      <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                    </div>
-                    <p className="homeUser-top-core-right-up-desc-light">Select the type of certificate</p>
-                  </div>
+                        <select
+                          value={certificateType}
+                          onChange={(e) => setCertificateType(e.target.value)}
+                          className="homeUser-top-core-right-input" // Changed to match input class
+                          required
+                        >
+                          <option value="" disabled>Select certificate type</option>
+                          {certificateTypes.map((type) => (
+                            <option key={type} value={type}>
+                              {type}
+                            </option>
+                          ))}
+                        </select>
 
-                  <button className="homeUser-top-core-right-up-btn">
-                    <div className="homeUser-top-core-right-up-btn-header">
-                      <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                      <p>Medical</p>
-                    </div>
-                    <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                  </button>
-                </div>
+                        <input
+                          type="text"
+                          value={certificateName}
+                          onChange={(e) => setCertificateName(e.target.value)}
+                          placeholder="Certificate Name"
+                          className="homeUser-top-core-right-input"
+                          required
+                        />
 
-                <div className="homeUser-top-core-right-down">
-                  <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                  <div className="homeUser-top-core-right-down-text">
-                    <p className="homeUser-top-core-right-down-text-bold">Choose a file to upload</p>
-                    <p className="homeUser-top-core-right-down-text-light">JPEG, PNG, and PDF formats, up to 50 MB</p>
-                  </div>
+                        <input
+                          type="date"
+                          value={expirationDate}
+                          onChange={(e) => setExpirationDate(e.target.value)}
+                          min={new Date().toISOString().split('T')[0]} // Prevent past dates
+                          className="homeUser-top-core-right-input"
+                        />
+                      </div>
 
-                  <button className="homeUser-top-core-right-down-btn">
-                    <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                    <p>Browse files</p>
-                  </button>
-                </div>
+                      <div className="homeUser-top-core-right-down">
+                        <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
+                        <div className="homeUser-top-core-right-down-text">
+                          <p className="homeUser-top-core-right-down-text-bold">Choose a file to upload</p>
+                          <p className="homeUser-top-core-right-down-text-light">PDF format, up to 30 MB</p>
+                        </div>
+
+                        <input
+                          type="file"
+                          accept=".pdf"
+                          onChange={(e) => setFile(e.target.files[0])}
+                          className="homeUser-top-core-right-down-btn"
+                          required
+                        />
+
+                        <button type="submit" className="homeUser-top-core-right-down-btn">
+                          <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
+                          Upload Certificate
+                        </button>
+                      </div>
+                    </form>
+                  </>
+                )}
               </div>
             </div>
           </div>
 
-          <div className="homeUser-bot">
-           
-          </div>
+          <div className="homeUser-bot"></div>
         </main>
       </div>
     </div>

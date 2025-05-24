@@ -54,10 +54,15 @@ Route::middleware('jwt.auth')->group(function () {
     // Crew Controller
     Route::get('/crew-members', [CrewController::class, 'getCrewMembers']);
     Route::get('/crew-members/available/count', [CrewController::class, 'getAvailableCrewCount']);
+
+    // File Upload
+    Route::post('/upload-certificate', [UploadController::class, 'upload']);
+
+    // Certificates
+    Route::get('/certificates', [UploadController::class, 'getCertificates']);
 });
 
-// File Upload
-Route::post('/upload-pdf', [UploadController::class, 'upload']);
+
 
 // PSGC Routes
 Route::get('/regions', [PSGCController::class, 'getRegions']);
