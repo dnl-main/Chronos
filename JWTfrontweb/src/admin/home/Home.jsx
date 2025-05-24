@@ -6,6 +6,7 @@ import './home.css';
 import { Navbar } from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
 import ScheduleCard from '../schedule/scheduleComponents/ScheduleCard';
+import Spinner from '../../components/Spinner';
 
 import Calendar_Event from '../../assets/icons/Calendar_Event.svg?react';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
@@ -19,90 +20,142 @@ import User_Add from '../../assets/icons/User_Add.svg?react';
 import More_Grid_Big from '../../assets/icons/More_Grid_Big.svg?react';
 
 const Home = () => {
-    const [overlayContent, setOverlayContent] = useState(null);
-    const navigate = useNavigate(); 
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const [overlayContent, setOverlayContent] = useState(null);
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [todayCount, setTodayCount] = useState(0);
+  const [upcomingCount, setUpcomingCount] = useState(0);
+  const [todayAppointments, setTodayAppointments] = useState([]);
+  const [crewCount, setCrewCount] = useState({ total: 0, complete: 0 });
+  const [error, setError] = useState(null);
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
-    
-    useEffect(() => {
-      const token = sessionStorage.getItem('token');
-      const storedUser = sessionStorage.getItem('user');
-    
-      if (!token) {
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    const storedUser = sessionStorage.getItem('user');
+
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      if (parsedUser.role === 'user') {
+        navigate('/user/homeuser');
+        return;
+      }
+      if (parsedUser.role !== 'admin') {
         navigate('/login');
         return;
       }
-    
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        if (parsedUser.role === 'user') {
-          navigate('/user/homeuser');
-          return;
-        }
-        if (parsedUser.role !== 'admin') {
-          navigate('/login');
-          return;
-        }
-        setUser(parsedUser);
-        setLoading(false);
-      } else {
-        fetchUserData(token);
-      }
-    }, [navigate]);
-    
-    const fetchUserData = async (token) => {
-      try {
-        const response = await axios.get(`${apiUrl}/user`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-    
-        const userData = response.data;
-    
-        if (userData.role === 'user') {
-          navigate('/user/homeuser');
-          return;
-        }
-        if (userData.role !== 'admin') {
-          navigate('/login');
-          return;
-        }
-    
-        setUser(userData);
-        sessionStorage.setItem('user', JSON.stringify(userData));
-      } catch (error) {
-        console.error('Failed to fetch user data:', error);
-        navigate('/login');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-//BLOCK TO
-    if (loading) {
-      return null; 
+      setUser(parsedUser);
+      fetchDashboardData(token);
+    } else {
+      fetchUserData(token);
     }
-     
-  
+  }, [navigate]);
+
+  const fetchUserData = async (token) => {
+    try {
+      const response = await axios.get(`${apiUrl}/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+
+      const userData = response.data;
+      if (userData.role === 'user') {
+        navigate('/user/homeuser');
+        return;
+      }
+      if (userData.role !== 'admin') {
+        navigate('/login');
+        return;
+      }
+
+      setUser(userData);
+      sessionStorage.setItem('user', JSON.stringify(userData));
+      await fetchDashboardData(token);
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      setError('Failed to load user data. Please log in again.');
+      navigate('/login');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDashboardData = async (token) => {
+    try {
+      setError(null);
+      // Fetch today's appointment count
+      const todayCountResponse = await axios.get(`${apiUrl}/appointment/today/count`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+      console.log('Today count:', todayCountResponse.data);
+      setTodayCount(todayCountResponse.data.count);
+
+      // Fetch upcoming appointment count
+      const upcomingCountResponse = await axios.get(`${apiUrl}/appointment/upcoming/count`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+      console.log('Upcoming count:', upcomingCountResponse.data);
+      setUpcomingCount(upcomingCountResponse.data.count);
+
+      // Fetch today's appointments
+      const appointmentsResponse = await axios.get(`${apiUrl}/appointment`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+      console.log('Appointments:', appointmentsResponse.data);
+      const appointments = Array.isArray(appointmentsResponse.data) ? appointmentsResponse.data : [];
+      setTodayAppointments(appointments.filter(app => app.status === 'today'));
+
+      // Fetch available crew count
+      const crewCountResponse = await axios.get(`${apiUrl}/crew-members/available/count`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+      console.log('Crew count:', crewCountResponse.data);
+      setCrewCount({
+        total: crewCountResponse.data.total,
+        complete: crewCountResponse.data.complete,
+      });
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+      setError('Failed to load dashboard data.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  if (error) {
+    return <div className="home-error">{error}</div>;
+  }
+
   return (
     <div className="home">
-    {/* <Navbar /> i uncomment if user navbar is okay na
-    <Sidebar /> */}
-    <div className="home-box">
-      <main className="home-box-in">
-        <div className="home-top">
-          <header className="home-top-header">
-            <More_Grid_Big 
-              style={{ 
-                color: "var(--black-color)", 
-                width: "32px", 
-                height: "32px", 
-                "--stroke-width": "1.5px" 
-              }} 
-            />
-            <p>Dashboard</p> 
-          </header> {/* home-top-header */}
+      <div className="home-box">
+        <main className="home-box-in">
+          <div className="home-top">
+            <header className="home-top-header">
+              <More_Grid_Big
+                style={{
+                  color: "var(--black-color)",
+                  width: "32px",
+                  height: "32px",
+                  "--stroke-width": "1.5px",
+                }}
+              />
+              <p>Dashboard</p>
+            </header>
 
             <main className="home-top-main">
               <section className="home-top-main-left">
@@ -121,7 +174,7 @@ const Home = () => {
                       <p>{crewCount.total}</p>
                     </div>
                     <div className="home-top-main-left-up-data-complete">
-                      <p>21 Complete</p>
+                      <p>{crewCount.complete} Complete</p>
                     </div>
                   </div>
                   <div className="home-top-main-left-up-job">
@@ -295,7 +348,7 @@ const Home = () => {
                   </main>
                   <main className="home-top-main-right-cards-card">
                     <div className="home-top-main-right-cards-card-up">
-                      <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "28px", height: "28px" }} />
+                                      <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "28px", height: "28px" }} />
                       <div className="home-top-main-right-cards-card-up-text">
                         <p className="home-top-main-right-cards-card-up-text-name">John R. Smith</p>
                         <p className="home-top-main-right-cards-card-up-text-cert">Java National Certificate</p>
