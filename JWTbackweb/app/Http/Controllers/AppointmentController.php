@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Carbon\Carbon;
 
 class AppointmentController extends Controller
 {
@@ -18,7 +19,6 @@ class AppointmentController extends Controller
         $user = JWTAuth::user();
 
         if ($user->role === 'admin') {
-            // For admins, return all appointments with user details
             $appointments = Appointment::with('user')->get()->map(function ($appointment) {
                 return [
                     'id' => $appointment->id,
@@ -42,7 +42,6 @@ class AppointmentController extends Controller
             return response()->json($appointments, 200);
         }
 
-        // For non-admins, return their own appointment
         $appointment = Appointment::where('user_id', $user->id)->first();
         if ($appointment) {
             return response()->json([
@@ -64,6 +63,22 @@ class AppointmentController extends Controller
         }
 
         return response()->json([], 200);
+    }
+
+    // New endpoint for today's appointment count
+    public function getTodayCount()
+    {
+        $today = Carbon::today()->toDateString();
+        $count = Appointment::where('date', $today)->count();
+        return response()->json(['count' => $count], 200);
+    }
+
+    // New endpoint for upcoming appointment count
+    public function getUpcomingCount()
+    {
+        $today = Carbon::today()->startOfDay();
+        $count = Appointment::where('date', '>=', $today)->count();
+        return response()->json(['count' => $count], 200);
     }
 
     private function getAppointmentStatus($appointment)
@@ -89,7 +104,6 @@ class AppointmentController extends Controller
             'end_time' => 'required|date_format:H:i|after:start_time',
         ]);
 
-        // Delete existing appointment to ensure one per user
         Appointment::where('user_id', $user->id)->delete();
 
         $appointment = Appointment::create([

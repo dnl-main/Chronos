@@ -11,7 +11,6 @@ import Notebook from '../../assets/icons/Notebook.svg?react';
 
 
 const Certificate = () => {
-  
   const [overlayContent, setOverlayContent] = useState(null);
   const navigate = useNavigate(); 
   const [user, setUser] = useState(null);
@@ -65,28 +64,6 @@ const Certificate = () => {
     } catch (error) {
       console.error('Failed to fetch user data:', error);
       navigate('/login');
-    } finally {
-      setLoading(false);
-    }
-    
-  };
-
-   const fetchCrewData = async (token) => {
-    try {
-      setError(null);
-      const response = await axios.get(`${apiUrl}/crew-members`, {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      });
-      setCrewData(Array.isArray(response.data) ? response.data : [response.data].filter(Boolean));
-    } catch (error) {
-      console.error('Failed to fetch crew data:', error);
-      if (error.response?.status === 401) {
-        setError('Unauthorized. Please log in again.');
-        navigate('/login');
-      } else {
-        setError('Failed to load crew data.');
-      }
     } finally {
       setLoading(false);
     }

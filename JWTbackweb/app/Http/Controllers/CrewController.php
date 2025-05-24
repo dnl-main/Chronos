@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Auth;
 
 class CrewController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api'); // Ensure JWT authentication
+    }
+
     public function getCrewMembers()
     {
         // Ensure only admins can access this endpoint
@@ -19,5 +24,31 @@ class CrewController extends Controller
         $crewMembers = User::where('role', 'user')->get();
 
         return response()->json($crewMembers);
+    }
+
+    public function getAvailableCrewCount()
+    {
+        // Ensure only admins can access this endpoint
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Count available crew members
+        $totalCount = User::where('role', 'user')
+            ->where('availability', 'available') // Adjust based on actual field
+            ->count();
+
+        // Count crew members with complete profiles
+        $completeCount = User::where('role', 'user')
+            ->where('availability', 'available')
+            ->whereNotNull('first_name')
+            ->whereNotNull('last_name')
+            ->whereNotNull('position')
+            ->count();
+
+        return response()->json([
+            'total' => $totalCount,
+            'complete' => $completeCount,
+        ]);
     }
 }

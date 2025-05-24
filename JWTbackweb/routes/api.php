@@ -41,6 +41,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('/appointment', [AppointmentController::class, 'index']);
     Route::post('/appointment', [AppointmentController::class, 'store']);
     Route::delete('/appointment', [AppointmentController::class, 'destroy']);
+    Route::get('/appointment/today/count', [AppointmentController::class, 'getTodayCount']);
+    Route::get('/appointment/upcoming/count', [AppointmentController::class, 'getUpcomingCount']);
 
     // Profile Picture Upload
     Route::post('/user/upload-profile-picture', [ProfilePicController::class, 'upload']);
@@ -51,6 +53,7 @@ Route::middleware('jwt.auth')->group(function () {
 
     // Crew Controller
     Route::get('/crew-members', [CrewController::class, 'getCrewMembers']);
+    Route::get('/crew-members/available/count', [CrewController::class, 'getAvailableCrewCount']);
 });
 
 // File Upload
