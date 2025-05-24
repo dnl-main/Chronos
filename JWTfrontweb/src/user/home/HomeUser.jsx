@@ -27,7 +27,7 @@ const HomeUser = () => {
   const [certificateLoading, setCertificateLoading] = useState(true);
 
   const statusOptions = ['On Board', 'Available', 'Vacation'];
-  const certificateTypes = ['Medical', 'Professional', 'Academic', 'Other'];
+  const certificateTypes = ['Medical', 'Training','Other'];
 
   // Fetch user certificates
   useEffect(() => {
