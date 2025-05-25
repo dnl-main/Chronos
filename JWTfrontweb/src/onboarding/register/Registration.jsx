@@ -209,7 +209,7 @@ const Registration = () => {
       return;
     }
 
-    // Prepare registration data (only codes, backend will fetch names)
+     // Prepare registration data (only codes, backend will fetch names)
     const registrationData = {
       region: selectedRegionName,
       province: selectedProvinceName,
@@ -223,9 +223,11 @@ const Registration = () => {
       secondary_position: formData.secondary_position,
       civil_status: formData.civil_status,
       birthday: formData.birthday,
+      availability: user?.role === 'admin' ? null : 'Available', // Set availability based on role
     };
     console.log('Registration Data:', registrationData);
-    //token
+
+    // Token
     const token = sessionStorage.getItem('token');
 
     try {
@@ -251,295 +253,293 @@ const Registration = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     const storedUser = sessionStorage.getItem('user');
     handleAuthToken(token, storedUser ? JSON.parse(storedUser) : null, navigate);
-  
+
     if (!token) {
       setLoading(false);
       navigate('/login');
       return;
     }
-  
+
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-  
+
       // Check if user is admin or already has a region
       if (parsedUser.role === 'admin' || parsedUser.region) {
         setLoading(false);
         navigate('/user/HomeUser'); // Redirect to home or dashboard if admin or has region
         return;
       }
-  
+
       // Ensure only 'user' role can proceed
       if (parsedUser.role !== 'user') {
         setLoading(false);
         navigate('/login');
         return;
       }
-  
+
       setUser(parsedUser);
       setLoading(false);
     } else {
       fetchUserData(token);
     }
   }, [navigate]);
-  // Moved loading check after all hooks to preserve your comments
+
   if (loading) {
     return null;
   }
 
   return (
     <div className="registration-wrapper">
-    <div className="registration">
-      <div className="registration-header">
-        <div className="registration-header-padding">
-          <p className="registration-header-heading">You're almost there!</p>
-          <p className="registration-header-sub">Just one more step</p>
-        </div> {/* registration-header-padding */}
-      </div> {/* registration-header */}
+      <div className="registration">
+        <div className="registration-header">
+          <div className="registration-header-padding">
+            <p className="registration-header-heading">You're almost there!</p>
+            <p className="registration-header-sub">Just one more step</p>
+          </div>
+        </div>
 
-      <div className="registration-container">
-        <div className="registration-container-padding">
-          <div className="registration-container-header">
-            <p className="registration-container-header-sub">Tell us more about yourself</p>
-            <p className="registration-container-header-heading">Complete your profile</p>
-          </div> {/* registration-container-header */}
+        <div className="registration-container">
+          <div className="registration-container-padding">
+            <div className="registration-container-header">
+              <p className="registration-container-header-sub">Tell us more about yourself</p>
+              <p className="registration-container-header-heading">Complete your profile</p>
+            </div>
 
-          <div className="registration-container-column">
-            <form className="registration-container-column-form" onSubmit={handleSubmit}>
-              {error && <div className="error-message">{error}</div>}
-              <div className="registration-container-column-form-address">
-                <div className="registration-container-column-form-address-header">
-                  <img src={calendar_week} className="" alt="calendar_week icon" />
-                  <p className="registration-container-column-form-address-header-text">Home address</p>
-                </div> {/* registration-container-column-form-address-header */}
+            <div className="registration-container-column">
+              <form className="registration-container-column-form" onSubmit={handleSubmit}>
+                {error && <div className="error-message">{error}</div>}
+                <div className="registration-container-column-form-address">
+                  <div className="registration-container-column-form-address-header">
+                    <img src={calendar_week} className="" alt="calendar_week icon" />
+                    <p className="registration-container-column-form-address-header-text">Home address</p>
+                  </div>
 
-                <div className="registration-container-column-form-address-content">
-                  <div className="registration-container-column-form-address-content-left">
-                    <div className="registration-container-column-form-address-content-left-alike">
-                      <label htmlFor="region">Region</label>
-                      <select
-                        id="region"
-                        name="region"
-                        value={selectedRegion}
-                        onChange={(e) => setSelectedRegion(e.target.value)}
-                        required
-                      >
-                        <option value="" selected>
-                          Select your region
-                        </option>
-                        {regions.map((region) => (
-                          <option key={region.code} value={region.code}>
-                            {region.name}
+                  <div className="registration-container-column-form-address-content">
+                    <div className="registration-container-column-form-address-content-left">
+                      <div className="registration-container-column-form-address-content-left-alike">
+                        <label htmlFor="region">Region</label>
+                        <select
+                          id="region"
+                          name="region"
+                          value={selectedRegion}
+                          onChange={(e) => setSelectedRegion(e.target.value)}
+                          required
+                        >
+                          <option value="" selected>
+                            Select your region
                           </option>
-                        ))}
-                      </select>
-                    </div>
+                          {regions.map((region) => (
+                            <option key={region.code} value={region.code}>
+                              {region.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                    {/* ---------------------------------------Added----------------------------------------- */}
-                    <div className="registration-container-column-form-address-content-left-alike">
-                      <label htmlFor="province">Province</label>
-                      <select
-                        id="province"
-                        name="province"
-                        value={selectedProvince}
-                        onChange={(e) => setSelectedProvince(e.target.value)}
-                        required
-                        disabled={!selectedRegion}
-                      >
-                        <option value="">Select your province</option>
-                        {provinces.map((province) => (
-                          <option key={province.code} value={province.code}>
-                            {province.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    {/* -------------------------------------------------------------------------------------------- */}
+                      <div className="registration-container-column-form-address-content-left-alike">
+                        <label htmlFor="province">Province</label>
+                        <select
+                          id="province"
+                          name="province"
+                          value={selectedProvince}
+                          onChange={(e) => setSelectedProvince(e.target.value)}
+                          required
+                          disabled={!selectedRegion}
+                        >
+                          <option value="">Select your province</option>
+                          {provinces.map((province) => (
+                            <option key={province.code} value={province.code}>
+                              {province.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                    <div className="registration-container-column-form-address-content-left-alike">
-                      <label htmlFor="barangay">Barangay</label>
-                      <select
-                        id="barangay"
-                        name="barangay"
-                        value={selectedBarangay}
-                        onChange={(e) => {
-                          setSelectedBarangay(e.target.value);
-                          setFormData((prev) => ({
-                            ...prev,
-                            barangay: e.target.value, // Update formData as well
-                          }));
-                        }}
-                        required
-                        disabled={!selectedCity}
-                      >
-                        <option value="">Select your barangay</option>
-                        {barangays.map((barangay) => (
-                          <option key={barangay.code} value={barangay.code}>
-                            {/* Use code as value */}
-                            {barangay.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                      <div className="registration-container-column-form-address-content-left-alike">
+                        <label htmlFor="barangay">Barangay</label>
+                        <select
+                          id="barangay"
+                          name="barangay"
+                          value={selectedBarangay}
+                          onChange={(e) => {
+                            setSelectedBarangay(e.target.value);
+                            setFormData((prev) => ({
+                              ...prev,
+                              barangay: e.target.value,
+                            }));
+                          }}
+                          required
+                          disabled={!selectedCity}
+                        >
+                          <option value="">Select your barangay</option>
+                          {barangays.map((barangay) => (
+                            <option key={barangay.code} value={barangay.code}>
+                              {barangay.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                    <div className="registration-container-column-form-address-content-left-alike">
-                      <label htmlFor="street">Street</label>
-                      <input
-                        type="text"
-                        id="street"
-                        name="street"
-                        placeholder="Enter your street"
-                        value={formData.street}
-                        onChange={handleChange}
-                        required
-                      />
-                    </div> {/* registration-container-column-form-address-content-left-alike */}
-                  </div> {/* registration-container-column-form-address-content-left */}
-
-                  <div className="registration-container-column-form-address-content-right">
-                    <div className="registration-container-column-form-address-content-left-alike">
-                      <label htmlFor="city">City/Municipality</label>
-                      <select
-                        id="city"
-                        name="city"
-                        value={selectedCity}
-                        onChange={(e) => setSelectedCity(e.target.value)}
-                        required
-                        disabled={!selectedProvince} //Disable if region is not chosen
-                      >
-                        <option value="">Select your city/municipality</option>
-                        {cities.map((city) => (
-                          <option key={city.code} value={city.code}>
-                            {city.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="registration-container-column-form-address-content-right-alike">
-                      <label htmlFor="zip_code">Zip code</label>
-                      <input
-                        type="text"
-                        id="zip_code"
-                        name="zip_code"
-                        placeholder="Enter your zip code"
-                        value={formData.zip_code}
-                        onChange={handleChange}
-                      />
-                    </div> {/* registration-container-column-form-address-content-right-alike */}
-
-                    <div className="registration-container-column-form-address-content-right-alike">
-                      <label htmlFor="building_number">Building number</label>
-                      <input
-                        type="text"
-                        id="building_number"
-                        name="building_number"
-                        placeholder="Enter your building number"
-                        value={formData.building_number}
-                        onChange={handleChange}
-                      />
-                    </div> {/* registration-container-column-form-address-content-right-alike */}
-                  </div> {/* registration-container-column-form-address-content-right */}
-                </div> {/* registration-container-column-form-address-content */}
-              </div> {/* registration-container-column-form-address */}
-
-              <div className="registration-container-column-form-personal">
-                <div className="registration-container-column-form-personal-header">
-                  <img src={user_square} alt="user_square icon" />
-                  <p className="registration-container-column-form-personal-header-text">
-                    Personal details
-                  </p>
-                </div> {/* registration-container-column-form-personal-header */}
-                <div className="registration-container-column-form-personal-content">
-                  <div className="registration-container-column-form-personal-content-top">
-                    <label htmlFor="birthday">Birthday</label>
-                    <input
-                      type="date"
-                      id="birthday"
-                      name="birthday"
-                      placeholder=""
-                      value={formData.birthday}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div> {/* registration-container-column-form-personal-content-top */}
-
-                  <div className="registration-container-column-form-personal-content-bottom">
-                    <div className="registration-container-column-form-personal-content-bottom-left">
-                      <div className="registration-container-column-form-personal-content-bottom-left-alike">
-                        <label htmlFor="position">Primary Position</label>
+                      <div className="registration-container-column-form-address-content-left-alike">
+                        <label htmlFor="street">Street</label>
                         <input
                           type="text"
-                          id="position"
-                          name="position"
-                          placeholder="Enter your position"
-                          value={formData.position}
+                          id="street"
+                          name="street"
+                          placeholder="Enter your street"
+                          value={formData.street}
                           onChange={handleChange}
                           required
                         />
-                      </div> {/* registration-container-column-form-personal-content-bottom-left-alike */}
+                      </div>
+                    </div>
 
-                      <div className="registration-container-column-form-personal-content-bottom-left-alike">
-                        <label htmlFor="gender">Gender</label>
-                        <input
-                          type="text"
-                          id="gender"
-                          name="gender"
-                          placeholder="Enter your gender"
-                          value={formData.gender}
-                          onChange={handleChange}
+                    <div className="registration-container-column-form-address-content-right">
+                      <div className="registration-container-column-form-address-content-left-alike">
+                        <label htmlFor="city">City/Municipality</label>
+                        <select
+                          id="city"
+                          name="city"
+                          value={selectedCity}
+                          onChange={(e) => setSelectedCity(e.target.value)}
                           required
-                        />
-                      </div> {/* registration-container-column-form-personal-content-bottom-left-alike */}
-                    </div> {/* registration-container-column-form-personal-content-bottom-left */}
+                          disabled={!selectedProvince}
+                        >
+                          <option value="">Select your city/municipality</option>
+                          {cities.map((city) => (
+                            <option key={city.code} value={city.code}>
+                              {city.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                    <div className="registration-container-column-form-personal-content-bottom-right">
-                      <div className="registration-container-column-form-personal-content-bottom-right-alike">
-                        <label htmlFor="secondary_position">Secondary Position </label>
+                      <div className="registration-container-column-form-address-content-right-alike">
+                        <label htmlFor="zip_code">Zip code</label>
                         <input
                           type="text"
-                          id="secondary_position"
-                          name="secondary_position"
-                          placeholder="Enter your position"
-                          value={formData.secondary_position}
+                          id="zip_code"
+                          name="zip_code"
+                          placeholder="Enter your zip code"
+                          value={formData.zip_code}
                           onChange={handleChange}
                         />
-                      </div> {/* registration-container-column-form-personal-content-bottom-right-alike */}
+                      </div>
 
-                      <div className="registration-container-column-form-personal-content-bottom-right-alike">
-                        <label htmlFor="civil_status">Civil status</label>
+                      <div className="registration-container-column-form-address-content-right-alike">
+                        <label htmlFor="building_number">Building number</label>
                         <input
                           type="text"
-                          id="civil_status"
-                          name="civil_status"
-                          value={formData.civil_status}
+                          id="building_number"
+                          name="building_number"
+                          placeholder="Enter your building number"
+                          value={formData.building_number}
                           onChange={handleChange}
-                          placeholder="Enter your status"
-                          required
                         />
-                      </div> {/* registration-container-column-form-personal-content-bottom-right-alike */}
-                    </div> {/* registration-container-column-form-personal-content-bottom-right */}
-                  </div> {/* registration-container-column-form-personal-content-bottom */}
-                </div> {/* registration-container-column-form-personal-content */}
-              </div> {/* registration-container-column-form-personal */}
-              <div className="registration-container-submit">
-                <button
-                  type="submit"
-                  id="register-button"
-                  name="register"
-                  disabled={loading}
-                >
-                {loading ? "Registering..." : "Register"}
-                </button>
-              </div> {/* registration-container-submit */}
-            </form> {/* registration-container-column-form */}
-          </div> {/* registration-container-column */}
-        </div> {/* registration-container-padding */}
-      </div> {/* registration-container */}
-    </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="registration-container-column-form-personal">
+                  <div className="registration-container-column-form-personal-header">
+                    <img src={user_square} alt="user_square icon" />
+                    <p className="registration-container-column-form-personal-header-text">
+                      Personal details
+                    </p>
+                  </div>
+                  <div className="registration-container-column-form-personal-content">
+                    <div className="registration-container-column-form-personal-content-top">
+                      <label htmlFor="birthday">Birthday</label>
+                      <input
+                        type="date"
+                        id="birthday"
+                        name="birthday"
+                        placeholder=""
+                        value={formData.birthday}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+
+                    <div className="registration-container-column-form-personal-content-bottom">
+                      <div className="registration-container-column-form-personal-content-bottom-left">
+                        <div className="registration-container-column-form-personal-content-bottom-left-alike">
+                          <label htmlFor="position">Primary Position</label>
+                          <input
+                            type="text"
+                            id="position"
+                            name="position"
+                            placeholder="Enter your position"
+                            value={formData.position}
+                            onChange={handleChange}
+                            required
+                          />
+                        </div>
+
+                        <div className="registration-container-column-form-personal-content-bottom-left-alike">
+                          <label htmlFor="gender">Gender</label>
+                          <input
+                            type="text"
+                            id="gender"
+                            name="gender"
+                            placeholder="Enter your gender"
+                            value={formData.gender}
+                            onChange={handleChange}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="registration-container-column-form-personal-content-bottom-right">
+                        <div className="registration-container-column-form-personal-content-bottom-right-alike">
+                          <label htmlFor="secondary_position">Secondary Position</label>
+                          <input
+                            type="text"
+                            id="secondary_position"
+                            name="secondary_position"
+                            placeholder="Enter your position"
+                            value={formData.secondary_position}
+                            onChange={handleChange}
+                          />
+                        </div>
+
+                        <div className="registration-container-column-form-personal-content-bottom-right-alike">
+                          <label htmlFor="civil_status">Civil status</label>
+                          <input
+                            type="text"
+                            id="civil_status"
+                            name="civil_status"
+                            value={formData.civil_status}
+                            onChange={handleChange}
+                            placeholder="Enter your status"
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="registration-container-submit">
+                  <button
+                    type="submit"
+                    id="register-button"
+                    name="register"
+                    disabled={loading}
+                  >
+                    {loading ? 'Registering...' : 'Register'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

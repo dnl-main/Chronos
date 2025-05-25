@@ -40,6 +40,8 @@ Route::middleware('jwt.auth')->group(function () {
     // Appointment Routes
     Route::get('/appointment', [AppointmentController::class, 'index']);
     Route::post('/appointment', [AppointmentController::class, 'store']);
+    Route::patch('/appointment/{id}', [AppointmentController::class, 'update']); // Admin Update
+    Route::delete('/appointment/{id}', [AppointmentController::class, 'delete']);// Admin Delete
     Route::delete('/appointment', [AppointmentController::class, 'destroy']);
     Route::get('/appointment/today/count', [AppointmentController::class, 'getTodayCount']);
     Route::get('/appointment/upcoming/count', [AppointmentController::class, 'getUpcomingCount']);

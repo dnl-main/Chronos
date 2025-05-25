@@ -1,127 +1,59 @@
-.manageAppointment-box-in-left-core-bot-cards-card {
-	/* background-color: mediumseagreen; */
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 100%;
-	column-gap: 2.4vh;
-	
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
-	.manageAppointment-box-in-left-core-bot-cards-card-check {
-		/* background-color: lightgreen; */
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 16vh;
-		width: 12%;
-	}
-
-
-		.manageAppointment-box-in-left-core-bot-cards-card-check-box {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 4vh;
-			height: 4vh;
-			border: 2px solid var(--primary-color);
-			border-radius: 0.3rem;
-			background-color: var(--white-color);
-			cursor: pointer;
-		}
-	
-			.manageAppointment-box-in-left-core-bot-cards-card-check-box.checked {
-				background-color: var(--primary-color);
-			}
-			
-			.manageAppointment-box-in-left-core-bot-cards-card-check-box::after {
-				content: '';
-				width: 2vh;
-				height: 0.8vh;
-				border-left: 2px solid white;
-				border-bottom: 2px solid white;
-				transform: rotate(-45deg);
-				opacity: 0;
-				transition: opacity 0.2s ease;
-			}
-			
-			.manageAppointment-box-in-left-core-bot-cards-card-check-box.checked::after {
-				opacity: 1;
-			}
-			
-
-	.manageAppointment-box-in-left-core-bot-cards-card-container {
-		/* background-color: forestgreen; */
+.manageAppointment-card {
+	/* background-color: mediumseagreen; */
+	background-color: var(--white-color);
+	display: flex;
+	flex-direction: column;
+	width: 90vh;
+	height: 60vh;
+	border-radius: 1rem;
+}
+	.manageAppointment-card-profile {
+		/* background-color: slategray; */
 		display: flex;
 		flex-direction: row;
+		justify-content: start;
 		align-items: center;
-		background-color: var(--white-color);
-		height: 16vh;
-		width: 88%;
-		border-radius: 12px;
-		/* !!! CHANGE ALL FROM 20PX TO 12PX */
-		box-shadow: 0px 0px 20px rgba(0, 136, 154, 0.10); 
+		width: 100%;
+		padding: 1.4vh 2vh;
+		column-gap: 1vw;
 	}
-
-		.manageAppointment-box-in-left-core-bot-cards-card-container-indicator {
-			/* background-color: springgreen; */
-			height: 100%;
-			width: 2%;
-			/* !!! CHANGE ALL FROM 1.8% TO 1.4% */
-			background-color: var(--green-indicator-opacity-60);
-			border-top-left-radius: 12px;
-			border-bottom-left-radius: 12px;
-		}
-
-		.manageAppointment-box-in-left-core-bot-cards-card-container-profile {
-			/* background-color: mediumspringgreen; */
+		.manageAppointment-card-profile-info {
+			/* background-color: lightgray; */
 			display: flex;
-			flex-direction: row;
-			justify-content: start;
-			align-items: center;
-			height: 100%;
-			width: 72%;
-			padding: 2vh;
-			column-gap: 1vw;
+			flex-direction: column;
+			justify-content: center;
+			align-items: start;
+			row-gap: 1vh;
 		}
-
-			.manageAppointment-box-in-left-core-bot-cards-card-container-profile-info {
-				/* background-color: palegreen; */
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-				align-items: start;
-				row-gap: 1vh;
+			.manageAppointment-card-profile-info-text {
+				/* background-color: gainsboro; */
+				font-weight: var(--font-weight-regular);
+				font-size: var(--font-size-16);
+				color: var(--black-color)
 			}
-
-				.manageAppointment-box-in-left-core-bot-cards-card-container-profile-info-text {
-					/* background-color: lightgreen; */
-					font-weight: var(--font-weight-regular);
-					font-size: var(--font-size-16);
-					color: var(--black-color)
-				}
-
-				.manageAppointment-box-in-left-core-bot-cards-card-container-profile-info-job {
-					/* background-color: mintcream; */
-					display: flex;
-					flex-direction: row;
-					justify-content: center;
-					align-items: center;
-					background-color: var(--secondary-color-opacity-60);
-					column-gap: 1.4vh;
-					padding: 1vh 1.4vh;
-					border-radius: 8px;
-					border: 2px solid var(--primary-color-opacity-15);
-				}
-
-					.manageAppointment-box-in-left-core-bot-cards-card-container-profile-info-job p {
-						font-weight: var(--font-weight-medium);
-						font-size: var(--font-size-12);
-						color: var(--black-color);
-					}
-
-		.manageAppointment-box-in-left-core-bot-cards-card-container-availability {
-			/* background-color: darkolivegreen; */
+			.manageAppointment-card-profile-info-job {
+				/* background-color: whitesmoke; */
+				display: flex;
+				flex-direction: row;
+				justify-content: center;
+				align-items: center;
+				background-color: var(--secondary-color-opacity-60);
+				column-gap: 1.4vh;
+				padding: 1vh 1.4vh;
+				border-radius: 8px;
+				border: 2px solid var(--primary-color-opacity-15);
+				font-weight: var(--font-weight-medium);
+				font-size: var(--font-size-12);
+				color: var(--black-color);
+			}
+		.manageAppointment-card-availability {
+			/* background-color: steelblue; */
 			display: flex;
 			justify-content: end;
 			align-items: start;
@@ -130,9 +62,8 @@
 			padding-top: 0.8rem;
 			padding-right: 0.8rem;
 		}
-
-			.manageAppointment-box-in-left-core-bot-cards-card-container-availability-bg {
-				/* background-color: yellowgreen; */
+			.manageAppointment-card-availability-bg {
+				/* background-color: lightsteelblue; */
 				display: flex;
 				justify-content: center;
 				align-items: center;
@@ -141,8 +72,156 @@
 				padding: 1vh 1.6vh;
 				border-radius: 500px;
 			}
-				.manageAppointment-box-in-left-core-bot-cards-card-container-availability-bg p {
+
+				.manageAppointment-card-availability-bg p {
 					font-weight: var(--font-weight-medium);
 					font-size: var(--font-size-12);
 					color: var(--black-color);
 				}
+	.manageAppointment-card-separator {
+		/* background-color: dimgray; */
+		display: flex;
+		align-self: center;
+		background-color: var(--primary-color-opacity-15);
+		/* background-color: var(--primary-color); */
+		width: 92%;
+		height: 0.3vh;
+		border-radius: 500px;
+		
+	}
+	.manageAppointment-card-personal {
+		/* background-color: darkolivegreen; */
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 2vh 3.2vh;
+	}
+		.manageAppointment-card-personal-field {
+			/* background-color: olivedrab; */
+			display: flex;
+			flex-direction: column;
+			width: 32%;
+			row-gap: 1vh;
+		}
+			.manageAppointment-card-personal-field-medium {
+				/* background-color: yellowgreen; */
+				font-weight: var(--font-weight-medium);
+				font-size: var(--font-size-16);
+				color: var(--black-color-opacity-60);
+			}
+			.manageAppointment-card-personal-field-data {
+				/* background-color: darkseagreen; */
+				padding: 1.4vh 2vh;
+				border: 2px solid var(--primary-color-opacity-15);
+				border-radius: 0.4rem;
+			}
+				.manageAppointment-card-personal-field-data-regular {
+					/* background-color: honeydew; */
+					font-weight: var(--font-weight-regular);
+					font-size: var(--font-size-12);
+					color: var(--black-color);
+				}
+	.manageAppointment-card-certificate {
+		/* background-color: darkred; */
+		display: flex;
+		flex-direction: column;
+		padding: 2vh 3.2vh;
+		row-gap: 1vh;
+	}
+		.manageAppointment-card-certificate-medium {
+			/* background-color: firebrick; */
+			font-weight: var(--font-weight-medium);
+			font-size: var(--font-size-16);
+			color: var(--black-color-opacity-60);
+		}
+		.manageAppointment-card-certificate-fields {
+			/* background-color: indianred; */
+			display: flex;
+			justify-content: space-between;
+			
+		}
+			.manageAppointment-card-certificate-fields-field {
+				background-color: var(--secondary-color-opacity-60);
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				width: 23%;
+				padding: 0.6vh 1.4vh;
+				/* border: 2px solid var(--primary-color-opacity-15); */
+				border-radius: 0.4rem;
+			}
+				.manageAppointment-card-certificate-fields-field-light {
+					/* background-color: mistyrose; */
+					white-space: nowrap;      
+					overflow: hidden;          
+					text-overflow: ellipsis;   
+					max-width: 76%;  
+					font-weight: var(--font-weight-light);
+					font-size: var(--font-size-8);
+					color: var(--black-color); 
+				}
+
+				.manageAppointment-card-certificate-fields-field-svg {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					background-color: var(--white-color);
+					height: fit-content;
+					width: fit-content;
+					border-radius: 4px;
+					box-shadow: 0px 0px 10px var(--primary-color-opacity-15);
+				}
+	.manageAppointment-card-contact {
+		/* background-color: darkblue; */
+		display: flex;
+		flex-direction: column;
+		padding: 2vh 3.2vh;
+		row-gap: 1vh;
+	}
+		.manageAppointment-card-contact-medium {
+			/* background-color: mediumblue; */
+			font-weight: var(--font-weight-medium);
+			font-size: var(--font-size-16);
+			color: var(--black-color-opacity-60);
+		}
+		.manageAppointment-card-contact-details {
+			/* background-color: royalblue; */
+			display: flex;
+			justify-content: space-between;
+			align-items: start;
+		}
+			.manageAppointment-card-contact-details-info {
+				/* background-color: cornflowerblue; */
+				display: flex;
+				flex-direction: column;
+				width: 48%;
+				row-gap: 0.6vh;
+				font-weight: var(--font-weight-regular);
+				font-size: var(--font-size-12);
+				color: var(--black-color-opacity-60);
+			}
+				.manageAppointment-card-contact-details-info-phone {
+					/* background-color: lightskyblue; */
+					display: flex;
+					align-items: center;
+					column-gap: 1vh;
+				}
+
+				.manageAppointment-card-contact-details-info-email {
+					/* background-color: lightslategray; */
+					display: flex;
+					align-items: center;
+					column-gap: 1vh;
+				}
+				
+			.manageAppointment-card-contact-details-address {
+				/* background-color: aliceblue; */
+				width: 48%;
+				display: flex;
+				align-items: start;
+				column-gap: 1vh;
+				font-weight: var(--font-weight-regular);
+				font-size: var(--font-size-12);
+				color: var(--black-color-opacity-60);
+			}
+

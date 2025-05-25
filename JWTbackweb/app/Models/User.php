@@ -4,9 +4,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Tymon\JWTAuth\Contracts\JWTSubject; // Import JWTSubject contract
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject // Implement JWTSubject
+class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
@@ -17,10 +17,10 @@ class User extends Authenticatable implements JWTSubject // Implement JWTSubject
      */
     protected $fillable = [
         'first_name', 'middle_name', 'last_name', 'email', 'mobile', 'password',
-        'region', 'province','barangay', 'city', 'street', 'zip_code', 'building_number',
-        'birthday', 'position', 'secondary_position', 'gender', 'civil_status','role','availability', 
+        'region', 'province', 'barangay', 'city', 'street', 'zip_code', 'building_number',
+        'birthday', 'position', 'secondary_position', 'gender', 'civil_status', 'role', 'availability',
     ];
-    
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -43,12 +43,6 @@ class User extends Authenticatable implements JWTSubject // Implement JWTSubject
             'password' => 'hashed',
         ];
     }
-    protected static function booted()
-    {
-        static::creating(function ($user) {
-            $user->availability = $user->role === 'admin' ? null : 'Available';
-        });
-    }
 
     /**
      * Get the identifier that will be stored in the JWT payload.
@@ -57,7 +51,7 @@ class User extends Authenticatable implements JWTSubject // Implement JWTSubject
      */
     public function getJWTIdentifier()
     {
-        return $this->getKey(); // Returns the primary key of the user
+        return $this->getKey(); // Returns the primary key of the user 
     }
 
     /**
@@ -67,6 +61,6 @@ class User extends Authenticatable implements JWTSubject // Implement JWTSubject
      */
     public function getJWTCustomClaims()
     {
-        return []; // You can add custom claims here if needed
+        return [];
     }
 }

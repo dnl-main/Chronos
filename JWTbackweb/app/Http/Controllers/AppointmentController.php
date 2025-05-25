@@ -36,6 +36,10 @@ class AppointmentController extends Controller
                         'position' => $appointment->user->position,
                         'secondary_position' => $appointment->user->secondary_position,
                         'availability' => $appointment->user->availability,
+                        'gender' => $appointment->user->gender,
+                        'civil_status' => $appointment->user->civil_status,
+                        'birthday' => $appointment->user->birthday,
+                        'address' => $this->formatAddress($appointment->user),
                     ] : null,
                 ];
             });
@@ -58,6 +62,12 @@ class AppointmentController extends Controller
                     'email' => $user->email,
                     'mobile' => $user->mobile,
                     'position' => $user->position,
+                    'secondary_position' => $user->secondary_position,
+                    'availability' => $user->availability,
+                    'gender' => $user->gender,
+                    'civil_status' => $user->civil_status,
+                    'birthday' => $user->birthday,
+                    'address' => $this->formatAddress($user),
                 ],
             ], 200);
         }
@@ -65,7 +75,21 @@ class AppointmentController extends Controller
         return response()->json([], 200);
     }
 
-    // New endpoint for today's appointment count
+    private function formatAddress($user)
+    {
+        $addressParts = array_filter([
+            $user->building_number,
+            $user->street,
+            $user->barangay,
+            $user->city,
+            $user->province,
+            $user->region,
+            $user->zip_code,
+        ]);
+
+        return !empty($addressParts) ? implode(', ', $addressParts) : null;
+    }
+
     public function getTodayCount()
     {
         $today = Carbon::today()->toDateString();
@@ -73,7 +97,6 @@ class AppointmentController extends Controller
         return response()->json(['count' => $count], 200);
     }
 
-    // New endpoint for upcoming appointment count
     public function getUpcomingCount()
     {
         $today = Carbon::today()->startOfDay();
@@ -123,7 +146,39 @@ class AppointmentController extends Controller
 
     public function update(Request $request, $id)
     {
-        return response()->json(['message' => 'Method not implemented'], 501);
+        $user = JWTAuth::user();
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $appointment = Appointment::find($id);
+        if (!$appointment) {
+            return response()->json(['message' => 'Appointment not found'], 404);
+        }
+
+        $validated = $request->validate([
+            'date' => 'required|date',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+        ]);
+
+        $appointment->update([
+            'date' => $validated['date'],
+            'start_time' => $validated['start_time'],
+            'end_time' => $validated['end_time'],
+        ]);
+
+        return response()->json([
+            'message' => 'Appointment updated successfully',
+            'appointment' => [
+                'id' => $appointment->id,
+                'user_id' => $appointment->user_id,
+                'date' => $appointment->date,
+                'start_time' => $appointment->start_time,
+                'end_time' => $appointment->end_time,
+                'status' => $this->getAppointmentStatus($appointment),
+            ],
+        ], 200);
     }
 
     public function destroy()
@@ -131,5 +186,21 @@ class AppointmentController extends Controller
         $user = JWTAuth::user();
         $deleted = Appointment::where('user_id', $user->id)->delete();
         return response()->json(['message' => $deleted ? 'Appointment deleted' : 'No appointment found'], 200);
+    }
+
+    public function delete($id)
+    {
+        $user = JWTAuth::user();
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $appointment = Appointment::find($id);
+        if (!$appointment) {
+            return response()->json(['message' => 'Appointment not found'], 404);
+        }
+
+        $appointment->delete();
+        return response()->json(['message' => 'Appointment deleted successfully'], 200);
     }
 }

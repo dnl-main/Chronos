@@ -23,8 +23,7 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'mobile' => 'required|string|max:20|unique:users',
             'password' => 'required|string|min:6',
-            'availability' => 'nullable|string',
-            'role' => 'required|string|in:user,admin', // Validate role field (user or admin)
+             'role' => 'required|string|in:user,admin',
         ]);
 
         if ($validator->fails()) {
@@ -34,7 +33,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Create the user with role
+        // Create the user
         $user = User::create([
             'first_name' => $request->first_name,
             'middle_name' => $request->middle_name,
@@ -43,8 +42,6 @@ class AuthController extends Controller
             'mobile' => $request->mobile,
             'password' => Hash::make($request->password), // Hash the password
             'role' => $request->role, // Store role (either 'user' or 'admin')
-            'availability' => $request->availability,
-
         ]);
 
         // Generate JWT token
@@ -102,7 +99,8 @@ class AuthController extends Controller
             ], 500);
         }
     }
- public function logout(Request $request)
+
+    public function logout(Request $request)
     {
         try {
             // Invalidate the current JWT token
@@ -137,7 +135,7 @@ class AuthController extends Controller
         }
 
         // Log the incoming request data
-        Log::info('Request data:', $request->all());
+        Log::info('Registration Request Data:', $request->all());
 
         // Validate the incoming request data
         $validator = Validator::make($request->all(), [
@@ -153,6 +151,7 @@ class AuthController extends Controller
             'secondary_position' => 'nullable|string',
             'civil_status' => 'required|string',
             'birthday' => 'required|date_format:Y-m-d',
+            'availability' => 'nullable|string|in:Available,Vacation,On Board',
         ]);
 
         // Return validation errors if any
@@ -164,11 +163,11 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Use the names directly from the frontend data (no API call required)
+        // Use the names directly from the frontend data
         $regionName = $request->input('region');
         $provinceName = $request->input('province');
         if ($provinceName === 'MM') {
-            $provinceName = 'Metro Manila'; // Adjusting to a readable name for consistency
+            $provinceName = 'Metro Manila';
         }
         $cityName = $request->input('city');
         $barangayName = $request->input('barangay');
@@ -178,6 +177,7 @@ class AuthController extends Controller
             'province' => $provinceName,
             'city' => $cityName,
             'barangay' => $barangayName,
+            'availability' => $request->input('availability'),
         ]);
 
         // Update the user's registration details
@@ -194,6 +194,7 @@ class AuthController extends Controller
             'secondary_position' => $request->input('secondary_position'),
             'civil_status' => $request->input('civil_status'),
             'birthday' => $request->input('birthday'),
+            'availability' => $request->input('availability'),
         ]);
 
         // Return success message with the updated user data

@@ -28,7 +28,10 @@ const Home = () => {
   const [upcomingCount, setUpcomingCount] = useState(0);
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [crewCount, setCrewCount] = useState({ total: 0, complete: 0 });
+  const [totalCrewCount, setTotalCrewCount] = useState(0);
   const [error, setError] = useState(null);
+  const [allUsers, setAllUsers] = useState([]);
+  const [jobTitleCounts, setJobTitleCounts] = useState({});
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
@@ -51,6 +54,7 @@ const Home = () => {
         return;
       }
       setUser(parsedUser);
+      fetchAllUsers(token);
       fetchDashboardData(token);
     } else {
       fetchUserData(token);
@@ -76,6 +80,7 @@ const Home = () => {
 
       setUser(userData);
       sessionStorage.setItem('user', JSON.stringify(userData));
+      fetchAllUsers(token);
       await fetchDashboardData(token);
     } catch (error) {
       console.error('Failed to fetch user data:', error);
@@ -89,7 +94,6 @@ const Home = () => {
   const fetchDashboardData = async (token) => {
     try {
       setError(null);
-      // Fetch today's appointment count
       const todayCountResponse = await axios.get(`${apiUrl}/appointment/today/count`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
@@ -97,7 +101,6 @@ const Home = () => {
       console.log('Today count:', todayCountResponse.data);
       setTodayCount(todayCountResponse.data.count);
 
-      // Fetch upcoming appointment count
       const upcomingCountResponse = await axios.get(`${apiUrl}/appointment/upcoming/count`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
@@ -105,7 +108,6 @@ const Home = () => {
       console.log('Upcoming count:', upcomingCountResponse.data);
       setUpcomingCount(upcomingCountResponse.data.count);
 
-      // Fetch today's appointments
       const appointmentsResponse = await axios.get(`${apiUrl}/appointment`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
@@ -114,7 +116,6 @@ const Home = () => {
       const appointments = Array.isArray(appointmentsResponse.data) ? appointmentsResponse.data : [];
       setTodayAppointments(appointments.filter(app => app.status === 'today'));
 
-      // Fetch available crew count
       const crewCountResponse = await axios.get(`${apiUrl}/crew-members/available/count`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
@@ -131,6 +132,39 @@ const Home = () => {
       setLoading(false);
     }
   };
+
+  const fetchAllUsers = async (token) => {
+    try {
+      const response = await axios.get(`${apiUrl}/crew-members`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+      console.log('Fetched users:', response.data);
+      setAllUsers(response.data);
+      calculateJobTitleCounts(response.data);
+      // Calculate total crew count (users with non-null region)
+      const userCount = response.data.filter(user => user.region != null && user.region !== '').length;
+      setTotalCrewCount(userCount);
+    } catch (error) {
+      console.error('Failed to fetch all users:', error);
+    }
+  };
+
+  const calculateJobTitleCounts = (users) => {
+    const counts = {};
+    console.log('Calculating job title counts for users:', users);
+    users.forEach(user => {
+      if (user.availability && user.availability.toLowerCase() === 'available' && user.position) {
+        counts[user.position] = (counts[user.position] || 0) + 1;
+      }
+    });
+    console.log('Calculated job title counts:', counts);
+    setJobTitleCounts(counts);
+  };
+
+  useEffect(() => {
+    calculateJobTitleCounts(allUsers);
+  }, [allUsers]);
 
   if (loading) {
     return <Spinner />;
@@ -182,31 +216,19 @@ const Home = () => {
                       <p>Job title</p>
                     </header>
                     <main className="home-top-main-left-up-job-main">
-                      <div className="home-top-main-left-up-job-main-card">
-                        <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "20px", height: "20px" }} />
-                        <p>Chief engineer</p>
-                        <p>(10)</p>
-                      </div>
-                      <div className="home-top-main-left-up-job-main-card">
-                        <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "20px", height: "20px" }} />
-                        <p>Trainee 4th engineer</p>
-                        <p>(8)</p>
-                      </div>
-                      <div className="home-top-main-left-up-job-main-card">
-                        <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "20px", height: "20px" }} />
-                        <p>Trainee 4th engineer</p>
-                        <p>(8)</p>
-                      </div>
-                      <div className="home-top-main-left-up-job-main-card">
-                        <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "20px", height: "20px" }} />
-                        <p>Chief engineer</p>
-                        <p>(10)</p>
-                      </div>
-                      <div className="home-top-main-left-up-job-main-card">
-                        <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "20px", height: "20px" }} />
-                        <p>Chief engineer</p>
-                        <p>(10)</p>
-                      </div>
+                      {Object.entries(jobTitleCounts).map(([title, count]) => (
+                        <div key={title} className="home-top-main-left-up-job-main-card">
+                          <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "20px", height: "20px" }} />
+                          <p>{title}</p>
+                          <p>({count})</p>
+                        </div>
+                      ))}
+                      {Object.keys(jobTitleCounts).length === 0 && (
+                        <div className="home-top-main-left-up-job-main-card">
+                          <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "20px", height: "20px" }} />
+                          <p>No available job titles</p>
+                        </div>
+                      )}
                       <div className="home-top-main-left-up-job-main-card">
                         <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "20px", height: "20px" }} />
                         <p>More</p>
@@ -217,7 +239,7 @@ const Home = () => {
                 <main className="home-top-main-left-down">
                   <div className="home-top-main-left-down-header">
                     <div className="home-top-main-left-down-header-main">
-                      <header>Weekly new applicants</header>
+                      <header>Total Crew</header>
                       <User_Add style={{ color: "var(--primary-color)", width: "20px", height: "20px", '--stroke-width': '7px' }} />
                     </div>
                     <button className="home-top-main-left-down-header-btn">
@@ -226,7 +248,7 @@ const Home = () => {
                   </div>
                   <div className="home-top-main-left-down-data">
                     <div className="home-top-main-left-down-data-all">
-                      <p>54</p>
+                      <p>{totalCrewCount}</p>
                     </div>
                     <div className="home-top-main-left-down-data-complete">
                       <p>+10 Today</p>
@@ -348,7 +370,7 @@ const Home = () => {
                   </main>
                   <main className="home-top-main-right-cards-card">
                     <div className="home-top-main-right-cards-card-up">
-                                      <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "28px", height: "28px" }} />
+                      <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "28px", height: "28px" }} />
                       <div className="home-top-main-right-cards-card-up-text">
                         <p className="home-top-main-right-cards-card-up-text-name">John R. Smith</p>
                         <p className="home-top-main-right-cards-card-up-text-cert">Java National Certificate</p>

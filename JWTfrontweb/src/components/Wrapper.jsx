@@ -9,12 +9,12 @@ const Wrapper = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const checkToken = () => {
-    console.log('Checking token for path:', location.pathname);
+
     const token = sessionStorage.getItem('token');
     const storedUser = sessionStorage.getItem('user');
 
     if (!token) {
-      console.log('No token found, redirecting to /login');
+
       if (location.pathname !== '/login' && location.pathname !== '/signup') {
         navigate('/login', { replace: true });
       }
@@ -27,7 +27,7 @@ const Wrapper = ({ children }) => {
       const currentTime = Date.now() / 1000;
 
       if (decoded.exp && decoded.exp < currentTime) {
-        console.log('Token expired in Wrapper, exp:', decoded.exp, 'currentTime:', currentTime);
+
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
         navigate('/login', { replace: true });
@@ -35,7 +35,7 @@ const Wrapper = ({ children }) => {
         return;
       }
 
-      // Prefer role and region from storedUser if available, else use JWT
+
       let role = decoded?.role;
       let region = decoded?.region;
       if (storedUser) {
@@ -48,15 +48,15 @@ const Wrapper = ({ children }) => {
         }
       }
 
-      console.log('User data:', { role, region, path: location.pathname });
 
-      // Robust region check
+
+      // Region check
       const hasRegion = region && typeof region === 'string' && region.trim() !== '';
 
       // Security checks
       if (role === 'user') {
         if (location.pathname === '/registration' && !hasRegion) {
-          console.log('New user on /registration without region, clearing sessionStorage and redirecting to /login');
+       
           sessionStorage.removeItem('token');
           sessionStorage.removeItem('user');
           navigate('/login', { replace: true });
@@ -65,9 +65,9 @@ const Wrapper = ({ children }) => {
         }
 
         if (location.pathname === '/user' || location.pathname === '/user/') {
-          console.log('User accessing /user, redirecting to:', hasRegion ? '/user/homeuser' : '/login');
+
           if (!hasRegion) {
-            console.log('User has no region, clearing sessionStorage');
+   
             sessionStorage.removeItem('token');
             sessionStorage.removeItem('user');
           }
@@ -77,7 +77,7 @@ const Wrapper = ({ children }) => {
         }
 
         if (location.pathname.startsWith('/user/') && !hasRegion) {
-          console.log('User has no region, redirecting to /login and clearing sessionStorage');
+
           sessionStorage.removeItem('token');
           sessionStorage.removeItem('user');
           navigate('/login', { replace: true });
@@ -86,9 +86,9 @@ const Wrapper = ({ children }) => {
         }
 
         if (location.pathname.startsWith('/admin/')) {
-          console.log('User trying to access admin routes, redirecting');
+
           if (!hasRegion) {
-            console.log('User has no region, clearing sessionStorage');
+
             sessionStorage.removeItem('token');
             sessionStorage.removeItem('user');
             navigate('/login', { replace: true });
@@ -100,20 +100,20 @@ const Wrapper = ({ children }) => {
         }
       } else if (role === 'admin') {
         if (location.pathname === '/admin' || location.pathname === '/admin/') {
-          console.log('Admin accessing /admin, redirecting to /admin/home');
+
           navigate('/admin/home', { replace: true });
           setIsLoading(false);
           return;
         }
 
         if (location.pathname.startsWith('/user/')) {
-          console.log('Admin trying to access user routes, redirecting to /admin/home');
+;
           navigate('/admin/home', { replace: true });
           setIsLoading(false);
           return;
         }
       } else {
-        console.log('Invalid role, clearing sessionStorage');
+
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
         navigate('/login', { replace: true });
@@ -138,11 +138,11 @@ const Wrapper = ({ children }) => {
   }, [navigate, location]);
 
   if (isLoading) {
-    console.log('Wrapper is loading, preventing render for path:', location.pathname);
+
     return <Spinner />;
   }
 
-  console.log('Wrapper rendering children for path:', location.pathname);
+
   return children;
 };
 

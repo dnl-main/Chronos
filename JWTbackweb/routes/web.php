@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
+use Illuminate\Support\Facades\Storage;
+
 Route::get('/', function () {
     return <<<EOT
     According to all known laws of aviation, there is no way a bee should be able to fly.
@@ -1368,4 +1370,20 @@ I'm not making a major life decision during a production number!
 All right. Take ten, everybody. Wrap it up, guys.
 I had virtually no rehearsal for that.
 EOT;
+
+
+
+
+
+
 });
+
+Route::get('/storage/{path}', function ($path) {
+    $fullPath = 'public/' . $path;
+
+    if (!Storage::disk('public')->exists($path)) {
+        abort(404, 'File not found');
+    }
+
+    return response()->file(Storage::disk('public')->path($path));
+})->where('path', '.*')->middleware('admin.storage');

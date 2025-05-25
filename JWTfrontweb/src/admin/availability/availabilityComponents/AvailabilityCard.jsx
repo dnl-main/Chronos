@@ -8,9 +8,9 @@ import Mail from '../../../assets/icons/Mail.svg?react';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
 
 const AvailabilityCard = ({ data }) => {
-  const fullName = data
-    ? `${data.first_name} ${data.middle_name?.charAt(0)}. ${data.last_name}`
-    : 'Loading...';
+const fullName = data
+  ? `${data.first_name}${data.middle_name ? ` ${data.middle_name.charAt(0)}.` : ''} ${data.last_name}`
+  : 'Loading...';
 
   const availabilityMap = {
     available: {
