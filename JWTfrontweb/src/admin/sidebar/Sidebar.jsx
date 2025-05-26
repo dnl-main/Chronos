@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './sidebar.css';
-import House_01 from '../../assets/icons/House_01.svg';
+import House_01 from '../../assets/icons/House_01.svg?react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -59,7 +59,15 @@ const Sidebar = () => {
     <div className="sidebar-buttons">
       <Link to="/admin/home">
         <button>
-          <img src={House_01} className="" alt="home icon" />
+            <House_01
+           style={{
+             color: "var(--primary-color)",
+             '--stroke-color': 'var(--primary-color)',
+             width: "32px",
+             height: "32px",
+             '--stroke-width': '4px'
+           }}
+         />
         </button>
       </Link>
 

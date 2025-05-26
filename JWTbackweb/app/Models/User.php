@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-
+use App\Notifications\CustomResetPassword;
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
@@ -63,4 +63,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+public function sendPasswordResetNotification($token)
+{
+    $this->notify(new CustomResetPassword($token));
 }
+}
+
+

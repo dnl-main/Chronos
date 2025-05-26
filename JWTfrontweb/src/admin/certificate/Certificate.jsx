@@ -5,7 +5,8 @@ import './certificate.css';
 import { Navbar } from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
 import CertificateCard from './cards/CertificateCard';
-import CertificatePopup from './CertificatePopup'; // Import the popup component
+import CertificatePopup from './CertificatePopup';
+import CertificateNotificationModal from './modals/CertificateNotificationModal'; // Import the modal
 import Spinner from '../../components/Spinner';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Notebook from '../../assets/icons/Notebook.svg?react';
@@ -20,7 +21,8 @@ const Certificate = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTab, setSelectedTab] = useState('all');
-  const [selectedCertificate, setSelectedCertificate] = useState(null); // State for popup
+  const [selectedCertificate, setSelectedCertificate] = useState(null);
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false); // State for notification modal
   const navigate = useNavigate();
 
   // Close popup handler
@@ -33,12 +35,18 @@ const Certificate = () => {
     setSelectedCertificate(certificate);
   };
 
-  useEffect(() => {
+  // Notification modal handlers
+  const handleOpenNotificationModal = () => {
+    setIsNotificationModalOpen(true);
+  };
 
+  const handleCloseNotificationModal = () => {
+    setIsNotificationModalOpen(false);
+  };
+
+  useEffect(() => {
     const token = sessionStorage.getItem('token');
     const storedUser = sessionStorage.getItem('user');
-
-
 
     if (!token) {
       navigate('/login');
@@ -75,7 +83,6 @@ const Certificate = () => {
 
   const fetchUserData = async (token) => {
     try {
-
       const response = await axios.get(`${apiUrl}/user`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
@@ -83,27 +90,23 @@ const Certificate = () => {
 
       const userData = response.data;
       if (userData.role !== 'admin') {
-
         navigate(userData.role === 'user' ? '/user/homeuser' : '/login');
         return;
       }
       sessionStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
-   
       await Promise.all([fetchCrewData(token), fetchCertificates(token)]);
     } catch (error) {
       console.error('Failed to fetch user data:', error);
       setError('Failed to load user data. Please log in again.');
       navigate('/login');
     } finally {
-  
       setLoading(false);
     }
   };
 
   const fetchCrewData = async (token) => {
     try {
-
       setError(null);
       const response = await axios.get(`${apiUrl}/crew-members`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -114,7 +117,6 @@ const Certificate = () => {
     } catch (error) {
       console.error('Failed to fetch crew data:', error);
       if (error.response?.status === 401) {
- 
         setError('Unauthorized. Please log in again.');
         navigate('/login');
       } else {
@@ -125,12 +127,11 @@ const Certificate = () => {
 
   const fetchCertificates = async (token) => {
     try {
- 
       const response = await axios.get(`${apiUrl}/certificates`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
- 
+
       setCertificates(
         Array.isArray(response.data.certificates)
           ? response.data.certificates
@@ -217,7 +218,8 @@ const Certificate = () => {
                 key={crew.id}
                 data={crew}
                 certificates={certificates.filter((cert) => cert.user_id === crew.id)}
-                onCertificateClick={handleCertificateClick} // Pass callback
+                onCertificateClick={handleCertificateClick}
+                onNotifyUpload={handleOpenNotificationModal} // Pass the notify handler
               />
             ))}
           </section>
@@ -225,6 +227,8 @@ const Certificate = () => {
       </div>
       {/* Render the CertificatePopup */}
       <CertificatePopup certificate={selectedCertificate} onClose={handleClosePopup} />
+      {/* Render the CertificateNotificationModal */}
+      {isNotificationModalOpen && <CertificateNotificationModal onClose={handleCloseNotificationModal} />}
     </div>
   );
 };

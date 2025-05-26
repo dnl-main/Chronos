@@ -17,6 +17,7 @@ import Signup from './onboarding/signup/Signup';
 import Registration from './onboarding/register/Registration';
 import Login from './onboarding/login/Login';
 import Landing from './onboarding/landing/Landing';
+import ResetPassword from './onboarding/login/ResetPassword';
 
 // User Components
 import AccountUser from './user/account/AccountUser';
@@ -66,8 +67,8 @@ function App() {
             <Route path="calendar" element={<Calendar />} />
             <Route path="certificate" element={<Certificate />} />
             <Route path="schedule" element={<Schedule />} />
-<Route path="schedule-card" element={<ScheduleCard />} />
-<Route path="manage-appointment" element={<ManageAppointment />} />
+            <Route path="schedule-card" element={<ScheduleCard />} />
+            <Route path="manage-appointment" element={<ManageAppointment />} />
 
 
           </Route>
@@ -113,6 +114,15 @@ function App() {
               </Wrapper>
             }
           />
+
+          <Route
+           path="/reset-password" 
+           element={
+            <Wrapper>
+           <ResetPassword />
+           </Wrapper>
+           } 
+           />
 
           {/* Case Study Routes - no layout */}
           <Route path="/caseStudy" element={<CaseStudy />} />

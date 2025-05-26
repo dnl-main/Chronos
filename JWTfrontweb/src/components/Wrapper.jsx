@@ -9,13 +9,16 @@ const Wrapper = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const checkToken = () => {
-
     const token = sessionStorage.getItem('token');
     const storedUser = sessionStorage.getItem('user');
 
     if (!token) {
-
-      if (location.pathname !== '/login' && location.pathname !== '/signup') {
+      // Allow /login, /signup, and /reset-password without a token
+      if (
+        location.pathname !== '/login' &&
+        location.pathname !== '/signup' &&
+        location.pathname !== '/reset-password'
+      ) {
         navigate('/login', { replace: true });
       }
       setIsLoading(false);
@@ -27,14 +30,12 @@ const Wrapper = ({ children }) => {
       const currentTime = Date.now() / 1000;
 
       if (decoded.exp && decoded.exp < currentTime) {
-
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
         navigate('/login', { replace: true });
         setIsLoading(false);
         return;
       }
-
 
       let role = decoded?.role;
       let region = decoded?.region;
@@ -48,15 +49,12 @@ const Wrapper = ({ children }) => {
         }
       }
 
-
-
       // Region check
       const hasRegion = region && typeof region === 'string' && region.trim() !== '';
 
       // Security checks
       if (role === 'user') {
         if (location.pathname === '/registration' && !hasRegion) {
-       
           sessionStorage.removeItem('token');
           sessionStorage.removeItem('user');
           navigate('/login', { replace: true });
@@ -65,9 +63,7 @@ const Wrapper = ({ children }) => {
         }
 
         if (location.pathname === '/user' || location.pathname === '/user/') {
-
           if (!hasRegion) {
-   
             sessionStorage.removeItem('token');
             sessionStorage.removeItem('user');
           }
@@ -77,7 +73,6 @@ const Wrapper = ({ children }) => {
         }
 
         if (location.pathname.startsWith('/user/') && !hasRegion) {
-
           sessionStorage.removeItem('token');
           sessionStorage.removeItem('user');
           navigate('/login', { replace: true });
@@ -86,9 +81,7 @@ const Wrapper = ({ children }) => {
         }
 
         if (location.pathname.startsWith('/admin/')) {
-
           if (!hasRegion) {
-
             sessionStorage.removeItem('token');
             sessionStorage.removeItem('user');
             navigate('/login', { replace: true });
@@ -100,20 +93,17 @@ const Wrapper = ({ children }) => {
         }
       } else if (role === 'admin') {
         if (location.pathname === '/admin' || location.pathname === '/admin/') {
-
           navigate('/admin/home', { replace: true });
           setIsLoading(false);
           return;
         }
 
         if (location.pathname.startsWith('/user/')) {
-;
           navigate('/admin/home', { replace: true });
           setIsLoading(false);
           return;
         }
       } else {
-
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
         navigate('/login', { replace: true });
@@ -138,10 +128,8 @@ const Wrapper = ({ children }) => {
   }, [navigate, location]);
 
   if (isLoading) {
-
     return <Spinner />;
   }
-
 
   return children;
 };

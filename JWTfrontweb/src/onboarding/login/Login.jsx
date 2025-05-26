@@ -17,6 +17,10 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [hasPreFilled, setHasPreFilled] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotError, setForgotError] = useState('');
+  const [forgotSuccess, setForgotSuccess] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,7 +42,6 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    // Clear sessionStorage instead of localStorage
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
 
@@ -54,7 +57,6 @@ const Login = () => {
           response.data.user.role = 'admin';
         }
 
-        // Store token and user in sessionStorage instead of localStorage
         sessionStorage.setItem('token', response.data.token);
         sessionStorage.setItem('user', JSON.stringify(response.data.user));
         console.log('Login successful:', response.data.message);
@@ -77,16 +79,11 @@ const Login = () => {
     } catch (error) {
       console.error('Login failed:', error);
       if (error.response) {
-        console.log('Response data:', error.response.data);
-        console.log('Status code:', error.response.status);
         setError(error.response.data.message || 'Login failed. Please check your credentials.');
-        alert(error.response.data.message || 'Login failed. Please check your credentials.');
       } else if (error.request) {
         setError('No response from server. Please check your network or server status.');
-        alert('No response from server. Please check your network or server status.');
       } else {
         setError('Something went wrong. Please try again.');
-        alert('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -95,6 +92,29 @@ const Login = () => {
 
   const handleSignup = () => {
     navigate('/signup');
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    e.stopPropagation(); // Prevent event bubbling to outer form
+
+    setForgotError('');
+    setForgotSuccess('');
+    setLoading(true);
+
+    try {
+      const response = await axios.post(`${apiUrl}/forgot-password`, { email: forgotEmail });
+      setForgotSuccess(response.data.message || 'Password reset link sent to your email.');
+      setShowForgotPasswordModal(false); // Close modal on success
+    } catch (error) {
+      if (error.response) {
+        setForgotError(error.response.data.message || 'Failed to send reset link. Please try again.');
+      } else {
+        setForgotError('No response from server. Please check your network or server status.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -116,35 +136,37 @@ const Login = () => {
           </div>
 
           <div className="login-right-form">
-            <form id="login-form" className="login-right-form-form" onSubmit={handleLogin} autocomplete="off">
+            <form
+              id="login-form"
+              className="login-right-form-form"
+              onSubmit={handleLogin}
+              autoComplete="off"
+              style={{ marginTop: '20px' }}
+            >
               <div className="login-right-form-email">
                 <label htmlFor="login-email-id">Email</label>
-                <input 
+                <input
                   type="email"
                   id="login-email-id"
                   name="login-email"
-                  placeholder="E.g. juandelacruz@gmail.com"
+                  placeholder="E.g. juandelacruz@example.com"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  autocomplete="off"
-                />    
+                  autoComplete="off"
+                />
               </div>
               <div className="login-right-form-password" style={{ position: 'relative', width: '100%' }}>
                 <label htmlFor="login-password-id">Password</label>
-                <input 
-                  type={showPassword ? 'text' : 'password'} 
+                <input
+                  type={showPassword ? 'text' : 'password'}
                   id="login-password-id"
                   name="login-password"
                   placeholder="Enter your password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  style={{
-                    width: '100%',
-                    paddingRight: '40px' 
-                  }}
-                  autocomplete="new-password"
+                  style={{ width: '100%', paddingRight: '40px' }}
                 />
                 <div
                   onClick={() => setShowPassword(!showPassword)}
@@ -157,30 +179,35 @@ const Login = () => {
                     height: '20px',
                     width: '20px',
                     borderRadius: '50%',
-                    backgroundColor: showPassword ? '#00889a' : '#ccc',
-                    zIndex: 1
+                    backgroundColor: showPassword ? '#00889A' : '#ccc',
+                    zIndex: 1,
                   }}
                   title={showPassword ? 'Hide password' : 'Show password'}
                 />
               </div>
               <div className="login-right-options">
                 <div className="login-right-options-remember">
-                  <input 
-                    type="checkbox" 
-                    id="remember-checkbox-id" 
-                    name="remember-checkbox" 
+                  <input
+                    type="checkbox"
+                    id="remember-checkbox-id"
+                    name="remember-checkbox"
                     checked={rememberMe}
                     onChange={handleRememberMeChange}
                   />
                   <label htmlFor="remember-checkbox-id">Remember me</label>
                 </div>
                 <div className="login-right-options-forgot">
-                  <button type="button" id="forgot_password-id" name="forgot_password">
+                  <button
+                    type="button"
+                    id="forgot_password-id"
+                    name="forgot_password"
+                    onClick={() => setShowForgotPasswordModal(true)}
+                  >
                     Forgot Password?
                   </button>
                 </div>
               </div>
-              <div className="login-right-button">
+              <div className="login-right-button" style={{ marginTop: '20px' }}>
                 <button type="submit" id="login-submit-button-id" name="login-button" disabled={loading}>
                   {loading ? 'Logging in...' : 'Login'}
                 </button>
@@ -188,14 +215,62 @@ const Login = () => {
             </form>
           </div>
 
-          <div className="login-right-spacer"></div>
+          <div classNameName="login-right-spacer"></div>
 
           <div className="login-right-signup">
             <p className="login-right-signup-text">Don't have an account yet? </p>
-            <button id="signup-button" onClick={handleSignup}> Sign up</button>
+            <button
+              id="signup-button"
+              onClick={handleSignup}
+              style={{ marginTop: '20px' }}
+            >
+              Sign up
+            </button>
           </div>
         </div>
       </div>
+
+      {showForgotPasswordModal && (
+        <div className="forgot-password-modal">
+          <div className="forgot-password-modal-content">
+            <h2>Forgot Password</h2>
+            <form
+              onSubmit={handleForgotPassword}
+              style={{ marginTop: '20px' }}
+            >
+              <div>
+                <label htmlFor="forgot-email-id">Email</label>
+                <input
+                  type="email"
+                  id="forgot-email-id"
+                  placeholder="Enter your email"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  required
+                />
+              </div>
+              {forgotError && <p style={{ color: 'red' }}>{forgotError}</p>}
+              {forgotSuccess && <p style={{ color: 'green' }}>{forgotSuccess}</p>}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPasswordModal(false)} // Fixed to close modal
+                  className="forgot-password-cancel"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="forgot-password-submit"
+                >
+                  {loading ? 'Sending...' : 'Send Reset Link'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

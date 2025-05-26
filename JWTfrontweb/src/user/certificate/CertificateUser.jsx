@@ -1,28 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './CertificateUser.css';
 import { useNavigate } from 'react-router-dom';
-import{ useState} from 'react'
-import { useEffect } from 'react';
-import { handleAuthToken } from '../../utils/timeout';
 import axios from 'axios';
-
-
 import CertificateUserCard from './certificateCard/CertificateUserCard';
-
-import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
+import CertificatePopup from './CertificatePopup';
+import Spinner from '../../components/Spinner';
+import Cloud_Upload from '../../assets/icons/Cloud_Upload.svg?react';
+import { handleAuthToken } from '../../utils/timeout';
 
 const CertificateUser = () => {
-  //token
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);  // Start as loading
+  const [loading, setLoading] = useState(true);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [certificates, setCertificates] = useState([]);
+  const [selectedCertificate, setSelectedCertificate] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     const storedUser = sessionStorage.getItem('user');
 
-    // If no token, navigate to login immediately
     if (!token) {
       navigate('/login');
       return;
@@ -30,107 +29,155 @@ const CertificateUser = () => {
 
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-
-      // If role is not 'user', navigate to login
       if (parsedUser.role !== 'user') {
         navigate('/login');
         return;
       }
-
       setUser(parsedUser);
+      fetchCertificates(token);
     } else {
       fetchUserData(token);
     }
 
-    // Call handleAuthToken to check for token expiry and handle logout if necessary
     handleAuthToken(token, storedUser ? JSON.parse(storedUser) : null, navigate);
-
-    // Stop loading after check
-    setLoading(false);
   }, [navigate]);
 
   const fetchUserData = async (token) => {
-  try {
-    const response = await axios.get(`${apiUrl}/user`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    try {
+      const response = await axios.get(`${apiUrl}/user`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const userData = response.data;
+      if (userData.role !== 'user') {
+        navigate('/login');
+        return;
+      }
+      setUser(userData);
+      sessionStorage.setItem('user', JSON.stringify(userData));
+      fetchCertificates(token);
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      setError('Failed to fetch user data');
+      navigate('/login');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const userData = response.data;
+  const fetchCertificates = async (token) => {
+    try {
+      const response = await axios.get(`${apiUrl}/certificates`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCertificates(response.data.certificates || []);
+    } catch (error) {
+      console.error('Failed to fetch certificates:', error);
+      setError('Failed to fetch certificates');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    if (userData.role !== 'user') {
+  const handleDelete = async (certificateId) => {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
       navigate('/login');
       return;
     }
 
-    setUser(userData);
-    sessionStorage.setItem('user', JSON.stringify(userData));  // Make data available globally
-  } catch (error) {
-    console.error('Failed to fetch user data:', error);
-    navigate('/login');
-  } finally {
-    setLoading(false);
-  }
-};
+    setDeleteLoading(true);
+    setError(null);
 
-// Store certificate data per card
-const [certData, setCertData] = useState([]);
+    try {
+      await axios.post(
+        `${apiUrl}/certificates/delete`,
+        { id: certificateId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // Fetch updated certificates list
+      await fetchCertificates(token);
+      alert('Certificate deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete certificate:', error);
+      setError('Failed to delete certificate');
+      alert(error.response?.data.message || 'Failed to delete certificate');
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
-const handleCardDataChange = (index, data) => {
-  const updated = [...certData];
-  updated[index] = data;
-  setCertData(updated);
-};
+  const handleFileClick = (certificate) => {
+    setSelectedCertificate(certificate);
+  };
 
+  const closePopup = () => {
+    setSelectedCertificate(null);
+  };
 
   if (loading) {
-    return null;  // Or a loader component if needed
+    return <Spinner />;
   }
 
-  
+  if (error) {
+    return <p className="error">{error}</p>;
+  }
+
   return (
     <div className="certificateUser">
-    <div className="certificateUser-box">
-    <main className="certificateUser-box-in">
-    
-      <div className="certificateUser-top">
-        <div className="certificateUser-top-header">
-          <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "20px", height: "20px" }} />
-          <header>Certificate</header>
-        </div> {/* certificateUser-top-header */}
-
-        <div className="certificateUser-top-core">
-          <p className="certificateUser-top-core-medium">List of certificates</p>
-          <div className="certificateUser-top-core-cards">
-  {[0, 1, 2, 3].map((i) => (
-    <div key={i}>
-      <CertificateUserCard onFileDataChange={(data) => handleCardDataChange(i, data)} />
-
-      {certData[i]?.uploadedFile && (
-        <CertificateCard
-          user={`${user.firstName} ${user.middleName?.[0] || ''}. ${user.lastName}`}
-          position={user.position}
-          uploadedFile={certData[i].uploadedFile}
-          expiryDate={certData[i].expiryDate}
-        />
+      <div className="certificateUser-box">
+        <main className="certificateUser-box-in">
+          <div className="certificateUser-top">
+            <div className="certificateUser-top-header">
+              <Cloud_Upload
+                style={{
+                  width: '1.8rem',
+                  height: '1.8rem',
+                  '--stroke-color': 'var(--black-color-opacity-60)',
+                  '--stroke-width': '6px',
+                  '--fill-color': 'none',
+                }}
+              />
+              <header>Certificates</header>
+            </div>
+            <div className="certificateUser-top-core">
+              <p className="certificateUser-top-core-medium">List of certificates</p>
+              <div className="certificateUser-top-core-cards" style={{ position: 'relative', minHeight: '200px' }}>
+                {deleteLoading ? (
+                  <Spinner />
+                ) : certificates.length > 0 ? (
+                  certificates.map((cert, index) => (
+                    <CertificateUserCard
+                      key={index}
+                      certificate={cert}
+                      onFileClick={() => handleFileClick(cert)}
+                      onDelete={() => handleDelete(cert.id)}
+                    />
+                  ))
+                ) : (
+                  <p
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      fontSize: '1.2rem',
+                      color: '#555',
+                      textAlign: 'center',
+                      width: '100%',
+                    }}
+                  >
+                    No certificates available.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="certificateUser-bot"></div>
+        </main>
+      </div>
+      {selectedCertificate && (
+        <CertificatePopup certificate={selectedCertificate} onClose={closePopup} />
       )}
-    </div>
-  ))}
-</div>
-
-        </div> {/* certificateUser-top-core */}
-
-        <div className="certificateUser-top-btn">
-          <button className="certificateUser-top-btn-button">
-            <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "20px", height: "20px" }} />
-            <p>Upload More</p>
-          </button> {/* certificateUser-top-btn-button */}
-        </div> {/* certificateUser-top-btn */}
-      </div> {/* certificateUser-top */}
-
-      <div className="certificateUser-bot">
-      </div> {/* certificateUser-bot */}
-    </main> {/* certificateUser-box-in */}
-    </div> {/* certificateUser-box */}
     </div>
   );
 };

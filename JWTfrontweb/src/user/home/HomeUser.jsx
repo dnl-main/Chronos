@@ -5,6 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import { handleAuthToken } from '../../utils/timeout';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Clock from '../../assets/icons/Clock.svg?react';
+import House_01 from '../../assets/icons/House_01.svg?react';
+import Users from '../../assets/icons/Users.svg?react';
+import Book from '../../assets/icons/Book.svg?react';
+import Cloud_Upload from '../../assets/icons/Cloud_Upload.svg?react';
+import File_Add from '../../assets/icons/File_Add.svg?react';
+import Folder_Open from '../../assets/icons/Folder_Open.svg?react';
+import Check from '../../assets/icons/Check.svg?react';
 import BookAppointmentModal from '../../user/home/BookAppointmentModal';
 import Spinner from '../../components/Spinner';
 
@@ -25,9 +32,10 @@ const HomeUser = () => {
   const [file, setFile] = useState(null);
   const [progress, setProgress] = useState({ percentage: 0, uploaded: 0, total: 4 });
   const [certificateLoading, setCertificateLoading] = useState(true);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const statusOptions = ['On Board', 'Available', 'Vacation'];
-  const certificateTypes = ['Medical', 'Training','Contract','Employee ID'];
+  const certificateTypes = ['Medical', 'Training', 'Contract', 'Employee ID'];
 
   // Fetch user certificates
   useEffect(() => {
@@ -57,9 +65,9 @@ const HomeUser = () => {
     };
 
     fetchCertificates();
-  }, []);
+  }, [apiUrl]);
 
-  // Existing useEffect for appointments
+  // Fetch appointments
   useEffect(() => {
     const fetchAppointment = async () => {
       const token = sessionStorage.getItem('token');
@@ -97,9 +105,9 @@ const HomeUser = () => {
     };
 
     fetchAppointment();
-  }, []);
+  }, [apiUrl]);
 
-  // Existing useEffect for user data
+  // Fetch user data
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     const storedUser = sessionStorage.getItem('user');
@@ -248,16 +256,31 @@ const HomeUser = () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('certificate_name', certificateName);
-    formData.append('certificate_type', certificateType);
-    if (expirationDate) {
-      formData.append('expiration_date', expirationDate);
-    }
-
+    // Check for existing certificate of the same type
+    const token = sessionStorage.getItem('token');
     try {
-      const token = sessionStorage.getItem('token');
+      const certResponse = await axios.get(`${apiUrl}/certificates`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const existingCert = certResponse.data.certificates.find(
+        (cert) => cert.certificate_type === certificateType
+      );
+
+      if (existingCert) {
+        const confirmReplace = window.confirm(
+          `A ${certificateType} certificate already exists. Uploading a new one will replace the existing certificate. Do you want to proceed?`
+        );
+        if (!confirmReplace) return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('certificate_name', certificateName);
+      formData.append('certificate_type', certificateType);
+      if (expirationDate) {
+        formData.append('expiration_date', expirationDate);
+      }
+
       const response = await axios.post(`${apiUrl}/upload-certificate`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -271,9 +294,13 @@ const HomeUser = () => {
       setExpirationDate('');
       setFile(null);
 
-      // Update progress
-      const uploaded = progress.uploaded + 1;
-      const total = progress.total;
+      // Fetch updated certificates list
+      const updatedCertResponse = await axios.get(`${apiUrl}/certificates`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const certificates = updatedCertResponse.data.certificates || [];
+      const uploaded = certificates.length;
+      const total = 4;
       const percentage = Math.round((uploaded / total) * 100);
       setProgress({ percentage, uploaded, total });
     } catch (error) {
@@ -291,7 +318,15 @@ const HomeUser = () => {
           <div className="homeUser-top">
             <div className="homeUser-top-header">
               <div className="homeUser-top-header-left">
-                <Circle_Primary style={{ width: '20px', height: '20px' }} />
+                <House_01
+                  style={{
+                    width: '30px',
+                    height: '30px',
+                    '--stroke-color': 'var(--black-color)',
+                    '--stroke-width': '3px',
+                    '--fill-color': 'none',
+                  }}
+                />
                 <header>Home</header>
               </div>
 
@@ -314,7 +349,7 @@ const HomeUser = () => {
                         : selectedStatus === 'On Board'
                         ? '#FFDC6C'
                         : selectedStatus === 'Vacation'
-                        ? '#FA6464'
+                        ? 'var(--yellow-indicator)'
                         : '#fff',
                     borderRadius: '50px',
                     padding: '6px',
@@ -352,7 +387,7 @@ const HomeUser = () => {
               <div className="homeUser-top-core-left">
                 <div className="homeUser-top-core-left-header">
                   <header>Scheduled appointment</header>
-                  <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
+                  <Users style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
                 </div>
 
                 {appointmentLoading ? (
@@ -461,7 +496,7 @@ const HomeUser = () => {
                           onClick={() => setIsModalOpen(true)}
                           className="homeUser-top-core-left-btn-button"
                         >
-                          <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
+                          <Book style={{ color: 'var(--white-color)', width: '20px', height: '20px' }} />
                           Set Appointment
                         </button>
                       )}
@@ -473,7 +508,15 @@ const HomeUser = () => {
               <div className="homeUser-top-core-right">
                 <div className="homeUser-top-core-right-header">
                   <header>Certificate upload</header>
-                  <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
+                  <Cloud_Upload
+                    style={{
+                      width: '1.4rem',
+                      height: '1.4rem',
+                      '--stroke-color': 'var(--black-color-opacity-60)',
+                      '--stroke-width': '6px',
+                      '--fill-color': 'none',
+                    }}
+                  />
                 </div>
 
                 {certificateLoading ? (
@@ -500,65 +543,132 @@ const HomeUser = () => {
                     </div>
 
                     <form onSubmit={handleCertificateSubmit} className="homeUser-top-core-right-form">
-                      <div className="homeUser-top-core-right-up">
-                        <div className="homeUser-top-core-right-up-desc">
-                          <div className="homeUser-top-core-right-up-desc-header">
-                            <p>File upload</p>
-                            <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
+                      <div className="homeUser-top-core-right-form-file">
+                        <div className="homeUser-top-core-right-form-file-header">
+                          <div className="homeUser-top-core-right-form-file-header-heading">
+                            <p className="homeUser-top-core-right-form-file-header-heading-medium">File upload</p>
+                            <File_Add
+                              style={{
+                                width: '1.4rem',
+                                height: '1.4rem',
+                                '--stroke-color': 'var(--black-color-opacity-60)',
+                                '--stroke-width': '6px',
+                                '--fill-color': 'none',
+                              }}
+                            />
                           </div>
-                          <p className="homeUser-top-core-right-up-desc-light"></p>
+                          <p className="homeUser-top-core-right-form-file-header-light">Select the type of certificate</p>
                         </div>
 
-                        <select
-                          value={certificateType}
-                          onChange={(e) => setCertificateType(e.target.value)}
-                          className="homeUser-top-core-right-input" // Changed to match input class
-                          required
-                        >
-                          <option value="" disabled>Select certificate type</option>
-                          {certificateTypes.map((type) => (
-                            <option key={type} value={type}>
-                              {type}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="homeUser-top-core-right-form-file-upload">
+                          <Cloud_Upload
+                            style={{
+                              width: '1.6rem',
+                              height: '1.6rem',
+                              '--stroke-color': 'var(--primary-color)',
+                              '--stroke-width': '6px',
+                              '--fill-color': 'none',
+                            }}
+                          />
+                          <div className="homeUser-top-core-right-form-file-upload-text">
+                            {file ? (
+                              <div className="homeUser-top-core-right-form-file-upload-file">
+                                <p className="homeUser-top-core-right-form-file-upload-text-bold">{file.name}</p>
+                                <svg
+                                  onClick={() => setFile(null)}
+                                  className="homeUser-top-core-right-form-file-upload-remove"
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="var(--black-color-opacity-60)"
+                                  strokeWidth="2"
+                                  style={{ cursor: 'pointer', marginLeft: '8px' }}
+                                >
+                                  <path d="M18 6L6 18M6 6l12 12" />
+                                </svg>
+                              </div>
+                            ) : (
+                              <>
+                                <p className="homeUser-top-core-right-form-file-upload-text-bold">Choose a file to upload</p>
+                                <p className="homeUser-top-core-right-form-file-upload-text-light">JPEG, PNG, and PDF formats, up to 50 MB</p>
+                              </>
+                            )}
+                          </div>
 
-                        <input
-                          type="text"
-                          value={certificateName}
-                          onChange={(e) => setCertificateName(e.target.value)}
-                          placeholder="Certificate Name"
-                          className="homeUser-top-core-right-input"
-                          required
-                        />
+                          <input
+                            type="file"
+                            accept=".pdf"
+                            onChange={(e) => setFile(e.target.files[0])}
+                            required
+                            style={{ display: 'none' }}
+                            id="certificate-upload"
+                          />
 
-                        <input
-                          type="date"
-                          value={expirationDate}
-                          onChange={(e) => setExpirationDate(e.target.value)}
-                          min={new Date().toISOString().split('T')[0]} // Prevent past dates
-                          className="homeUser-top-core-right-input"
-                        />
+                          <label htmlFor="certificate-upload" className="homeUser-top-core-right-form-file-upload-btn">
+                            <Folder_Open
+                              style={{
+                                width: '1.4rem',
+                                height: '1.4rem',
+                                '--stroke-color': 'var(--primary-color-opacity-60)',
+                                '--stroke-width': '6px',
+                                '--fill-color': 'none',
+                              }}
+                            />
+                            <p style={{ cursor: 'pointer' }}>Browse files</p>
+                          </label>
+                        </div>
                       </div>
 
-                      <div className="homeUser-top-core-right-down">
-                        <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                        <div className="homeUser-top-core-right-down-text">
-                          <p className="homeUser-top-core-right-down-text-bold">Choose a file to upload</p>
-                          <p className="homeUser-top-core-right-down-text-light">PDF format, up to 30 MB</p>
+                      <div className="homeUser-top-core-right-form-input">
+                        <div className="homeUser-top-core-right-form-input-fields">
+                          <div className="homeUser-top-core-right-form-input-fields-select">
+                            <select
+                              value={certificateType}
+                              onChange={(e) => setCertificateType(e.target.value)}
+                              required
+                            >
+                              <option value="" disabled>Select certificate type</option>
+                              {certificateTypes.map((type) => (
+                                <option key={type} value={type}>
+                                  {type}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div className="homeUser-top-core-right-form-input-fields-text">
+                            <input
+                              type="text"
+                              value={certificateName}
+                              onChange={(e) => setCertificateName(e.target.value)}
+                              placeholder="Certificate Name"
+                              required
+                            />
+                          </div>
+
+                          <div className="homeUser-top-core-right-form-input-fields-date">
+                            <input
+                              type="date"
+                              value={expirationDate}
+                              onChange={(e) => setExpirationDate(e.target.value)}
+                              min={new Date().toISOString().split('T')[0]}
+                              required
+                            />
+                          </div>
                         </div>
 
-                        <input
-                          type="file"
-                          accept=".pdf"
-                          onChange={(e) => setFile(e.target.files[0])}
-                          className="homeUser-top-core-right-down-btn"
-                          required
-                        />
-
-                        <button type="submit" className="homeUser-top-core-right-down-btn">
-                          <Circle_Primary style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
-                          Upload Certificate
+                        <button className="homeUser-top-core-right-form-input-btn">
+                          <Check
+                            style={{
+                              width: '24px',
+                              height: '40px',
+                              '--stroke-color': 'var(--primary-color)',
+                              '--stroke-width': '6px',
+                              '--fill-color': 'none',
+                            }}
+                          />
+                          <p style={{ cursor: 'pointer' }}>Upload now</p>
                         </button>
                       </div>
                     </form>

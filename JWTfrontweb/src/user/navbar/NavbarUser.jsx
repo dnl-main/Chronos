@@ -16,18 +16,7 @@ const NavbarUser = () => {
       </header> {/* navbarUser-header */}
         
       <main className="navbarUser-main">
-        <div className="navbarUser-main-search">
-          <div className="navbarUser-main-search-left">
-            <img src={Search} className="" alt="Search icon" />
-            <p>Search</p>
-          </div> {/* navbarUser-main-search-left */}
-        
-          <div className="navbarUser-main-search-right">
-            <div className="navbarUser-main-search-right-bg">
-              <img src={Filter} className="" alt="Filter icon" />
-            </div> {/* navbarUser-main-search-right-bg */}
-          </div> {/* navbarUser-main-search-right */}
-        </div> {/* navbarUser-main-search */}
+      
         
         <div className="navbarUser-main-notification">
           <Link to="/user/notificationUser">

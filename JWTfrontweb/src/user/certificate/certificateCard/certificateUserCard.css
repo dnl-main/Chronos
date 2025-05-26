@@ -2,7 +2,7 @@
 	background-color: var(--white-color);
 	display: flex;
 	flex-direction: column;
-	height: 42vh;
+	height: 60vh;
 	width: 40vh;
 	border-radius: 12px;
 	border: 2px solid var(--primary-color-opacity-15);
@@ -14,9 +14,9 @@
 		/* background-color: deepskyblue; */
 		display: flex;
 		flex-direction: column;
-		height: 50%;
+		flex-grow: 1;
 		padding: 2.8vh;
-		row-gap: 2vh;
+		row-gap: 3vh;
 		border-bottom: 2px solid var(--primary-color-opacity-15);
 	}
 
@@ -34,7 +34,7 @@
 			/* background-color: lightskyblue; */
 			display: flex;
 			flex-direction: column;
-			row-gap: 1vh;
+			row-gap: 2vh;
 		}
 
 			.certificateUser-top-core-cards-card-up-expiry-semibold {
@@ -89,9 +89,9 @@
 		/* background-color: paleturquoise; */
 		display: flex;
 		flex-direction: column;
-		flex-grow: 1;
+		height: 40%;
 		background-color: var(--secondary-color-opacity-45);
-		row-gap: 3vh;
+		row-gap: 2vh;
 		padding: 2.8vh;
 	}
 
@@ -107,13 +107,15 @@
 				/* background-color: azure; */
 				display: flex;
 				align-items: center;
-				column-gap: 1vh;
-				font-weight: var(--font-weight-bold);
-				color: var(--black-color);
+				column-gap: 0.6vh;
+				font-size: var(--font-size-12);
+				font-weight: var(--font-weight-medium);
+				color: var(--black-color-opacity-60);
 			}
 
 			.certificateUser-top-core-cards-card-down-text-light {
 				/* background-color: mintcream; */
+				font-size: var(--font-size-8);
 				font-weight: var(--font-weight-regular);
 				color: var(--black-color-opacity-60);
 			}
@@ -125,11 +127,28 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			flex-grow: 1;
 			column-gap: 1vh;
 			padding: 1.4vh;
 			border-radius: 8px;
 			background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='4' ry='4' stroke='rgba(0%2C136%2C154%2C0.99)' stroke-width='4' stroke-dasharray='16' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
 
+			font-size: var(--font-size-8);
 			font-weight: var(--font-weight-medium);
 			color: var(--primary-color);
+
+			max-width: 100%;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
+.certificateUser-top-core-cards-card-down-delete-btn {
+  font-size: var(--font-size-8);
+  font-weight: var(--font-weight-medium);
+  color: red; /* Override to ensure red color */
+}
+
+.certificateUser-top-core-cards-card-down-delete-btn:hover {
+  opacity: 0.7; /* Matches hover effect of other elements */
+}
+

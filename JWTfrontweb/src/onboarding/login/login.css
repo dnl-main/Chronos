@@ -273,3 +273,66 @@
 	  gap: 10px;
 	}
   }
+
+.forgot-password-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(20, 24, 31, 0.5); /* Using --black-color with opacity */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.forgot-password-modal-content {
+  background-color: var(--secondary-color); /* Light background */
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  color: var(--black-color); /* Text color */
+}
+
+.forgot-password-modal-content h2 {
+  margin-bottom: 20px;
+  color: var(--black-color);
+}
+
+.forgot-password-modal-content label {
+  color: var(--black-color);
+  font-weight: 500;
+}
+
+.forgot-password-modal-content input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid var(--black-color);
+  border-radius: 4px;
+  background-color: var(--white-color);
+  color: var(--black-color);
+}
+
+.forgot-password-modal-content button {
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+}
+
+.forgot-password-modal-content button[type="submit"] {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+}
+
+.forgot-password-modal-content button[type="button"] {
+  background-color: #ccc; /* Keep default grey for cancel button */
+  color: var(--black-color);
+}
+
+.forgot-password-modal-content p {
+  margin: 10px 0;
+}

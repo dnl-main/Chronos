@@ -10,6 +10,8 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\ProfilePicController;
 use App\Http\Controllers\CrewController;
+use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
@@ -62,9 +64,16 @@ Route::middleware('jwt.auth')->group(function () {
 
     // Certificates
     Route::get('/certificates', [UploadController::class, 'getCertificates']);
+    Route::post('/certificates/delete', [UploadController::class, 'deleteCertificate']);
+
+    // Notifications
+    Route::post('/notifications', [NotificationController::class, 'create']);
+    Route::get('/notifications', [NotificationController::class, 'getUserNotifications']);
 });
 
-
+//Password Rest Routes
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
+Route::post('/reset-password', [PasswordResetController::class, 'reset']);
 
 // PSGC Routes
 Route::get('/regions', [PSGCController::class, 'getRegions']);

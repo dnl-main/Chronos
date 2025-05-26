@@ -5,11 +5,9 @@ import Calendar_Add from '../../../assets/icons/Calendar_Add.svg?react';
 import Bell from '../../../assets/icons/Bell.svg?react';
 import Note_Search from '../../../assets/icons/Note_Search.svg?react';
 
-const CertificateCard = ({ data, certificates, onCertificateClick }) => {
-  // Construct full name from first_name, middle_name, last_name
+const CertificateCard = ({ data, certificates, onCertificateClick, onNotifyUpload }) => {
   const fullName = [data.first_name, data.middle_name, data.last_name].filter(Boolean).join(' ');
 
-  // Format date to "MMM-DD-YYYY"
   const formatDate = (dateString) => {
     if (!dateString) return 'No date';
     const date = new Date(dateString);
@@ -20,10 +18,8 @@ const CertificateCard = ({ data, certificates, onCertificateClick }) => {
     }).toUpperCase();
   };
 
-  // Define certificate types in order
   const certificateTypes = ['Medical', 'Training', 'Contract', 'Employee ID'];
 
-  // Get one certificate per type
   const getCertificateByType = (type) => {
     return certificates.find((cert) => cert.certificate_type === type) || null;
   };
@@ -60,8 +56,8 @@ const CertificateCard = ({ data, certificates, onCertificateClick }) => {
               </div>
               <button
                 className={`certificate-cards-card-certificates-${cert ? '2' : '1'}-button`}
-                onClick={() => cert && onCertificateClick(cert)} // Trigger popup only if cert exists
-                disabled={!cert} // Disable button if no certificate
+                onClick={() => (cert ? onCertificateClick(cert) : onNotifyUpload(type))}
+                disabled={false}
               >
                 <p>{cert ? cert.certificate_name || 'Unknown Certificate' : 'Notify upload'}</p>
                 <div
