@@ -3,6 +3,11 @@ import './notification.css';
 import { Navbar } from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
 import NotificationCard from './notificationComponent/NotificationCard';
+
+import BookNotification from './components/book/BookNotification';
+import CancelNotification from './components/cancel/CancelNotification';
+import RescheduleNotification from './components/reschedule/RescheduleNotification';
+import UploadNotification from './components/upload/UploadNotification';
 // icons
 import Calendar_Event from '../../assets/icons/Calendar_Event.svg?react';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
@@ -120,9 +125,10 @@ const Notification = () => {
           </header> {/* notification-header-recents */}
 
           <div className="notification-cards">
-            <NotificationCard />
-            <NotificationCard />
-            <NotificationCard /> 
+            <BookNotification />
+            <CancelNotification />
+            <RescheduleNotification />
+            <UploadNotification />
           </div> {/* notification-cards */}
         </section>
       </main> {/* notification-box-in */}

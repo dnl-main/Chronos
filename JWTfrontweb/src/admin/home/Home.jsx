@@ -7,6 +7,7 @@ import { Navbar } from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
 import ScheduleCard from '../schedule/scheduleComponents/ScheduleCard';
 import Spinner from '../../components/Spinner';
+import Appointment from '../appointment/bookAppointment/Appointment';
 
 import Calendar_Event from '../../assets/icons/Calendar_Event.svg?react';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
@@ -20,6 +21,10 @@ import User_Add from '../../assets/icons/User_Add.svg?react';
 import More_Grid_Big from '../../assets/icons/More_Grid_Big.svg?react';
 
 const Home = () => {
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  
   const [overlayContent, setOverlayContent] = useState(null);
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -180,16 +185,20 @@ const Home = () => {
         <main className="home-box-in">
           <div className="home-top">
             <header className="home-top-header">
-              <More_Grid_Big
-                style={{
-                  color: "var(--black-color)",
-                  width: "32px",
-                  height: "32px",
-                  "--stroke-width": "1.5px",
-                }}
-              />
-              <p>Dashboard</p>
-            </header>
+              <div className="home-top-header-heading">
+                <More_Grid_Big style={{ color: "var(--black-color)", width: "32px", height: "32px", "--stroke-width": "1.5px" }} />
+                <p>Dashboard</p> 
+              </div>
+              <button 
+                className="home-top-header-button"
+                onClick={() => setIsModalOpen(true)}  // Open modal on click
+              >
+                Book Now
+              </button>
+              {isModalOpen && (
+                <Appointment onClose={() => setIsModalOpen(false)} />
+              )}
+            </header> {/* home-top-header */}
 
             <main className="home-top-main">
               <section className="home-top-main-left">

@@ -4,7 +4,10 @@ import './notificationUser.css';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Bell from '../../assets/icons/Bell.svg?react';
 
-import NotificationUserCard from './components/NotificationUserCard';
+import BookNotificationUser from './components/book/BookNotificationUser';
+import CancelNotificationUser from './components/cancel/CancelNotificationUser';
+import RescheduleNotificationUser from './components/reschedule/RescheduleNotificationUser';
+import UploadNotificationUser from './components/upload/UploadNotificationUser';
 
 
 const NotificationUser = () => {
@@ -52,7 +55,10 @@ const NotificationUser = () => {
           </header> {/* notificationUser-header-recents */}
 
           <div className="notificationUser-cards">
-            <NotificationUserCard />
+            <BookNotificationUser />
+            <CancelNotificationUser />
+            <RescheduleNotificationUser />
+            <UploadNotificationUser />
           </div> {/* notificationUser-cards */}
         </section>
       </main> {/* notificationUser-box-in */}

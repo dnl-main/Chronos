@@ -215,7 +215,7 @@ const Login = () => {
             </form>
           </div>
 
-          <div classNameName="login-right-spacer"></div>
+          <div className="login-right-spacer"></div>
 
           <div className="login-right-signup">
             <p className="login-right-signup-text">Don't have an account yet? </p>
