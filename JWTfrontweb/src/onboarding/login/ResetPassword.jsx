@@ -11,12 +11,12 @@ const ResetPassword = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
   const navigate = useNavigate();
-
   const token = searchParams.get('token');
 
 
-  // Comment out
   if (!token) {
     console.warn('Missing token, redirecting to /login');
     navigate('/login');
@@ -29,12 +29,7 @@ const ResetPassword = () => {
     setSuccess('');
     setLoading(true);
 
-    // Validate inputs
-    if (!email) {
-      setError('Email is required.');
-      setLoading(false);
-      return;
-    }
+
     if (password !== passwordConfirmation) {
       setError('Passwords do not match.');
       setLoading(false);
@@ -67,26 +62,58 @@ const ResetPassword = () => {
       <div className="reset-password-container">
         <h2>Reset Password</h2>
         <form onSubmit={handleResetPassword} style={{ marginTop: '20px' }}>
-          <div style={{ marginTop: '20px' }}>
+          <div className="input-container" style={{ marginTop: '20px', position: 'relative' }}>
             <label htmlFor="password-id">New Password</label>
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               id="password-id"
               placeholder="Enter new password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <div
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: 'absolute',
+                right: '15px',
+                top: '50%',
+                transform: 'translateY(5%)',
+                cursor: 'pointer',
+                height: '20px',
+                width: '20px',
+                borderRadius: '50%',
+                backgroundColor: showPassword ? '#00889A' : '#ccc',
+                zIndex: 1,
+              }}
+              title={showPassword ? 'Hide password' : 'Show password'}
+            />
           </div>
-          <div style={{ marginTop: '20px' }}>
+          <div className="input-container" style={{ marginTop: '20px', position: 'relative' }}>
             <label htmlFor="password-confirmation-id">Confirm Password</label>
             <input
-              type="password"
+              type={showPasswordConfirmation ? 'text' : 'password'}
               id="password-confirmation-id"
               placeholder="Confirm new password"
               value={passwordConfirmation}
               onChange={(e) => setPasswordConfirmation(e.target.value)}
               required
+            />
+            <div
+              onClick={() => setShowPasswordConfirmation(!showPasswordConfirmation)}
+              style={{
+                position: 'absolute',
+                right: '15px',
+                top: '50%',
+                transform: 'translateY(1%)',
+                cursor: 'pointer',
+                height: '20px',
+                width: '20px',
+                borderRadius: '50%',
+                backgroundColor: showPasswordConfirmation ? '#00889A' : '#ccc',
+                zIndex: 1,
+              }}
+              title={showPasswordConfirmation ? 'Hide password' : 'Show password'}
             />
           </div>
           {error && <p style={{ color: 'red' }}>{error}</p>}

@@ -1,71 +1,126 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './notificationUser.css';
-
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Bell from '../../assets/icons/Bell.svg?react';
-
-import BookNotificationUser from './components/book/BookNotificationUser';
-import CancelNotificationUser from './components/cancel/CancelNotificationUser';
-import RescheduleNotificationUser from './components/reschedule/RescheduleNotificationUser';
 import UploadNotificationUser from './components/upload/UploadNotificationUser';
 
+const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 const NotificationUser = () => {
-  return (
-    <div className="notificationUser">
-    <div className="notificationUser-box">
-      <main className="notificationUser-box-in">
-        <header className="notificationUser-header">
-          <Bell 
-            style={{ 
-              color: "var(--black-color)", 
-              width: "32px", 
-              height: "32px", 
-              "--stroke-width": "5px"  
-            }} 
-          />
-          <p>Notifications</p> 
-        </header> {/* notificationUser-header */}
+    const [notifications, setNotifications] = useState([]);
+    const [selectedTab, setSelectedTab] = useState('all');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-        <section className="notificationUser-tabs">
-          <button className="notificationUser-tabs-all">
-            <Circle_Primary style={{ color: "var(--white-color)", width: "20px", height: "20px" }} />
-            <p>All</p>
-          </button> {/* notificationUser-tabs-all */}
+    const fetchNotifications = async () => {
+        try {
+            const token = sessionStorage.getItem('token');
+            console.log('Token:', token); // Debug
+            if (!token) {
+                setError('Please log in to view notifications');
+                setLoading(false);
+                return;
+            }
+            const response = await axios.get(`${apiUrl}/notifications`, {
+                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true,
+            });
+            console.log('Notifications fetched:', response.data); // Debug
+            setNotifications(response.data);
+            setLoading(false);
+        } catch (err) {
+            console.error('Fetch notifications error:', err);
+            if (err.response?.status === 401) {
+                setError('Session expired. Please log in again.');
+                sessionStorage.removeItem('token');
+                window.location.href = '/login';
+            } else {
+                setError('Failed to load notifications');
+            }
+            setLoading(false);
+        }
+    };
 
-          <button className="notificationUser-tabs-rescheduled">
-            <Circle_Primary style={{ color: "var(--primary-color)", width: "20px", height: "20px" }} />
-            <p>Rescheduled</p>
-          </button> {/* notificationUser-tabs-rescheduled */}
+    useEffect(() => {
+        fetchNotifications();
+    }, []);
 
-          <button className="notificationUser-tabs-canceled">
-            <Circle_Primary style={{ color: "var(--primary-color)", width: "20px", height: "20px" }} />
-            <p>Canceled</p>
-          </button> {/* notificationUser-tabs-canceled */}
+    const handleDelete = (id) => {
+        setNotifications(notifications.filter(notification => notification.id !== id));
+    };
 
-          <button className="notificationUser-tabs-uploaded">
-            <Circle_Primary style={{ color: "var(--primary-color)", width: "20px", height: "20px" }} />
-            <p>Uploaded</p>
-          </button> {/* notificationUser-tabs-uploaded */}
-        </section> {/* notificationUser-tabs */}
+    const filteredNotifications = notifications.filter(notification => {
+        console.log('Filtering notification:', notification); // Debug
+        if (selectedTab === 'all') return true;
+        if (selectedTab === 'uploaded') return !!notification.certificate_type;
+        return false;
+    });
 
-        <section className="notificationUser-container">
-          <header className="notificationUser-header-recents">
-            <p>Recents</p>
-          </header> {/* notificationUser-header-recents */}
+    const renderNotification = (notification) => (
+        <UploadNotificationUser
+            key={notification.id}
+            notification={notification}
+            onDelete={handleDelete}
+        />
+    );
 
-          <div className="notificationUser-cards">
-            <BookNotificationUser />
-            <CancelNotificationUser />
-            <RescheduleNotificationUser />
-            <UploadNotificationUser />
-          </div> {/* notificationUser-cards */}
-        </section>
-      </main> {/* notificationUser-box-in */}
-    </div> {/* notificationUser-box */}
-    </div>
-  );
+    return (
+        <div className="notificationUser">
+            <div className="notificationUser-box">
+                <main className="notificationUser-box-in">
+                    <header className="notificationUser-header">
+                        <Bell
+                            style={{
+                                color: "var(--black-color)",
+                                width: "32px",
+                                height: "32px",
+                                "--stroke-width": "5px"
+                            }}
+                        />
+                        <p>Notifications</p>
+                    </header>
 
+                    <section className="notificationUser-tabs">
+                        {['all', 'rescheduled', 'canceled', 'uploaded'].map(tab => (
+                            <button
+                                key={tab}
+                                className={`notificationUser-tabs-${tab} ${selectedTab === tab ? 'active' : ''}`}
+                                onClick={() => setSelectedTab(tab)}
+                            >
+                                <Circle_Primary
+                                    style={{
+                                        color: selectedTab === tab ? "var(--white-color)" : "var(--primary-color)",
+                                        width: "20px",
+                                        height: "20px"
+                                    }}
+                                />
+                                <p>{tab.charAt(0).toUpperCase() + tab.slice(1)}</p>
+                            </button>
+                        ))}
+                    </section>
+
+                    <section className="notificationUser-container">
+                        <header className="notificationUser-header-recents">
+                            <p>Recents</p>
+                        </header>
+
+                        <div className="notificationUser-cards">
+                            {loading ? (
+                                <p>Loading...</p>
+                            ) : error ? (
+                                <p>{error}</p>
+                            ) : filteredNotifications.length === 0 ? (
+                                <p>None</p>
+                            ) : (
+                                filteredNotifications.map(renderNotification)
+                            )}
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+    );
 };
 
 export default NotificationUser;

@@ -215,21 +215,20 @@ const Login = () => {
             </form>
           </div>
 
-          <div className="login-right-spacer"></div>
+          <div className="login-right-spacer">
 
           <div className="login-right-signup">
             <p className="login-right-signup-text">Don't have an account yet? </p>
             <button
               id="signup-button"
               onClick={handleSignup}
-              style={{ marginTop: '20px' }}
             >
               Sign up
             </button>
           </div>
         </div>
       </div>
-
+</div>
       {showForgotPasswordModal && (
         <div className="forgot-password-modal">
           <div className="forgot-password-modal-content">

@@ -8,7 +8,7 @@ const CertificatePopup = ({ certificate, onClose }) => {
   // Use VITE_STORAGE_BASE_URL for storage files
   const storageBaseUrl = import.meta.env.VITE_STORAGE_BASE_URL;
   const fileUrl = `${storageBaseUrl}/${encodeURI(file_path)}`;
-  console.log('Constructed fileUrl:', fileUrl); // Debug log
+
 
   const isPdf = file_path.toLowerCase().endsWith('.pdf');
   const isImage = /\.(jpg|jpeg|png|gif)$/i.test(file_path.toLowerCase());

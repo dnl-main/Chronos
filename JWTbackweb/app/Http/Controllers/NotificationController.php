@@ -1,56 +1,68 @@
 <?php
-
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use App\Models\Notification;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use App\Notifications\SendCertificateNotification;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
 {
-    public function create(Request $request)
+    public function sendCertificateNotification(Request $request)
     {
-        // Validate request
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'certificate_type' => 'required|in:Medical,Training,Contract,Employee ID',
+            'certificate_type' => 'required|string|in:Medical,Training,Contract,Employee ID',
         ]);
 
-        // Check if the authenticated user is an admin
-        if (Auth::user()->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        try {
+            $user = User::findOrFail($request->user_id);
+            Log::info('Sending notification to user ID: ' . $user->id . ', Certificate: ' . $request->certificate_type);
+            $user->notify(new SendCertificateNotification($request->certificate_type));
+            Log::info('Notification sent successfully for user ID: ' . $user->id);
+            return response()->json(['message' => 'Notification sent successfully'], 200);
+        } catch (\Exception $e) {
+            Log::error('Failed to send notification: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to send notification'], 500);
         }
-
-        $user = User::find($request->user_id);
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-
-        // Create notification
-        $notification = Notification::create([
-            'user_id' => $request->user_id,
-            'type' => 'certificate_upload',
-            'message' => "Please upload your {$request->certificate_type} Certificate",
-            'status' => 'unread',
-        ]);
-
-        return response()->json([
-            'message' => 'Notification created successfully',
-            'notification' => $notification,
-        ], 201);
     }
 
-    // Fetch notifications for a specific user
     public function getUserNotifications(Request $request)
     {
-        $user = Auth::user();
-        $notifications = Notification::where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        try {
+            $user = $request->user();
+            Log::info('Fetching notifications for user ID: ' . $user->id);
+            $notifications = $user->notifications()
+                ->where('type', SendCertificateNotification::class)
+                ->get()
+                ->map(function ($notification) {
+                    return [
+                        'id' => $notification->id,
+                        'user_id' => $notification->notifiable_id,
+                        'certificate_type' => $notification->data['certificate_type'],
+                        'message' => $notification->data['message'],
+                        'created_at' => $notification->created_at,
+                        'read_at' => $notification->read_at,
+                    ];
+                });
+            Log::info('Notifications found: ' . $notifications->count());
+            return response()->json($notifications, 200);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch notifications: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to fetch notifications'], 500);
+        }
+    }
 
-        return response()->json([
-            'notifications' => $notifications,
-        ], 200);
+    public function deleteNotification(Request $request, $id)
+    {
+        try {
+            $user = $request->user();
+            $notification = $user->notifications()->where('id', $id)->firstOrFail();
+            $notification->delete();
+            Log::info('Notification deleted for user ID: ' . $user->id . ', Notification ID: ' . $id);
+            return response()->json(['message' => 'Notification deleted successfully'], 200);
+        } catch (\Exception $e) {
+            Log::error('Failed to delete notification: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to delete notification'], 500);
+        }
     }
 }

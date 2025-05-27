@@ -45,10 +45,59 @@ const Registration = () => {
     birthday: '',
   });
 
-  //token
+  // Civil status options
+  const civilStatusOptions = [
+    { value: '', label: 'Select your civil status' },
+    { value: 'Single', label: 'Single' },
+    { value: 'Married', label: 'Married' },
+    { value: 'Widowed', label: 'Widowed' },
+    { value: 'Divorced', label: 'Divorced' },
+    { value: 'Separated', label: 'Separated' },
+  ];
+
+  // Gender options
+  const genderOptions = [
+    { value: '', label: 'Select your gender' },
+    { value: 'Male', label: 'Male' },
+    { value: 'Female', label: 'Female' },
+  ];
+
+  // Position options (title case and alphabetically sorted)
+  const positionOptions = [
+    { value: '', label: 'Select your primary position' },
+    { value: 'Able Seaman', label: 'Able Seaman' },
+    { value: 'Bosun', label: 'Bosun' },
+    { value: 'Chief Cook', label: 'Chief Cook' },
+    { value: 'Chief Engineer', label: 'Chief Engineer' },
+    { value: 'Chief Mate', label: 'Chief Mate' },
+    { value: 'Cook', label: 'Cook' },
+    { value: 'Deck Cadet', label: 'Deck Cadet' },
+    { value: 'Electrician', label: 'Electrician' },
+    { value: 'Engine Cadet', label: 'Engine Cadet' },
+    { value: 'Fitter', label: 'Fitter' },
+    { value: 'Galley Boy', label: 'Galley Boy' },
+    { value: 'Jr 3rd Mate', label: 'Jr 3rd Mate' },
+    { value: 'Jr 4th Engineer', label: 'Jr 4th Engineer' },
+    { value: 'Messman', label: 'Messman' },
+    { value: 'Ordinary Seaman', label: 'Ordinary Seaman' },
+    { value: 'Pumpman', label: 'Pumpman' },
+    { value: '2nd Engineer', label: '2nd Engineer' },
+    { value: '2nd Mate', label: '2nd Mate' },
+    { value: '3rd Engineer', label: '3rd Engineer' },
+    { value: '3rd Mate', label: '3rd Mate' },
+    { value: 'Trainee 4th Engineer', label: 'Trainee 4th Engineer' },
+    { value: 'Trainee Gas Engineer', label: 'Trainee Gas Engineer' },
+    { value: 'Trainee', label: 'Trainee' },
+    { value: 'Electrician Trainee', label: 'Electrician Trainee' },
+  ];
+
+  // Secondary position options (same as primary position options)
+  const secondaryPositionOptions = positionOptions;
+
+  // Token
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Start as loading
-  const [error, setError] = useState(null); // Added for error handling
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
@@ -118,10 +167,8 @@ const Registration = () => {
           const filteredProvinces = response.data.filter(
             (province) => province.regionCode === selectedRegion
           );
-          console.log('Provinces API Response:', response.data); // Debug
-          console.log('Filtered Provinces:', filteredProvinces); // Debug
           setProvinces(filteredProvinces);
-          setSelectedProvince(filteredProvinces[0]?.code || ''); // Set default province
+          setSelectedProvince(filteredProvinces[0]?.code || '');
           setCities([]);
           setBarangays([]);
         })
@@ -182,14 +229,6 @@ const Registration = () => {
   };
 
   const handleSubmit = async (e) => {
-    console.log('Selected Barangay:', e.target.value);
-    console.log('Submitting:', {
-      ...formData,
-      region: selectedRegion,
-      province: selectedProvince,
-      city: selectedCity,
-      barangay: selectedBarangay,
-    });
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -209,7 +248,7 @@ const Registration = () => {
       return;
     }
 
-     // Prepare registration data (only codes, backend will fetch names)
+    // Prepare registration data
     const registrationData = {
       region: selectedRegionName,
       province: selectedProvinceName,
@@ -223,9 +262,8 @@ const Registration = () => {
       secondary_position: formData.secondary_position,
       civil_status: formData.civil_status,
       birthday: formData.birthday,
-      availability: user?.role === 'admin' ? null : 'Available', // Set availability based on role
+      availability: user?.role === 'admin' ? null : 'Available',
     };
-    console.log('Registration Data:', registrationData);
 
     // Token
     const token = sessionStorage.getItem('token');
@@ -268,14 +306,12 @@ const Registration = () => {
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
 
-      // Check if user is admin or already has a region
       if (parsedUser.role === 'admin' || parsedUser.region) {
         setLoading(false);
-        navigate('/user/HomeUser'); // Redirect to home or dashboard if admin or has region
+        navigate('/user/HomeUser');
         return;
       }
 
-      // Ensure only 'user' role can proceed
       if (parsedUser.role !== 'user') {
         setLoading(false);
         navigate('/login');
@@ -471,55 +507,71 @@ const Registration = () => {
                       <div className="registration-container-column-form-personal-content-bottom-left">
                         <div className="registration-container-column-form-personal-content-bottom-left-alike">
                           <label htmlFor="position">Primary Position</label>
-                          <input
-                            type="text"
+                          <select
                             id="position"
                             name="position"
-                            placeholder="Enter your position"
                             value={formData.position}
                             onChange={handleChange}
                             required
-                          />
+                          >
+                            {positionOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
                         </div>
 
                         <div className="registration-container-column-form-personal-content-bottom-left-alike">
                           <label htmlFor="gender">Gender</label>
-                          <input
-                            type="text"
+                          <select
                             id="gender"
                             name="gender"
-                            placeholder="Enter your gender"
                             value={formData.gender}
                             onChange={handleChange}
                             required
-                          />
+                          >
+                            {genderOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                       </div>
 
                       <div className="registration-container-column-form-personal-content-bottom-right">
                         <div className="registration-container-column-form-personal-content-bottom-right-alike">
                           <label htmlFor="secondary_position">Secondary Position</label>
-                          <input
-                            type="text"
+                          <select
                             id="secondary_position"
                             name="secondary_position"
-                            placeholder="Enter your position"
                             value={formData.secondary_position}
                             onChange={handleChange}
-                          />
+                          >
+                            {secondaryPositionOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
                         </div>
 
                         <div className="registration-container-column-form-personal-content-bottom-right-alike">
                           <label htmlFor="civil_status">Civil status</label>
-                          <input
-                            type="text"
+                          <select
                             id="civil_status"
                             name="civil_status"
                             value={formData.civil_status}
                             onChange={handleChange}
-                            placeholder="Enter your status"
                             required
-                          />
+                          >
+                            {civilStatusOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                       </div>
                     </div>

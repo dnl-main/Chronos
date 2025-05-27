@@ -21,6 +21,16 @@ Route::get('/test', function () {
 Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/login', [AuthController::class, 'login']);
 
+// Password Reset Routes
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
+Route::post('/reset-password', [PasswordResetController::class, 'reset']);
+
+// PSGC Routes
+Route::get('/regions', [PSGCController::class, 'getRegions']);
+Route::get('/provinces', [PSGCController::class, 'getProvinces']);
+Route::get('/cities-municipalities', [PSGCController::class, 'getCitiesMunicipalities']);
+Route::get('/barangays', [PSGCController::class, 'getBarangays']);
+
 Route::middleware('jwt.auth')->group(function () {
     Route::post('/registration', [AuthController::class, 'registration']);
     Route::get('/user', [AuthController::class, 'getUser']);
@@ -42,8 +52,8 @@ Route::middleware('jwt.auth')->group(function () {
     // Appointment Routes
     Route::get('/appointment', [AppointmentController::class, 'index']);
     Route::post('/appointment', [AppointmentController::class, 'store']);
-    Route::patch('/appointment/{id}', [AppointmentController::class, 'update']); // Admin Update
-    Route::delete('/appointment/{id}', [AppointmentController::class, 'delete']);// Admin Delete
+    Route::patch('/appointment/{id}', [AppointmentController::class, 'update']);
+    Route::delete('/appointment/{id}', [AppointmentController::class, 'delete']);
     Route::delete('/appointment', [AppointmentController::class, 'destroy']);
     Route::get('/appointment/today/count', [AppointmentController::class, 'getTodayCount']);
     Route::get('/appointment/upcoming/count', [AppointmentController::class, 'getUpcomingCount']);
@@ -67,16 +77,12 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('/certificates/delete', [UploadController::class, 'deleteCertificate']);
 
     // Notifications
-    Route::post('/notifications', [NotificationController::class, 'create']);
+    Route::post('/notifications/send', [NotificationController::class, 'sendCertificateNotification']);
     Route::get('/notifications', [NotificationController::class, 'getUserNotifications']);
+    Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification']);
+
+    // User Details
+    Route::get('/users/{id}', function ($id) {
+        return App\Models\User::select('id', 'first_name', 'middle_name', 'last_name', 'position')->findOrFail($id);
+    });
 });
-
-//Password Rest Routes
-Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
-Route::post('/reset-password', [PasswordResetController::class, 'reset']);
-
-// PSGC Routes
-Route::get('/regions', [PSGCController::class, 'getRegions']);
-Route::get('/provinces', [PSGCController::class, 'getProvinces']);
-Route::get('/cities-municipalities', [PSGCController::class, 'getCitiesMunicipalities']);
-Route::get('/barangays', [PSGCController::class, 'getBarangays']);
