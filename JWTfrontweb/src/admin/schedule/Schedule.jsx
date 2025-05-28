@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './schedule.css';
-
 import { Navbar } from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
 import ScheduleCard from './scheduleComponents/ScheduleCard';
 import Spinner from '../../components/Spinner';
-
+import ManageAppointment from '../appointment/ManageAppointment';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Calendar_Event from '../../assets/icons/Calendar_Event.svg?react';
 
@@ -19,6 +18,8 @@ const Schedule = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTab, setSelectedTab] = useState('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalData, setModalData] = useState(null);
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
@@ -31,14 +32,14 @@ const Schedule = () => {
 
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-      		  if (parsedUser.role === 'user') {
-			navigate('/user/homeuser');
-			return;
-		  }
-		  if (parsedUser.role !== 'admin') {
-			navigate('/login');
-			return;
-		  }
+      if (parsedUser.role === 'user') {
+        navigate('/user/homeuser');
+        return;
+      }
+      if (parsedUser.role !== 'admin') {
+        navigate('/login');
+        return;
+      }
       fetchAppointments(token);
     } else {
       fetchUserData(token);
@@ -49,7 +50,7 @@ const Schedule = () => {
     try {
       const response = await axios.get(`${apiUrl}/user`, {
         headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true, // Enable credentials
+        withCredentials: true,
       });
       const userData = response.data;
       if (userData.role !== 'admin') {
@@ -72,7 +73,7 @@ const Schedule = () => {
       setError(null);
       const response = await axios.get(`${apiUrl}/appointment`, {
         headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true, // Enable credentials
+        withCredentials: true,
       });
       setAppointments(Array.isArray(response.data) ? response.data : [response.data].filter(Boolean));
     } catch (error) {
@@ -86,6 +87,17 @@ const Schedule = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEditClick = (data) => {
+    setModalData(data);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setModalData(null);
+    fetchAppointments(sessionStorage.getItem('token')); // Refresh appointments after modal closes
   };
 
   const today = new Date().toISOString().split('T')[0];
@@ -109,7 +121,6 @@ const Schedule = () => {
             <p>Scheduled appointments</p>
           </header>
 
-          {/* Tabs */}
           <section className="schedule-tabs">
             <button
               className={`schedule-tabs-all ${selectedTab === 'all' ? 'schedule-tab-active' : ''}`}
@@ -141,7 +152,6 @@ const Schedule = () => {
             </button>
           </section>
 
-          {/* Today Section */}
           {(selectedTab === 'today' || selectedTab === 'all') && (
             <>
               <header className="schedule-header-today">
@@ -150,16 +160,21 @@ const Schedule = () => {
               <section className="schedule-today">
                 <div className="schedule-today-cards">
                   {appointments
-                    .filter(app => app.date === today && app.status !== 'completed')
-                    .map(app => (
-                      <ScheduleCard key={app.id} appointment={app} user={app.user} />
+                    .filter((app) => app.date === today && app.status !== 'completed')
+                    .map((app) => (
+                      <ScheduleCard
+                        key={app.id}
+                        appointment={app}
+                        user={app.user}
+                        allAppointments={appointments}
+                        onEditClick={handleEditClick}
+                      />
                     ))}
                 </div>
               </section>
             </>
           )}
 
-          {/* Upcoming Section */}
           {(selectedTab === 'upcoming' || selectedTab === 'all') && (
             <>
               <header className="schedule-header-today">
@@ -168,16 +183,21 @@ const Schedule = () => {
               <section className="schedule-today">
                 <div className="schedule-today-cards">
                   {appointments
-                    .filter(app => app.date > today && app.status !== 'completed')
-                    .map(app => (
-                      <ScheduleCard key={app.id} appointment={app} user={app.user} />
+                    .filter((app) => app.date > today && app.status !== 'completed')
+                    .map((app) => (
+                      <ScheduleCard
+                        key={app.id}
+                        appointment={app}
+                        user={app.user}
+                        allAppointments={appointments}
+                        onEditClick={handleEditClick}
+                      />
                     ))}
                 </div>
               </section>
             </>
           )}
 
-          {/* Completed Section */}
           {(selectedTab === 'all' || selectedTab === 'completed') && (
             <>
               <header className="schedule-header-completed">
@@ -185,13 +205,57 @@ const Schedule = () => {
               </header>
               <section className="schedule-today">
                 <div className="schedule-today-cards">
-                  <p style={{ color: '#888', padding: '1rem' }}>No results found.</p>
+                  {appointments
+                    .filter((app) => app.status === 'completed')
+                    .map((app) => (
+                      <ScheduleCard
+                        key={app.id}
+                        appointment={app}
+                        user={app.user}
+                        allAppointments={appointments}
+                        onEditClick={handleEditClick}
+                      />
+                    ))}
+                  {appointments.filter((app) => app.status === 'completed').length === 0 && (
+                    <p style={{ color: '#888', padding: '1rem' }}>No results found.</p>
+                  )}
                 </div>
               </section>
             </>
           )}
         </main>
       </div>
+
+      {isModalOpen && modalData && (
+        <div className="modal-overlay" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          zIndex: 1000,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          <div className="modal-content" style={{
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            maxWidth: '80%',
+            maxHeight: '80%',
+            overflowY: 'auto',
+          }}>
+            <ManageAppointment
+              appointment={modalData.appointment}
+              user={modalData.user}
+              bookedAppointments={modalData.bookedAppointments}
+              onClose={handleCloseModal}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

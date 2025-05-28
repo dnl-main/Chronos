@@ -26,6 +26,11 @@ class AppointmentController extends Controller
                     'date' => $appointment->date,
                     'start_time' => $appointment->start_time,
                     'end_time' => $appointment->end_time,
+                    'department' => $appointment->department,
+                    'crewing_dept' => $appointment->crewing_dept,
+                    'operator' => $appointment->operator,
+                    'accounting_task' => $appointment->accounting_task,
+                    'employee' => $appointment->employee,
                     'status' => $this->getAppointmentStatus($appointment),
                     'user' => $appointment->user ? [
                         'first_name' => $appointment->user->first_name,
@@ -54,6 +59,11 @@ class AppointmentController extends Controller
                 'date' => $appointment->date,
                 'start_time' => $appointment->start_time,
                 'end_time' => $appointment->end_time,
+                'department' => $appointment->department,
+                'crewing_dept' => $appointment->crewing_dept,
+                'operator' => $appointment->operator,
+                'accounting_task' => $appointment->accounting_task,
+                'employee' => $appointment->employee,
                 'status' => $this->getAppointmentStatus($appointment),
                 'user' => [
                     'first_name' => $user->first_name,
@@ -107,7 +117,7 @@ class AppointmentController extends Controller
     private function getAppointmentStatus($appointment)
     {
         $today = now()->startOfDay();
-        $appointmentDate = \Carbon\Carbon::parse($appointment->date)->startOfDay();
+        $appointmentDate = Carbon::parse($appointment->date)->startOfDay();
 
         if ($appointmentDate->isToday()) {
             return 'today';
@@ -121,12 +131,19 @@ class AppointmentController extends Controller
     public function store(Request $request)
     {
         $user = JWTAuth::user();
+
         $validated = $request->validate([
-            'date' => 'required|date',
+            'date' => 'required|date|after_or_equal:today',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
+            'department' => 'required|in:crewing,medical,accounting',
+            'crewing_dept' => 'required_if:department,crewing|in:maran gas,maran dry,maran tankers|nullable',
+            'operator' => 'required_if:department,crewing|in:fleet crew manager,senior fleet crew operator,crew operator 1,crew operator 2,crew operator 3|nullable',
+            'accounting_task' => 'required_if:department,accounting|in:allotment,final balance,check releasing|nullable',
+            'employee_name' => 'required|string|max:255',
         ]);
 
+        // Delete any existing appointment for the user
         Appointment::where('user_id', $user->id)->delete();
 
         $appointment = Appointment::create([
@@ -134,14 +151,50 @@ class AppointmentController extends Controller
             'date' => $validated['date'],
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
+            'department' => $validated['department'],
+            'crewing_dept' => $validated['crewing_dept'] ?? null,
+            'operator' => $validated['operator'] ?? null,
+            'accounting_task' => $validated['accounting_task'] ?? null,
+            'employee' => $validated['employee_name'],
         ]);
 
-        return response()->json($appointment, 201);
+        return response()->json([
+            'appointment' => [
+                'id' => $appointment->id,
+                'user_id' => $appointment->user_id,
+                'date' => $appointment->date,
+                'start_time' => $appointment->start_time,
+                'end_time' => $appointment->end_time,
+                'department' => $appointment->department,
+                'crewing_dept' => $appointment->crewing_dept,
+                'operator' => $appointment->operator,
+                'accounting_task' => $appointment->accounting_task,
+                'employee' => $appointment->employee,
+                'status' => $this->getAppointmentStatus($appointment),
+            ]
+        ], 201);
     }
 
     public function show($id)
     {
-        return response()->json(['message' => 'Method not implemented'], 501);
+        $appointment = Appointment::find($id);
+        if (!$appointment) {
+            return response()->json(['message' => 'Appointment not found'], 404);
+        }
+
+        return response()->json([
+            'id' => $appointment->id,
+            'user_id' => $appointment->user_id,
+            'date' => $appointment->date,
+            'start_time' => $appointment->start_time,
+            'end_time' => $appointment->end_time,
+            'department' => $appointment->department,
+            'crewing_dept' => $appointment->crewing_dept,
+            'operator' => $appointment->operator,
+            'accounting_task' => $appointment->accounting_task,
+            'employee' => $appointment->employee,
+            'status' => $this->getAppointmentStatus($appointment),
+        ], 200);
     }
 
     public function update(Request $request, $id)
@@ -157,15 +210,25 @@ class AppointmentController extends Controller
         }
 
         $validated = $request->validate([
-            'date' => 'required|date',
+            'date' => 'required|date|after_or_equal:today',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
+            'department' => 'required|in:crewing,medical,accounting',
+            'crewing_dept' => 'required_if:department,crewing|in:maran gas,maran dry,maran tankers|nullable',
+            'operator' => 'required_if:department,crewing|in:fleet crew manager,senior fleet crew operator,crew operator 1,crew operator 2,crew operator 3|nullable',
+            'accounting_task' => 'required_if:department,accounting|in:allotment,final balance,check releasing|nullable',
+            'employee_name' => 'required|string|max:255',
         ]);
 
         $appointment->update([
             'date' => $validated['date'],
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
+            'department' => $validated['department'],
+            'crewing_dept' => $validated['crewing_dept'] ?? null,
+            'operator' => $validated['operator'] ?? null,
+            'accounting_task' => $validated['accounting_task'] ?? null,
+            'employee' => $validated['employee_name'],
         ]);
 
         return response()->json([
@@ -176,6 +239,11 @@ class AppointmentController extends Controller
                 'date' => $appointment->date,
                 'start_time' => $appointment->start_time,
                 'end_time' => $appointment->end_time,
+                'department' => $appointment->department,
+                'crewing_dept' => $appointment->crewing_dept,
+                'operator' => $appointment->operator,
+                'accounting_task' => $appointment->accounting_task,
+                'employee' => $appointment->employee,
                 'status' => $this->getAppointmentStatus($appointment),
             ],
         ], 200);

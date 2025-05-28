@@ -22,9 +22,16 @@ const HomeUser = () => {
   const [loading, setLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [appointmentDate, setAppointmentDate] = useState('');
-  const [appointmentStartTime, setAppointmentStartTime] = useState('');
-  const [appointmentEndTime, setAppointmentEndTime] = useState('');
+  const [appointment, setAppointment] = useState({
+    date: '',
+    start_time: '',
+    end_time: '',
+    department: '',
+    crewing_dept: '',
+    operator: '',
+    accounting_task: '',
+    employee: '',
+  });
   const [appointmentLoading, setAppointmentLoading] = useState(true);
   const [certificateName, setCertificateName] = useState('');
   const [certificateType, setCertificateType] = useState('');
@@ -53,7 +60,7 @@ const HomeUser = () => {
         });
         const certificates = response.data.certificates || [];
         const uploaded = certificates.length;
-        const total = 4; // Adjust based on your requirements
+        const total = 4;
         const percentage = Math.round((uploaded / total) * 100);
         setProgress({ percentage, uploaded, total });
       } catch (error) {
@@ -72,9 +79,16 @@ const HomeUser = () => {
     const fetchAppointment = async () => {
       const token = sessionStorage.getItem('token');
       if (!token) {
-        setAppointmentDate('');
-        setAppointmentStartTime('');
-        setAppointmentEndTime('');
+        setAppointment({
+          date: '',
+          start_time: '',
+          end_time: '',
+          department: '',
+          crewing_dept: '',
+          operator: '',
+          accounting_task: '',
+          employee: '',
+        });
         setAppointmentLoading(false);
         return;
       }
@@ -84,21 +98,42 @@ const HomeUser = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const appointment = response.data.appointment || response.data;
-        if (appointment && appointment.date) {
-          setAppointmentDate(appointment.date || '');
-          setAppointmentStartTime(appointment.startTime || appointment.start_time || '');
-          setAppointmentEndTime(appointment.endTime || appointment.end_time || '');
+        const appointmentData = Array.isArray(response.data) ? response.data[0] : response.data;
+        if (appointmentData && appointmentData.date) {
+          setAppointment({
+            date: appointmentData.date || '',
+            start_time: appointmentData.start_time || '',
+            end_time: appointmentData.end_time || '',
+            department: appointmentData.department || '',
+            crewing_dept: appointmentData.crewing_dept || '',
+            operator: appointmentData.operator || '',
+            accounting_task: appointmentData.accounting_task || '',
+            employee: appointmentData.employee || '',
+          });
         } else {
-          setAppointmentDate('');
-          setAppointmentStartTime('');
-          setAppointmentEndTime('');
+          setAppointment({
+            date: '',
+            start_time: '',
+            end_time: '',
+            department: '',
+            crewing_dept: '',
+            operator: '',
+            accounting_task: '',
+            employee: '',
+          });
         }
       } catch (error) {
         console.error('Failed to fetch appointment:', error.response?.data || error.message);
-        setAppointmentDate('');
-        setAppointmentStartTime('');
-        setAppointmentEndTime('');
+        setAppointment({
+          date: '',
+          start_time: '',
+          end_time: '',
+          department: '',
+          crewing_dept: '',
+          operator: '',
+          accounting_task: '',
+          employee: '',
+        });
       } finally {
         setAppointmentLoading(false);
       }
@@ -208,27 +243,17 @@ const HomeUser = () => {
     return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   };
 
-  const handleAppointmentSave = async () => {
-    const appointment = {
-      date: appointmentDate,
-      startTime: appointmentStartTime,
-      endTime: appointmentEndTime,
-    };
-    try {
-      const token = sessionStorage.getItem('token');
-      const response = await axios.post(`${apiUrl}/appointment`, appointment, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const savedAppointment = response.data.appointment;
-      setAppointmentDate(savedAppointment.date || '');
-      setAppointmentStartTime(savedAppointment.startTime || '');
-      setAppointmentEndTime(savedAppointment.endTime || '');
-      setIsModalOpen(false);
-      alert('Appointment saved successfully');
-    } catch (error) {
-      console.error('Failed to save appointment:', error.response?.data || error.message);
-      alert(error.response?.data.message || 'Failed to save appointment');
-    }
+  const handleAppointmentBooked = (appointment) => {
+    setAppointment({
+      date: appointment.date || '',
+      start_time: appointment.start_time || '',
+      end_time: appointment.end_time || '',
+      department: appointment.department || '',
+      crewing_dept: appointment.crewing_dept || '',
+      operator: appointment.operator || '',
+      accounting_task: appointment.accounting_task || '',
+      employee: appointment.employee || '',
+    });
   };
 
   const handleDeleteAppointment = async () => {
@@ -237,9 +262,16 @@ const HomeUser = () => {
       await axios.delete(`${apiUrl}/appointment`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setAppointmentDate('');
-      setAppointmentStartTime('');
-      setAppointmentEndTime('');
+      setAppointment({
+        date: '',
+        start_time: '',
+        end_time: '',
+        department: '',
+        crewing_dept: '',
+        operator: '',
+        accounting_task: '',
+        employee: '',
+      });
       alert('Appointment deleted successfully');
     } catch (error) {
       console.error('Failed to delete appointment:', error.response?.data || error.message);
@@ -256,7 +288,6 @@ const HomeUser = () => {
       return;
     }
 
-    // Check for existing certificate of the same type
     const token = sessionStorage.getItem('token');
     try {
       const certResponse = await axios.get(`${apiUrl}/certificates`, {
@@ -294,7 +325,6 @@ const HomeUser = () => {
       setExpirationDate('');
       setFile(null);
 
-      // Fetch updated certificates list
       const updatedCertResponse = await axios.get(`${apiUrl}/certificates`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -333,9 +363,7 @@ const HomeUser = () => {
               {isModalOpen && (
                 <BookAppointmentModal
                   onClose={() => setIsModalOpen(false)}
-                  setAppointmentDate={setAppointmentDate}
-                  setAppointmentStartTime={setAppointmentStartTime}
-                  setAppointmentEndTime={setAppointmentEndTime}
+                  onAppointmentBooked={handleAppointmentBooked}
                 />
               )}
 
@@ -397,7 +425,7 @@ const HomeUser = () => {
                 ) : (
                   <>
                     <div className="homeUser-top-core-left-heading">
-                      {appointmentDate ? (
+                      {appointment.date ? (
                         <p style={{ fontWeight: '600', fontSize: '1.1rem' }}>You have an appointment</p>
                       ) : (
                         <p style={{ color: '#888', fontSize: '1.1rem' }}>No appointment scheduled</p>
@@ -405,13 +433,13 @@ const HomeUser = () => {
                     </div>
 
                     <div className="homeUser-top-core-left-date">
-                      {appointmentDate ? (
+                      {appointment.date ? (
                         <div className="homeUser-top-core-left-date-cal">
                           <p className="homeUser-top-core-left-date-cal-regular">
-                            {new Date(appointmentDate).toLocaleString('en-US', { month: 'short' }).toUpperCase()}
+                            {new Date(appointment.date).toLocaleString('en-US', { month: 'short' }).toUpperCase()}
                           </p>
                           <p className="homeUser-top-core-left-date-cal-semibold">
-                            {new Date(appointmentDate).getDate()}
+                            {new Date(appointment.date).getDate()}
                           </p>
                         </div>
                       ) : (
@@ -422,12 +450,36 @@ const HomeUser = () => {
                       )}
 
                       <div className="homeUser-top-core-left-date-data">
-                        {appointmentDate ? (
+                        {appointment.date ? (
                           <>
                             <div className="homeUser-top-core-left-date-data-text">
-                              <p className="homeUser-top-core-left-date-data-text-regular">{appointmentDate}</p>
+                              <p className="homeUser-top-core-left-date-data-text-regular">{appointment.date}</p>
                               <p className="homeUser-top-core-left-date-data-text-light">
-                                {new Date(appointmentDate).toLocaleDateString('en-US', { weekday: 'long' })}
+                                {new Date(appointment.date).toLocaleDateString('en-US', { weekday: 'long' })}
+                              </p>
+   <p className="homeUser-top-core-left-date-data-text-light">
+  Department: {appointment.department ? 
+    appointment.department.charAt(0).toUpperCase() + appointment.department.slice(1) : 'N/A'}
+</p>
+                              {appointment.department === 'crewing' && (
+                                <>
+                                  <p className="homeUser-top-core-left-date-data-text-light">
+                                    Crewing Dept:{appointment.crewing_dept ? 
+    appointment.crewing_dept.charAt(0).toUpperCase() + appointment.crewing_dept.slice(1) : 'N/A'}
+                                  </p>
+                                  <p className="homeUser-top-core-left-date-data-text-light">
+                                    Operator: {appointment.operator || 'N/A'}
+                                  </p>
+                                </>
+                              )}
+                              {appointment.department === 'accounting' && (
+                                <p className="homeUser-top-core-left-date-data-text-light">
+                                  Accounting Task: {appointment.accounting_task ? 
+    appointment.accounting_task.charAt(0).toUpperCase() + appointment.accounting_task.slice(1) : 'N/A'}
+                                </p>
+                              )}
+                              <p className="homeUser-top-core-left-date-data-text-light">
+                                Employee: {appointment.employee || 'N/A'}
                               </p>
                             </div>
 
@@ -444,7 +496,7 @@ const HomeUser = () => {
                                 <div className="homeUser-top-core-left-date-data-cards-start-text">
                                   <p className="homeUser-top-core-left-date-data-cards-start-text-light">Starts at</p>
                                   <p className="homeUser-top-core-left-date-data-cards-start-text-medium">
-                                    {formatTime(appointmentStartTime)}
+                                    {formatTime(appointment.start_time)}
                                   </p>
                                 </div>
                               </div>
@@ -461,7 +513,7 @@ const HomeUser = () => {
                                 <div className="homeUser-top-core-left-date-data-cards-end-text">
                                   <p className="homeUser-top-core-left-date-data-cards-end-text-light">Ends at</p>
                                   <p className="homeUser-top-core-left-date-data-cards-end-text-medium">
-                                    {formatTime(appointmentEndTime)}
+                                    {formatTime(appointment.end_time)}
                                   </p>
                                 </div>
                               </div>
@@ -491,7 +543,7 @@ const HomeUser = () => {
                     </div>
 
                     <div className="homeUser-top-core-left-btn">
-                      {!appointmentDate && (
+                      {!appointment.date && (
                         <button
                           onClick={() => setIsModalOpen(true)}
                           className="homeUser-top-core-left-btn-button"

@@ -49,9 +49,18 @@ const CancelSummaryModal = ({ onClose, onConfirm, appointment, user }) => {
           <button className="cancel-back-btn" onClick={onClose}>
             Go Back
           </button>
-          <button className="cancel-confirm-btn" onClick={onConfirm}>
-            Cancel Now
-          </button>
+          <button
+  className="cancel-confirm-btn"
+  onClick={() => {
+    const confirmed = window.confirm('Are you sure you want to cancel this appointment?');
+    if (confirmed) {
+      onConfirm();
+    }
+  }}
+>
+  Cancel Now
+</button>
+
         </div>
       </div>
     </div>

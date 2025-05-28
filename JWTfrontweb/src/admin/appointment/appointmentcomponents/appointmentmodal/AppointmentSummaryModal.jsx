@@ -52,7 +52,7 @@ const AppointmentSummaryModal = ({ appointment, user, onClose, onConfirm }) => {
 
         <div className="appointmentsummary-modal-buttons">
           <button onClick={onClose}>Cancel</button>
-          <button onClick={onConfirm}>Book Now</button>
+          <button onClick={onConfirm}>Reschedule Now</button>
         </div>
       </div>
     </div>

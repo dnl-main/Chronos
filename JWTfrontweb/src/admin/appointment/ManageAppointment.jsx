@@ -1,42 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './manageAppointment.css';
 import ManageAppointmentCard from './appointmentComponents/ManageAppointmentCard';
-
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Calendar_Week from '../../assets/icons/Calendar_Week.svg?react';
 import Caret_Down_SM from '../../assets/icons/Caret_Down_SM.svg?react';
 import Calendar_Check from '../../assets/icons/Calendar_Check.svg?react';
 import Book from '../../assets/icons/Book.svg?react';
-
-import AppointmentSummaryModal from '../../admin/appointment/appointmentcomponents/appointmentmodal/AppointmentSummaryModal';
-import CancelSummaryModal from '../../admin/appointment/appointmentcomponents/appointmentmodal/CancelSummaryModal';
+import AppointmentSummaryModal from './appointmentcomponents/appointmentmodal/AppointmentSummaryModal';
+import CancelSummaryModal from './appointmentcomponents/appointmentmodal/CancelSummaryModal';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
-const ManageAppointment = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const routedAppointment = location.state?.appointment || null;
-  const routedUser = location.state?.user || null;
-  const bookedAppointments = location.state?.bookedAppointments || [];
-
-  const [selectedAppointment, setSelectedAppointment] = useState(routedAppointment);
-  const [selectedUser, setSelectedUser] = useState(routedUser);
+const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose }) => {
+  const [selectedAppointment, setSelectedAppointment] = useState(appointment);
+  const [selectedUser, setSelectedUser] = useState(user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (routedAppointment) {
+    if (appointment) {
       setSelectedAppointment({
-        ...routedAppointment,
-        original_date: routedAppointment.date,
+        ...appointment,
+        original_date: appointment.date,
       });
     }
-  }, [routedAppointment]);
+  }, [appointment]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '--';
@@ -100,14 +90,15 @@ const ManageAppointment = () => {
       );
       setIsModalOpen(false);
       setError(null);
-      navigate('/admin/schedule', { replace: true });
+      onClose(); // Close modal and refresh appointments in parent
     } catch (error) {
       console.error('Failed to reschedule appointment:', error);
       setError(
         error.response?.data?.message || 'Failed to reschedule appointment.'
       );
       if (error.response?.status === 401 || error.response?.status === 403) {
-        navigate('/login');
+        onClose();
+        window.location.href = '/login'; // Navigate to login
       }
     }
   };
@@ -129,14 +120,15 @@ const ManageAppointment = () => {
       );
       setIsCancelModalOpen(false);
       setError(null);
-      navigate('/admin/schedule', { replace: true });
+      onClose(); // Close modal and refresh appointments in parent
     } catch (error) {
       console.error('Failed to cancel appointment:', error);
       setError(
         error.response?.data?.message || 'Failed to cancel appointment.'
       );
       if (error.response?.status === 401 || error.response?.status === 403) {
-        navigate('/login');
+        onClose();
+        window.location.href = '/login'; // Navigate to login
       }
     }
   };
@@ -166,7 +158,7 @@ const ManageAppointment = () => {
                 <p>Edit Appointment</p>
                 <button
                   className="manageAppointment-exit-button"
-                  onClick={() => navigate(-1)}
+                  onClick={onClose}
                 >
                   ×
                 </button>
@@ -174,13 +166,13 @@ const ManageAppointment = () => {
 
               <div className="manageAppointment-box-in-left-core-bot">
                 <div className="manageAppointment-box-in-left-core-bot-cards">
-                  {routedAppointment && routedUser && (
+                  {appointment && user && (
                     <ManageAppointmentCard
-                      appointment={routedAppointment}
-                      user={routedUser}
+                      appointment={appointment}
+                      user={user}
                       onSelect={() => {
-                        setSelectedAppointment(routedAppointment);
-                        setSelectedUser(routedUser);
+                        setSelectedAppointment(appointment);
+                        setSelectedUser(user);
                       }}
                     />
                   )}
@@ -321,7 +313,6 @@ const ManageAppointment = () => {
         </div>
       </div>
 
-      {/* Reschedule Modal */}
       {isModalOpen && (
         <AppointmentSummaryModal
           appointment={selectedAppointment}
@@ -334,7 +325,6 @@ const ManageAppointment = () => {
         />
       )}
 
-      {/* Cancel Summary Modal */}
       {isCancelModalOpen && (
         <CancelSummaryModal
           appointment={selectedAppointment}

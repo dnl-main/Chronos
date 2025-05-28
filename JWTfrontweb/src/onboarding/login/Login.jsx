@@ -175,7 +175,7 @@ const Login = () => {
                   style={{
                     position: 'absolute',
                     right: '15px',
-                    top: '60px',
+                    top: '55px',
                     transform: 'translateY(-50%)',
                     cursor: 'pointer',
                     height: '20px',

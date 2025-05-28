@@ -1,17 +1,11 @@
 import React from 'react';
 import './scheduleCard.css';
-
 import Phone from '../../../assets/icons/Phone.svg?react';
 import Mail from '../../../assets/icons/Mail.svg?react';
 import Edit_Pencil_01 from '../../../assets/icons/Edit_Pencil_01.svg?react';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
 
-import { useNavigate } from 'react-router-dom';
-
-const ScheduleCard = ({ appointment, user, allAppointments = [] }) => {
-
-  const navigate = useNavigate();
-
+const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) => {
   if (!appointment || !user) {
     return <p>Loading...</p>;
   }
@@ -42,9 +36,9 @@ const ScheduleCard = ({ appointment, user, allAppointments = [] }) => {
     formattedPhone = cleaned.length >= 10
       ? `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`
       : cleaned;
-  }  
-  return (
+  }
 
+  return (
     <main className="schedule-today-cards-card">
       <section className="schedule-today-cards-card-indicator"></section>
 
@@ -66,7 +60,7 @@ const ScheduleCard = ({ appointment, user, allAppointments = [] }) => {
         <Circle_Primary className="schedule-today-cards-card-profile-svg" />
         <div className="schedule-today-cards-card-profile-info">
           <p className="schedule-today-cards-card-profile-info-text">
-              {`${user.first_name}${user.middle_name ? ` ${user.middle_name.charAt(0)}.` : ''} ${user.last_name}`}
+            {`${user.first_name}${user.middle_name ? ` ${user.middle_name.charAt(0)}.` : ''} ${user.last_name}`}
           </p>
           <div className="schedule-today-cards-card-profile-info-job">
             <Circle_Primary style={{ color: "var(--primary-color)", width: "32px", height: "32px" }} />
@@ -78,7 +72,7 @@ const ScheduleCard = ({ appointment, user, allAppointments = [] }) => {
       <section className="schedule-today-cards-card-contact">
         <div className="schedule-today-cards-card-contact-mobile">
           <Phone className="schedule-today-cards-card-contact-mobile-svg" />
-         <p>{formattedPhone ? `(+63)${formattedPhone}` : 'Loading...'}</p>
+          <p>{formattedPhone ? `(+63)${formattedPhone}` : 'Loading...'}</p>
         </div>
 
         <div className="schedule-today-cards-card-contact-email">
@@ -88,34 +82,27 @@ const ScheduleCard = ({ appointment, user, allAppointments = [] }) => {
       </section>
 
       <section className="schedule-today-cards-card-button">
-     
-  <button
-    onClick={() =>
-      navigate('/admin/manage-appointment', {
-        state: {
-          appointment,
-          user,
-          bookedAppointments: allAppointments.filter(a =>
-            a.status === 'booked' &&
-            a.id !== appointment.id &&
-            a.user
-          )
-        }
-      })
-    }
-  >
-    <Edit_Pencil_01
-      style={{
-        color: "var(--white-color)",
-        width: "32px",
-        height: "32px",
-        "--stroke-width": "2px"
-      }}
-    />
-  </button>
-</section>
-
-    
+        <button
+          onClick={() =>
+            onEditClick({
+              appointment,
+              user,
+              bookedAppointments: allAppointments.filter(
+                (a) => a.status === 'booked' && a.id !== appointment.id && a.user
+              ),
+            })
+          }
+        >
+          <Edit_Pencil_01
+            style={{
+              color: "var(--white-color)",
+              width: "32px",
+              height: "32px",
+              "--stroke-width": "2px",
+            }}
+          />
+        </button>
+      </section>
     </main>
   );
 };
