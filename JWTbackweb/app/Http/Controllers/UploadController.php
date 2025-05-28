@@ -148,56 +148,61 @@ class UploadController extends Controller
  
     }
 
-        public function deleteCertificate(Request $request)
-    {
-        // Validate the request
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|integer|exists:certificates,id',
-        ]);
+public function deleteCertificate(Request $request)
+{
+    // Validate the request
+    $validator = Validator::make($request->all(), [
+        'id' => 'required|integer|exists:certificates,id',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        // Get the authenticated user
-        $user = JWTAuth::user();
-        if (!$user) {
-            return response()->json([
-                'message' => 'Unauthorized',
-            ], 401);
-        }
-
-        try {
-            // Find the certificate
-            $certificate = Certificate::where('id', $request->id)
-                ->where('user_id', $user->id)
-                ->first();
-
-            if (!$certificate) {
-                return response()->json([
-                    'message' => 'Certificate not found or you do not have permission to delete it',
-                ], 404);
-            }
-
-            // Delete the file from storage
-            if (Storage::disk('public')->exists($certificate->file_path)) {
-                Storage::disk('public')->delete($certificate->file_path);
-            }
-
-            // Delete the certificate from the database
-            $certificate->delete();
-
-            return response()->json([
-                'message' => 'Certificate deleted successfully',
-            ], 200);
-        } catch (\Exception $e) {
-            \Log::error('Delete Certificate Exception:', ['message' => $e->getMessage()]);
-            return response()->json([
-                'message' => 'Failed to delete certificate: ' . $e->getMessage(),
-            ], 500);
-        }
+    if ($validator->fails()) {
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $validator->errors()
+        ], 422);
     }
+
+    // Get the authenticated user
+    $user = JWTAuth::user();
+    if (!$user) {
+        return response()->json([
+            'message' => 'Unauthorized',
+        ], 401);
+    }
+
+    try {
+        // Find the certificate, allowing admins to bypass user_id check
+        $certificate = Certificate::where('id', $request->id)
+            ->when($user->role !== 'admin', function ($query) use ($user) {
+                return $query->where('user_id', $user->id);
+            })
+            ->first();
+
+        if (!$certificate) {
+            return response()->json([
+                'message' => 'Certificate not found or you do not have permission to delete it',
+            ], 404);
+        }
+
+        // Delete the file from storage
+        if (Storage::disk('public')->exists($certificate->file_path)) {
+            if (!Storage::disk('public')->delete($certificate->file_path)) {
+                \Log::warning('Failed to delete file from storage: ' . $certificate->file_path);
+            }
+        }
+
+        // Delete the certificate from the database
+        $certificate->delete();
+
+        return response()->json([
+            'message' => 'Certificate deleted successfully',
+            'certificate_id' => $certificate->id,
+        ], 200);
+    } catch (\Exception $e) {
+        \Log::error('Delete Certificate Exception:', ['message' => $e->getMessage()]);
+        return response()->json([
+            'message' => 'Failed to delete certificate: ' . $e->getMessage(),
+        ], 500);
+    }
+}
 }

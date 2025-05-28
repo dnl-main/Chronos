@@ -75,11 +75,14 @@ Route::middleware('jwt.auth')->group(function () {
     // Certificates
     Route::get('/certificates', [UploadController::class, 'getCertificates']);
     Route::post('/certificates/delete', [UploadController::class, 'deleteCertificate']);
+  
 
     // Notifications
-    Route::post('/notifications/send', [NotificationController::class, 'sendCertificateNotification']);
+    Route::post('/notifications/upload', [NotificationController::class, 'sendCertificateNotification']);
     Route::get('/notifications', [NotificationController::class, 'getUserNotifications']);
     Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification']);
+    Route::post('/notifications/appointment', [NotificationController::class, 'sendAppointmentNotification']);
+    Route::post('/notifications/cancel', [NotificationController::class, 'sendCancelNotification']);
 
     // User Details
     Route::get('/users/{id}', function ($id) {
