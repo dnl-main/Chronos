@@ -59,3 +59,27 @@
   border: none;
   object-fit: contain;
 }
+
+.certificate-popup-footer {
+  display: flex;
+  justify-content: center; /* Center the button horizontally */
+  align-items: center; /* Center vertically if needed */
+  padding: 1vh 2vw;
+  background-color: var(--white-color);
+  border-top: 1px solid var(--primary-color-opacity-15);
+}
+
+.certificate-popup-delete {
+  all: unset; /* Reset default button styles */
+  background-color: var(--primary-color); /* Use primary color variable */
+  color: var(--white-color); /* Assuming white text for contrast */
+  padding: 1vh 2vw;
+  border-radius: 8px;
+  font-size: var(--font-size-16);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.certificate-popup-delete:hover {
+  background-color: var(--primary-color-opacity-80, #005f99);
+}

@@ -7,6 +7,8 @@ import { Navbar } from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
 import ScheduleCard from '../schedule/scheduleComponents/ScheduleCard';
 import Spinner from '../../components/Spinner';
+import Appointment from '../appointment/bookAppointment/Appointment';
+import HomeCertAdmin from './HomeCertAdmin'; // Import the new component
 
 import Calendar_Event from '../../assets/icons/Calendar_Event.svg?react';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
@@ -18,9 +20,12 @@ import Book from '../../assets/icons/Book.svg?react';
 import Calendar_Week from '../../assets/icons/Calendar_Week.svg?react';
 import User_Add from '../../assets/icons/User_Add.svg?react';
 import More_Grid_Big from '../../assets/icons/More_Grid_Big.svg?react';
-import CertificateUserCard from '../../user/certificate/certificateCard/CertificateUserCard';
 
 const Home = () => {
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  
   const [overlayContent, setOverlayContent] = useState(null);
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -33,8 +38,6 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [jobTitleCounts, setJobTitleCounts] = useState({});
-  const [expiringCertificates, setExpiringCertificates] = useState([]);
-
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
@@ -59,40 +62,10 @@ const Home = () => {
       setUser(parsedUser);
       fetchAllUsers(token);
       fetchDashboardData(token);
-      fetchExpiringCertificates(token);
     } else {
       fetchUserData(token);
     }
   }, [navigate]);
-
-  const fetchExpiringCertificates = async (token) => {
-  try {
-    const response = await axios.get(`${apiUrl}/certificate.expiration-date`, {
-      headers: { Authorization: `Bearer ${token}` },
-      withCredentials: true,
-    });
-
-    const formatted = response.data
-  .map(cert => ({
-    id: cert.id,
-    certificate_type: cert.certificate_type, 
-    certificate_name: cert.certificate_name,
-    expiration_date: cert.expiration_date,
-    file_path: cert.file_path,
-  }))
-  .sort((a, b) => new Date(a.expiration_date) - new Date(b.expiration_date));
-
-
-    setExpiringCertificates(formatted);
-    console.log('Expiring Certificates:', formatted); // ✅ Place logging here
-
-  } catch (error) {
-    console.error('Failed to fetch expiring certificates:', error);
-  }
-};
-
-
-
 
   const fetchUserData = async (token) => {
     try {
@@ -199,12 +172,6 @@ const Home = () => {
     calculateJobTitleCounts(allUsers);
   }, [allUsers]);
 
- const handleFileClick = (cert) => {
-  if (cert.file_path) {
-    window.open(cert.file_path, '_blank');
-  }
-};
-
   if (loading) {
     return <Spinner />;
   }
@@ -213,39 +180,26 @@ const Home = () => {
     return <div className="home-error">{error}</div>;
   }
 
-  console.log('Expiring Certificates:', expiringCertificates);
-
-  const handleDelete = async (certId) => {
-  const token = sessionStorage.getItem('token');
-  try {
-    await axios.delete(`${apiUrl}/api/certificate/${certId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      withCredentials: true,
-    });
-
-    setExpiringCertificates(prev => prev.filter(cert => cert.id !== certId));
-  } catch (error) {
-    console.error('Error deleting certificate:', error);
-  }
-};
-
-
   return (
     <div className="home">
       <div className="home-box">
         <main className="home-box-in">
           <div className="home-top">
             <header className="home-top-header">
-              <More_Grid_Big
-                style={{
-                  color: "var(--black-color)",
-                  width: "32px",
-                  height: "32px",
-                  "--stroke-width": "1.5px",
-                }}
-              />
-              <p>Dashboard</p>
-            </header>
+              <div className="home-top-header-heading">
+                <More_Grid_Big style={{ color: "var(--black-color)", width: "32px", height: "32px", "--stroke-width": "1.5px" }} />
+                <p>Dashboard</p> 
+              </div>
+              <button 
+                className="home-top-header-button"
+                onClick={() => setIsModalOpen(true)}  // Open modal on click
+              >
+                Book Now
+              </button>
+              {isModalOpen && (
+                <Appointment onClose={() => setIsModalOpen(false)} />
+              )}
+            </header> {/* home-top-header */}
 
             <main className="home-top-main">
               <section className="home-top-main-left">
@@ -375,34 +329,22 @@ const Home = () => {
                 </main>
               </section>
 
-              <section className="home-top-main-right">
+                  <section className="home-top-main-right">
                 <div className="home-top-main-right-header">
                   <div className="home-top-main-right-header-main">
-                    <header>Expiring certificates</header>
+                    <header>Expiring Certificates</header>
                     <Notebook style={{ color: "var(--black-color)", width: "20px", height: "20px" }} />
                   </div>
                   <button className="home-top-main-right-header-btn">
                     <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
                   </button>
                 </div>
-              <div className="home-top-main-right-cards">
-  {expiringCertificates.length > 0 ? (
-  expiringCertificates.slice(0, 3).map((certificate) => (
-    <CertificateUserCard
-      key={certificate.id}
-      certificate={certificate}
-      onFileClick={() => handleFileClick(certificate)}
-      onDelete={() => handleDelete(certificate.id)}
-    />
-  ))
-) : (
-  <p>No expiring certificates.</p>
-)}
-</div>
+                <HomeCertAdmin /> {/* Removed onFileClick and onDelete props */}
               </section>
             </main>
           </div>
 
+         
           <div className="home-bot">
             <header className="home-bot-header">
               <Calendar_Week

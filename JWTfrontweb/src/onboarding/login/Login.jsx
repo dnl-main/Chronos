@@ -64,29 +64,31 @@ const Login = () => {
         if (rememberMe) {
           localStorage.setItem('rememberedEmail', email);
         }
-
+        // Conditionally navigate based on role and region
         if (response.data.user.role === 'admin') {
-          navigate('/admin/home');
+          navigate('/admin/home'); // Redirect to admin dashboard
         } else if (response.data.user.region) {
-          navigate('/user/homeUser');
+          navigate('/user/homeUser'); // Navigate to home user if region exists
         } else {
-          navigate('/Registration');
+          navigate('/Registration'); // Redirect to registration if region is null
         }
       } else {
         setError('Invalid credentials or incomplete response. Please try again.');
         alert('Invalid credentials. Please check your email and password and try again.');
       }
     } catch (error) {
-      console.error('Login failed:', error);
       if (error.response) {
         setError(error.response.data.message || 'Login failed. Please check your credentials.');
+        alert(error.response.data.message || 'Login failed. Please check your credentials.');
       } else if (error.request) {
         setError('No response from server. Please check your network or server status.');
+        alert('No response from server. Please check your network or server status.');
       } else {
         setError('Something went wrong. Please try again.');
+        alert('Something went wrong. Please try again.');
       }
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
