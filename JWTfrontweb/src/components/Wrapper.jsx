@@ -45,7 +45,7 @@ const Wrapper = ({ children }) => {
           role = parsedUser?.role || role;
           region = parsedUser?.region || region;
         } catch (err) {
-          console.error('Error parsing stored user:', err);
+          // console.error('Error parsing stored user:', err);
         }
       }
 
@@ -113,7 +113,7 @@ const Wrapper = ({ children }) => {
 
       setIsLoading(false);
     } catch (err) {
-      console.error('Error decoding token:', err);
+      // console.error('Error decoding token:', err);
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
       navigate('/login', { replace: true });

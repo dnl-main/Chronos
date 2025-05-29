@@ -27,14 +27,14 @@ const CertificatePopup = ({ certificate, onClose }) => {
               src={fileUrl}
               title={certificate_name}
               className="certificate-popup-file"
-              onError={() => console.error('Failed to load PDF:', fileUrl)}
+              // onError={() => console.error('Failed to load PDF:', fileUrl)}
             />
           ) : isImage ? (
             <img
               src={fileUrl}
               alt={certificate_name}
               className="certificate-popup-file"
-              onError={() => console.error('Failed to load image:', fileUrl)}
+              // onError={() => console.error('Failed to load image:', fileUrl)}
             />
           ) : (
             <p>Unsupported file type</p>

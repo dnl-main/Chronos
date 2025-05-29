@@ -60,7 +60,7 @@ const fetchUserData = async (token) => {
     sessionStorage.setItem('user', JSON.stringify(userData));
 
   } catch (error) {
-    console.error('Failed to fetch user data:', error);
+    // console.error('Failed to fetch user data:', error);
     navigate('/login');
   } finally {
     setLoading(false);
@@ -77,7 +77,7 @@ if (loading) {
       const token = sessionStorage.getItem('token');
 
       if (!token) {
-        console.warn('No token found, logging out anyway.');
+        // console.warn('No token found, logging out anyway.');
         navigate('/');
         return;
       }
@@ -92,7 +92,7 @@ if (loading) {
       sessionStorage.removeItem('user'); // Clear user data
       navigate('/');
     } catch (error) {
-      console.error('Logout failed:', error);
+      // console.error('Logout failed:', error);
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
       navigate('/');
@@ -112,9 +112,9 @@ if (loading) {
       });
   
       alert('Upload successful!');
-      console.log(response.data);
+      // console.log(response.data);
     } catch (error) {
-      console.error(error.response?.data);
+      // console.error(error.response?.data);
       alert('Upload failed');
     }
   };

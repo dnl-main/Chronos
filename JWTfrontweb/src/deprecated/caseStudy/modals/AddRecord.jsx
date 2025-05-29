@@ -21,7 +21,7 @@ const AddRecord = ({ closeAddRecord }) => {
       const response = await axios.get("http://localhost/Concorde/backend/index.php");
       setFetchedRecords(response.data); 
     } catch (error) {
-      console.error("Error fetching records:", error);
+      // console.error("Error fetching records:", error);
     }
   };
 
@@ -51,7 +51,7 @@ const AddRecord = ({ closeAddRecord }) => {
         setMessage('Error adding record: ' + response.data.message);
       }
     } catch (error) {
-      console.error("There was an error!", error);
+      // console.error("There was an error!", error);
       setMessage('An error occurred while adding the record.');
     }
   };

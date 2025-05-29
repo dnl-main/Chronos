@@ -14,10 +14,10 @@ const SidebarUser = () => {
   const handleLogout = async () => {
     try {
       const token = sessionStorage.getItem('token');
-      console.log(import.meta.env.VITE_API_BASE_URL);
+      // console.log(import.meta.env.VITE_API_BASE_URL);
 
       if (!token) {
-        console.warn('No token found, logging out anyway.');
+        // console.warn('No token found, logging out anyway.');
         navigate('/');
         return;
       }
@@ -32,7 +32,7 @@ const SidebarUser = () => {
       sessionStorage.removeItem('user'); // Clear user data
       navigate('/');
     } catch (error) {
-      console.error('Logout failed:', error);
+      // console.error('Logout failed:', error);
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
       navigate('/');

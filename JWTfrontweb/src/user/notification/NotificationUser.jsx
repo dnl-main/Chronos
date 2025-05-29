@@ -16,7 +16,7 @@ const NotificationUser = () => {
     const fetchNotifications = async () => {
         try {
             const token = sessionStorage.getItem('token');
-            console.log('Token:', token); // Debug
+            // console.log('Token:', token); // Debug
             if (!token) {
                 setError('Please log in to view notifications');
                 setLoading(false);
@@ -26,11 +26,11 @@ const NotificationUser = () => {
                 headers: { Authorization: `Bearer ${token}` },
                 withCredentials: true,
             });
-            console.log('Notifications fetched:', response.data); // Debug
+            // console.log('Notifications fetched:', response.data); // Debug
             setNotifications(response.data);
             setLoading(false);
         } catch (err) {
-            console.error('Fetch notifications error:', err);
+            // console.error('Fetch notifications error:', err);
             if (err.response?.status === 401) {
                 setError('Session expired. Please log in again.');
                 sessionStorage.removeItem('token');
@@ -51,7 +51,7 @@ const NotificationUser = () => {
     };
 
     const filteredNotifications = notifications.filter(notification => {
-        console.log('Filtering notification:', notification); // Debug
+        // console.log('Filtering notification:', notification); // Debug
         if (selectedTab === 'all') return true;
         if (selectedTab === 'uploaded') return !!notification.certificate_type;
         return false;

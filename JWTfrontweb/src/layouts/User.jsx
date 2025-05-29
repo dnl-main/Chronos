@@ -26,7 +26,7 @@ const User = () => {
         navigate('/login');
       }
     } catch (err) {
-      console.error('Invalid token:', err);
+      // console.error('Invalid token:', err);
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
       navigate('/login');

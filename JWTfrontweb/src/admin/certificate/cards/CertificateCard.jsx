@@ -59,7 +59,7 @@ const CertificateCard = ({ data, certificates, onCertificateClick, onNotifyUploa
             onNotifyUpload(type); // Notify parent if needed
             alert('Notification sent successfully'); // Replace with toast in production
         } catch (err) {
-            console.error('Failed to send notification:', err);
+            // console.error('Failed to send notification:', err);
             alert('Failed to send notification');
         }
     };

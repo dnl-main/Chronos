@@ -36,7 +36,7 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
           setError(response.data.message || 'Failed to upload profile picture.');
         }
       } catch (error) {
-        console.log('Error Response:', error.response?.data, error.request, error.message);
+        // console.log('Error Response:', error.response?.data, error.request, error.message);
         if (error.response) {
           const status = error.response.status;
           const errorMessage = error.response.data?.errors

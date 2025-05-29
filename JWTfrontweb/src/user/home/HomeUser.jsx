@@ -64,7 +64,7 @@ const HomeUser = () => {
         const percentage = Math.round((uploaded / total) * 100);
         setProgress({ percentage, uploaded, total });
       } catch (error) {
-        console.error('Failed to fetch certificates:', error.response?.data || error.message);
+        // console.error('Failed to fetch certificates:', error.response?.data || error.message);
         alert(error.response?.data.message || 'Failed to load certificates');
       } finally {
         setCertificateLoading(false);
@@ -123,7 +123,7 @@ const HomeUser = () => {
           });
         }
       } catch (error) {
-        console.error('Failed to fetch appointment:', error.response?.data || error.message);
+        // console.error('Failed to fetch appointment:', error.response?.data || error.message);
         setAppointment({
           date: '',
           start_time: '',
@@ -181,7 +181,7 @@ const HomeUser = () => {
       setSelectedStatus(userData.availability || 'Available');
       sessionStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
+      // console.error('Failed to fetch user data:', error);
       navigate('/login');
     } finally {
       setLoading(false);
@@ -208,7 +208,7 @@ const HomeUser = () => {
         sessionStorage.setItem('user', JSON.stringify(updatedUser));
         alert('Status updated successfully');
       } catch (error) {
-        console.error('Failed to auto-save status:', error.response?.data || error.message);
+        // console.error('Failed to auto-save status:', error.response?.data || error.message);
         alert(error.response?.data.message || 'Failed to update status');
       }
     };
@@ -274,7 +274,7 @@ const HomeUser = () => {
       });
       alert('Appointment deleted successfully');
     } catch (error) {
-      console.error('Failed to delete appointment:', error.response?.data || error.message);
+      // console.error('Failed to delete appointment:', error.response?.data || error.message);
       alert(error.response?.data.message || 'Failed to delete appointment');
     }
   };
@@ -334,7 +334,7 @@ const HomeUser = () => {
       const percentage = Math.round((uploaded / total) * 100);
       setProgress({ percentage, uploaded, total });
     } catch (error) {
-      console.error('Failed to upload certificate:', error.response?.data || error.message);
+      // console.error('Failed to upload certificate:', error.response?.data || error.message);
       alert(error.response?.data.message || 'Failed to upload certificate');
     }
   };

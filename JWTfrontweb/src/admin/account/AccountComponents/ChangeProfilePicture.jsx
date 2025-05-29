@@ -11,13 +11,15 @@ const departments = {
 
 const ChangeProfilePicture = ({ onClose, onSave }) => {
   const fileInputRef = useRef(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingProfilePicture, setLoadingProfilePicture] = useState(false);
+  const [loadingPosition, setLoadingPosition] = useState(false);
   const [error, setError] = useState(null);
 
   const [selectedDept, setSelectedDept] = useState('');
-  const [jobTitle, setJobTitle] = useState('');
+  const [jobTitles, setJobTitles] = useState([]);
+  const [selectedJob, setSelectedJob] = useState('');
 
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(true); // Start in editing mode
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
   const baseUrl = import.meta.env.VITE_BASE_URL || 'http://127.0.0.1:8000';
@@ -25,7 +27,7 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      setLoading(true);
+      setLoadingProfilePicture(true);
       setError(null);
       const formData = new FormData();
       formData.append('profile_picture', file);
@@ -50,7 +52,7 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
         const msg = error.response?.data?.message || error.message;
         setError(`Upload failed: ${msg}`);
       } finally {
-        setLoading(false);
+        setLoadingProfilePicture(false);
       }
     }
   };
@@ -58,116 +60,164 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
   const handleDeptChange = (e) => {
     const dept = e.target.value;
     setSelectedDept(dept);
-    setJobTitle(''); // Clear job title when department changes
+    setJobTitles(departments[dept] || []);
+    setSelectedJob(''); // Reset job title when department changes
   };
 
   const handleEdit = () => setIsEditing(true);
-  const handleSave = () => {
-    // Placeholder for saving to backend
-    if (!selectedDept || !jobTitle) {
-      alert('Please select a department and enter a job title.');
+
+  const handleSave = async () => {
+    if (!selectedDept || !selectedJob) {
+      setError('Please select a department and enter a job title.');
       return;
     }
-    alert(`Saved: ${selectedDept} - ${jobTitle}`);
-    setIsEditing(false);
+
+    setLoadingPosition(true);
+    setError(null);
+
+    try {
+      const token = sessionStorage.getItem('token');
+      const response = await axios.post(
+        `${apiUrl}/user/update-position`,
+        { position: selectedJob },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.data.status) {
+        alert('Position updated successfully!');
+        setIsEditing(false);
+        // Update user in sessionStorage
+        const updatedUser = {
+          ...JSON.parse(sessionStorage.getItem('user')),
+          position: selectedJob,
+          needs_position: false,
+        };
+        sessionStorage.setItem('user', JSON.stringify(updatedUser));
+        window.location.reload(); // Refresh the page after successful position update
+        onClose(); // Close the modal
+      } else {
+        setError(response.data.message || 'Failed to update position.');
+      }
+    } catch (error) {
+      const msg = error.response?.data?.message || error.message;
+      setError(`Failed to update position: ${msg}`);
+    } finally {
+      setLoadingPosition(false);
+    }
   };
+
   const handleDiscard = () => {
     setSelectedDept('');
-    setJobTitle('');
+    setSelectedJob('');
     setIsEditing(false);
+    onClose(); // Close the modal on discard
   };
 
   return (
     <div className="changePP">
-      <div className="changePP-main">
+      <div className="changepassword-main">
         <header className="changePP-main-header">
           <div className="changePP-main-header-core">
             <div className="changePP-main-header-core-svg">
               <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "20px", height: "20px" }} />
             </div>
             <div className="changePP-main-header-core-text">
-              <p className="changePP-main-header-core-text-semibold">Change profile picture</p>
-              <p className="changePP-main-header-core-text-light">Update your display picture and details</p>
+              <p className="changePP-main-header-core-text-semibold">Edit Profile</p>
+              <p className="changePP-main-header-core-text-light">Update your profile picture or position</p>
             </div>
           </div>
           <div className="changePP-main-header-line"></div>
         </header>
 
-        {/* Profile Picture Upload */}
-        <div className="changePP-main-section">
-          <div className="changePP-main-fields changePP-upload">
-            <label htmlFor="profilePicInput">Select new image</label>
-            <input
-              id="profilePicInput"
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              ref={fileInputRef}
-              disabled={loading}
-            />
-            {loading && (
-              <div className="loading-bar-container" style={{ marginTop: '10px' }}>
-                <div className="loading-bar"></div>
-                <span>Uploading...</span>
-              </div>
-            )}
-            {error && <p className="error-message" style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
-          </div>
-        </div>
+        <div className="changePP-main-fields">
+          <label htmlFor="profilePicInput">Select new image</label>
+          <input
+            id="profilePicInput"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            ref={fileInputRef}
+            disabled={loadingProfilePicture}
+          />
+          {loadingProfilePicture && (
+            <div className="loading-bar-container" style={{ marginTop: '10px' }}>
+              <div className="loading-bar"></div>
+              <span>Uploading...</span>
+            </div>
+          )}
+          {error && <p className="error-message" style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
 
-        {/* Separator */}
-        <hr className="changePP-main-divider" />
-
-        {/* Department and Job Title Fields */}
-        <div className="changePP-main-section">
-          <div className="changePP-main-fields">
-            <label>Department</label>
-            <select value={selectedDept} onChange={handleDeptChange} disabled={!isEditing}>
-              <option value="">Select Department</option>
-              {Object.keys(departments).map((dept) => (
-                <option key={dept} value={dept}>{dept}</option>
-              ))}
-            </select>
-
-            <label>Job Title</label>
-            <input
-              type="text"
-              value={jobTitle}
-              onChange={(e) => setJobTitle(e.target.value)}
-              disabled={!isEditing || !selectedDept}
-              placeholder="Enter job title"
-            />
-          </div>
-        </div>
-
-        {/* Upload Buttons */}
-        <div className="changePP-main-buttons">
-          <button
-            className="changePP-main-buttons-cancel"
-            onClick={() => onClose(false)}
-            disabled={loading}
-          >
-            Cancel
-          </button>
           <button
             className="changePP-main-buttons-confirm"
             onClick={() => fileInputRef.current?.click()}
-            disabled={loading}
+            disabled={loadingProfilePicture}
+            style={{ marginTop: '15px' }}
           >
-            {loading ? 'Uploading...' : 'Upload'}
+            {loadingProfilePicture ? 'Uploading...' : 'Upload'}
           </button>
         </div>
 
-        {/* Department/Job Buttons */}
-        <div className="changePP-main-buttons">
-          {!isEditing ? (
-            <button onClick={handleEdit}>Edit</button>
-          ) : (
-            <>
-              <button onClick={handleSave} disabled={!selectedDept || !jobTitle}>Save</button>
-              <button onClick={handleDiscard}>Discard</button>
-            </>
-          )}
+        <div className="changePP-main-fields">
+          <label>Department</label>
+          <select value={selectedDept} onChange={handleDeptChange} disabled={!isEditing || loadingPosition}>
+            <option value="">Select Department</option>
+            {Object.keys(departments).map((dept) => (
+              <option key={dept} value={dept}>{dept}</option>
+            ))}
+          </select>
+
+          <label>Job Title</label>
+          <input
+            type="text"
+            value={selectedJob}
+            onChange={(e) => setSelectedJob(e.target.value)}
+            placeholder="Enter Job Title"
+            disabled={!isEditing || loadingPosition}
+          />
+
+          <div className="changePP-main-role-buttons" style={{ marginTop: '15px' }}>
+            {!isEditing ? (
+              <button
+                className="changePP-role-button changePP-role-button-edit"
+                onClick={handleEdit}
+                disabled={loadingPosition}
+              >
+                Edit
+              </button>
+            ) : (
+              <>
+                <button
+                  className="changePP-role-button changePP-role-button-save"
+                  onClick={handleSave}
+                  disabled={!selectedDept || !selectedJob || loadingPosition}
+                >
+                  {loadingPosition ? 'Saving...' : 'Save'}
+                </button>
+                <button
+                  className="changePP-role-button changePP-role-button-discard"
+                  onClick={handleDiscard}
+                  disabled={loadingPosition}
+                >
+                  Discard
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="changePP-main-buttons" style={{ marginTop: '30px' }}>
+          <button
+            className="changePP-main-buttons-cancel"
+            onClick={() => onClose(false)}
+            disabled={loadingPosition || loadingProfilePicture}
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </div>

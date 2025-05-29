@@ -55,7 +55,7 @@ const fetchUserData = async (token) => {
     localStorage.setItem('user', JSON.stringify(userData));
 
   } catch (error) {
-    console.error('Failed to fetch user data:', error);
+    // console.error('Failed to fetch user data:', error);
     navigate('/login');
   } finally {
     setLoading(false);
@@ -72,7 +72,7 @@ if (loading) {
       const token = localStorage.getItem('token');
 
       if (!token) {
-        console.warn('No token found, logging out anyway.');
+        // console.warn('No token found, logging out anyway.');
         navigate('/login');
         return;
       }
@@ -87,7 +87,7 @@ if (loading) {
       localStorage.removeItem('user'); // Clear user data too
       navigate('/login');
     } catch (error) {
-      console.error('Logout failed:', error);
+      // console.error('Logout failed:', error);
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       navigate('/login');
@@ -107,9 +107,9 @@ if (loading) {
       });
   
       alert('Upload successful!');
-      console.log(response.data);
+      // console.log(response.data);
     } catch (error) {
-      console.error(error.response?.data);
+      // console.error(error.response?.data);
       alert('Upload failed');
     }
   };

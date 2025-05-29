@@ -67,12 +67,12 @@ const Certificate = () => {
             setLoading(false);
           })
           .catch((error) => {
-            console.error('Error in Promise.all:', error);
+            // console.error('Error in Promise.all:', error);
             setError('Failed to load data.');
             setLoading(false);
           });
       } catch (error) {
-        console.error('Failed to parse stored user:', error);
+        // console.error('Failed to parse stored user:', error);
         navigate('/login');
         setLoading(false);
       }
@@ -97,7 +97,7 @@ const Certificate = () => {
       setUser(userData);
       await Promise.all([fetchCrewData(token), fetchCertificates(token)]);
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
+      // console.error('Failed to fetch user data:', error);
       setError('Failed to load user data. Please log in again.');
       navigate('/login');
     } finally {
@@ -115,7 +115,7 @@ const Certificate = () => {
 
       setCrewData(Array.isArray(response.data) ? response.data : [response.data].filter(Boolean));
     } catch (error) {
-      console.error('Failed to fetch crew data:', error);
+      // console.error('Failed to fetch crew data:', error);
       if (error.response?.status === 401) {
         setError('Unauthorized. Please log in again.');
         navigate('/login');
@@ -138,7 +138,7 @@ const Certificate = () => {
           : [response.data.certificates].filter(Boolean)
       );
     } catch (error) {
-      console.error('Failed to fetch certificates:', error);
+      // console.error('Failed to fetch certificates:', error);
       setError('Failed to load certificates.');
     }
   };

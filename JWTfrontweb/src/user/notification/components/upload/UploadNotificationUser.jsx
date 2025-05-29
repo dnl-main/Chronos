@@ -10,7 +10,7 @@ const UploadNotificationUser = ({ notification, onDelete }) => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        console.log('Notification prop:', notification); // Debug
+        // console.log('Notification prop:', notification); // Debug
         const fetchUser = async () => {
             try {
                 const token = sessionStorage.getItem('token');
@@ -18,10 +18,10 @@ const UploadNotificationUser = ({ notification, onDelete }) => {
                     headers: { Authorization: `Bearer ${token}` },
                     withCredentials: true,
                 });
-                console.log('User fetched:', response.data); // Debug
+                // console.log('User fetched:', response.data); // Debug
                 setUser(response.data);
             } catch (err) {
-                console.error('Failed to fetch user:', err);
+                // console.error('Failed to fetch user:', err);
             }
         };
 
@@ -37,11 +37,11 @@ const UploadNotificationUser = ({ notification, onDelete }) => {
                 headers: { Authorization: `Bearer ${token}` },
                 withCredentials: true,
             });
-            console.log('Notification deleted:', notification.id); // Debug
+            // console.log('Notification deleted:', notification.id); // Debug
             onDelete(notification.id); // Notify parent to refresh
             alert('Notification deleted successfully'); // Replace with toast in production
         } catch (err) {
-            console.error('Failed to delete notification:', err);
+            // console.error('Failed to delete notification:', err);
             alert('Failed to delete notification');
         }
     };

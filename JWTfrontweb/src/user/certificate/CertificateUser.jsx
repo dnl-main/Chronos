@@ -56,7 +56,7 @@ const CertificateUser = () => {
       sessionStorage.setItem('user', JSON.stringify(userData));
       fetchCertificates(token);
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
+      // console.error('Failed to fetch user data:', error);
       setError('Failed to fetch user data');
       navigate('/login');
     } finally {
@@ -71,7 +71,7 @@ const CertificateUser = () => {
       });
       setCertificates(response.data.certificates || []);
     } catch (error) {
-      console.error('Failed to fetch certificates:', error);
+      // console.error('Failed to fetch certificates:', error);
       setError('Failed to fetch certificates');
     } finally {
       setLoading(false);
@@ -98,7 +98,7 @@ const CertificateUser = () => {
       await fetchCertificates(token);
       alert('Certificate deleted successfully');
     } catch (error) {
-      console.error('Failed to delete certificate:', error);
+      // console.error('Failed to delete certificate:', error);
       setError('Failed to delete certificate');
       alert(error.response?.data.message || 'Failed to delete certificate');
     } finally {

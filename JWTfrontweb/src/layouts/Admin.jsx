@@ -26,7 +26,7 @@ const Admin = () => {
         navigate('/login');
       }
     } catch (error) {
-      console.error('Invalid token:', error);
+      // console.error('Invalid token:', error);
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
       navigate('/login');

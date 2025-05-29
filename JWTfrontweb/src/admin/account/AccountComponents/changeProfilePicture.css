@@ -11,23 +11,26 @@
 	background-color: var(--black-color-opacity-60);
 }
 
-.changePP-main {
+.changepassword-main {
 	background-color: var(--white-color);
 	display: flex;
 	flex-direction: column;
-	height: 50vh;
-	width: 64vh;
-	padding: 4vh;
-	row-gap: 4vh;
+	justify-content: flex-start;
+	width: 75vh;
+	max-height: 90vh;
+	height: auto;
+	padding: 3vh;
+	gap: 3vh;
 	border-radius: 1.8vh;
-	box-shadow: 0px 0px 20px rgba(0, 136, 154, 0.10);
+	box-shadow: 0 0 20px rgba(0, 136, 154, 0.10);
+	box-sizing: border-box;
 }
+
 
 .changePP-main-header {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	height: 16%;
 	width: 100%;
 }
 
@@ -72,6 +75,7 @@
 	height: 0.4vh;
 	width: 100%;
 	border-radius: 500px;
+	margin-top: 1.5vh;
 }
 
 .changePP-main-fields {
@@ -81,13 +85,18 @@
 	width: 100%;
 }
 
+.changePP-main-fields + .changePP-main-fields {
+	margin-top: 2vh;
+}
+
 .changePP-main-fields label {
 	font-size: var(--font-size-12);
 	font-weight: var(--font-weight-semibold);
 	color: var(--black-color);
 }
 
-.changePP-main-fields input {
+.changePP-main-fields input,
+.changePP-main-fields select {
 	padding: 1.2vh;
 	border-radius: 0.8vh;
 	border: 1px solid var(--black-color-opacity-15);
@@ -96,48 +105,95 @@
 	color: var(--black-color);
 	outline: none;
 	box-shadow: 0px 0px 8px rgba(0, 136, 154, 0.05);
+	width: 100%;
+}
+
+.changePP-main-fields select {
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+.changePP-main-fields input[type="file"] {
+	margin-bottom: 1.2vh;
 }
 
 .changePP-main-buttons {
 	display: flex;
 	justify-content: center;
-	align-items: end;
-	flex-grow: 1;
 	column-gap: 4%;
+	width: 100%;
+	margin-top: 3vh; /* Adjusted for bottom spacing */
 }
 
-.changePP-main-buttons-cancel {
-	all: unset;
-	width: 48%;
-	background-color: var(--white-color);
-	font-weight: var(--font-weight-semibold);
-	font-size: var(--font-size-12);
-	color: var(--black-color);
-	border: 2px solid var(--primary-color-opacity-15);
-	text-align: center;
-	padding: 1vh;
-	cursor: pointer;
-}
-
+.changePP-main-buttons-cancel,
 .changePP-main-buttons-confirm {
 	all: unset;
 	width: 48%;
-	background-color: var(--primary-color);
-	font-weight: var(--font-weight-semibold);
-	font-size: var(--font-size-12);
-	color: var(--white-color);
 	text-align: center;
 	padding: 1vh;
+	font-weight: var(--font-weight-semibold);
+	font-size: var(--font-size-12);
 	cursor: pointer;
+	border-radius: 0.8vh;
+}
+
+.changePP-main-buttons-cancel {
+	background-color: var(--white-color);
+	color: var(--black-color);
+	border: 2px solid var(--primary-color-opacity-15);
+}
+
+.changePP-main-buttons-confirm {
+	background-color: var(--primary-color);
+	color: var(--white-color);
+	border: 2px solid var(--primary-color);
+}
+
+.changePP-main-role-buttons {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 1vh;
+	width: 100%;
+}
+
+.changePP-role-button {
+	all: unset;
+	flex: 1;
+	text-align: center;
+	padding: 1vh;
+	margin: 0 0.5vh;
+	font-size: var(--font-size-12);
+	font-weight: var(--font-weight-semibold);
+	border-radius: 0.6vh;
+	cursor: pointer;
+	box-shadow: 0px 0px 8px rgba(0, 136, 154, 0.05);
+}
+
+.changePP-role-button-edit {
+	border: 2px solid var(--primary-color);
+	color: var(--primary-color);
+	background-color: var(--white-color);
+}
+
+.changePP-role-button-save {
+	background-color: var(--primary-color);
+	color: var(--white-color);
+	border: 2px solid var(--primary-color);
+}
+
+.changePP-role-button-discard {
+	background-color: var(--black-color-opacity-05);
+	color: var(--black-color);
+	border: 2px solid var(--black-color-opacity-15);
 }
 
 .error-message {
 	font-size: var(--font-size-12);
 	font-weight: var(--font-weight-regular);
 	color: red;
+	margin-top: 1vh;
 }
 
-/* Loading bar styles */
 .loading-bar-container {
 	display: flex;
 	flex-direction: column;
@@ -180,4 +236,22 @@
 	100% {
 		transform: translateX(200%);
 	}
+}
+
+button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.changePP-main-buttons-confirm:hover:not(:disabled),
+.changePP-role-button-save:hover:not(:disabled) {
+	background-color: var(--primary-color-dark);
+}
+
+.changePP-role-button-edit:hover {
+	background-color: var(--primary-color-opacity-05);
+}
+
+.changePP-role-button-discard:hover {
+	background-color: var(--black-color-opacity-10);
 }

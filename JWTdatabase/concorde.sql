@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 28, 2025 at 05:59 PM
+-- Generation Time: May 29, 2025 at 04:02 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -39,15 +39,17 @@ CREATE TABLE `appointments` (
   `accounting_task` varchar(255) DEFAULT NULL,
   `employee` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `status` enum('available','booked') NOT NULL DEFAULT 'booked'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `appointments`
 --
 
-INSERT INTO `appointments` (`id`, `user_id`, `date`, `start_time`, `end_time`, `department`, `crewing_dept`, `operator`, `accounting_task`, `employee`, `created_at`, `updated_at`) VALUES
-(16, 1, '2025-06-01', '17:00:00', '18:00:00', 'crewing', 'maran gas', 'fleet crew manager', NULL, 'Angela Guilaran', '2025-05-28 14:50:17', '2025-05-28 14:50:17');
+INSERT INTO `appointments` (`id`, `user_id`, `date`, `start_time`, `end_time`, `department`, `crewing_dept`, `operator`, `accounting_task`, `employee`, `created_at`, `updated_at`, `status`) VALUES
+(33, 1, '2025-07-31', '12:30:00', '17:00:00', 'crewing', 'maran tankers', 'senior fleet crew operator', NULL, 'Yagoda', '2025-05-29 07:27:26', '2025-05-29 10:56:11', 'booked'),
+(37, 22, '2025-06-21', '13:00:00', '16:00:00', 'accounting', NULL, NULL, 'allotment', 'Angela Guilaran', '2025-05-29 12:44:12', '2025-05-29 12:44:12', 'booked');
 
 -- --------------------------------------------------------
 
@@ -66,17 +68,19 @@ CREATE TABLE `cache` (
 --
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('laravel_cache_38a3ca8cec82add39a8b166d63d5ad55', 'i:1;', 1748505158),
+('laravel_cache_38a3ca8cec82add39a8b166d63d5ad55:timer', 'i:1748505158;', 1748505158),
 ('laravel_cache_51e331c8866e23cab0d39d2b17735cfd', 'i:5;', 1748403448),
 ('laravel_cache_51e331c8866e23cab0d39d2b17735cfd:timer', 'i:1748403448;', 1748403448),
-('laravel_cache_86661923a619c56d32390f6520b52426', 'i:4;', 1748330046),
-('laravel_cache_86661923a619c56d32390f6520b52426:timer', 'i:1748330046;', 1748330046),
-('laravel_cache_a75f3f172bfb296f2e10cbfc6dfc1883', 'i:7;', 1748447941),
-('laravel_cache_a75f3f172bfb296f2e10cbfc6dfc1883:timer', 'i:1748447941;', 1748447941),
-('laravel_cache_e9b6cc1432541b9ceebf113eee05eeba', 'i:14;', 1748447942),
-('laravel_cache_e9b6cc1432541b9ceebf113eee05eeba:timer', 'i:1748447942;', 1748447942),
+('laravel_cache_86661923a619c56d32390f6520b52426', 'i:3;', 1748497000),
+('laravel_cache_86661923a619c56d32390f6520b52426:timer', 'i:1748497000;', 1748497000),
+('laravel_cache_a75f3f172bfb296f2e10cbfc6dfc1883', 'i:19;', 1748527275),
+('laravel_cache_a75f3f172bfb296f2e10cbfc6dfc1883:timer', 'i:1748527275;', 1748527275),
+('laravel_cache_e9b6cc1432541b9ceebf113eee05eeba', 'i:16;', 1748527061),
+('laravel_cache_e9b6cc1432541b9ceebf113eee05eeba:timer', 'i:1748527061;', 1748527061),
 ('laravel_cache_eORryRsqAWETirHd', 's:7:\"forever\";', 2063626593),
-('laravel_cache_f1f70ec40aaa556905d4a030501c0ba4', 'i:2;', 1748443951),
-('laravel_cache_f1f70ec40aaa556905d4a030501c0ba4:timer', 'i:1748443951;', 1748443951);
+('laravel_cache_f1f70ec40aaa556905d4a030501c0ba4', 'i:4;', 1748527307),
+('laravel_cache_f1f70ec40aaa556905d4a030501c0ba4:timer', 'i:1748527307;', 1748527307);
 
 -- --------------------------------------------------------
 
@@ -112,7 +116,10 @@ CREATE TABLE `certificates` (
 --
 
 INSERT INTO `certificates` (`id`, `user_id`, `certificate_name`, `certificate_type`, `file_path`, `expiration_date`, `created_at`, `updated_at`) VALUES
-(35, 1, 'Medical', 'Medical', '1-ian_kenneth-sianghio-user/certificates/Medical.pdf', '2025-05-31', '2025-05-28 14:13:05', '2025-05-28 14:13:05');
+(35, 1, 'Medical', 'Medical', '1-ian_kenneth-sianghio-user/certificates/Medical.pdf', '2025-05-31', '2025-05-28 14:13:05', '2025-05-28 14:13:05'),
+(36, 1, 'fAWSFASFDAS', 'Training', '1-ian_kenneth-sianghio-user/certificates/fAWSFASFDAS.pdf', '2025-05-31', '2025-05-29 00:11:53', '2025-05-29 00:11:53'),
+(37, 1, 'ASDASDASD(1)', 'Contract', '1-ian_kenneth-sianghio-user/certificates/ASDASDASD(1).pdf', '2025-05-31', '2025-05-29 00:12:30', '2025-05-29 00:12:30'),
+(38, 1, 'ASDASDASDASD', 'Employee ID', '1-ian_kenneth-sianghio-user/certificates/ASDASDASDASD.pdf', '2025-05-31', '2025-05-29 00:12:51', '2025-05-29 00:12:51');
 
 -- --------------------------------------------------------
 
@@ -161,7 +168,9 @@ INSERT INTO `jobs` (`id`, `queue`, `payload`, `attempts`, `reserved_at`, `availa
 (8, 'default', '{\"uuid\":\"266bd5da-586d-439d-9828-1695bd8307d2\",\"displayName\":\"App\\\\Notifications\\\\SendCertificateNotification\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\",\"command\":\"O:48:\\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\\":3:{s:11:\\\"notifiables\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:15:\\\"App\\\\Models\\\\User\\\";s:2:\\\"id\\\";a:1:{i:0;i:1;}s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:12:\\\"notification\\\";O:45:\\\"App\\\\Notifications\\\\SendCertificateNotification\\\":2:{s:18:\\\"\\u0000*\\u0000certificateType\\\";s:7:\\\"Medical\\\";s:2:\\\"id\\\";s:36:\\\"4b140ac8-dbb1-4184-ad36-0d47a2e10a08\\\";}s:8:\\\"channels\\\";a:1:{i:0;s:8:\\\"database\\\";}}\"}}', 0, NULL, 1748323938, 1748323938),
 (9, 'default', '{\"uuid\":\"ed235198-e0af-4c05-90c2-2a17d9307661\",\"displayName\":\"App\\\\Notifications\\\\SendCertificateNotification\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\",\"command\":\"O:48:\\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\\":3:{s:11:\\\"notifiables\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:15:\\\"App\\\\Models\\\\User\\\";s:2:\\\"id\\\";a:1:{i:0;i:1;}s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:12:\\\"notification\\\";O:45:\\\"App\\\\Notifications\\\\SendCertificateNotification\\\":2:{s:18:\\\"\\u0000*\\u0000certificateType\\\";s:7:\\\"Medical\\\";s:2:\\\"id\\\";s:36:\\\"5cb3afdf-b33f-495e-968e-f882b3761d9d\\\";}s:8:\\\"channels\\\";a:1:{i:0;s:8:\\\"database\\\";}}\"}}', 0, NULL, 1748324440, 1748324440),
 (10, 'default', '{\"uuid\":\"c54d98ab-4992-4004-beca-afbb56a7170d\",\"displayName\":\"App\\\\Notifications\\\\SendCertificateNotification\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\",\"command\":\"O:48:\\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\\":3:{s:11:\\\"notifiables\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:15:\\\"App\\\\Models\\\\User\\\";s:2:\\\"id\\\";a:1:{i:0;i:1;}s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:12:\\\"notification\\\";O:45:\\\"App\\\\Notifications\\\\SendCertificateNotification\\\":2:{s:18:\\\"\\u0000*\\u0000certificateType\\\";s:7:\\\"Medical\\\";s:2:\\\"id\\\";s:36:\\\"0da4c150-4043-4970-aa99-51686f559cc3\\\";}s:8:\\\"channels\\\";a:1:{i:0;s:8:\\\"database\\\";}}\"}}', 0, NULL, 1748324443, 1748324443),
-(11, 'default', '{\"uuid\":\"f803c7be-ea13-4434-b386-872df7a58617\",\"displayName\":\"App\\\\Notifications\\\\SendCertificateNotification\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\",\"command\":\"O:48:\\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\\":3:{s:11:\\\"notifiables\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:15:\\\"App\\\\Models\\\\User\\\";s:2:\\\"id\\\";a:1:{i:0;i:1;}s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:12:\\\"notification\\\";O:45:\\\"App\\\\Notifications\\\\SendCertificateNotification\\\":2:{s:18:\\\"\\u0000*\\u0000certificateType\\\";s:8:\\\"Training\\\";s:2:\\\"id\\\";s:36:\\\"f9709649-cb20-4de5-8268-ade98ef8cb2c\\\";}s:8:\\\"channels\\\";a:1:{i:0;s:8:\\\"database\\\";}}\"}}', 0, NULL, 1748324448, 1748324448);
+(11, 'default', '{\"uuid\":\"f803c7be-ea13-4434-b386-872df7a58617\",\"displayName\":\"App\\\\Notifications\\\\SendCertificateNotification\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\",\"command\":\"O:48:\\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\\":3:{s:11:\\\"notifiables\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:15:\\\"App\\\\Models\\\\User\\\";s:2:\\\"id\\\";a:1:{i:0;i:1;}s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:12:\\\"notification\\\";O:45:\\\"App\\\\Notifications\\\\SendCertificateNotification\\\":2:{s:18:\\\"\\u0000*\\u0000certificateType\\\";s:8:\\\"Training\\\";s:2:\\\"id\\\";s:36:\\\"f9709649-cb20-4de5-8268-ade98ef8cb2c\\\";}s:8:\\\"channels\\\";a:1:{i:0;s:8:\\\"database\\\";}}\"}}', 0, NULL, 1748324448, 1748324448),
+(12, 'default', '{\"uuid\":\"5aa6ca1d-7b50-4537-a805-e75f996008f4\",\"displayName\":\"App\\\\Notifications\\\\SendRescheduleNotification\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\",\"command\":\"O:48:\\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\\":3:{s:11:\\\"notifiables\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:15:\\\"App\\\\Models\\\\User\\\";s:2:\\\"id\\\";a:1:{i:0;i:1;}s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:12:\\\"notification\\\";O:44:\\\"App\\\\Notifications\\\\SendRescheduleNotification\\\":2:{s:14:\\\"\\u0000*\\u0000appointment\\\";a:4:{s:2:\\\"id\\\";i:18;s:4:\\\"date\\\";s:10:\\\"2025-06-07\\\";s:10:\\\"start_time\\\";s:5:\\\"07:00\\\";s:8:\\\"end_time\\\";s:5:\\\"18:00\\\";}s:2:\\\"id\\\";s:36:\\\"49c1e6e6-5adb-41fd-a1c9-dc99ebada8d4\\\";}s:8:\\\"channels\\\";a:1:{i:0;s:8:\\\"database\\\";}}\"}}', 0, NULL, 1748454625, 1748454625),
+(13, 'default', '{\"uuid\":\"7754c32a-6182-403e-940d-6fb3daa6e68f\",\"displayName\":\"App\\\\Notifications\\\\SendRescheduleNotification\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\",\"command\":\"O:48:\\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\\":3:{s:11:\\\"notifiables\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:15:\\\"App\\\\Models\\\\User\\\";s:2:\\\"id\\\";a:1:{i:0;i:1;}s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}s:12:\\\"notification\\\";O:44:\\\"App\\\\Notifications\\\\SendRescheduleNotification\\\":3:{s:14:\\\"\\u0000*\\u0000appointment\\\";a:4:{s:2:\\\"id\\\";i:18;s:4:\\\"date\\\";s:10:\\\"2025-06-08\\\";s:10:\\\"start_time\\\";s:5:\\\"07:00\\\";s:8:\\\"end_time\\\";s:5:\\\"18:00\\\";}s:10:\\\"\\u0000*\\u0000adminId\\\";i:2;s:2:\\\"id\\\";s:36:\\\"82a68872-112f-4e6f-b711-afefbcc02352\\\";}s:8:\\\"channels\\\";a:1:{i:0;s:8:\\\"database\\\";}}\"}}', 0, NULL, 1748455044, 1748455044);
 
 -- --------------------------------------------------------
 
@@ -219,7 +228,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (18, '2025_05_27_131728_create_notifications_table', 8),
 (19, '2025_05_28_120816_add_department_and_officer_to_appointments_table', 9),
 (20, '2025_05_28_120037_add_person_to_appointments_table', 10),
-(21, '2025_05_28_222426_update_appointments_table', 10);
+(21, '2025_05_28_222426_update_appointments_table', 10),
+(22, '2025_05_29_132646_add_status_to_appointments_table', 11);
 
 -- --------------------------------------------------------
 
@@ -246,6 +256,7 @@ INSERT INTO `notifications` (`id`, `type`, `notifiable_type`, `notifiable_id`, `
 ('0c22e4b7-de7a-4bb2-ab0e-83a25cce8b55', 'App\\Notifications\\SendCancelNotification', 'App\\Models\\User', 24, '{\"user_id\":24,\"appointment_id\":9,\"date\":\"2025-05-28\",\"start_time\":\"17:37:00\",\"end_time\":\"19:45:00\",\"message\":\"Your appointment has been cancelled.\",\"created_at\":\"2025-05-28T03:34:06.414943Z\"}', NULL, '2025-05-28 03:34:06', '2025-05-28 03:34:06'),
 ('3d2f8a4d-1979-45d4-8581-c7d0b2d5cd58', 'App\\Notifications\\SendAppointmentNotification', 'App\\Models\\User', 24, '{\"user_id\":24,\"appointment_id\":8,\"date\":\"2025-05-28\",\"start_time\":\"19:00\",\"end_time\":\"21:00\",\"message\":\"You have a new appointment scheduled.\",\"created_at\":\"2025-05-28T03:23:20.578054Z\"}', NULL, '2025-05-28 03:23:20', '2025-05-28 03:23:20'),
 ('4ce17c11-dfe1-4fbd-bbd7-78b25ded7a42', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 24, '{\"user_id\":24,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-05-28T03:37:05.162169Z\"}', NULL, '2025-05-28 03:37:05', '2025-05-28 03:37:05'),
+('500b413a-c599-468f-bfd3-db791bd88e3c', 'App\\Notifications\\SendRescheduleNotification', 'App\\Models\\User', 1, '{\"appointment_id\":18,\"date\":\"2025-06-03\",\"start_time\":\"16:00\",\"end_time\":\"18:00\",\"message\":\"Your appointment has been rescheduled.\",\"created_at\":\"2025-05-29 01:13:57\",\"user\":{\"first_name\":\"Ian Kenneth\",\"middle_name\":\"Ramirez\",\"last_name\":\"Sianghio\",\"position\":\"CEO\"}}', NULL, '2025-05-28 17:13:57', '2025-05-28 17:13:57'),
 ('67253a41-4915-488f-bc5d-ce6d449958f4', 'App\\Notifications\\SendAppointmentNotification', 'App\\Models\\User', 24, '{\"user_id\":24,\"appointment_id\":9,\"date\":\"2025-05-28\",\"start_time\":\"17:37\",\"end_time\":\"19:45\",\"message\":\"You have a new appointment scheduled.\",\"created_at\":\"2025-05-28T03:32:09.592210Z\"}', NULL, '2025-05-28 03:32:09', '2025-05-28 03:32:09'),
 ('7989d0f3-f28b-4d04-89f3-f77d93167e90', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-05-27T05:44:56.340789Z\"}', NULL, '2025-05-27 05:44:56', '2025-05-27 05:44:56'),
 ('82fb5276-1958-449d-86d0-2a4dcda90e9b', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-05-28T05:42:28.406728Z\"}', NULL, '2025-05-28 05:42:28', '2025-05-28 05:42:28'),
@@ -314,7 +325,7 @@ CREATE TABLE `profile_pictures` (
 
 INSERT INTO `profile_pictures` (`id`, `user_id`, `path`, `created_at`, `updated_at`) VALUES
 (3, 1, '1-ian_kenneth-sianghio-user/1748321322.jpg', '2025-05-19 06:02:34', '2025-05-27 04:48:42'),
-(4, 2, '2-11-1-admin/1747641963.jpeg', '2025-05-19 07:15:09', '2025-05-19 08:06:03'),
+(4, 2, '2-11-1-admin/1748526994.png', '2025-05-19 07:15:09', '2025-05-29 13:56:34'),
 (7, 24, '24-matthias-czernin-user/1748345314.jpg', '2025-05-27 11:28:34', '2025-05-27 11:28:34');
 
 -- --------------------------------------------------------
@@ -395,11 +406,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `first_name`, `middle_name`, `last_name`, `email`, `password`, `mobile`, `remember_token`, `availability`, `created_at`, `updated_at`, `region`, `province`, `city`, `barangay`, `street`, `zip_code`, `building_number`, `birthday`, `position`, `secondary_position`, `gender`, `civil_status`, `role`) VALUES
-(1, 'Ian Kenneth', 'Ramirez', 'Sianghio', 'kennethsianghio756@gmail.com', '$2y$12$/egBUHbJdA5vWQlbG9qt5uh2OCEZk6OmxCjhWDT/bi1HMBYXYQBrW', '09761465526', 'UQoCB80RKI7NozqNPxo0kPUs1t147OQfDCBxMLZkgpl06TRNFyW4QLzbRSfs', 'Available', '2025-05-08 03:39:44', '2025-05-26 13:36:33', 'National Capital Region', 'Metro Manila', 'City of Malabon', 'Santulan', 'Mh Del Pilar St', '1473', '128', '2003-12-09', 'CEO', 'COO', 'Male', 'Single', 'user'),
-(2, '11', '1', '1', 'ian@friendmar.com.ph', '$2y$12$OesYh7hMpvOIbAu1E.zpsOX/GWTphHHUKAIFNtZphSk/zaGWG6pA6', '45as4d5455454', NULL, NULL, '2025-05-13 03:12:10', '2025-05-17 06:37:08', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin'),
+(1, 'Ian Kenneth', 'Ramirez', 'Sianghio', 'kennethsianghio756@gmail.com', '$2y$12$/egBUHbJdA5vWQlbG9qt5uh2OCEZk6OmxCjhWDT/bi1HMBYXYQBrW', '09761465526', 'w5166khbfSAE8oB1zelTHziBfplN1HJE8SqBW1zA7lM9HpwtKUGYsWJQpFqq', 'Available', '2025-05-08 03:39:44', '2025-05-29 14:00:41', 'National Capital Region', 'Metro Manila', 'City of Malabon', 'Santulan', 'Mh Del Pilar St', '1473', '128', '2003-12-09', 'Lebron', 'James', 'Male', 'Married', 'user'),
+(2, '11', '1', '1', 'ian@friendmar.com.ph', '$2y$12$OesYh7hMpvOIbAu1E.zpsOX/GWTphHHUKAIFNtZphSk/zaGWG6pA6', '45as4d5455454', NULL, NULL, '2025-05-13 03:12:10', '2025-05-29 13:56:20', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Plant Manager', NULL, NULL, NULL, 'admin'),
 (21, 'Yagoda', 'Camba', 'Maratas', 'yags@gmail.com', '$2y$12$3o55PTRb/DizQlIOMo.EjeT30BxxnnWDUUXzzTFbzbQCap.ZRf16a', '1234567543', NULL, 'Available', '2025-05-25 10:01:09', '2025-05-25 10:06:27', 'CALABARZON', 'Batangas', 'City of Lipa', 'Tanguay', '1232312', '123123213', '12323', '2006-12-12', 'Trainee', 'COO', 'Male', 'Single', 'user'),
 (22, 'Angela', 'Fajardo', 'Guilaran', 'meaboo@gmail.com', '$2y$12$Fpe0FQA7wJdMG3JXMS4ST.V2J0VJYs5fewANm/H1oLzlC/zf0vvqy', '09761465527', NULL, 'Available', '2025-05-25 10:25:00', '2025-05-25 10:26:42', 'National Capital Region', 'Metro Manila', 'City of Malabon', 'Santolan', 'sfsdfasasd', '1476', '213', '2003-10-24', '𝓯𝓻𝓮𝓪𝓴𝔂', '𝓯𝓻𝓮𝓪𝓴𝔂', 'Female', 'Single', 'user'),
-(24, 'Matthias', 'Idv', 'Czernin', 'matthias@gmail.com', '$2y$12$fWvpEmIDJZPXseT13gmotuTZJXPOoSeoA1vNyiNv7YArp/bwn4s2m', '1234563244', NULL, 'Vacation', '2025-05-27 11:04:48', '2025-05-28 03:36:55', 'Cagayan Valley', 'Isabela', 'Alicia', 'Aurora', 'asdasdasd', 'afdsd', 'adasdasd', '2005-11-25', 'Galley Boy', 'Bosun', 'Male', 'Married', 'user');
+(24, 'Matthias', 'Idv', 'Czernin', 'matthias@gmail.com', '$2y$12$fWvpEmIDJZPXseT13gmotuTZJXPOoSeoA1vNyiNv7YArp/bwn4s2m', '1234563244', NULL, 'Vacation', '2025-05-27 11:04:48', '2025-05-28 03:36:55', 'Cagayan Valley', 'Isabela', 'Alicia', 'Aurora', 'asdasdasd', 'afdsd', 'adasdasd', '2005-11-25', 'Galley Boy', 'Bosun', 'Male', 'Married', 'user'),
+(25, 'Angelique', 'Dumadag', 'Tenoso', 'a@gmail.com', '$2y$12$T1wY13K1qZt9.rZ.xJsojuDDO79YFzVVeCEjjWwpFZFBloFTHYDly', '1111', NULL, NULL, '2025-05-29 13:03:34', '2025-05-29 13:03:34', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user');
 
 --
 -- Indexes for dumped tables
@@ -509,13 +521,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `certificates`
 --
 ALTER TABLE `certificates`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -527,13 +539,13 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `jobs`
 --
 ALTER TABLE `jobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -551,7 +563,7 @@ ALTER TABLE `profile_pictures`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- Constraints for dumped tables

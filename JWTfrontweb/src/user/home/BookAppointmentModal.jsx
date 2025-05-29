@@ -113,7 +113,7 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
         onClose();
       }
     } catch (error) {
-      console.error('Booking failed:', error.response?.data || error.message);
+      // console.error('Booking failed:', error.response?.data || error.message);
       const errorMessage = error.response?.data?.message || 
                           error.response?.data?.errors?.department?.[0] || 
                           'Failed to book appointment. Please check your inputs and try again.';

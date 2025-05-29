@@ -27,7 +27,7 @@ const DeleteRecord = ({ closeDeleteRecord }) => {
         setMessage('Error: ' + response.data.message);
       }
     } catch (error) {
-      console.error('Error deleting record:', error);
+      // console.error('Error deleting record:', error);
       setMessage('An error occurred while deleting the record.');
     }
   };

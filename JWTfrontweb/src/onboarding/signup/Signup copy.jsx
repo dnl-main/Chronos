@@ -57,7 +57,7 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
     setErrors({}); // Clear previous errors
-    console.log("Clicked")
+    // console.log("Clicked")
   
     // // Validate passwords
     // const validationErrors = validatePassword(password, confirmPassword);
@@ -74,7 +74,7 @@ const Signup = () => {
     try {
       const response = await axios.post(`${apiUrl}/signup`,cleanedFormData);
       alert('Signup Successful!');
-      console.log('Response:', response.data);
+      // console.log('Response:', response.data);
   
       setFormData({ first_name: '', middle_name: '', last_name: '', email: '', mobile: '', password: '' });
   
@@ -87,7 +87,7 @@ const Signup = () => {
   
     } catch (error) {
       if (error.response) {
-        console.log('Error:', error.response.data);
+        // console.log('Error:', error.response.data);
         if (error.response.status === 422) {
           setErrors(error.response.data.errors);
         } else {

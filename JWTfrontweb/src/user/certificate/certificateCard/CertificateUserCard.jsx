@@ -18,7 +18,7 @@ const CertificateUserCard = ({ certificate, onFileClick, onDelete }) => {
 
     return `${month} - ${day} - ${year}`;
   } catch (error) {
-    console.error('Error formatting date:', dateString, error);
+    // console.error('Error formatting date:', dateString, error);
     return 'N/A';
   }
 };

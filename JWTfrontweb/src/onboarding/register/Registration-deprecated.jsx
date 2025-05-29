@@ -92,7 +92,7 @@ try {
   sessionStorage.setItem('user', JSON.stringify(userData));
 
 } catch (error) {
-  console.error('Failed to fetch user data:', error);
+  // console.error('Failed to fetch user data:', error);
   navigate('/login');
 } finally {
   setLoading(false);
@@ -108,7 +108,7 @@ return null;
     useEffect(() => {
       axios.get(`${apiUrl}/regions`)
         .then((response) => setRegions(response.data))
-        .catch((error) => console.error('Error fetching regions:', error));
+         .catch((error) => alert.error('Error fetching regions:', error));
     }, []);
   
     // Fetch provinces based on region
@@ -126,7 +126,7 @@ return null;
             setCities([]);
             setBarangays([]);
           })
-          .catch((error) => console.error('Error fetching provinces:', error));
+           .catch((error) => alert.error('Error fetching provinces:', error));
       }
     }, [selectedRegion]);
   
@@ -143,7 +143,7 @@ return null;
             setSelectedCity('');
             setBarangays([]);
           })
-          .catch((error) => console.error('Error fetching cities:', error));
+          .catch((error) => alert('Error fetching cities:', error));
       }
     }, [selectedProvince]);
   
@@ -155,7 +155,7 @@ return null;
           setSelectedCity('');
           setBarangays([]);
         })
-        .catch((error) => console.error('Error fetching NCR cities:', error));
+        .catch((error) => alert.error('Error fetching NCR cities:', error));
     };
   
     // Fetch barangays based on city
@@ -169,7 +169,7 @@ return null;
           setBarangays(filteredBarangays);
           setSelectedBarangay('');
         })
-        .catch((error) => console.error('Error fetching barangays:', error));
+        .catch((error) => alert.error('Error fetching barangays:', error));
     }, [selectedCity]);
   
     const handleChange = (e) => {
@@ -177,14 +177,14 @@ return null;
     };
   
     const handleSubmit = async (e) => {
-       console.log("Selected Barangay:", e.target.value);
-       console.log('Submitting:', {
-        ...formData,
-        region: selectedRegion,
-        province: selectedProvince,
-        city: selectedCity,
-        barangay: selectedBarangay
-      });
+      //  console.log("Selected Barangay:", e.target.value);
+      //  console.log('Submitting:', {
+      //   ...formData,
+      //   region: selectedRegion,
+      //   province: selectedProvince,
+      //   city: selectedCity,
+      //   barangay: selectedBarangay
+      // });
       e.preventDefault();
       setLoading(true);
       setError(null);
@@ -234,7 +234,7 @@ return null;
           setError('Register update failed. Please try again.');
         }
       } catch (err) {
-        console.error('Register update failed:', err);
+        // console.error('Register update failed:', err);
         const errorMessage = err.response?.data?.message || 'Register failed. Please try again.';
         setError(errorMessage);
         alert(errorMessage);

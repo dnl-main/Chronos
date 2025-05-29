@@ -8,13 +8,12 @@ import Sidebar from '../sidebar/Sidebar';
 import ScheduleCard from '../schedule/scheduleComponents/ScheduleCard';
 import Spinner from '../../components/Spinner';
 import Appointment from '../appointment/bookAppointment/Appointment';
-import HomeCertAdmin from './HomeCertAdmin'; // Import the new component
+import HomeCertAdmin from './HomeCertAdmin';
 
 import Calendar_Event from '../../assets/icons/Calendar_Event.svg?react';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Arrow_Right_SM from '../../assets/icons/Arrow_Right_SM.svg?react';
 import Users from '../../assets/icons/Users.svg?react';
-import Bell from '../../assets/icons/Bell.svg?react';
 import Notebook from '../../assets/icons/Notebook.svg?react';
 import Book from '../../assets/icons/Book.svg?react';
 import Calendar_Week from '../../assets/icons/Calendar_Week.svg?react';
@@ -23,12 +22,7 @@ import More_Grid_Big from '../../assets/icons/More_Grid_Big.svg?react';
 import Calendar_Check from '../../assets/icons/Calendar_Check.svg?react';
 
 const Home = () => {
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  
-  const [overlayContent, setOverlayContent] = useState(null);
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [todayCount, setTodayCount] = useState(0);
@@ -39,6 +33,7 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [jobTitleCounts, setJobTitleCounts] = useState({});
+  const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
@@ -63,6 +58,11 @@ const Home = () => {
       setUser(parsedUser);
       fetchAllUsers(token);
       fetchDashboardData(token);
+      // Check if position is needed
+      if (parsedUser.needs_position) {
+        alert('Please input your position in the Account Page.');
+        navigate('/admin/account');
+      }
     } else {
       fetchUserData(token);
     }
@@ -85,12 +85,24 @@ const Home = () => {
         return;
       }
 
+      // Check needs_position from login endpoint
+      const loginResponse = await axios.post(`${apiUrl}/login`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+
+      userData.needs_position = loginResponse.data.needs_position;
       setUser(userData);
       sessionStorage.setItem('user', JSON.stringify(userData));
       fetchAllUsers(token);
       await fetchDashboardData(token);
+
+      // Alert and redirect if position is needed
+      if (loginResponse.data.needs_position) {
+        alert('Please input your position in the Account Page.');
+        navigate('/admin/account');
+      }
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
       setError('Failed to load user data. Please log in again.');
       navigate('/login');
     } finally {
@@ -105,21 +117,18 @@ const Home = () => {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
-      console.log('Today count:', todayCountResponse.data);
       setTodayCount(todayCountResponse.data.count);
 
       const upcomingCountResponse = await axios.get(`${apiUrl}/appointment/upcoming/count`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
-      console.log('Upcoming count:', upcomingCountResponse.data);
       setUpcomingCount(upcomingCountResponse.data.count);
 
       const appointmentsResponse = await axios.get(`${apiUrl}/appointment`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
-      console.log('Appointments:', appointmentsResponse.data);
       const appointments = Array.isArray(appointmentsResponse.data) ? appointmentsResponse.data : [];
       setTodayAppointments(appointments.filter(app => app.status === 'today'));
 
@@ -127,13 +136,11 @@ const Home = () => {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
-      console.log('Crew count:', crewCountResponse.data);
       setCrewCount({
         total: crewCountResponse.data.total,
         complete: crewCountResponse.data.complete,
       });
     } catch (error) {
-      console.error('Failed to fetch dashboard data:', error);
       setError('Failed to load dashboard data.');
     } finally {
       setLoading(false);
@@ -146,10 +153,8 @@ const Home = () => {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
-      console.log('Fetched users:', response.data);
       setAllUsers(response.data);
       calculateJobTitleCounts(response.data);
-      // Calculate total crew count (users with non-null region)
       const userCount = response.data.filter(user => user.region != null && user.region !== '').length;
       setTotalCrewCount(userCount);
     } catch (error) {
@@ -159,13 +164,11 @@ const Home = () => {
 
   const calculateJobTitleCounts = (users) => {
     const counts = {};
-    console.log('Calculating job title counts for users:', users);
     users.forEach(user => {
       if (user.availability && user.availability.toLowerCase() === 'available' && user.position) {
         counts[user.position] = (counts[user.position] || 0) + 1;
       }
     });
-    console.log('Calculated job title counts:', counts);
     setJobTitleCounts(counts);
   };
 
@@ -189,11 +192,11 @@ const Home = () => {
             <header className="home-top-header">
               <div className="home-top-header-heading">
                 <More_Grid_Big style={{ color: "var(--black-color)", width: "32px", height: "32px", "--stroke-width": "1.5px" }} />
-                <p>Dashboard</p> 
+                <p>Dashboard</p>
               </div>
-              <button 
+              <button
                 className="home-top-header-button"
-                onClick={() => setIsModalOpen(true)}  // Open modal on click
+                onClick={() => setIsModalOpen(true)}
               >
                 <Calendar_Check style={{
                   width: "20px", height: "20px",
@@ -205,8 +208,7 @@ const Home = () => {
               {isModalOpen && (
                 <Appointment onClose={() => setIsModalOpen(false)} />
               )}
-            </header> {/* home-top-header */}
-
+            </header>
             <main className="home-top-main">
               <section className="home-top-main-left">
                 <main className="home-top-main-left-up">
@@ -224,7 +226,7 @@ const Home = () => {
                       <p>{crewCount.total}</p>
                     </div>
                     <div className="home-top-main-left-up-data-complete">
-                      <p>{crewCount.complete} Complete</p>
+                      {/* <p>{crewCount.complete} Complete</p> */}
                     </div>
                   </div>
                   <div className="home-top-main-left-up-job">
@@ -266,13 +268,10 @@ const Home = () => {
                     <div className="home-top-main-left-down-data-all">
                       <p>{totalCrewCount}</p>
                     </div>
-                    <div className="home-top-main-left-down-data-complete">
-                      <p>+10 Today</p>
-                    </div>
+                    <div className="home-top-main-left-down-data-complete"></div>
                   </div>
                 </main>
               </section>
-
               <section className="home-top-main-mid">
                 <main className="home-top-main-mid-up">
                   <div className="home-top-main-mid-up-header">
@@ -334,8 +333,7 @@ const Home = () => {
                   </div>
                 </main>
               </section>
-
-                  <section className="home-top-main-right">
+              <section className="home-top-main-right">
                 <div className="home-top-main-right-header">
                   <div className="home-top-main-right-header-main">
                     <header>Expiring Certificates</header>
@@ -345,12 +343,10 @@ const Home = () => {
                     <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
                   </button>
                 </div>
-                <HomeCertAdmin /> {/* Removed onFileClick and onDelete props */}
+                <HomeCertAdmin />
               </section>
             </main>
           </div>
-
-         
           <div className="home-bot">
             <header className="home-bot-header">
               <Calendar_Week

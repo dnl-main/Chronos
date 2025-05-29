@@ -17,19 +17,24 @@ export const Navbar = () => {
       </header> {/* navbar-header */}
 
       <main className="navbar-main">
+        {/*
+
         <div className="navbar-main-search">
           <div className="navbar-main-search-left">
             <img src={Search} className="" alt="Search icon" />
             <p>Search</p>
-          </div> {/* navbar-main-search-left */}
-
+          </div>
+          */}
+{/*
           <div className="navbar-main-search-right">
             <div className="navbar-main-search-right-bg">
               <img src={Filter} className="" alt="Filter icon" />
-            </div> {/* navbar-main-search-right-bg */}
-          </div> {/* navbar-main-search-right */}
-        </div> {/* navbar-main-search */}
+            </div> 
+          </div> 
+        </div> 
+        */}
 
+{/* 
         <div className="navbar-main-notification">
           <Link to="/admin/notification">
             
@@ -42,7 +47,7 @@ export const Navbar = () => {
                 }} 
               />
           </Link>
-        </div> {/* navbar-main-notification */}
+        </div> navbar-main-notification */}
 
         <div className="navbar-main-account">
           <Link to="/admin/account"> 

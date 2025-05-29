@@ -26,7 +26,7 @@ const CaseStudy = () => {
         setRecords(response.data); 
       })
       .catch((error) => {
-        console.error("Error fetching records:", error);
+        // console.error("Error fetching records:", error);
       });
   }, []);
 
@@ -61,7 +61,7 @@ const handleFileUpload = async (e) => {
       setMessage('File upload failed.');
     }
   } catch (error) {
-    console.error('Error uploading file:', error);
+    // console.error('Error uploading file:', error);
     setMessage('An error occurred while uploading the file.');
   }
 };
@@ -87,7 +87,7 @@ const handleDeleteAll = async () => {
       setMessage('Error deleting records: ' + response.data.message);
     }
   } catch (error) {
-    console.error('Error deleting all records:', error);
+    // console.error('Error deleting all records:', error);
     setMessage('An error occurred while deleting records.');
   }
 };

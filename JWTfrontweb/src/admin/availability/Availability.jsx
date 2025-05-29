@@ -6,15 +6,16 @@ import { Navbar } from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
 import AvailabilityCard from './availabilityComponents/AvailabilityCard';
 import Spinner from '../../components/Spinner';
-
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Users from '../../assets/icons/Users.svg?react';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
+
 const Availability = () => {
   const [overlayContent, setOverlayContent] = useState(null);
   const [user, setUser] = useState(null);
   const [crewData, setCrewData] = useState([]);
+  const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTab, setSelectedTab] = useState('all');
@@ -36,7 +37,13 @@ const Availability = () => {
         return;
       }
       setUser(parsedUser);
-      fetchCrewData(token);
+      Promise.all([fetchCrewData(token), fetchCertificates(token)])
+        .then(() => setLoading(false))
+        .catch((error) => {
+          // console.error('Error in Promise.all:', error);
+          setError('Failed to load data.');
+          setLoading(false);
+        });
     } else {
       fetchUserData(token);
     }
@@ -55,9 +62,9 @@ const Availability = () => {
       }
       sessionStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
-      fetchCrewData(token);
+      await Promise.all([fetchCrewData(token), fetchCertificates(token)]);
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
+      // console.error('Failed to fetch user data:', error);
       setError('Failed to load user data. Please log in again.');
       navigate('/login');
     } finally {
@@ -72,17 +79,33 @@ const Availability = () => {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
-      setCrewData(Array.isArray(response.data) ? response.data : [response.data].filter(Boolean));
+      const crew = Array.isArray(response.data) ? response.data : [response.data].filter(Boolean);
+      setCrewData(crew);
     } catch (error) {
-      console.error('Failed to fetch crew data:', error);
+      // console.error('Failed to fetch crew data:', error);
       if (error.response?.status === 401) {
         setError('Unauthorized. Please log in again.');
         navigate('/login');
       } else {
         setError('Failed to load crew data.');
       }
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const fetchCertificates = async (token) => {
+    try {
+      const response = await axios.get(`${apiUrl}/certificates`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
+      const certs = Array.isArray(response.data.certificates)
+        ? response.data.certificates
+        : [response.data.certificates].filter(Boolean);
+      // console.log('Certificates:', certs); // Debug log
+      setCertificates(certs);
+    } catch (error) {
+      // console.error('Failed to fetch certificates:', error);
+      setError('Failed to load certificates.');
     }
   };
 
@@ -91,10 +114,24 @@ const Availability = () => {
 
   const tabs = ['all', 'available', 'vacation', 'on board'];
 
+  // Process crew data with certificate status
+  const processedCrewData = crewData.map((member) => {
+    const memberCertificates = certificates.filter((cert) => cert.user_id === member.id);
+    // console.log(`Certificates for ${member.id}:`, memberCertificates); // Debug log
+    const certificateTypes = new Set(memberCertificates.map((cert) => cert.certificate_type));
+    const requiredTypes = ['Medical', 'Training', 'Contract', 'Employee ID'];
+    const hasAllCertificates = requiredTypes.every((type) => certificateTypes.has(type));
+    const allValid = memberCertificates.every((cert) => cert.expiration_date && new Date(cert.expiration_date) >= new Date());
+
+    return {
+      ...member,
+      completionStatus: hasAllCertificates && allValid ? 'Complete' : 'Incomplete',
+      completionColor: hasAllCertificates && allValid ? 'var(--green-indicator)' : 'var(--red-indicator)',
+    };
+  });
+
   return (
     <div className="availability">
-  
-
       <div className="availability-box">
         <main className="availability-box-in">
           <header className="availability-box-in-header">
@@ -129,9 +166,11 @@ const Availability = () => {
             <>
               <header className="availability-box-in-header"><p>Available</p></header>
               <section className="availability-box-in-cards">
-                {crewData
+                {processedCrewData
                   .filter((member) => member.availability?.toLowerCase() === 'available')
-                  .map((member) => <AvailabilityCard key={member.id} data={member} />)}
+                  .map((member) => (
+                    <AvailabilityCard key={member.id} data={member} />
+                  ))}
               </section>
             </>
           )}
@@ -141,9 +180,11 @@ const Availability = () => {
             <>
               <header className="availability-box-in-header"><p>Vacation</p></header>
               <section className="availability-box-in-cards">
-                {crewData
+                {processedCrewData
                   .filter((member) => member.availability?.toLowerCase() === 'vacation')
-                  .map((member) => <AvailabilityCard key={member.id} data={member} />)}
+                  .map((member) => (
+                    <AvailabilityCard key={member.id} data={member} />
+                  ))}
               </section>
             </>
           )}
@@ -153,9 +194,11 @@ const Availability = () => {
             <>
               <header className="availability-box-in-header"><p>On Board</p></header>
               <section className="availability-box-in-cards">
-                {crewData
+                {processedCrewData
                   .filter((member) => member.availability?.toLowerCase() === 'on board')
-                  .map((member) => <AvailabilityCard key={member.id} data={member} />)}
+                  .map((member) => (
+                    <AvailabilityCard key={member.id} data={member} />
+                  ))}
               </section>
             </>
           )}

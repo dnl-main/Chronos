@@ -45,6 +45,7 @@ Route::middleware('jwt.auth')->group(function () {
     // User Update Routes
     Route::put('/user/update-address', [AuthController::class, 'updateAddress']);
     Route::put('/user/update-personal', [AuthController::class, 'updatePersonal']);
+    Route::post('/user/update-position', [AuthController::class, 'updatePosition']);//for admin only
 
     // Availability Status
     Route::patch('/user/availability', [StatusController::class, 'updateAvailability']);

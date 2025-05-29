@@ -150,7 +150,7 @@ useEffect(() => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = Array.isArray(response.data) ? response.data : response.data.id ? [response.data] : [];
-      console.log('Appointments Data:', data); // Debug
+      // console.log('Appointments Data:', data); // Debug
       setAppointments(data.map(mapAppointment));
       return data;
     } catch (err) {
@@ -164,7 +164,7 @@ const fetchAvailableUsers = async (existingAppointments) => {
     const response = await axios.get(`${apiUrl}/crew-members`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log('Crew Members Data:', response.data); // Debug
+    // console.log('Crew Members Data:', response.data); // Debug
     const availableUsers = response.data; // Backend returns crew members
     // Get user_ids of users with booked appointments
     const bookedUserIds = new Set(
@@ -172,7 +172,7 @@ const fetchAvailableUsers = async (existingAppointments) => {
         .filter(appt => appt.status === 'booked')
         .map(appt => appt.user_id)
     );
-    console.log('Booked User IDs:', Array.from(bookedUserIds)); // Debug
+    // console.log('Booked User IDs:', Array.from(bookedUserIds)); // Debug
     // Filter users who do NOT have booked appointments and have availability 'available' or 'on board'
     const availableAppointments = availableUsers
       .filter(user => 
@@ -199,13 +199,13 @@ const fetchAvailableUsers = async (existingAppointments) => {
           position: user.position || '',
         },
       }));
-    console.log('Available Appointments:', availableAppointments); // Debug
+    // console.log('Available Appointments:', availableAppointments); // Debug
     setAppointments(prev => {
       const updatedAppointments = [
         ...prev.filter(appt => !String(appt.id).startsWith('user-')), // Remove old virtual appointments
         ...availableAppointments,
       ];
-      console.log('Updated Appointments State:', updatedAppointments); // Debug
+      // console.log('Updated Appointments State:', updatedAppointments); // Debug
       return updatedAppointments;
     });
   } catch (err) {
@@ -306,7 +306,7 @@ function convertTo24Hour(timeStr) {
 const confirmBooking = async () => {
   try {
     const token = sessionStorage.getItem('token');
-    console.log('Booking Inputs:', { startTime, endTime }); // Debug
+    // console.log('Booking Inputs:', { startTime, endTime }); // Debug
     const payload = {
       user_id: selectedAppointment?.user_id,
       date: formatDateForInput(date),
@@ -318,7 +318,7 @@ const confirmBooking = async () => {
       accounting_task: department === 'Accounting' && accountingOption ? accountingOption.toLowerCase() : null,
       employee_name: employeeName || `${selectedAppointment?.user?.first_name || ''} ${selectedAppointment?.user?.last_name || ''}`.trim() || 'Unknown User',
     };
-    console.log('Booking Payload:', payload);
+    // console.log('Booking Payload:', payload);
     if (!payload.start_time || !payload.end_time) {
       throw new Error('Start time and end time are required.');
     }
@@ -335,7 +335,7 @@ const confirmBooking = async () => {
     alert('Appointment booked successfully!');
     window.location.reload(); // Reload to reflect changes
   } catch (err) {
-    console.error('Booking Error:', err.response?.data || err.message);
+    // console.error('Booking Error:', err.response?.data || err.message);
     alert('Error booking appointment: ' + (err.response?.data?.message || err.message));
   }
 };
@@ -391,7 +391,7 @@ const confirmReschedule = async () => {
       accounting_task: accountingOption || null,
       employee_name: employeeName || user?.first_name + ' ' + user?.last_name || 'Unknown User',
     };
-    console.log('Reschedule Payload:', payload); // Debug
+    // console.log('Reschedule Payload:', payload); // Debug
     const response = await axios.put(
       `${apiUrl}/appointment/${selectedId}/reschedule`,
       payload,
@@ -407,7 +407,7 @@ const confirmReschedule = async () => {
     alert('Appointment rescheduled successfully!');
     window.location.reload(); // Reload to reflect changes
   } catch (err) {
-    console.error('Reschedule Error:', err.response?.data); // Debug
+    // console.error('Reschedule Error:', err.response?.data); // Debug
     alert('Error rescheduling appointment: ' + (err.response?.data?.message || err.message));
   }
 };

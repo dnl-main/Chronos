@@ -139,7 +139,7 @@ const Registration = () => {
       setUser(userData);
       sessionStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
+      // console.error('Failed to fetch user data:', error);
       navigate('/login');
     } finally {
       setLoading(false);
@@ -151,7 +151,7 @@ const Registration = () => {
     axios
       .get(`${apiUrl}/regions`)
       .then((response) => setRegions(response.data))
-      .catch((error) => console.error('Error fetching regions:', error));
+      .catch((error) => alert.error('Error fetching regions:', error));
   }, []);
 
   // Fetch provinces based on region
@@ -172,7 +172,7 @@ const Registration = () => {
           setCities([]);
           setBarangays([]);
         })
-        .catch((error) => console.error('Error fetching provinces:', error));
+        .catch((error) => alert.error('Error fetching provinces:', error));
     }
   }, [selectedRegion]);
 
@@ -192,7 +192,7 @@ const Registration = () => {
           setSelectedCity('');
           setBarangays([]);
         })
-        .catch((error) => console.error('Error fetching cities:', error));
+        .catch((error) => alert.error('Error fetching cities:', error));
     }
   }, [selectedProvince]);
 
@@ -205,7 +205,7 @@ const Registration = () => {
         setSelectedCity('');
         setBarangays([]);
       })
-      .catch((error) => console.error('Error fetching NCR cities:', error));
+      .catch((error) => alert.error('Error fetching NCR cities:', error));
   };
 
   // Fetch barangays based on city
@@ -221,7 +221,7 @@ const Registration = () => {
         setBarangays(filteredBarangays);
         setSelectedBarangay('');
       })
-      .catch((error) => console.error('Error fetching barangays:', error));
+      .catch((error) => alert.error('Error fetching barangays:', error));
   }, [selectedCity]);
 
   const handleChange = (e) => {
@@ -284,7 +284,7 @@ const Registration = () => {
         alert('Register update failed. Please try again.');
       }
     } catch (err) {
-      console.error('Register update failed:', err);
+      // console.error('Register update failed:', err);
       const errorMessage = err.response?.data?.message;
       alert(errorMessage);
     } finally {

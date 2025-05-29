@@ -36,7 +36,7 @@ const HomeCertAdmin = () => {
             });
             user_name = `${userResponse.data.first_name} ${userResponse.data.last_name}`;
           } catch (error) {
-            console.error(`Failed to fetch user ${cert.user_id}:`, error);
+            // console.error(`Failed to fetch user ${cert.user_id}:`, error);
           }
 
           return {
@@ -63,9 +63,9 @@ const HomeCertAdmin = () => {
         .sort((a, b) => new Date(a.expiration_date) - new Date(b.expiration_date));
 
       setExpiringCertificates(filtered);
-      console.log('Expiring Certificates (This Month):', filtered);
+      // console.log('Expiring Certificates (This Month):', filtered);
     } catch (error) {
-      console.error('Failed to fetch certificates:', error);
+      // console.error('Failed to fetch certificates:', error);
     }
   };
 

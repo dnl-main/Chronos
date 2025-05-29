@@ -1,6 +1,5 @@
 import React from 'react';
 import './availabilityCard.css';
-
 import Calendar_Add from '../../../assets/icons/Calendar_Add.svg?react';
 import Caret_Circle_Down from '../../../assets/icons/Caret_Circle_Down.svg?react';
 import Phone from '../../../assets/icons/Phone.svg?react';
@@ -8,9 +7,9 @@ import Mail from '../../../assets/icons/Mail.svg?react';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
 
 const AvailabilityCard = ({ data }) => {
-const fullName = data
-  ? `${data.first_name}${data.middle_name ? ` ${data.middle_name.charAt(0)}.` : ''} ${data.last_name}`
-  : 'Loading...';
+  const fullName = data
+    ? `${data.first_name}${data.middle_name ? ` ${data.middle_name.charAt(0)}.` : ''} ${data.last_name}`
+    : 'Loading...';
 
   const availabilityMap = {
     available: {
@@ -23,13 +22,13 @@ const fullName = data
       text: 'Vacation',
       color: 'var(--yellow-indicator)',
       bgColor: 'var(--yellow-indicator-opacity-15)',
-      indicatorColor: 'var(--yellow-indicator-opacity-60)'
+      indicatorColor: 'var(--yellow-indicator-opacity-60)',
     },
     'on-board': {
       text: 'On Board',
       color: 'var(--red-indicator)',
       bgColor: 'var(--red-indicator-opacity-15)',
-      indicatorColor: 'var(--red-indicator-opacity-60)'
+      indicatorColor: 'var(--red-indicator-opacity-60)',
     },
   };
 
@@ -43,13 +42,14 @@ const fullName = data
     bgColor: 'var(--yellow-indicator-opacity-15)',
   };
 
-  const certificate = 'Incomplete';
+  const certificate = data.completionStatus || 'Incomplete';
+  const certificateColor = data.completionColor || 'var(--red-indicator)';
 
   return (
     <main className="availability-box-in-cards-card">
-      <div 
+      <div
         className="availability-box-in-cards-card-indicator"
-        style={{ backgroundColor: availability.indicatorColor }}
+        style={{ backgroundColor: certificateColor === 'var(--green-indicator)' ? 'rgba(152, 251, 152, 0.6)' : 'var(--red-indicator-opacity-60)' }}
       ></div>
 
       <div className="availability-box-in-cards-card-profile">
@@ -75,8 +75,7 @@ const fullName = data
       </div>
 
       <div className="availability-box-in-cards-card-availability">
-        {/* ✅ Apply dynamic backgroundColor using availability.bgColor */}
-        <div 
+        <div
           className="availability-box-in-cards-card-availability-bg"
           style={{ backgroundColor: availability.bgColor || 'transparent' }}
         >
@@ -87,10 +86,10 @@ const fullName = data
 
       <div className="availability-box-in-cards-card-certificate">
         <button>
-          <p>{certificate}</p>
+          <p style={{ color: certificateColor }}>{certificate}</p>
           <Caret_Circle_Down
             className="availability-box-in-cards-card-certificate-svg"
-            style={{ strokeWidth: '40px' }}
+            style={{ strokeWidth: '40px', color: certificateColor }}
           />
         </button>
       </div>

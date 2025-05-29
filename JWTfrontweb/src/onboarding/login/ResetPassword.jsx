@@ -18,7 +18,7 @@ const ResetPassword = () => {
 
 
   if (!token) {
-    console.warn('Missing token, redirecting to /login');
+    // console.warn('Missing token, redirecting to /login');
     navigate('/login');
     return null;
   }

@@ -105,7 +105,7 @@ const AccountUser = () => {
         setAddressDetails(address);
         setOriginalAddressDetails(address);
       } catch (error) {
-        console.log('Fetch User Error:', error.response?.data, error.message);
+        // console.log('Fetch User Error:', error.response?.data, error.message);
         alert('Failed to fetch user: ' + error.message);
         setError('Failed to load user data. Please try again.');
       } finally {
@@ -210,7 +210,7 @@ const AccountUser = () => {
         ...response.data.user,
       }));
       setOriginalPersonalDetails(details);
-      const successMessage = response.data.message || 'Personal details updated successfully!';
+      const successMessage = response.data.message;
       setSuccess(successMessage);
       alert(successMessage);
     } catch (error) {
@@ -282,7 +282,7 @@ const AccountUser = () => {
                 className="accountUser-box-in-card-main-dp"
                 alt="profile"
                 onError={(e) => {
-                  console.log('Image Load Error:', e);
+                  // console.log('Image Load Error:', e);
                   e.target.src = defaultdp;
                 }}
               />
@@ -349,8 +349,8 @@ const AccountUser = () => {
                 <p>Home address</p>
               </div>
               <form className="accountUser-box-in-forms-address-form">
-                {error && <div className="error-message">{error}</div>}
-                {success && <div className="success-message">{success}</div>}
+                {/* {error && <div className="error-message">{error}</div>} */}
+                {/* {success && <div className="success-message">{success}</div>} */}
                 <div className="accountUser-box-in-forms-address-form-left">
                   <div className="accountUser-box-in-forms-address-form-left-fields">
                     <label>Province</label>
@@ -465,11 +465,11 @@ const AccountUser = () => {
             <section className="accountUser-box-in-forms-personal">
               <div className="accountUser-box-in-forms-personal-header">
                 <img src={User_Square} className="delete" alt="calendar icon" />
-                <p>Personal details</p>
+                {/* <p>Personal details</p> */}
               </div>
               <form className="accountUser-box-in-forms-personal-form">
-                {error && <div className="error-message">{error}</div>}
-                {success && <div className="success-message">{success}</div>}
+                {/* {error && <div className="error-message">{error}</div>} */}
+                {/* {success && <div className="success-message">{success}</div>} */}
                 <div className="accountUser-box-in-forms-personal-form-top">
                   <div className="accountUser-box-in-forms-personal-form-top-left">
                     <div className="accountUser-box-in-forms-personal-form-top-left-fields">

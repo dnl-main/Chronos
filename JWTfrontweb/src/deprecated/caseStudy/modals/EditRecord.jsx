@@ -37,7 +37,7 @@ const EditRecord = ({ closeEditRecord }) => {
         setMessage('Error updating record: ' + response.data.message);
       }
     } catch (error) {
-      console.error('There was an error!', error);
+      // console.error('There was an error!', error);
       setMessage('An error occurred while updating the record.');
     }
   };

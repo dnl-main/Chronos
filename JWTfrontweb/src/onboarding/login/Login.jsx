@@ -49,7 +49,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      console.log('Sending login request:', { email, password });
+      // console.log('Sending login request:', { email, password });
       const response = await axios.post(`${apiUrl}/login`, { email, password });
 
       if (response.data.status && response.data.token) {
@@ -59,7 +59,7 @@ const Login = () => {
 
         sessionStorage.setItem('token', response.data.token);
         sessionStorage.setItem('user', JSON.stringify(response.data.user));
-        console.log('Login successful:', response.data.message);
+        // console.log('Login successful:', response.data.message);
 
         if (rememberMe) {
           localStorage.setItem('rememberedEmail', email);
@@ -175,7 +175,7 @@ const Login = () => {
                   style={{
                     position: 'absolute',
                     right: '15px',
-                    top: '55px',
+                    top: '57px',
                     transform: 'translateY(-50%)',
                     cursor: 'pointer',
                     height: '20px',

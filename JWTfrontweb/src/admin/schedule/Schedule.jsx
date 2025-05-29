@@ -60,7 +60,7 @@ const Schedule = () => {
       sessionStorage.setItem('user', JSON.stringify(userData));
       fetchAppointments(token);
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
+      // console.error('Failed to fetch user data:', error);
       setError('Failed to load user data. Please log in again.');
       navigate('/login');
     } finally {
@@ -77,7 +77,7 @@ const Schedule = () => {
       });
       setAppointments(Array.isArray(response.data) ? response.data : [response.data].filter(Boolean));
     } catch (error) {
-      console.error('Failed to fetch appointments:', error);
+      // console.error('Failed to fetch appointments:', error);
       if (error.response?.status === 401) {
         setError('Unauthorized. Please log in again.');
         navigate('/login');

@@ -65,7 +65,7 @@ const Schedule = () => {
 		  setUser(userData);
 		  sessionStorage.setItem('user', JSON.stringify(userData));
 		} catch (error) {
-		  console.error('Failed to fetch user data:', error);
+		//   console.error('Failed to fetch user data:', error);
 		  navigate('/login');
 		} finally {
 		  setLoading(false);

@@ -12,10 +12,10 @@ import Edit_Pencil_Line_01 from '../../assets/icons/Edit_Pencil_Line_01.svg';
 import Edit_Pencil_01 from '../../assets/icons/Edit_Pencil_01.svg?react';
 import LabelIcon from '../../assets/icons/Label.svg?react';
 import More_Grid_Big from '../../assets/icons/More_Grid_Big.svg?react';
+
 import ChangeProfilePicture from './AccountComponents/ChangeProfilePicture';
 import ResetPassword from './AccountComponents/ResetPassword';
 import landing_dp_1 from '../../assets/profiles/landing_dp_1.png';
-import Spinner from '../../components/Spinner';
 
 const Account = () => {
   const navigate = useNavigate();
@@ -65,16 +65,8 @@ const Account = () => {
             navigate('/login');
             return;
           }
+          sessionStorage.setItem('user', JSON.stringify(userData));
         }
-
-        // Check needs_position from login endpoint
-        const loginResponse = await axios.post(`${apiUrl}/login`, {}, {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        });
-
-        userData.needs_position = loginResponse.data.needs_position;
-        sessionStorage.setItem('user', JSON.stringify(userData));
 
         // Fetch profile picture
         const profilePictureResponse = await axios.get(`${apiUrl}/user/profile-picture`, {
@@ -85,14 +77,9 @@ const Account = () => {
           ...userData,
           profile_picture: profilePictureResponse.data.path || null,
         });
-
-        // Show alert and open ChangeProfilePicture if position is needed
-        // if (loginResponse.data.needs_position) {
-        //   alert('Please input your position in the Account Page.');
-        //   setShowChangeProfilePicture(true);
-        // }
       } catch (error) {
         console.log('Fetch User Error:', error.response?.data, error.message);
+        alert('Failed to fetch user: ' + error.message);
         setError('Failed to load user data. Please try again.');
         navigate('/login');
       } finally {
@@ -127,10 +114,10 @@ const Account = () => {
       profile_picture: profilePictureUrl,
     }));
     setShowChangeProfilePicture(false);
-    window.location.reload(); // Removed to prevent unnecessary reload
+     window.location.reload(); // Refresh the page after successful upload
   };
 
-  if (loading) return <Spinner />;
+  if (loading) return null;
 
   let formattedPhone = 'N/A';
   if (user?.mobile) {
@@ -201,7 +188,7 @@ const Account = () => {
                     </div>
                     <div className="account-box-in-card-main-info-right-job-title">
                       <LabelIcon className="label-icon" />
-                      <p>{user?.position || 'N/A'}</p> {/* Updated to show position instead of role */}
+                      <p>{user?.role || 'N/A'}</p>
                     </div>
                   </div>
 

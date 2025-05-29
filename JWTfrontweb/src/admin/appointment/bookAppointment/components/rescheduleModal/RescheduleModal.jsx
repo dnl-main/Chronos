@@ -18,7 +18,7 @@ const RescheduleModal = ({ date, startTime, endTime, user, status, onClose, onCo
   };
 
   const handleCloseConfirmation = () => {
-    console.log('Closing confirmation'); // Debug
+    // console.log('Closing confirmation'); // Debug
     window.location.reload();
     setShowConfirmation(false);
     onClose();

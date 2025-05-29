@@ -24,7 +24,7 @@ const Sidebar = () => {
       
 
       if (!token) {
-        console.warn('No token found, logging out anyway.');
+        // console.warn('No token found, logging out anyway.');
         navigate('/');
         return;
       }
@@ -39,7 +39,7 @@ const Sidebar = () => {
       sessionStorage.removeItem('user'); // Clear user data
       navigate('/');
     } catch (error) {
-      console.error('Logout failed:', error);
+      // console.error('Logout failed:', error);
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
       navigate('/');
@@ -78,11 +78,11 @@ const Sidebar = () => {
         </button>
       </Link>
       
-      <Link to="/admin/calendar">
+      {/* <Link to="/admin/calendar">
         <button>
           <img src={Calendar} className="" alt="calendar icon" />
         </button>
-      </Link>
+      </Link> */}
       
       <Link to="/admin/certificate">
       <button>

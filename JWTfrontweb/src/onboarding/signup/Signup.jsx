@@ -83,7 +83,7 @@ const Signup = () => {
     try {
       const response = await axios.post(`${apiUrl}/signup`, dataToSend);
       alert('Signup Successful!');
-      console.log('Response:', response.data);
+      // console.log('Response:', response.data);
 
       setFormData({ first_name: '', middle_name: '', last_name: '', email: '', mobile: '', password: '' });
       setPassword('');
@@ -97,7 +97,7 @@ const Signup = () => {
       }
     } catch (error) {
       if (error.response) {
-        console.log('Error:', error.response.data);
+        // console.log('Error:', error.response.data);
         if (error.response.status === 422) {
           setErrors(error.response.data.errors);
         } else {
@@ -227,7 +227,7 @@ const Signup = () => {
                 style={{
                   position: 'absolute',
                   right: '15px',
-                  top: '60px',
+                  top: '55px',
                   transform: 'translateY(-50%)',
                   cursor: 'pointer',
                   height: '20px',
@@ -260,7 +260,7 @@ const Signup = () => {
                 style={{
                   position: 'absolute',
                   right: '15px',
-                  top: '60px',
+                  top: '55px',
                   transform: 'translateY(-50%)',
                   cursor: 'pointer',
                   height: '20px',
@@ -302,10 +302,35 @@ const Signup = () => {
                     officia deserunt mollit anim id est laborum.
                   </p>
                   <p>
-                    More filler text here. You can add more paragraphs as needed.
-                    Remember to replace this with your actual terms.
+                              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+                    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
+                    in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+                    officia deserunt mollit anim id est laborum.
                   </p>
+                         <p>
+                              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+                    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
+                    in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+                    officia deserunt mollit anim id est laborum.
+                  </p>
+                         <p>
+                              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+                    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
+                    in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+                    officia deserunt mollit anim id est laborum.
+                  </p>
+                  <div className="modal-button">
                   <button onClick={closeModal}>Close</button>
+                  </div>
                 </div>
               </div>
             )}
