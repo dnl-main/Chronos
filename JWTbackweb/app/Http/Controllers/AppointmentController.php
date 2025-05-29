@@ -31,7 +31,8 @@ class AppointmentController extends Controller
                     'operator' => $appointment->operator,
                     'accounting_task' => $appointment->accounting_task,
                     'employee' => $appointment->employee,
-                    'status' => $this->getAppointmentStatus($appointment),
+                    'status' => $appointment->status, // Use database status
+                    'computed_status' => $this->getAppointmentStatus($appointment), // Include computed status
                     'user' => $appointment->user ? [
                         'first_name' => $appointment->user->first_name,
                         'middle_name' => $appointment->user->middle_name,
@@ -64,7 +65,8 @@ class AppointmentController extends Controller
                 'operator' => $appointment->operator,
                 'accounting_task' => $appointment->accounting_task,
                 'employee' => $appointment->employee,
-                'status' => $this->getAppointmentStatus($appointment),
+                'status' => $appointment->status, // Use database status
+                'computed_status' => $this->getAppointmentStatus($appointment), // Include computed status
                 'user' => [
                     'first_name' => $user->first_name,
                     'middle_name' => $user->middle_name,
@@ -133,6 +135,7 @@ class AppointmentController extends Controller
         $user = JWTAuth::user();
 
         $validated = $request->validate([
+            'user_id' => 'required|exists:users,id', // Validate user_id
             'date' => 'required|date|after_or_equal:today',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
@@ -143,11 +146,16 @@ class AppointmentController extends Controller
             'employee_name' => 'required|string|max:255',
         ]);
 
-        // Delete any existing appointment for the user
-        Appointment::where('user_id', $user->id)->delete();
+        // Restrict non-admins to their own user_id
+        if ($user->role !== 'admin' && $validated['user_id'] != $user->id) {
+            return response()->json(['message' => 'Unauthorized: Cannot book for another user'], 403);
+        }
+
+        // Delete any existing appointment for the target user_id
+        Appointment::where('user_id', $validated['user_id'])->delete();
 
         $appointment = Appointment::create([
-            'user_id' => $user->id,
+            'user_id' => $validated['user_id'], // Use validated user_id
             'date' => $validated['date'],
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
@@ -156,6 +164,7 @@ class AppointmentController extends Controller
             'operator' => $validated['operator'] ?? null,
             'accounting_task' => $validated['accounting_task'] ?? null,
             'employee' => $validated['employee_name'],
+            'status' => 'booked', // Explicitly set status
         ]);
 
         return response()->json([
@@ -170,7 +179,8 @@ class AppointmentController extends Controller
                 'operator' => $appointment->operator,
                 'accounting_task' => $appointment->accounting_task,
                 'employee' => $appointment->employee,
-                'status' => $this->getAppointmentStatus($appointment),
+                'status' => $appointment->status,
+                'computed_status' => $this->getAppointmentStatus($appointment),
             ]
         ], 201);
     }
@@ -193,7 +203,8 @@ class AppointmentController extends Controller
             'operator' => $appointment->operator,
             'accounting_task' => $appointment->accounting_task,
             'employee' => $appointment->employee,
-            'status' => $this->getAppointmentStatus($appointment),
+            'status' => $appointment->status,
+            'computed_status' => $this->getAppointmentStatus($appointment),
         ], 200);
     }
 
@@ -210,6 +221,7 @@ class AppointmentController extends Controller
         }
 
         $validated = $request->validate([
+            'user_id' => 'required|exists:users,id', // Validate user_id
             'date' => 'required|date|after_or_equal:today',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
@@ -221,6 +233,7 @@ class AppointmentController extends Controller
         ]);
 
         $appointment->update([
+            'user_id' => $validated['user_id'], // Allow user_id update
             'date' => $validated['date'],
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
@@ -229,6 +242,7 @@ class AppointmentController extends Controller
             'operator' => $validated['operator'] ?? null,
             'accounting_task' => $validated['accounting_task'] ?? null,
             'employee' => $validated['employee_name'],
+            'status' => 'booked',
         ]);
 
         return response()->json([
@@ -244,7 +258,8 @@ class AppointmentController extends Controller
                 'operator' => $appointment->operator,
                 'accounting_task' => $appointment->accounting_task,
                 'employee' => $appointment->employee,
-                'status' => $this->getAppointmentStatus($appointment),
+                'status' => $appointment->status,
+                'computed_status' => $this->getAppointmentStatus($appointment),
             ],
         ], 200);
     }
@@ -270,5 +285,85 @@ class AppointmentController extends Controller
 
         $appointment->delete();
         return response()->json(['message' => 'Appointment deleted successfully'], 200);
+    }
+
+    public function reschedule(Request $request, $id)
+{
+    $user = JWTAuth::user();
+    if ($user->role !== 'admin') {
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
+
+    $appointment = Appointment::find($id);
+    if (!$appointment) {
+        return response()->json(['message' => 'Appointment not found'], 404);
+    }
+
+    if (!$appointment->date || $this->getAppointmentStatus($appointment) === 'completed') {
+        return response()->json(['message' => 'Only upcoming or today\'s appointments can be rescheduled'], 400);
+    }
+
+    $validated = $request->validate([
+        'user_id' => 'sometimes|exists:users,id', // Make user_id optional
+        'date' => 'required|date|after_or_equal:today',
+        'start_time' => 'required|date_format:H:i',
+        'end_time' => 'required|date_format:H:i|after:start_time',
+        'department' => 'required|in:crewing,medical,accounting',
+        'crewing_dept' => 'required_if:department,crewing|in:maran gas,maran dry,maran tankers|nullable',
+        'operator' => 'required_if:department,crewing|in:fleet crew manager,senior fleet crew operator,crew operator 1,crew operator 2,crew operator 3|nullable',
+        'accounting_task' => 'required_if:department,accounting|in:allotment,final balance,check releasing|nullable',
+        'employee_name' => 'required|string|max:255',
+    ]);
+
+    $appointment->update([
+        'user_id' => $validated['user_id'] ?? $appointment->user_id, // Use existing user_id if not provided
+        'date' => $validated['date'],
+        'start_time' => $validated['start_time'],
+        'end_time' => $validated['end_time'],
+        'department' => $validated['department'],
+        'crewing_dept' => $validated['crewing_dept'] ?? null,
+        'operator' => $validated['operator'] ?? null,
+        'accounting_task' => $validated['accounting_task'] ?? null,
+        'employee' => $validated['employee_name'],
+        'status' => 'booked',
+    ]);
+
+    return response()->json([
+        'message' => 'Appointment rescheduled successfully',
+        'appointment' => [
+            'id' => $appointment->id,
+            'user_id' => $appointment->user_id,
+            'date' => $appointment->date,
+            'start_time' => $appointment->start_time,
+            'end_time' => $appointment->end_time,
+            'department' => $appointment->department,
+            'crewing_dept' => $appointment->crewing_dept,
+            'operator' => $appointment->operator,
+            'accounting_task' => $appointment->accounting_task,
+            'employee' => $appointment->employee,
+            'status' => $appointment->status,
+            'computed_status' => $this->getAppointmentStatus($appointment),
+        ],
+    ], 200);
+}
+
+    public function cancel($id)
+    {
+        $user = JWTAuth::user();
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $appointment = Appointment::find($id);
+        if (!$appointment) {
+            return response()->json(['message' => 'Appointment not found'], 404);
+        }
+
+        if (!$appointment->date || $this->getAppointmentStatus($appointment) === 'completed') {
+            return response()->json(['message' => 'Only upcoming or today\'s appointments can be canceled'], 400);
+        }
+
+        $appointment->delete();
+        return response()->json(['message' => 'Appointment canceled successfully'], 200);
     }
 }

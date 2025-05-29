@@ -11,9 +11,16 @@ const CancelConfirmation = ({ onClose }) => {
         <div className="confirmationModal-box-in">
           <p>Appointment Cancelled</p>
           <Approval />
-          <button onClick={onClose} className="confirmationModal-button">
-            Close
-          </button>
+<button
+  onClick={() => {
+    onClose();
+    window.location.reload();
+  }}
+  className="confirmationModal-button"
+>
+  Close
+</button>
+
         </div>
       </div>
     </div>

@@ -57,6 +57,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::delete('/appointment', [AppointmentController::class, 'destroy']);
     Route::get('/appointment/today/count', [AppointmentController::class, 'getTodayCount']);
     Route::get('/appointment/upcoming/count', [AppointmentController::class, 'getUpcomingCount']);
+    Route::put('/appointment/{id}/reschedule', [AppointmentController::class, 'reschedule']);
+    Route::delete('/appointment/{id}/cancel', [AppointmentController::class, 'cancel']);
 
     // Profile Picture Upload
     Route::post('/user/upload-profile-picture', [ProfilePicController::class, 'upload']);
@@ -81,8 +83,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('/notifications/upload', [NotificationController::class, 'sendCertificateNotification']);
     Route::get('/notifications', [NotificationController::class, 'getUserNotifications']);
     Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification']);
-    Route::post('/notifications/appointment', [NotificationController::class, 'sendAppointmentNotification']);
-    Route::post('/notifications/cancel', [NotificationController::class, 'sendCancelNotification']);
+    Route::post('/notifications/reschedule', [NotificationController::class, 'sendRescheduleNotification']);
+
 
     // User Details
     Route::get('/users/{id}', function ($id) {

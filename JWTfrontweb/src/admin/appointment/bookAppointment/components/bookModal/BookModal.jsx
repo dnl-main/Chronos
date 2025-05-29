@@ -35,6 +35,8 @@ const BookModal = ({ date, startTime, endTime, user, status, onClose, onConfirmB
 
 	const handleCloseConfirmation = () => {
 		setShowConfirmation(false);
+    window.location.reload();
+
 		onClose();  // Now close BookModal when user closes confirmation
 	};
 

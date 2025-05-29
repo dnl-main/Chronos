@@ -10,7 +10,7 @@ import Map_Pin from '../../../assets/icons/Map_Pin.svg?react';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
-const ManageAppointmentCard = ({ appointment, user, onSelect }) => {
+const ManageAppointmentCard = ({ appointment, user, onCertificateClick }) => {
   const [checked, setChecked] = useState(false);
   const [certificates, setCertificates] = useState([]);
   const [loadingCertificates, setLoadingCertificates] = useState(false);
@@ -29,11 +29,9 @@ const ManageAppointmentCard = ({ appointment, user, onSelect }) => {
           withCredentials: true,
         });
         const allCertificates = response.data.certificates || [];
-        // Filter certificates for the current user
         const userCertificates = allCertificates.filter(cert => cert.user_id === userId);
         setCertificates(userCertificates);
       } catch (error) {
-        console.error('Failed to fetch certificates:', error);
         setErrorCertificates('Failed to load certificates.');
         setCertificates([]);
       } finally {
@@ -49,11 +47,7 @@ const ManageAppointmentCard = ({ appointment, user, onSelect }) => {
   }
 
   return (
-    <main
-      className="manageAppointment-card"
-      onClick={() => onSelect && onSelect()}
-      style={{ cursor: 'pointer' }}
-    >
+    <main className="manageAppointment-card">
       <div className="manageAppointment-card-profile">
         <div className="manageAppointment-card-profile">
           <Circle_Primary style={{ color: 'var(--primary-color)', width: '4rem', height: '4rem' }} />
@@ -75,7 +69,7 @@ const ManageAppointmentCard = ({ appointment, user, onSelect }) => {
         </div>
       </div>
 
-      <div className="manageAppointment-card-separator"> </div>
+      <div className="manageAppointment-card-separator"> </div>
 
       <div className="manageAppointment-card-personal">
         <div className="manageAppointment-card-personal-field">
@@ -98,7 +92,7 @@ const ManageAppointmentCard = ({ appointment, user, onSelect }) => {
         </div>
       </div>
 
-      <div className="manageAppointment-card-separator"> </div>
+      <div className="manageAppointment-card-separator"> </div>
 
       <div className="manageAppointment-card-certificate">
         <p className="manageAppointment-card-certificate-medium">Certificate</p>
@@ -109,7 +103,15 @@ const ManageAppointmentCard = ({ appointment, user, onSelect }) => {
             <p style={{ color: '#888' }}>{errorCertificates}</p>
           ) : certificates.length > 0 ? (
             certificates.map((cert, index) => (
-              <div key={cert.id || index} className="manageAppointment-card-certificate-fields-field">
+              <div
+                key={cert.id || index}
+                className="manageAppointment-card-certificate-fields-field"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCertificateClick('/admin/certificates');
+                }}
+                style={{ cursor: 'pointer' }}
+              >
                 <p className="manageAppointment-card-certificate-fields-field-light">{cert.certificate_name || 'N/A'}</p>
                 <div className="manageAppointment-card-certificate-fields-field-svg">
                   <Note_Search
@@ -129,7 +131,7 @@ const ManageAppointmentCard = ({ appointment, user, onSelect }) => {
         </div>
       </div>
 
-      <div className="manageAppointment-card-separator"> </div>
+      <div className="manageAppointment-card-separator"> </div>
 
       <div className="manageAppointment-card-contact">
         <p className="manageAppointment-card-contact-medium">Contact</p>

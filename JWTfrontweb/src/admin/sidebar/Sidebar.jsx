@@ -21,7 +21,7 @@ const Sidebar = () => {
   const handleLogout = async () => {
     try {
       const token = sessionStorage.getItem('token');
-      console.log(import.meta.env.VITE_API_BASE_URL);
+      
 
       if (!token) {
         console.warn('No token found, logging out anyway.');

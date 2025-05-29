@@ -4,9 +4,7 @@ use App\Models\User;
 use App\Notifications\SendCertificateNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use App\Notifications\SendAppointmentNotification;
-use App\Notifications\SendCancelNotification;
-
+use App\Notifications\SendRescheduleNotification;
 class NotificationController extends Controller
 {
     public function sendCertificateNotification(Request $request)
@@ -54,73 +52,29 @@ class NotificationController extends Controller
         }
     }
 
-    public function deleteNotification(Request $request, $id)
-    {
-        try {
-            $user = $request->user();
-            $notification = $user->notifications()->where('id', $id)->firstOrFail();
-            $notification->delete();
-            Log::info('Notification deleted for user ID: ' . $user->id . ', Notification ID: ' . $id);
-            return response()->json(['message' => 'Notification deleted successfully'], 200);
-        } catch (\Exception $e) {
-            Log::error('Failed to delete notification: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to delete notification'], 500);
-        }
-    }
 
-    public function sendAppointmentNotification(Request $request)
+    public function sendRescheduleNotification(Request $request)
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'appointment_id' => 'required|exists:appointments,id',
-            'date' => 'required|date',
-            'start_time' => 'required',
-            'end_time' => 'required',
+            'appointment_date' => 'required|date_format:Y-m-d',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
         ]);
 
         try {
             $user = User::findOrFail($request->user_id);
-            $appointment = [
-                'id' => $request->appointment_id,
-                'date' => $request->date,
-                'start_time' => $request->start_time,
-                'end_time' => $request->end_time,
-            ];
-            Log::info('Sending appointment notification to user ID: ' . $user->id);
-            $user->notify(new SendAppointmentNotification($appointment));
-            Log::info('Appointment notification sent successfully for user ID: ' . $user->id);
-            return response()->json(['message' => 'Appointment notification sent'], 200);
+            Log::info('Sending reschedule notification to user ID: ' . $user->id . ', Date: ' . $request->appointment_date);
+            $user->notify(new RescheduleNotification(
+                $request->appointment_date,
+                $request->start_time,
+                $request->end_time
+            ));
+            Log::info('Reschedule notification sent successfully for user ID: ' . $user->id);
+            return response()->json(['message' => 'Reschedule notification sent successfully'], 200);
         } catch (\Exception $e) {
-            Log::error('Failed to send appointment notification: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to send appointment notification'], 500);
-        }
-    }
-
-    public function sendCancelNotification(Request $request)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'appointment_id' => 'required|exists:appointments,id',
-            'date' => 'required|date',
-            'start_time' => 'required',
-            'end_time' => 'required',
-        ]);
-
-        try {
-            $user = User::findOrFail($request->user_id);
-            $appointment = [
-                'id' => $request->appointment_id,
-                'date' => $request->date,
-                'start_time' => $request->start_time,
-                'end_time' => $request->end_time,
-            ];
-            Log::info('Sending cancel notification to user ID: ' . $user->id);
-            $user->notify(new SendCancelNotification($appointment));
-            Log::info('Cancel notification sent successfully for user ID: ' . $user->id);
-            return response()->json(['message' => 'Cancel notification sent'], 200);
-        } catch (\Exception $e) {
-            Log::error('Failed to send cancel notification: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to send cancel notification'], 500);
+            Log::error('Failed to send reschedule notification: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to send reschedule notification'], 500);
         }
     }
 }

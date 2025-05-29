@@ -20,6 +20,7 @@ import Book from '../../assets/icons/Book.svg?react';
 import Calendar_Week from '../../assets/icons/Calendar_Week.svg?react';
 import User_Add from '../../assets/icons/User_Add.svg?react';
 import More_Grid_Big from '../../assets/icons/More_Grid_Big.svg?react';
+import Calendar_Check from '../../assets/icons/Calendar_Check.svg?react';
 
 const Home = () => {
 
@@ -194,7 +195,12 @@ const Home = () => {
                 className="home-top-header-button"
                 onClick={() => setIsModalOpen(true)}  // Open modal on click
               >
-                Book Now
+                <Calendar_Check style={{
+                  width: "20px", height: "20px",
+                  '--stroke-color': 'var(--white-color)',
+                  '--stroke-width': '7px'
+                }} />
+                <p>Book now</p>
               </button>
               {isModalOpen && (
                 <Appointment onClose={() => setIsModalOpen(false)} />

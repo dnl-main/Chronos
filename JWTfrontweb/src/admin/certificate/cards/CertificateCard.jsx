@@ -36,6 +36,12 @@ const CertificateCard = ({ data, certificates, onCertificateClick, onNotifyUploa
         return cert;
     };
 
+    // Check if all certificate types are present and valid
+    const hasAllCertificates = certificateTypes.every((type) => {
+        const cert = getCertificateByType(type);
+        return cert !== null;
+    });
+
     const handleNotifyUpload = async (type) => {
         try {
             const token = sessionStorage.getItem('token');
@@ -60,7 +66,10 @@ const CertificateCard = ({ data, certificates, onCertificateClick, onNotifyUploa
 
     return (
         <main className="certificate-cards-card">
-            <section className="certificate-cards-card-indicator"></section>
+            <section
+                className="certificate-cards-card-indicator"
+                style={hasAllCertificates ? { backgroundColor: 'rgba(152, 251, 152, 0.6)' } : {}}
+            ></section>
             <section className="certificate-cards-card-profile">
                 <Circle_Primary className="certificate-cards-card-profile-svg" />
                 <div className="certificate-cards-card-profile-info">

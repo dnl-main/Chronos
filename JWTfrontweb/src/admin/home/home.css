@@ -61,16 +61,37 @@
           color: var(--black-color);
         }
 
-    .home-top-header-button {
-      all: unset;
-      padding: 0.4rem 1.2rem;
-      background-color: var(--primary-color);
-      font-weight: var(--font-weight-medium);
-      font-size: var(--font-size-16);
-      color: var(--white-color);
-      border-radius: 500px;
-      cursor: pointer;
-    }
+.home-top-header-button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem; /* spacing between icon and text */
+  padding: 0.5rem 1.4rem;
+  background-color: var(--primary-color);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-16);
+  color: var(--white-color);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.home-top-header-button:hover {
+  background-color: var(--primary-color); /* fallback if hover var not defined */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.home-top-header-button:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.home-top-header-button:active {
+  transform: scale(0.97);
+  background-color: var(--primary-color-active); /* fallback */
+}
+
 
     .home-top-main {
       /* background-color: mediumblue; */

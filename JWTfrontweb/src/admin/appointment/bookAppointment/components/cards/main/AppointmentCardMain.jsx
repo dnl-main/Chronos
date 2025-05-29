@@ -8,7 +8,7 @@ const AppointmentCardMain = ({ status, date, user }) => {
 	const isBooked = status === "booked";
 	// const isBooked = true;
 
-  console.log('AppointmentCardMain props:', { status, date, user });
+//   console.log('AppointmentCardMain props:', { status, date, user });
   // ...
 	return (
 		

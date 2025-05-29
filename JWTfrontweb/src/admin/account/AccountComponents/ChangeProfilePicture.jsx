@@ -3,10 +3,22 @@ import './changeProfilePicture.css';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
 import axios from 'axios';
 
+const departments = {
+  Accounting: ['Accountant', 'Auditor', 'Clerk'],
+  Crewing: ['Crew Manager', 'Recruiter', 'Scheduler'],
+  Medical: ['Doctor', 'Nurse', 'MedTech'],
+};
+
 const ChangeProfilePicture = ({ onClose, onSave }) => {
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const [selectedDept, setSelectedDept] = useState('');
+  const [jobTitle, setJobTitle] = useState('');
+
+  const [isEditing, setIsEditing] = useState(false);
+
   const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
   const baseUrl = import.meta.env.VITE_BASE_URL || 'http://127.0.0.1:8000';
 
@@ -28,7 +40,6 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
         });
 
         if (response.data.success) {
-          // Prepend /storage/ to the relative path for display
           const imageUrl = `${baseUrl}/storage/${response.data.profile_picture}`;
           onSave(imageUrl);
           alert('Profile picture updated successfully!');
@@ -36,22 +47,34 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
           setError(response.data.message || 'Failed to upload profile picture.');
         }
       } catch (error) {
-        console.log('Error Response:', error.response?.data, error.request, error.message);
-        if (error.response) {
-          const status = error.response.status;
-          const errorMessage = error.response.data?.errors
-            ? Object.values(error.response.data.errors).flat().join(' ')
-            : error.response.data?.message || error.message;
-          setError(`Upload failed (${status}): ${errorMessage}`);
-        } else if (error.request) {
-          setError('CORS error: Unable to reach server. Check server CORS settings or network.');
-        } else {
-          setError(`Error: ${error.message}`);
-        }
+        const msg = error.response?.data?.message || error.message;
+        setError(`Upload failed: ${msg}`);
       } finally {
         setLoading(false);
       }
     }
+  };
+
+  const handleDeptChange = (e) => {
+    const dept = e.target.value;
+    setSelectedDept(dept);
+    setJobTitle(''); // Clear job title when department changes
+  };
+
+  const handleEdit = () => setIsEditing(true);
+  const handleSave = () => {
+    // Placeholder for saving to backend
+    if (!selectedDept || !jobTitle) {
+      alert('Please select a department and enter a job title.');
+      return;
+    }
+    alert(`Saved: ${selectedDept} - ${jobTitle}`);
+    setIsEditing(false);
+  };
+  const handleDiscard = () => {
+    setSelectedDept('');
+    setJobTitle('');
+    setIsEditing(false);
   };
 
   return (
@@ -64,46 +87,87 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
             </div>
             <div className="changePP-main-header-core-text">
               <p className="changePP-main-header-core-text-semibold">Change profile picture</p>
-              <p className="changePP-main-header-core-text-light">Upload a new display picture</p>
+              <p className="changePP-main-header-core-text-light">Update your display picture and details</p>
             </div>
           </div>
           <div className="changePP-main-header-line"></div>
         </header>
 
-        <div className="changePP-main-fields">
-          <label htmlFor="profilePicInput">Select new image</label>
-          <input
-            id="profilePicInput"
-            type="file"
-            accept="image/jpeg,image/png,image/jpg,image/webp,image/heic,image/heif"
-            onChange={handleFileChange}
-            ref={fileInputRef}
-            disabled={loading}
-          />
-          {loading && (
-            <div className="loading-bar-container" style={{ marginTop: '10px' }}>
-              <div className="loading-bar"></div>
-              <span>Uploading...</span>
-            </div>
-          )}
-          {error && <p className="error-message" style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
+        {/* Profile Picture Upload */}
+        <div className="changePP-main-section">
+          <div className="changePP-main-fields changePP-upload">
+            <label htmlFor="profilePicInput">Select new image</label>
+            <input
+              id="profilePicInput"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              ref={fileInputRef}
+              disabled={loading}
+            />
+            {loading && (
+              <div className="loading-bar-container" style={{ marginTop: '10px' }}>
+                <div className="loading-bar"></div>
+                <span>Uploading...</span>
+              </div>
+            )}
+            {error && <p className="error-message" style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
+          </div>
         </div>
 
+        {/* Separator */}
+        <hr className="changePP-main-divider" />
+
+        {/* Department and Job Title Fields */}
+        <div className="changePP-main-section">
+          <div className="changePP-main-fields">
+            <label>Department</label>
+            <select value={selectedDept} onChange={handleDeptChange} disabled={!isEditing}>
+              <option value="">Select Department</option>
+              {Object.keys(departments).map((dept) => (
+                <option key={dept} value={dept}>{dept}</option>
+              ))}
+            </select>
+
+            <label>Job Title</label>
+            <input
+              type="text"
+              value={jobTitle}
+              onChange={(e) => setJobTitle(e.target.value)}
+              disabled={!isEditing || !selectedDept}
+              placeholder="Enter job title"
+            />
+          </div>
+        </div>
+
+        {/* Upload Buttons */}
         <div className="changePP-main-buttons">
           <button
             className="changePP-main-buttons-cancel"
             onClick={() => onClose(false)}
             disabled={loading}
           >
-            <p>Cancel</p>
+            Cancel
           </button>
           <button
             className="changePP-main-buttons-confirm"
             onClick={() => fileInputRef.current?.click()}
             disabled={loading}
           >
-            <p>{loading ? 'Uploading...' : 'Upload'}</p>
+            {loading ? 'Uploading...' : 'Upload'}
           </button>
+        </div>
+
+        {/* Department/Job Buttons */}
+        <div className="changePP-main-buttons">
+          {!isEditing ? (
+            <button onClick={handleEdit}>Edit</button>
+          ) : (
+            <>
+              <button onClick={handleSave} disabled={!selectedDept || !jobTitle}>Save</button>
+              <button onClick={handleDiscard}>Discard</button>
+            </>
+          )}
         </div>
       </div>
     </div>
