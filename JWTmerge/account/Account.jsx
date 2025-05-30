@@ -70,7 +70,10 @@ const Account = () => {
 
         // Fetch profile picture
         const profilePictureResponse = await axios.get(`${apiUrl}/user/profile-picture`, {
-          headers: { Authorization: `Bearer ${token}` },
+    headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true' // Add to bypass warning page
+        },
         });
 
         setUser({

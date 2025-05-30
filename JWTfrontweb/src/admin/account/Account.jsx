@@ -53,7 +53,10 @@ const Account = () => {
           }
         } else {
           const response = await axios.get(`${apiUrl}/user`, {
-            headers: { Authorization: `Bearer ${token}` },
+         headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true' // Add to bypass warning page
+        },
           });
           userData = response.data;
 
