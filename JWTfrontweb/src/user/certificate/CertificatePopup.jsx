@@ -1,44 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
 import './certificatepopup.css';
 
 const CertificatePopup = ({ certificate, onClose }) => {
-  const [pdfUrl, setPdfUrl] = useState(null);
-
   if (!certificate) return null;
 
   const { file_path, certificate_name } = certificate;
   const storageBaseUrl = import.meta.env.VITE_STORAGE_BASE_URL;
-  const fileUrl = `${storageBaseUrl}/${encodeURI(file_path)}`;
+  // Append ngrok-skip-browser-warning as a query parameter
+  const fileUrl = `${storageBaseUrl}/${encodeURI(file_path)}?ngrok-skip-browser-warning=true`;
 
   const isPdf = file_path.toLowerCase().endsWith('.pdf');
   const isImage = /\.(jpg|jpeg|png|gif)$/i.test(file_path.toLowerCase());
-
-  useEffect(() => {
-    if (isPdf) {
-      // Fetch PDF with ngrok-skip-browser-warning header
-      const fetchPdf = async () => {
-        try {
-          const response = await axios.get(fileUrl, {
-            responseType: 'blob',
-            headers: {
-              'ngrok-skip-browser-warning': 'true',
-            },
-          });
-          // Create a blob URL for the PDF
-          const blob = new Blob([response.data], { type: 'application/pdf' });
-          const blobUrl = URL.createObjectURL(blob);
-          setPdfUrl(blobUrl);
-          // Clean up blob URL when component unmounts
-          return () => URL.revokeObjectURL(blobUrl);
-        } catch (error) {
-          console.error('Failed to fetch PDF:', error);
-          setPdfUrl(null);
-        }
-      };
-      fetchPdf();
-    }
-  }, [isPdf, fileUrl]);
 
   return (
     <div className="certificate-popup-overlay">
@@ -51,22 +23,18 @@ const CertificatePopup = ({ certificate, onClose }) => {
         </header>
         <div className="certificate-popup-content">
           {isPdf ? (
-            pdfUrl ? (
-              <iframe
-                src={pdfUrl}
-                title={certificate_name}
-                className="certificate-popup-file"
-                onError={() => console.error('Failed to load PDF:', pdfUrl)}
-              />
-            ) : (
-              <p>Loading PDF...</p>
-            )
+            <iframe
+              src={fileUrl}
+              title={certificate_name}
+              className="certificate-popup-file"
+              // onError={() => console.error('Failed to load PDF:', fileUrl)}
+            />
           ) : isImage ? (
             <img
-              src={`${fileUrl}?ngrok-skip-browser-warning=true`}
+              src={fileUrl}
               alt={certificate_name}
               className="certificate-popup-file"
-              onError={() => console.error('Failed to load image:', fileUrl)}
+              // onError={() => console.error('Failed to load image:', fileUrl)}
             />
           ) : (
             <p>Unsupported file type</p>
