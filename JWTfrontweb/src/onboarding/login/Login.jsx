@@ -14,10 +14,8 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  // CHANGE: Split the single `loading` state into two separate states
-  // Original: const [loading, setLoading] = useState(false);
-  const [loginLoading, setLoginLoading] = useState(false); // New state for login form loading
-  const [forgotLoading, setForgotLoading] = useState(false); // New state for forgot password modal loading
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [hasPreFilled, setHasPreFilled] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
@@ -47,9 +45,9 @@ const Login = () => {
     e.preventDefault();
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('user');
+    sessionStorage.removeItem('needs_position'); // Clear needs_position
 
     setError('');
-    // CHANGE: Use `setLoginLoading` instead of `setLoading`
     setLoginLoading(true);
 
     try {
@@ -61,16 +59,25 @@ const Login = () => {
           response.data.user.role = 'admin';
         }
 
+        // Store token, user, and needs_position in sessionStorage
         sessionStorage.setItem('token', response.data.token);
         sessionStorage.setItem('user', JSON.stringify(response.data.user));
+        sessionStorage.setItem('needs_position', JSON.stringify(response.data.needs_position));
+
         // console.log('Login successful:', response.data.message);
 
         if (rememberMe) {
           localStorage.setItem('rememberedEmail', email);
         }
-        // Conditionally navigate based on role and region
+
+        // Navigate based on role, region, and needs_position
         if (response.data.user.role === 'admin') {
-          navigate('/admin/home'); // Redirect to admin dashboard
+          if (response.data.needs_position) {
+            alert("You need to set your position before proceeding.");
+            navigate('/admin/account'); // Redirect to set position if needed
+          } else {
+            navigate('/admin/home'); // Redirect to admin dashboard
+          }
         } else if (response.data.user.region) {
           navigate('/user/homeUser'); // Navigate to home user if region exists
         } else {
@@ -92,7 +99,6 @@ const Login = () => {
         alert('Something went wrong. Please try again.');
       }
     } finally {
-      // CHANGE: Use `setLoginLoading` instead of `setLoading`
       setLoginLoading(false);
     }
   };
@@ -103,17 +109,16 @@ const Login = () => {
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
-    e.stopPropagation(); // Prevent event bubbling to outer form
+    e.stopPropagation();
 
     setForgotError('');
     setForgotSuccess('');
-    // CHANGE: Use `setForgotLoading` instead of `setLoading`
     setForgotLoading(true);
 
     try {
       const response = await axios.post(`${apiUrl}/forgot-password`, { email: forgotEmail });
       setForgotSuccess(response.data.message || 'Password reset link sent to your email.');
-      setShowForgotPasswordModal(false); // Close modal on success
+      setShowForgotPasswordModal(false);
     } catch (error) {
       if (error.response) {
         setForgotError(error.response.data.message || 'Failed to send reset link. Please try again.');
@@ -121,7 +126,6 @@ const Login = () => {
         setForgotError('No response from server. Please check your network or server status.');
       }
     } finally {
-      // CHANGE: Use `setForgotLoading` instead of `setLoading`
       setForgotLoading(false);
     }
   };
@@ -217,7 +221,6 @@ const Login = () => {
                 </div>
               </div>
               <div className="login-right-button" style={{ marginTop: '20px' }}>
-                {/* CHANGE: Use `loginLoading` instead of `loading` for the login button */}
                 <button type="submit" id="login-submit-button-id" name="login-button" disabled={loginLoading}>
                   {loginLoading ? 'Logging in...' : 'Login'}
                 </button>
@@ -225,8 +228,6 @@ const Login = () => {
             </form>
           </div>
 
-          {/* CHANGE: Fix missing closing div tag for `login-right-spacer` */}
-          {/* Original had an incomplete `<div className="login-right-spacer">` with no closing tag */}
           <div className="login-right-spacer">
             <div className="login-right-signup">
               <p className="login-right-signup-text">Don't have an account yet? </p>
@@ -264,7 +265,6 @@ const Login = () => {
                 >
                   Cancel
                 </button>
-                {/* CHANGE: Use `forgotLoading` instead of `loading` for the forgot password button */}
                 <button
                   type="submit"
                   disabled={forgotLoading}
