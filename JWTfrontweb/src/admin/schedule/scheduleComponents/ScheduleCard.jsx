@@ -79,8 +79,14 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
         </div>
 
         <div className="schedule-today-cards-card-contact-email">
+          <p>Department: {appointment.department || 'N/A'}</p>
+        </div>
+
+        <div className="schedule-today-cards-card-contact-email">
           <p>Employee: {appointment.employee || 'N/A'}</p>
         </div>
+
+        
       </section>
 
       <section className="schedule-today-cards-card-button">
