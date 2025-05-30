@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './BookAppointmentModal.css';
 import axios from 'axios';
 import Calendar from 'react-calendar';
@@ -35,6 +35,30 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
   const [date, setDate] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+  const [userId, setUserId] = useState(null); // New state for user_id
+
+  // Fetch user ID when component mounts
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const token = sessionStorage.getItem('token');
+      const apiUrl = import.meta.env.VITE_API_BASE_URL;
+
+      try {
+        const response = await axios.get(`${apiUrl}/user`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
+        });
+        setUserId(response.data.id); // Assuming the endpoint returns { id: number, ... }
+      } catch (error) {
+        console.error('Failed to fetch user ID:', error.response?.data || error.message);
+        alert('Unable to fetch user information. Please log in again.');
+      }
+    };
+
+    fetchUserId();
+  }, []);
 
   const formatLocalDate = (inputDate) => {
     const dateObj = new Date(inputDate);
@@ -45,6 +69,11 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
   };
 
   const handleBook = async () => {
+    if (!userId) {
+      alert('User information not loaded. Please try again.');
+      return;
+    }
+
     if (!department || !employeeName || !date || !startTime || !endTime) {
       alert('Please complete all required fields before booking.');
       return;
@@ -70,11 +99,20 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
       return;
     }
 
+    // Time validation: Ensure endTime is after startTime
+    const startMinutes = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
+    const endMinutes = parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1]);
+    if (endMinutes <= startMinutes) {
+      alert('End time must be after start time.');
+      return;
+    }
+
     const formattedDate = formatLocalDate(date);
     const token = sessionStorage.getItem('token');
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
     const payload = {
+      user_id: userId, // Include user_id in the payload
       department: department.toLowerCase(),
       crewing_dept: department === 'Crewing' ? crewingDept.toLowerCase() : undefined,
       operator: department === 'Crewing' ? operator.toLowerCase() : undefined,
@@ -88,7 +126,8 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
     try {
       const response = await axios.post(`${apiUrl}/appointment`, payload, {
         headers: {
-          Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true'
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
         },
       });
 
@@ -113,7 +152,6 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
         onClose();
       }
     } catch (error) {
-      // console.error('Booking failed:', error.response?.data || error.message);
       const errorMessage = error.response?.data?.message || 
                           error.response?.data?.errors?.department?.[0] || 
                           'Failed to book appointment. Please check your inputs and try again.';
