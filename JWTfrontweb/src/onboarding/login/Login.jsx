@@ -14,7 +14,10 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  // CHANGE: Split the single `loading` state into two separate states
+  // Original: const [loading, setLoading] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false); // New state for login form loading
+  const [forgotLoading, setForgotLoading] = useState(false); // New state for forgot password modal loading
   const [rememberMe, setRememberMe] = useState(false);
   const [hasPreFilled, setHasPreFilled] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
@@ -46,7 +49,8 @@ const Login = () => {
     sessionStorage.removeItem('user');
 
     setError('');
-    setLoading(true);
+    // CHANGE: Use `setLoginLoading` instead of `setLoading`
+    setLoginLoading(true);
 
     try {
       // console.log('Sending login request:', { email, password });
@@ -88,7 +92,8 @@ const Login = () => {
         alert('Something went wrong. Please try again.');
       }
     } finally {
-      setLoading(false); 
+      // CHANGE: Use `setLoginLoading` instead of `setLoading`
+      setLoginLoading(false);
     }
   };
 
@@ -102,7 +107,8 @@ const Login = () => {
 
     setForgotError('');
     setForgotSuccess('');
-    setLoading(true);
+    // CHANGE: Use `setForgotLoading` instead of `setLoading`
+    setForgotLoading(true);
 
     try {
       const response = await axios.post(`${apiUrl}/forgot-password`, { email: forgotEmail });
@@ -115,7 +121,8 @@ const Login = () => {
         setForgotError('No response from server. Please check your network or server status.');
       }
     } finally {
-      setLoading(false);
+      // CHANGE: Use `setForgotLoading` instead of `setLoading`
+      setForgotLoading(false);
     }
   };
 
@@ -210,35 +217,32 @@ const Login = () => {
                 </div>
               </div>
               <div className="login-right-button" style={{ marginTop: '20px' }}>
-                <button type="submit" id="login-submit-button-id" name="login-button" disabled={loading}>
-                  {loading ? 'Logging in...' : 'Login'}
+                {/* CHANGE: Use `loginLoading` instead of `loading` for the login button */}
+                <button type="submit" id="login-submit-button-id" name="login-button" disabled={loginLoading}>
+                  {loginLoading ? 'Logging in...' : 'Login'}
                 </button>
               </div>
             </form>
           </div>
 
+          {/* CHANGE: Fix missing closing div tag for `login-right-spacer` */}
+          {/* Original had an incomplete `<div className="login-right-spacer">` with no closing tag */}
           <div className="login-right-spacer">
-
-          <div className="login-right-signup">
-            <p className="login-right-signup-text">Don't have an account yet? </p>
-            <button
-              id="signup-button"
-              onClick={handleSignup}
-            >
-              Sign up
-            </button>
+            <div className="login-right-signup">
+              <p className="login-right-signup-text">Don't have an account yet? </p>
+              <button id="signup-button" onClick={handleSignup}>
+                Sign up
+              </button>
+            </div>
           </div>
         </div>
       </div>
-</div>
+
       {showForgotPasswordModal && (
         <div className="forgot-password-modal">
           <div className="forgot-password-modal-content">
             <h2>Forgot Password</h2>
-            <form
-              onSubmit={handleForgotPassword}
-              style={{ marginTop: '20px' }}
-            >
+            <form onSubmit={handleForgotPassword} style={{ marginTop: '20px' }}>
               <div>
                 <label htmlFor="forgot-email-id">Email</label>
                 <input
@@ -255,17 +259,18 @@ const Login = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
                 <button
                   type="button"
-                  onClick={() => setShowForgotPasswordModal(false)} // Fixed to close modal
+                  onClick={() => setShowForgotPasswordModal(false)}
                   className="forgot-password-cancel"
                 >
                   Cancel
                 </button>
+                {/* CHANGE: Use `forgotLoading` instead of `loading` for the forgot password button */}
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={forgotLoading}
                   className="forgot-password-submit"
                 >
-                  {loading ? 'Sending...' : 'Send Reset Link'}
+                  {forgotLoading ? 'Sending...' : 'Send Reset Link'}
                 </button>
               </div>
             </form>
