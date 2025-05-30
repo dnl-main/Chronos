@@ -20,7 +20,10 @@ const CertificatePopup = ({ certificate, onClose, onDelete }) => {
     try {
       const token = sessionStorage.getItem('token');
       await axios.post(`${apiUrl}/certificates/delete`,{id},{
-        headers: { Authorization: `Bearer ${token}` },
+headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
         withCredentials: true,
       });
       alert('Certificate deleted successfully'); // Replace with toast in production

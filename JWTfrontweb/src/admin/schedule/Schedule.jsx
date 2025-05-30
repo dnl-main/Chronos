@@ -49,7 +49,10 @@ const Schedule = () => {
   const fetchUserData = async (token) => {
     try {
       const response = await axios.get(`${apiUrl}/user`, {
-        headers: { Authorization: `Bearer ${token}` },
+headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
         withCredentials: true,
       });
       const userData = response.data;
@@ -72,7 +75,10 @@ const Schedule = () => {
     try {
       setError(null);
       const response = await axios.get(`${apiUrl}/appointment`, {
-        headers: { Authorization: `Bearer ${token}` },
+headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
         withCredentials: true,
       });
       setAppointments(Array.isArray(response.data) ? response.data : [response.data].filter(Boolean));

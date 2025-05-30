@@ -166,7 +166,10 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
         `${apiUrl}/appointment/${selectedAppointment.id}/reschedule`,
         payload,
         {
-          headers: { Authorization: `Bearer ${token}` },
+     headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
           withCredentials: true,
         }
       );
@@ -204,7 +207,10 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
       const response = await axios.delete(
         `${apiUrl}/appointment/${selectedAppointment.id}`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+    headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
           withCredentials: true,
         }
       );

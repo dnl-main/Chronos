@@ -25,7 +25,10 @@ const ManageAppointmentCard = ({ appointment, user, onCertificateClick }) => {
       try {
         const token = sessionStorage.getItem('token');
         const response = await axios.get(`${apiUrl}/certificates`, {
-          headers: { Authorization: `Bearer ${token}` },
+       headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
           withCredentials: true,
         });
         const allCertificates = response.data.certificates || [];

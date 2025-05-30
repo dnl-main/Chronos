@@ -16,7 +16,10 @@ const HomeCertAdmin = () => {
 
     try {
       const response = await axios.get(`${apiUrl}/certificates`, {
-        headers: { Authorization: `Bearer ${token}` },
+headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
         withCredentials: true,
       });
 
@@ -31,7 +34,10 @@ const HomeCertAdmin = () => {
           let user_name = 'Unknown User';
           try {
             const userResponse = await axios.get(`${apiUrl}/users/${cert.user_id}`, {
-              headers: { Authorization: `Bearer ${token}` },
+headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
               withCredentials: true,
             });
             user_name = `${userResponse.data.first_name} ${userResponse.data.last_name}`;

@@ -15,7 +15,10 @@ const UploadNotificationUser = ({ notification, onDelete }) => {
             try {
                 const token = sessionStorage.getItem('token');
                 const response = await axios.get(`${apiUrl}/users/${notification.user_id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
+            headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
                     withCredentials: true,
                 });
                 // console.log('User fetched:', response.data); // Debug
@@ -34,7 +37,10 @@ const UploadNotificationUser = ({ notification, onDelete }) => {
         try {
             const token = sessionStorage.getItem('token');
             await axios.delete(`${apiUrl}/notifications/${notification.id}`, {
-                headers: { Authorization: `Bearer ${token}` },
+           headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
                 withCredentials: true,
             });
             // console.log('Notification deleted:', notification.id); // Debug

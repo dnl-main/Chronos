@@ -9,21 +9,18 @@ class Cors
 {
     public function handle(Request $request, Closure $next)
     {
-        // Get the origin from the request
         $origin = $request->headers->get('Origin');
-
-        // Define allowed origins from config
         $allowedOrigins = config('cors.allowed_origins', []);
+
+        // Log for debugging
+        \Log::info('CORS: Request Origin: ' . ($origin ?? 'None'));
+        \Log::info('CORS: Allowed Origins: ' . json_encode($allowedOrigins));
 
         // Check if the origin is allowed
         $allowOrigin = in_array($origin, $allowedOrigins, true) ? $origin : null;
 
         // Handle preflight OPTIONS request
-        if ($request->getMethod() === 'OPTIONS') {
-            $response = response('', 204); // Return 204 No Content for preflight
-        } else {
-            $response = $next($request);
-        }
+        $response = $request->isMethod('OPTIONS') ? response('', 204) : $next($request);
 
         // Set CORS headers if origin is allowed
         if ($allowOrigin) {
@@ -32,6 +29,9 @@ class Cors
             $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
             $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
             $response->headers->set('Access-Control-Max-Age', config('cors.max_age', 86400));
+            \Log::info('CORS: Applied headers for origin: ' . $allowOrigin);
+        } else {
+            \Log::warning('CORS: Origin not allowed or missing: ' . ($origin ?? 'None'));
         }
 
         return $response;

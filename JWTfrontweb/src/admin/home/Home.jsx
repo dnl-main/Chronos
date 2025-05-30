@@ -71,7 +71,10 @@ const Home = () => {
   const fetchUserData = async (token) => {
     try {
       const response = await axios.get(`${apiUrl}/user`, {
-        headers: { Authorization: `Bearer ${token}` },
+  headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
         withCredentials: true,
       });
 
@@ -102,21 +105,30 @@ const Home = () => {
     try {
       setError(null);
       const todayCountResponse = await axios.get(`${apiUrl}/appointment/today/count`, {
-        headers: { Authorization: `Bearer ${token}` },
+headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
         withCredentials: true,
       });
       // console.log('Today count:', todayCountResponse.data);
       setTodayCount(todayCountResponse.data.count);
 
       const upcomingCountResponse = await axios.get(`${apiUrl}/appointment/upcoming/count`, {
-        headers: { Authorization: `Bearer ${token}` },
+headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
         withCredentials: true,
       });
       // console.log('Upcoming count:', upcomingCountResponse.data);
       setUpcomingCount(upcomingCountResponse.data.count);
 
       const appointmentsResponse = await axios.get(`${apiUrl}/appointment`, {
-        headers: { Authorization: `Bearer ${token}` },
+  headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
         withCredentials: true,
       });
       // console.log('Appointments:', appointmentsResponse.data);
@@ -124,7 +136,10 @@ const Home = () => {
       setTodayAppointments(appointments.filter(app => app.status === 'today'));
 
       const crewCountResponse = await axios.get(`${apiUrl}/crew-members/available/count`, {
-        headers: { Authorization: `Bearer ${token}` },
+headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
         withCredentials: true,
       });
       // console.log('Crew count:', crewCountResponse.data);
@@ -143,7 +158,10 @@ const Home = () => {
   const fetchAllUsers = async (token) => {
     try {
       const response = await axios.get(`${apiUrl}/crew-members`, {
-        headers: { Authorization: `Bearer ${token}` },
+headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
         withCredentials: true,
       });
       // console.log('Fetched users:', response.data);

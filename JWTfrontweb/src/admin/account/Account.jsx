@@ -69,7 +69,10 @@ const Account = () => {
 
         // Check needs_position from login endpoint
         const loginResponse = await axios.post(`${apiUrl}/login`, {}, {
-          headers: { Authorization: `Bearer ${token}` },
+         headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
           withCredentials: true,
         });
 

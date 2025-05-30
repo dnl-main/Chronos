@@ -23,7 +23,10 @@ const NotificationUser = () => {
                 return;
             }
             const response = await axios.get(`${apiUrl}/notifications`, {
-                headers: { Authorization: `Bearer ${token}` },
+  headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
                 withCredentials: true,
             });
             // console.log('Notifications fetched:', response.data); // Debug

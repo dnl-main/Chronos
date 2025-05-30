@@ -52,7 +52,10 @@ const CertificateCard = ({ data, certificates, onCertificateClick, onNotifyUploa
                     certificate_type: type,
                 },
                 {
-                    headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+      },
                     withCredentials: true,
                 }
             );
