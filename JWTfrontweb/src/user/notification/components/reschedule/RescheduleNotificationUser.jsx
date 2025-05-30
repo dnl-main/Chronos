@@ -15,7 +15,7 @@ const RescheduleNotificationUser = () => {
         const fetchNotifications = async () => {
             try {
                 const response = await axios.get('/api/notifications', {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, 'ngrok-skip-browser-warning': 'true' },
                 });
                 setNotifications(response.data);
             } catch (error) {

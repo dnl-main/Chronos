@@ -24,7 +24,7 @@ const SidebarUser = () => {
 
       await axios.post(`${apiUrl}/logout`, {}, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true'
         },
       });
 

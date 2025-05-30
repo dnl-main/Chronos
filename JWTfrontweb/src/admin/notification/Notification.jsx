@@ -53,7 +53,7 @@ const Notification = () => {
     const fetchUserData = async (token) => {
       try {
         const response = await axios.get(`${apiUrl}/user`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}`,  'ngrok-skip-browser-warning': 'true' },
         });
     
         const userData = response.data;

@@ -64,7 +64,7 @@ const AccountUser = () => {
         }
 
         const response = await axios.get(`${apiUrl}/user`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
         });
 
         const data = response.data;
@@ -93,7 +93,7 @@ const AccountUser = () => {
 
         // Fetch profile picture from profile_pictures table
         const profilePictureResponse = await axios.get(`${apiUrl}/user/profile-picture`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` , 'ngrok-skip-browser-warning': 'true'},
         });
 
         setUser({
@@ -146,7 +146,7 @@ const AccountUser = () => {
         navigate('/login');
         return;
       }
-      await axios.post(`${apiUrl}/logout`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${apiUrl}/logout`, {}, { headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' } });
     } catch (error) {
       alert('Logout failed: ' + error.message);
     } finally {
@@ -169,7 +169,7 @@ const AccountUser = () => {
       setSuccess(null);
       const token = sessionStorage.getItem('token');
       const response = await axios.put(`${apiUrl}/user/update-address`, newAddress, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
       });
       setUser((prevUser) => ({
         ...prevUser,

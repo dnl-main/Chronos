@@ -37,13 +37,19 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await axios.post(`${apiUrl}/reset-password`, {
-        email,
-        token,
-        password,
-        password_confirmation: passwordConfirmation,
-      });
-
+const response = await axios.post(
+    `${apiUrl}/reset-password`,
+    {
+      token,
+      password,
+      password_confirmation: passwordConfirmation,
+    },
+    {
+      headers: {
+        'ngrok-skip-browser-warning': 'true',
+      },
+    }
+  );
       setSuccess(response.data.message || 'Password reset successfully. You can now log in.');
       setTimeout(() => navigate('/login'), 3000);
     } catch (error) {

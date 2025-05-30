@@ -45,7 +45,7 @@ const CertificateUser = () => {
   const fetchUserData = async (token) => {
     try {
       const response = await axios.get(`${apiUrl}/user`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` , 'ngrok-skip-browser-warning': 'true'},
       });
       const userData = response.data;
       if (userData.role !== 'user') {
@@ -67,7 +67,7 @@ const CertificateUser = () => {
   const fetchCertificates = async (token) => {
     try {
       const response = await axios.get(`${apiUrl}/certificates`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` , 'ngrok-skip-browser-warning': 'true'},
       });
       setCertificates(response.data.certificates || []);
     } catch (error) {
@@ -92,7 +92,7 @@ const CertificateUser = () => {
       await axios.post(
         `${apiUrl}/certificates/delete`,
         { id: certificateId },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' } }
       );
       // Fetch updated certificates list
       await fetchCertificates(token);

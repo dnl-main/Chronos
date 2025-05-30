@@ -23,7 +23,8 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
         const response = await axios.post(`${apiUrl}/user/upload-profile-picture`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'multipart/form-data' ,
+            'ngrok-skip-browser-warning': 'true'
           },
         });
 

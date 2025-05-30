@@ -52,7 +52,15 @@ const Login = () => {
 
     try {
       // console.log('Sending login request:', { email, password });
-      const response = await axios.post(`${apiUrl}/login`, { email, password });
+      const response = await axios.post(
+        `${apiUrl}/login`,
+         { email, password },
+              {
+    headers: {
+      'ngrok-skip-browser-warning': 'true',
+    },
+  }
+        );
 
       if (response.data.status && response.data.token) {
         if (email.endsWith('@friendmar.com.ph')) {
@@ -116,7 +124,15 @@ const Login = () => {
     setForgotLoading(true);
 
     try {
-      const response = await axios.post(`${apiUrl}/forgot-password`, { email: forgotEmail });
+      const response = await axios.post(`${apiUrl}/forgot-password`, 
+        { email: forgotEmail },
+        {
+    headers: {
+      'ngrok-skip-browser-warning': 'true',
+    },
+  }
+      );
+
       setForgotSuccess(response.data.message || 'Password reset link sent to your email.');
       setShowForgotPasswordModal(false);
     } catch (error) {

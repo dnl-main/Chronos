@@ -37,6 +37,7 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
         const response = await axios.post(`${apiUrl}/user/upload-profile-picture`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
+              'ngrok-skip-browser-warning': 'true', // Add this to bypass ngrok warning
             'Content-Type': 'multipart/form-data',
           },
         });
@@ -84,6 +85,7 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true', // Add this to bypass ngrok warning
           },
         }
       );

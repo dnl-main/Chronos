@@ -88,7 +88,7 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
     try {
       const response = await axios.post(`${apiUrl}/appointment`, payload, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true'
         },
       });
 

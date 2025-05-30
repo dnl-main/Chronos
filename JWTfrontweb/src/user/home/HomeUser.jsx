@@ -56,7 +56,7 @@ const HomeUser = () => {
 
       try {
         const response = await axios.get(`${apiUrl}/certificates`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` , 'ngrok-skip-browser-warning': 'true'},
         });
         const certificates = response.data.certificates || [];
         const uploaded = certificates.length;
@@ -95,7 +95,7 @@ const HomeUser = () => {
 
       try {
         const response = await axios.get(`${apiUrl}/appointment`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
         });
 
         const appointmentData = Array.isArray(response.data) ? response.data[0] : response.data;
@@ -170,7 +170,7 @@ const HomeUser = () => {
   const fetchUserData = async (token) => {
     try {
       const response = await axios.get(`${apiUrl}/user`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
       });
       const userData = response.data;
       if (userData.role !== 'user') {
@@ -201,7 +201,7 @@ const HomeUser = () => {
         const response = await axios.patch(
           `${apiUrl}/user/availability`,
           { availability: selectedStatus },
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` , 'ngrok-skip-browser-warning': 'true'} }
         );
         const updatedUser = response.data.user;
         setUser(updatedUser);
@@ -223,7 +223,7 @@ const HomeUser = () => {
         navigate('/');
         return;
       }
-      await axios.post(`${apiUrl}/logout`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${apiUrl}/logout`, {}, { headers: { Authorization: `Bearer ${token}` , 'ngrok-skip-browser-warning': 'true'} });
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
       navigate('/');
@@ -260,7 +260,7 @@ const HomeUser = () => {
     try {
       const token = sessionStorage.getItem('token');
       await axios.delete(`${apiUrl}/appointment`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
       });
       setAppointment({
         date: '',
@@ -291,7 +291,7 @@ const HomeUser = () => {
     const token = sessionStorage.getItem('token');
     try {
       const certResponse = await axios.get(`${apiUrl}/certificates`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
       });
       const existingCert = certResponse.data.certificates.find(
         (cert) => cert.certificate_type === certificateType
@@ -316,6 +316,7 @@ const HomeUser = () => {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
+           'ngrok-skip-browser-warning': 'true'
         },
       });
 
@@ -326,7 +327,7 @@ const HomeUser = () => {
       setFile(null);
 
       const updatedCertResponse = await axios.get(`${apiUrl}/certificates`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` , 'ngrok-skip-browser-warning': 'true'},
       });
       const certificates = updatedCertResponse.data.certificates || [];
       const uploaded = certificates.length;

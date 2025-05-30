@@ -69,7 +69,7 @@ const ResetPassword = ({ closeResetPassword }) => {
           new_password_confirmation: confirmPassword,
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` , 'ngrok-skip-browser-warning': 'true'},
         }
       );
 

@@ -120,7 +120,7 @@ const Account = () => {
         navigate('/login');
         return;
       }
-      await axios.post(`${apiUrl}/logout`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${apiUrl}/logout`, {}, { headers: { Authorization: `Bearer ${token}`,  'ngrok-skip-browser-warning': 'true' } });
     } catch (error) {
       alert('Logout failed: ' + error.message);
     } finally {

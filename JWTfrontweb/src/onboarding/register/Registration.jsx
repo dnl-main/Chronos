@@ -126,7 +126,10 @@ const Registration = () => {
   const fetchUserData = async (token) => {
     try {
       const response = await axios.get(`${apiUrl}/user`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
       });
 
       const userData = response.data;
@@ -139,7 +142,6 @@ const Registration = () => {
       setUser(userData);
       sessionStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
-      // console.error('Failed to fetch user data:', error);
       navigate('/login');
     } finally {
       setLoading(false);
@@ -149,9 +151,13 @@ const Registration = () => {
   // Fetch regions
   useEffect(() => {
     axios
-      .get(`${apiUrl}/regions`)
+      .get(`${apiUrl}/regions`, {
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+        },
+      })
       .then((response) => setRegions(response.data))
-      .catch((error) => alert.error('Error fetching regions:', error));
+      .catch((error) => alert('Error fetching regions:', error));
   }, []);
 
   // Fetch provinces based on region
@@ -162,7 +168,11 @@ const Registration = () => {
       setSelectedProvince('MM');
     } else {
       axios
-        .get(`${apiUrl}/provinces`)
+        .get(`${apiUrl}/provinces`, {
+          headers: {
+            'ngrok-skip-browser-warning': 'true',
+          },
+        })
         .then((response) => {
           const filteredProvinces = response.data.filter(
             (province) => province.regionCode === selectedRegion
@@ -172,7 +182,7 @@ const Registration = () => {
           setCities([]);
           setBarangays([]);
         })
-        .catch((error) => alert.error('Error fetching provinces:', error));
+        .catch((error) => alert('Error fetching provinces:', error));
     }
   }, [selectedRegion]);
 
@@ -183,7 +193,11 @@ const Registration = () => {
       fetchCitiesForNCR();
     } else {
       axios
-        .get(`${apiUrl}/cities-municipalities`)
+        .get(`${apiUrl}/cities-municipalities`, {
+          headers: {
+            'ngrok-skip-browser-warning': 'true',
+          },
+        })
         .then((response) => {
           const filteredCities = response.data.filter(
             (city) => city.provinceCode === selectedProvince
@@ -192,27 +206,35 @@ const Registration = () => {
           setSelectedCity('');
           setBarangays([]);
         })
-        .catch((error) => alert.error('Error fetching cities:', error));
+        .catch((error) => alert('Error fetching cities:', error));
     }
   }, [selectedProvince]);
 
   const fetchCitiesForNCR = () => {
     axios
-      .get(`${apiUrl}/cities-municipalities`)
+      .get(`${apiUrl}/cities-municipalities`, {
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+        },
+      })
       .then((response) => {
         const ncrCities = response.data.filter((city) => city.regionCode === '130000000');
         setCities(ncrCities);
         setSelectedCity('');
         setBarangays([]);
       })
-      .catch((error) => alert.error('Error fetching NCR cities:', error));
+      .catch((error) => alert('Error fetching NCR cities:', error));
   };
 
   // Fetch barangays based on city
   useEffect(() => {
     if (!selectedCity) return;
     axios
-      .get(`${apiUrl}/barangays`)
+      .get(`${apiUrl}/barangays`, {
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+        },
+      })
       .then((response) => {
         const filteredBarangays = response.data.filter(
           (barangay) =>
@@ -221,7 +243,7 @@ const Registration = () => {
         setBarangays(filteredBarangays);
         setSelectedBarangay('');
       })
-      .catch((error) => alert.error('Error fetching barangays:', error));
+      .catch((error) => alert('Error fetching barangays:', error));
   }, [selectedCity]);
 
   const handleChange = (e) => {
@@ -270,7 +292,10 @@ const Registration = () => {
 
     try {
       const response = await axios.post(`${apiUrl}/registration`, registrationData, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
       });
 
       if (response.status === 200) {
@@ -284,7 +309,6 @@ const Registration = () => {
         alert('Register update failed. Please try again.');
       }
     } catch (err) {
-      // console.error('Register update failed:', err);
       const errorMessage = err.response?.data?.message;
       alert(errorMessage);
     } finally {
@@ -587,7 +611,7 @@ const Registration = () => {
                     {loading ? 'Registering...' : 'Register'}
                   </button>
                 </div>
-              </form>
+              </form> 
             </div>
           </div>
         </div>

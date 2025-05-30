@@ -135,7 +135,7 @@ useEffect(() => {
   const fetchUserRole = async () => {
     try {
       const response = await axios.get(`${apiUrl}/user`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`,  'ngrok-skip-browser-warning': 'true' },
       });
       setIsAdmin(response.data.role === 'admin');
     } catch (err) {
@@ -147,7 +147,7 @@ useEffect(() => {
   const fetchAppointments = async () => {
     try {
       const response = await axios.get(`${apiUrl}/appointment`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`,  'ngrok-skip-browser-warning': 'true' },
       });
       const data = Array.isArray(response.data) ? response.data : response.data.id ? [response.data] : [];
       // console.log('Appointments Data:', data); // Debug
@@ -162,7 +162,7 @@ useEffect(() => {
 const fetchAvailableUsers = async (existingAppointments) => {
   try {
     const response = await axios.get(`${apiUrl}/crew-members`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}`,  'ngrok-skip-browser-warning': 'true' },
     });
     // console.log('Crew Members Data:', response.data); // Debug
     const availableUsers = response.data; // Backend returns crew members
@@ -325,7 +325,7 @@ const confirmBooking = async () => {
     const response = await axios.post(
       `${apiUrl}/appointment`,
       payload,
-      { headers: { Authorization: `Bearer ${token}` } }
+      { headers: { Authorization: `Bearer ${token}` ,  'ngrok-skip-browser-warning': 'true'} }
     );
     setAppointments(prev => [
       ...prev.filter(appt => appt.id !== selectedId),
@@ -395,7 +395,7 @@ const confirmReschedule = async () => {
     const response = await axios.put(
       `${apiUrl}/appointment/${selectedId}/reschedule`,
       payload,
-      { headers: { Authorization: `Bearer ${token}` } }
+      { headers: { Authorization: `Bearer ${token}` ,  'ngrok-skip-browser-warning': 'true'} }
     );
     setAppointments(prev =>
       prev.map(appt =>
@@ -428,7 +428,7 @@ const confirmReschedule = async () => {
     try {
       const token = sessionStorage.getItem('token');
       await axios.delete(`${apiUrl}/appointment/${selectedId}/cancel`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` ,  'ngrok-skip-browser-warning': 'true'},
       });
       setAppointments(prev => prev.filter(appt => appt.id !== selectedId));
       setDate('');
