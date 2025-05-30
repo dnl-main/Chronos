@@ -6,7 +6,7 @@ import '../appointment/manageAppointment.css';
 import Book from '../../assets/icons/Book.svg?react';
 import Close_MD from '../../assets/icons/Close_MD.svg?react';
 
-import ManageAppointmentCard from './appointmentComponents/ManageAppointmentCard';
+import ManageAppointmentCard from './appointmentcomponents/ManageAppointmentCard';
 import AppointmentSummaryModal from './appointmentcomponents/appointmentmodal/AppointmentSummaryModal';
 import CancelSummaryModal from './appointmentcomponents/appointmentmodal/CancelSummaryModal';
 
