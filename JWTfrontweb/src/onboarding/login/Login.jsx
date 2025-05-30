@@ -74,6 +74,7 @@ const Login = () => {
         if (response.data.user.role === 'admin') {
           if (response.data.needs_position) {
             alert("You need to set your position before proceeding.");
+            navigate('/admin/home'); // Redirect to admin dashboard
           } else {
             navigate('/admin/home'); // Redirect to admin dashboard
           }

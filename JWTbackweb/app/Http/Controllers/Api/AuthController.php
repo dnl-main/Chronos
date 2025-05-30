@@ -20,7 +20,7 @@ class AuthController extends Controller
             try {
                 $user = JWTAuth::parseToken()->authenticate();
                 // If authenticated, return user data with needs_position
-                $needsPosition = $user->role === 'admin' && empty($user->position);
+               $needsPosition = $user->role === 'admin' && $user->position === null;
                 return response()->json([
                     'status' => true,
                     'message' => 'User authenticated',
@@ -78,8 +78,7 @@ class AuthController extends Controller
         }
     }
 
-    // Rest of the AuthController methods remain unchanged
-    public function signup(Request $request)
+public function signup(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
@@ -106,6 +105,7 @@ class AuthController extends Controller
             'mobile' => $request->mobile,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'position' => $request->role === 'user' ? 'Unregistered' : null, // "Unregistered" for users, null for admins
         ]);
 
         $token = JWTAuth::fromUser($user);
@@ -115,8 +115,10 @@ class AuthController extends Controller
             'message' => 'User registered successfully.',
             'token' => $token,
             'user' => $user,
+            'needs_position' => $user->role === 'admin' && empty($user->position),
         ], 201);
     }
+
 
     public function logout(Request $request)
     {
