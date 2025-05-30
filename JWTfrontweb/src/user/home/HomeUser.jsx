@@ -376,7 +376,7 @@ const HomeUser = () => {
                       selectedStatus === 'Available'
                         ? '#36C081'
                         : selectedStatus === 'On Board'
-                        ? '#FFDC6C'
+                        ? 'var(--red-indicator)'
                         : selectedStatus === 'Vacation'
                         ? 'var(--yellow-indicator)'
                         : '#fff',
