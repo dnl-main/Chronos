@@ -203,7 +203,9 @@ const AccountUser = () => {
       setSuccess(null);
       const token = sessionStorage.getItem('token');
       const response = await axios.put(`${apiUrl}/user/update-personal`, details, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true'
+         },
       });
       setUser((prevUser) => ({
         ...prevUser,
