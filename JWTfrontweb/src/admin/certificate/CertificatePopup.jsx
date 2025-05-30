@@ -9,7 +9,8 @@ const CertificatePopup = ({ certificate, onClose, onDelete }) => {
   // Use VITE_STORAGE_BASE_URL for storage files
   const storageBaseUrl = import.meta.env.VITE_STORAGE_BASE_URL;
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const fileUrl = `${storageBaseUrl}/${encodeURI(file_path)}`;
+  // Append ngrok-skip-browser-warning as a query parameter
+  const fileUrl = `${storageBaseUrl}/${encodeURI(file_path)}?ngrok-skip-browser-warning=true`;
 
   const isPdf = file_path.toLowerCase().endsWith('.pdf');
   const isImage = /\.(jpg|jpeg|png|gif)$/i.test(file_path.toLowerCase());
@@ -19,13 +20,17 @@ const CertificatePopup = ({ certificate, onClose, onDelete }) => {
 
     try {
       const token = sessionStorage.getItem('token');
-      await axios.post(`${apiUrl}/certificates/delete`,{id},{
-headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
-        withCredentials: true,
-      });
+      await axios.post(
+        `${apiUrl}/certificates/delete`,
+        { id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true', // Keep for API request
+          },
+          withCredentials: true,
+        }
+      );
       alert('Certificate deleted successfully'); // Replace with toast in production
       if (typeof onDelete === 'function') {
         onDelete(id); // Notify parent to update state
@@ -33,7 +38,6 @@ headers: {
       onClose(); // Close the popup
       window.location.reload(); // Refresh the page
     } catch (error) {
-      //console.error('Failed to delete certificate:', error);
       alert('Failed to delete certificate');
     }
   };

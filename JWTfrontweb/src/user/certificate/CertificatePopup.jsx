@@ -6,8 +6,8 @@ const CertificatePopup = ({ certificate, onClose }) => {
 
   const { file_path, certificate_name } = certificate;
   const storageBaseUrl = import.meta.env.VITE_STORAGE_BASE_URL;
-  const fileUrl = `${storageBaseUrl}/${encodeURI(file_path)}`;
-
+  // Append ngrok-skip-browser-warning as a query parameter
+  const fileUrl = `${storageBaseUrl}/${encodeURI(file_path)}?ngrok-skip-browser-warning=true`;
 
   const isPdf = file_path.toLowerCase().endsWith('.pdf');
   const isImage = /\.(jpg|jpeg|png|gif)$/i.test(file_path.toLowerCase());
