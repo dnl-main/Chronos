@@ -169,7 +169,6 @@ const Login = () => {
               id="login-form"
               className="login-right-form-form"
               onSubmit={handleLogin}
-              autoComplete="off"
               style={{ marginTop: '20px' }}
             >
               <div className="login-right-form-email">
@@ -182,7 +181,7 @@ const Login = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="off"
+           
                 />
               </div>
               <div className="login-right-form-password" style={{ position: 'relative', width: '100%' }}>
