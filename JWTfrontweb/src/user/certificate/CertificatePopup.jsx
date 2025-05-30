@@ -1,5 +1,5 @@
 import React from 'react';
-import './CertificatePopup.css';
+import './certificateopup.css';
 
 const CertificatePopup = ({ certificate, onClose }) => {
   if (!certificate) return null;
