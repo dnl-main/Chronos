@@ -24,10 +24,13 @@ const CertificatePopup = ({ certificate, onClose, onDelete }) => {
         withCredentials: true,
       });
       alert('Certificate deleted successfully'); // Replace with toast in production
-      onDelete(id); // Notify parent to update state
+      if (typeof onDelete === 'function') {
+        onDelete(id); // Notify parent to update state
+      }
       onClose(); // Close the popup
+      window.location.reload(); // Refresh the page
     } catch (error) {
-      // console.error('Failed to delete certificate:', error);
+      //console.error('Failed to delete certificate:', error);
       alert('Failed to delete certificate');
     }
   };
@@ -47,14 +50,12 @@ const CertificatePopup = ({ certificate, onClose, onDelete }) => {
               src={fileUrl}
               title={certificate_name}
               className="certificate-popup-file"
-              // onError={() => console.error('Failed to load PDF:', fileUrl)}
             />
           ) : isImage ? (
             <img
               src={fileUrl}
               alt={certificate_name}
               className="certificate-popup-file"
-              // onError={() => console.error('Failed to load image:', fileUrl)}
             />
           ) : (
             <p>Unsupported file type</p>
