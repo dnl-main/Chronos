@@ -49,10 +49,10 @@ const Schedule = () => {
   const fetchUserData = async (token) => {
     try {
       const response = await axios.get(`${apiUrl}/user`, {
-headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
         withCredentials: true,
       });
       const userData = response.data;
@@ -63,7 +63,6 @@ headers: {
       sessionStorage.setItem('user', JSON.stringify(userData));
       fetchAppointments(token);
     } catch (error) {
-      // console.error('Failed to fetch user data:', error);
       setError('Failed to load user data. Please log in again.');
       navigate('/login');
     } finally {
@@ -75,15 +74,14 @@ headers: {
     try {
       setError(null);
       const response = await axios.get(`${apiUrl}/appointment`, {
-headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
         withCredentials: true,
       });
       setAppointments(Array.isArray(response.data) ? response.data : [response.data].filter(Boolean));
     } catch (error) {
-      // console.error('Failed to fetch appointments:', error);
       if (error.response?.status === 401) {
         setError('Unauthorized. Please log in again.');
         navigate('/login');
@@ -104,6 +102,17 @@ headers: {
     setIsModalOpen(false);
     setModalData(null);
     fetchAppointments(sessionStorage.getItem('token')); // Refresh appointments after modal closes
+  };
+
+  // Normalize date to YYYY-MM-DD format for consistent comparison
+  const normalizeDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  };
+
+  // Sort appointments by date in ascending order
+  const sortAppointmentsByDate = (a, b) => {
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
   };
 
   const today = new Date().toISOString().split('T')[0];
@@ -166,7 +175,8 @@ headers: {
               <section className="schedule-today">
                 <div className="schedule-today-cards">
                   {appointments
-                    .filter((app) => app.date === today && app.status !== 'completed')
+                    .filter((app) => normalizeDate(app.date) === today && app.status !== 'completed')
+                    .sort(sortAppointmentsByDate)
                     .map((app) => (
                       <ScheduleCard
                         key={app.id}
@@ -176,6 +186,9 @@ headers: {
                         onEditClick={handleEditClick}
                       />
                     ))}
+                  {appointments.filter((app) => normalizeDate(app.date) === today && app.status !== 'completed').length === 0 && (
+                    <p style={{ color: '#888', padding: '1rem' }}>No appointments today.</p>
+                  )}
                 </div>
               </section>
             </>
@@ -189,7 +202,8 @@ headers: {
               <section className="schedule-today">
                 <div className="schedule-today-cards">
                   {appointments
-                    .filter((app) => app.date > today && app.status !== 'completed')
+                    .filter((app) => normalizeDate(app.date) > today && app.status !== 'completed')
+                    .sort(sortAppointmentsByDate)
                     .map((app) => (
                       <ScheduleCard
                         key={app.id}
@@ -199,6 +213,9 @@ headers: {
                         onEditClick={handleEditClick}
                       />
                     ))}
+                  {appointments.filter((app) => normalizeDate(app.date) > today && app.status !== 'completed').length === 0 && (
+                    <p style={{ color: '#888', padding: '1rem' }}>No upcoming appointments.</p>
+                  )}
                 </div>
               </section>
             </>
@@ -213,6 +230,7 @@ headers: {
                 <div className="schedule-today-cards">
                   {appointments
                     .filter((app) => app.status === 'completed')
+                    .sort(sortAppointmentsByDate)
                     .map((app) => (
                       <ScheduleCard
                         key={app.id}
@@ -223,7 +241,7 @@ headers: {
                       />
                     ))}
                   {appointments.filter((app) => app.status === 'completed').length === 0 && (
-                    <p style={{ color: '#888', padding: '1rem' }}>No results found.</p>
+                    <p style={{ color: '#888', padding: '1rem' }}>No completed appointments.</p>
                   )}
                 </div>
               </section>

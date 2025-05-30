@@ -31,8 +31,9 @@ class AppointmentController extends Controller
                     'operator' => $appointment->operator,
                     'accounting_task' => $appointment->accounting_task,
                     'employee' => $appointment->employee,
-                    'status' => $appointment->status, // Use database status
-                    'computed_status' => $this->getAppointmentStatus($appointment), // Include computed status
+                    'purpose' => $appointment->purpose,
+                    'status' => $appointment->status,
+                    'computed_status' => $this->getAppointmentStatus($appointment),
                     'user' => $appointment->user ? [
                         'first_name' => $appointment->user->first_name,
                         'middle_name' => $appointment->user->middle_name,
@@ -65,8 +66,9 @@ class AppointmentController extends Controller
                 'operator' => $appointment->operator,
                 'accounting_task' => $appointment->accounting_task,
                 'employee' => $appointment->employee,
-                'status' => $appointment->status, // Use database status
-                'computed_status' => $this->getAppointmentStatus($appointment), // Include computed status
+                'purpose' => $appointment->purpose,
+                'status' => $appointment->status,
+                'computed_status' => $this->getAppointmentStatus($appointment),
                 'user' => [
                     'first_name' => $user->first_name,
                     'middle_name' => $user->middle_name,
@@ -135,7 +137,7 @@ class AppointmentController extends Controller
         $user = JWTAuth::user();
 
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id', // Validate user_id
+            'user_id' => 'required|exists:users,id',
             'date' => 'required|date|after_or_equal:today',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
@@ -144,18 +146,17 @@ class AppointmentController extends Controller
             'operator' => 'required_if:department,crewing|in:fleet crew manager,senior fleet crew operator,crew operator 1,crew operator 2,crew operator 3|nullable',
             'accounting_task' => 'required_if:department,accounting|in:allotment,final balance,check releasing|nullable',
             'employee_name' => 'required|string|max:255',
+            'purpose' => 'required|string|max:255',
         ]);
 
-        // Restrict non-admins to their own user_id
         if ($user->role !== 'admin' && $validated['user_id'] != $user->id) {
             return response()->json(['message' => 'Unauthorized: Cannot book for another user'], 403);
         }
 
-        // Delete any existing appointment for the target user_id
         Appointment::where('user_id', $validated['user_id'])->delete();
 
         $appointment = Appointment::create([
-            'user_id' => $validated['user_id'], // Use validated user_id
+            'user_id' => $validated['user_id'],
             'date' => $validated['date'],
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
@@ -164,7 +165,8 @@ class AppointmentController extends Controller
             'operator' => $validated['operator'] ?? null,
             'accounting_task' => $validated['accounting_task'] ?? null,
             'employee' => $validated['employee_name'],
-            'status' => 'booked', // Explicitly set status
+            'purpose' => $validated['purpose'],
+            'status' => 'booked',
         ]);
 
         return response()->json([
@@ -179,6 +181,7 @@ class AppointmentController extends Controller
                 'operator' => $appointment->operator,
                 'accounting_task' => $appointment->accounting_task,
                 'employee' => $appointment->employee,
+                'purpose' => $appointment->purpose,
                 'status' => $appointment->status,
                 'computed_status' => $this->getAppointmentStatus($appointment),
             ]
@@ -203,6 +206,7 @@ class AppointmentController extends Controller
             'operator' => $appointment->operator,
             'accounting_task' => $appointment->accounting_task,
             'employee' => $appointment->employee,
+            'purpose' => $appointment->purpose,
             'status' => $appointment->status,
             'computed_status' => $this->getAppointmentStatus($appointment),
         ], 200);
@@ -221,7 +225,7 @@ class AppointmentController extends Controller
         }
 
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id', // Validate user_id
+            'user_id' => 'required|exists:users,id',
             'date' => 'required|date|after_or_equal:today',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
@@ -230,10 +234,11 @@ class AppointmentController extends Controller
             'operator' => 'required_if:department,crewing|in:fleet crew manager,senior fleet crew operator,crew operator 1,crew operator 2,crew operator 3|nullable',
             'accounting_task' => 'required_if:department,accounting|in:allotment,final balance,check releasing|nullable',
             'employee_name' => 'required|string|max:255',
+            'purpose' => 'required|string|max:255',
         ]);
 
         $appointment->update([
-            'user_id' => $validated['user_id'], // Allow user_id update
+            'user_id' => $validated['user_id'],
             'date' => $validated['date'],
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
@@ -242,6 +247,7 @@ class AppointmentController extends Controller
             'operator' => $validated['operator'] ?? null,
             'accounting_task' => $validated['accounting_task'] ?? null,
             'employee' => $validated['employee_name'],
+            'purpose' => $validated['purpose'],
             'status' => 'booked',
         ]);
 
@@ -258,6 +264,7 @@ class AppointmentController extends Controller
                 'operator' => $appointment->operator,
                 'accounting_task' => $appointment->accounting_task,
                 'employee' => $appointment->employee,
+                'purpose' => $appointment->purpose,
                 'status' => $appointment->status,
                 'computed_status' => $this->getAppointmentStatus($appointment),
             ],
@@ -287,7 +294,7 @@ class AppointmentController extends Controller
         return response()->json(['message' => 'Appointment deleted successfully'], 200);
     }
 
-    public function reschedule(Request $request, $id)
+   public function reschedule(Request $request, $id)
 {
     $user = JWTAuth::user();
     if ($user->role !== 'admin') {
@@ -304,7 +311,7 @@ class AppointmentController extends Controller
     }
 
     $validated = $request->validate([
-        'user_id' => 'sometimes|exists:users,id', // Make user_id optional
+        'user_id' => 'sometimes|exists:users,id',
         'date' => 'required|date|after_or_equal:today',
         'start_time' => 'required|date_format:H:i',
         'end_time' => 'required|date_format:H:i|after:start_time',
@@ -313,10 +320,11 @@ class AppointmentController extends Controller
         'operator' => 'required_if:department,crewing|in:fleet crew manager,senior fleet crew operator,crew operator 1,crew operator 2,crew operator 3|nullable',
         'accounting_task' => 'required_if:department,accounting|in:allotment,final balance,check releasing|nullable',
         'employee_name' => 'required|string|max:255',
+        'purpose' => 'sometimes|string|max:255', // Changed to optional
     ]);
 
     $appointment->update([
-        'user_id' => $validated['user_id'] ?? $appointment->user_id, // Use existing user_id if not provided
+        'user_id' => $validated['user_id'] ?? $appointment->user_id,
         'date' => $validated['date'],
         'start_time' => $validated['start_time'],
         'end_time' => $validated['end_time'],
@@ -325,6 +333,7 @@ class AppointmentController extends Controller
         'operator' => $validated['operator'] ?? null,
         'accounting_task' => $validated['accounting_task'] ?? null,
         'employee' => $validated['employee_name'],
+        'purpose' => $validated['purpose'] ?? $appointment->purpose, // Preserve existing purpose
         'status' => 'booked',
     ]);
 
@@ -341,13 +350,14 @@ class AppointmentController extends Controller
             'operator' => $appointment->operator,
             'accounting_task' => $appointment->accounting_task,
             'employee' => $appointment->employee,
+            'purpose' => $appointment->purpose,
             'status' => $appointment->status,
             'computed_status' => $this->getAppointmentStatus($appointment),
         ],
     ], 200);
-}
+} 
 
-    public function cancel($id)
+public function cancel($id)
     {
         $user = JWTAuth::user();
         if ($user->role !== 'admin') {

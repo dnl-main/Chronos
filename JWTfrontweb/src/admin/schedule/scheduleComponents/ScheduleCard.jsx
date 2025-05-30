@@ -1,7 +1,5 @@
 import React from 'react';
 import './scheduleCard.css';
-import Phone from '../../../assets/icons/Phone.svg?react';
-import Mail from '../../../assets/icons/Mail.svg?react';
 import Edit_Pencil_01 from '../../../assets/icons/Edit_Pencil_01.svg?react';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
 
@@ -10,10 +8,20 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
     return <p>Loading...</p>;
   }
 
+  const isUpcoming = (dateString) => {
+    const today = new Date();
+    const appointmentDate = new Date(dateString);
+    // Consider an appointment upcoming if it's after today
+    return appointmentDate > today;
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
+    const isUpcomingAppointment = isUpcoming(dateString);
     return {
-      day: date.toLocaleString('en-US', { weekday: 'short' }),
+      day: isUpcomingAppointment
+        ? date.toLocaleString('en-US', { month: 'short' }) // e.g., "Jan"
+        : date.toLocaleString('en-US', { weekday: 'short' }), // e.g., "Sat"
       date: date.getDate(),
     };
   };
@@ -25,18 +33,14 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
     return date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
   };
 
+  const formatPurpose = (purpose) => {
+    if (!purpose) return 'N/A';
+    return purpose.charAt(0).toUpperCase() + purpose.slice(1);
+  };
+
   const { day, date } = formatDate(appointment.date);
   const startTime = formatTime(appointment.start_time);
   const endTime = formatTime(appointment.end_time);
-
-  let formattedPhone = 'N/A';
-  if (user?.mobile) {
-    const rawPhone = user.mobile;
-    const cleaned = rawPhone.startsWith('0') ? rawPhone.substring(1) : rawPhone;
-    formattedPhone = cleaned.length >= 10
-      ? `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`
-      : cleaned;
-  }
 
   return (
     <main className="schedule-today-cards-card">
@@ -71,13 +75,11 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
 
       <section className="schedule-today-cards-card-contact">
         <div className="schedule-today-cards-card-contact-mobile">
-          <Phone className="schedule-today-cards-card-contact-mobile-svg" />
-          <p>{formattedPhone ? `(+63)${formattedPhone}` : 'Loading...'}</p>
+          <p>Purpose of visit: {formatPurpose(appointment.purpose)}</p>
         </div>
 
         <div className="schedule-today-cards-card-contact-email">
-          <Mail className="schedule-today-cards-card-contact-email-svg" />
-          <p>{user.email || 'N/A'}</p>
+          <p>Employee: {appointment.employee || 'N/A'}</p>
         </div>
       </section>
 

@@ -18,6 +18,7 @@ const operators = [
   'Crew operator 3',
 ];
 const accountingOptions = ['Allotment', 'Final balance', 'Check releasing'];
+const purposeOptions = ['Document submission', 'Contract Signing', 'Training', 'Allowance Distribution', 'Others'];
 const times = [];
 for (let hour = 9; hour <= 18; hour++) {
   times.push(`${hour.toString().padStart(2, '0')}:00`);
@@ -32,12 +33,13 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
   const [operator, setOperator] = useState('');
   const [accountingOption, setAccountingOption] = useState('');
   const [employeeName, setEmployeeName] = useState('');
+  const [purpose, setPurpose] = useState('');
+  const [customPurpose, setCustomPurpose] = useState('');
   const [date, setDate] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [userId, setUserId] = useState(null); // New state for user_id
+  const [userId, setUserId] = useState(null);
 
-  // Fetch user ID when component mounts
   useEffect(() => {
     const fetchUserId = async () => {
       const token = sessionStorage.getItem('token');
@@ -50,7 +52,7 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
             'ngrok-skip-browser-warning': 'true',
           },
         });
-        setUserId(response.data.id); // Assuming the endpoint returns { id: number, ... }
+        setUserId(response.data.id);
       } catch (error) {
         console.error('Failed to fetch user ID:', error.response?.data || error.message);
         alert('Unable to fetch user information. Please log in again.');
@@ -74,7 +76,7 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
       return;
     }
 
-    if (!department || !employeeName || !date || !startTime || !endTime) {
+    if (!department || !employeeName || !purpose || !date || !startTime || !endTime) {
       alert('Please complete all required fields before booking.');
       return;
     }
@@ -89,6 +91,11 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
       return;
     }
 
+    if (purpose === 'Others' && !customPurpose) {
+      alert('Please specify the purpose of visit.');
+      return;
+    }
+
     const today = new Date();
     const selectedDate = new Date(date);
     today.setHours(0, 0, 0, 0);
@@ -99,7 +106,6 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
       return;
     }
 
-    // Time validation: Ensure endTime is after startTime
     const startMinutes = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
     const endMinutes = parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1]);
     if (endMinutes <= startMinutes) {
@@ -112,12 +118,13 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
     const payload = {
-      user_id: userId, // Include user_id in the payload
+      user_id: userId,
       department: department.toLowerCase(),
       crewing_dept: department === 'Crewing' ? crewingDept.toLowerCase() : undefined,
       operator: department === 'Crewing' ? operator.toLowerCase() : undefined,
       accounting_task: department === 'Accounting' ? accountingOption.toLowerCase() : undefined,
       employee_name: employeeName,
+      purpose: purpose === 'Others' ? customPurpose : purpose.toLowerCase(),
       date: formattedDate,
       start_time: startTime,
       end_time: endTime,
@@ -145,6 +152,7 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
           operator: appointment.operator,
           accounting_task: appointment.accounting_task,
           employee: appointment.employee,
+          purpose: appointment.purpose,
         });
       }
 
@@ -154,6 +162,7 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
     } catch (error) {
       const errorMessage = error.response?.data?.message || 
                           error.response?.data?.errors?.department?.[0] || 
+                          error.response?.data?.errors?.purpose?.[0] || 
                           'Failed to book appointment. Please check your inputs and try again.';
       alert(errorMessage);
     }
@@ -270,6 +279,33 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
                     onChange={(e) => setEmployeeName(e.target.value)}
                   />
                 </article>
+
+                <article className="bookModalUser-box-in-core-data-dept-purpose">
+                  <label htmlFor="purpose">Purpose of visit</label>
+                  <select
+                    id="purpose"
+                    value={purpose}
+                    onChange={(e) => setPurpose(e.target.value)}
+                  >
+                    <option value="">Select...</option>
+                    {purposeOptions.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </article>
+
+                {purpose === 'Others' && (
+                  <article className="bookModalUser-box-in-core-data-dept-custom-purpose">
+                    <label htmlFor="customPurpose">Specify Purpose</label>
+                    <input
+                      type="text"
+                      id="customPurpose"
+                      value={customPurpose}
+                      onChange={(e) => setCustomPurpose(e.target.value)}
+                      placeholder="Enter custom purpose"
+                    />
+                  </article>
+                )}
               </section>
 
               <section className="bookModalUser-box-in-core-data-day">

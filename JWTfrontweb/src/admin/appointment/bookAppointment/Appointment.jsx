@@ -26,6 +26,7 @@ const operators = [
   'crew operator 3',
 ];
 const accountingOptions = ['allotment', 'final balance', 'check releasing'];
+const purposeOptions = ['Document submission', 'Contract Signing', 'Training', 'Allowance Distribution', 'Others'];
 
 function formatDateForInput(displayDate) {
   if (!displayDate) return '';
@@ -73,19 +74,39 @@ function parseTime(timeStr) {
 }
 
 function convertTo12Hour(timeStr) {
-  if (!timeStr) return '';
-  const [hours, minutes] = timeStr.split(':').map(Number);
-  if (isNaN(hours) || isNaN(minutes)) return '';
+  if (!timeStr || typeof timeStr !== 'string') return '';
+  const cleanTime = timeStr.split(':').slice(0, 2).join(':');
+  const [hours, minutes] = cleanTime.split(':').map(Number);
+  if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return '';
   const period = hours >= 12 ? 'PM' : 'AM';
   const displayHours = hours % 12 || 12;
-  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+  return `${displayHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
+}
+
+function convertTo24Hour(timeStr) {
+  if (!timeStr || typeof timeStr !== 'string') return '';
+  const [time, modifier] = timeStr.split(' ').filter(Boolean);
+  if (!time || !modifier) return '';
+  const [hours, minutes] = time.split(':').map(Number);
+  if (isNaN(hours) || isNaN(minutes)) return '';
+  let adjustedHours = hours;
+  if (modifier.toUpperCase() === 'PM' && hours !== 12) adjustedHours += 12;
+  if (modifier.toUpperCase() === 'AM' && hours === 12) adjustedHours = 0;
+  return `${adjustedHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
 function mapAppointment(appointment) {
+  const normalizePurpose = (p) => {
+    if (!p || typeof p !== 'string') return '';
+    const lowerPurpose = p.toLowerCase();
+    const matchingOption = purposeOptions.find(opt => opt.toLowerCase() === lowerPurpose);
+    return matchingOption || p.charAt(0).toUpperCase() + p.slice(1);
+  };
+
   return {
-    id: String(appointment.id), // Normalize to string
-    user_id: appointment.user_id,
-    status: appointment.status || 'booked', // Use database status
+    id: String(appointment.id || `temp-${Math.random()}`), // Fallback ID
+    user_id: appointment.user_id || null,
+    status: appointment.status || 'booked',
     date: appointment.date ? formatDateForDisplay(appointment.date) : '',
     start_time: appointment.start_time ? convertTo12Hour(appointment.start_time) : '',
     end_time: appointment.end_time ? convertTo12Hour(appointment.end_time) : '',
@@ -94,10 +115,11 @@ function mapAppointment(appointment) {
     operator: appointment.operator || '',
     accountingOption: appointment.accounting_task || '',
     employeeName: appointment.employee || '',
+    purpose: normalizePurpose(appointment.purpose),
     user: appointment.user || { first_name: '', middle_name: '', last_name: '', position: '' },
   };
 }
-
+  
 export default function Appointment({ onClose }) {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
@@ -114,6 +136,8 @@ export default function Appointment({ onClose }) {
   const [operator, setOperator] = useState('');
   const [accountingOption, setAccountingOption] = useState('');
   const [employeeName, setEmployeeName] = useState('');
+  const [purpose, setPurpose] = useState('');
+  const [customPurpose, setCustomPurpose] = useState('');
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
@@ -122,105 +146,93 @@ export default function Appointment({ onClose }) {
 
   const selectedAppointment = appointments.find(appt => appt.id === selectedId);
 
-
-
-
-useEffect(() => {
-  const token = sessionStorage.getItem('token');
-  if (!token) {
-    navigate('/login');
-    return;
-  }
-
-  const fetchUserRole = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/user`, {
-        headers: { Authorization: `Bearer ${token}`,  'ngrok-skip-browser-warning': 'true' },
-      });
-      setIsAdmin(response.data.role === 'admin');
-    } catch (err) {
-      setError('Error fetching user role: ' + (err.response?.data?.message || err.message));
-      setIsAdmin(false);
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
     }
-  };
 
-  const fetchAppointments = async () => {
-    try {
-      const response = await axios.get(`${apiUrl}/appointment`, {
-        headers: { Authorization: `Bearer ${token}`,  'ngrok-skip-browser-warning': 'true' },
-      });
-      const data = Array.isArray(response.data) ? response.data : response.data.id ? [response.data] : [];
-      // console.log('Appointments Data:', data); // Debug
-      setAppointments(data.map(mapAppointment));
-      return data;
-    } catch (err) {
-      setError('Error fetching appointments: ' + (err.response?.data?.message || err.message));
-      return [];
-    }
-  };
+    const fetchUserRole = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/user`, {
+          headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
+        });
+        setIsAdmin(response.data.role === 'admin');
+      } catch (err) {
+        setError('Error fetching user role: ' + (err.response?.data?.message || err.message));
+        setIsAdmin(false);
+      }
+    };
 
-const fetchAvailableUsers = async (existingAppointments) => {
-  try {
-    const response = await axios.get(`${apiUrl}/crew-members`, {
-      headers: { Authorization: `Bearer ${token}`,  'ngrok-skip-browser-warning': 'true' },
-    });
-    // console.log('Crew Members Data:', response.data); // Debug
-    const availableUsers = response.data; // Backend returns crew members
-    // Get user_ids of users with booked appointments
-    const bookedUserIds = new Set(
-      existingAppointments
-        .filter(appt => appt.status === 'booked')
-        .map(appt => appt.user_id)
-    );
-    // console.log('Booked User IDs:', Array.from(bookedUserIds)); // Debug
-    // Filter users who do NOT have booked appointments and have availability 'available' or 'on board'
-    const availableAppointments = availableUsers
-      .filter(user => 
-        !bookedUserIds.has(user.id) && // Must NOT have a booked appointment
-        ['available', 'on board'].includes(user.availability?.toLowerCase()) // Availability must be 'available' or 'on board'
-      )
-      .map(user => ({
-        id: `user-${user.id}`,
-        user_id: user.id,
-        status: 'available', // Virtual appointment status
-        availability: user.availability || '', // Preserve availability field
-        date: '',
-        start_time: '',
-        end_time: '',
-        department: '',
-        crewingDept: '',
-        operator: '',
-        accountingOption: '',
-        employeeName: '',
-        user: {
-          first_name: user.first_name || '',
-          middle_name: user.middle_name || '',
-          last_name: user.last_name || '',
-          position: user.position || '',
-        },
-      }));
-    // console.log('Available Appointments:', availableAppointments); // Debug
-    setAppointments(prev => {
-      const updatedAppointments = [
-        ...prev.filter(appt => !String(appt.id).startsWith('user-')), // Remove old virtual appointments
-        ...availableAppointments,
-      ];
-      // console.log('Updated Appointments State:', updatedAppointments); // Debug
-      return updatedAppointments;
-    });
-  } catch (err) {
-    setError('Error fetching available users: ' + (err.response?.data?.message || err.message));
-  }
-};
+    const fetchAppointments = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/appointment`, {
+          headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
+        });
+        const data = Array.isArray(response.data) ? response.data : response.data.id ? [response.data] : [];
+        setAppointments(data.map(mapAppointment));
+        return data;
+      } catch (err) {
+        setError('Error fetching appointments: ' + (err.response?.data?.message || err.message));
+        return [];
+      }
+    };
 
-const initialize = async () => {
-  await fetchUserRole();
-  const appointmentsData = await fetchAppointments();
-  await fetchAvailableUsers(appointmentsData);
-};
+    const fetchAvailableUsers = async (existingAppointments) => {
+      try {
+        const response = await axios.get(`${apiUrl}/crew-members`, {
+          headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
+        });
+        const availableUsers = response.data;
+        const bookedUserIds = new Set(
+          existingAppointments
+            .filter(appt => appt.status === 'booked')
+            .map(appt => appt.user_id)
+        );
+        const availableAppointments = availableUsers
+          .filter(user => 
+            !bookedUserIds.has(user.id) && 
+            ['available', 'on board'].includes(user.availability?.toLowerCase())
+          )
+          .map(user => ({
+            id: `user-${user.id}`,
+            user_id: user.id,
+            status: 'available',
+            availability: user.availability || '',
+            date: '',
+            start_time: '',
+            end_time: '',
+            department: '',
+            crewingDept: '',
+            operator: '',
+            accountingOption: '',
+            employeeName: '',
+            purpose: '',
+            user: {
+              first_name: user.first_name || '',
+              middle_name: user.middle_name || '',
+              last_name: user.last_name || '',
+              position: user.position || '',
+            },
+          }));
+        setAppointments(prev => [
+          ...prev.filter(appt => !String(appt.id).startsWith('user-')),
+          ...availableAppointments,
+        ]);
+      } catch (err) {
+        setError('Error fetching available users: ' + (err.response?.data?.message || err.message));
+      }
+    };
 
-initialize();
-}, [navigate, apiUrl]);
+    const initialize = async () => {
+      await fetchUserRole();
+      const appointmentsData = await fetchAppointments();
+      await fetchAvailableUsers(appointmentsData);
+    };
+
+    initialize();
+  }, [navigate, apiUrl]);
 
   useEffect(() => {
     if (!selectedAppointment) {
@@ -232,6 +244,8 @@ initialize();
       setOperator('');
       setAccountingOption('');
       setEmployeeName('');
+      setPurpose('');
+      setCustomPurpose('');
       return;
     }
 
@@ -243,6 +257,8 @@ initialize();
     setOperator(selectedAppointment.operator || '');
     setAccountingOption(selectedAppointment.accountingOption || '');
     setEmployeeName(selectedAppointment.employeeName || '');
+    setPurpose(selectedAppointment.purpose || '');
+    setCustomPurpose(selectedAppointment.purpose === 'others' ? selectedAppointment.purpose : '');
   }, [selectedAppointment]);
 
   const validateTimeFields = () => {
@@ -290,55 +306,51 @@ initialize();
       alert('Please select an Accounting Task.');
       return;
     }
+    if (!purpose) {
+      alert('Please select a Purpose of visit.');
+      return;
+    }
+    if (purpose === 'Others' && !customPurpose) {
+      alert('Please specify the purpose of visit.');
+      return;
+    }
     setShowBookModal(true);
   };
-function convertTo24Hour(timeStr) {
-  if (!timeStr || typeof timeStr !== 'string') return '';
-  const [time, modifier] = timeStr.split(' ').filter(Boolean);
-  if (!time || !modifier) return '';
-  const [hours, minutes] = time.split(':').map(Number);
-  if (isNaN(hours) || isNaN(minutes)) return '';
-  let adjustedHours = hours;
-  if (modifier.toUpperCase() === 'PM' && hours !== 12) adjustedHours += 12;
-  if (modifier.toUpperCase() === 'AM' && hours === 12) adjustedHours = 0;
-  return `${adjustedHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-}
-const confirmBooking = async () => {
-  try {
-    const token = sessionStorage.getItem('token');
-    // console.log('Booking Inputs:', { startTime, endTime }); // Debug
-    const payload = {
-      user_id: selectedAppointment?.user_id,
-      date: formatDateForInput(date),
-      start_time: convertTo24Hour(startTime),
-      end_time: convertTo24Hour(endTime),
-      department: department.toLowerCase(),
-      crewing_dept: department === 'Crewing' && crewingDept ? crewingDept.toLowerCase() : null,
-      operator: department === 'Crewing' && operator ? operator.toLowerCase() : null,
-      accounting_task: department === 'Accounting' && accountingOption ? accountingOption.toLowerCase() : null,
-      employee_name: employeeName || `${selectedAppointment?.user?.first_name || ''} ${selectedAppointment?.user?.last_name || ''}`.trim() || 'Unknown User',
-    };
-    // console.log('Booking Payload:', payload);
-    if (!payload.start_time || !payload.end_time) {
-      throw new Error('Start time and end time are required.');
+
+  const confirmBooking = async () => {
+    try {
+      const token = sessionStorage.getItem('token');
+      const payload = {
+        user_id: selectedAppointment?.user_id,
+        date: formatDateForInput(date),
+        start_time: convertTo24Hour(startTime),
+        end_time: convertTo24Hour(endTime),
+        department: department.toLowerCase(),
+        crewing_dept: department === 'Crewing' && crewingDept ? crewingDept.toLowerCase() : null,
+        operator: department === 'Crewing' && operator ? operator.toLowerCase() : null,
+        accounting_task: department === 'Accounting' && accountingOption ? accountingOption.toLowerCase() : null,
+        employee_name: employeeName || `${selectedAppointment?.user?.first_name || ''} ${selectedAppointment?.user?.last_name || ''}`.trim() || 'Unknown User',
+        purpose: purpose === 'Others' ? customPurpose.toLowerCase() : purpose.toLowerCase(),
+      };
+      if (!payload.start_time || !payload.end_time) {
+        throw new Error('Start time and end time are required.');
+      }
+      const response = await axios.post(
+        `${apiUrl}/appointment`,
+        payload,
+        { headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' } }
+      );
+      setAppointments(prev => [
+        ...prev.filter(appt => appt.id !== selectedId),
+        mapAppointment(response.data.appointment),
+      ]);
+      setShowBookModal(false);
+      alert('Appointment booked successfully!');
+      window.location.reload();
+    } catch (err) {
+      alert('Error booking appointment: ' + (err.response?.data?.message || err.message));
     }
-    const response = await axios.post(
-      `${apiUrl}/appointment`,
-      payload,
-      { headers: { Authorization: `Bearer ${token}` ,  'ngrok-skip-browser-warning': 'true'} }
-    );
-    setAppointments(prev => [
-      ...prev.filter(appt => appt.id !== selectedId),
-      mapAppointment(response.data.appointment),
-    ]);
-    setShowBookModal(false);
-    alert('Appointment booked successfully!');
-    window.location.reload(); // Reload to reflect changes
-  } catch (err) {
-    // console.error('Booking Error:', err.response?.data || err.message);
-    alert('Error booking appointment: ' + (err.response?.data?.message || err.message));
-  }
-};
+  };
 
   const handleReschedule = () => {
     if (!isAdmin) {
@@ -370,10 +382,18 @@ const confirmBooking = async () => {
       alert('Please select an Accounting Task.');
       return;
     }
+    if (!purpose) {
+      alert('Please select a Purpose of visit.');
+      return;
+    }
+    if (purpose === 'Others' && !customPurpose) {
+      alert('Please specify the purpose of visit.');
+      return;
+    }
     setShowRescheduleModal(true);
   };
 
-const confirmReschedule = async () => {
+  const confirmReschedule = async () => {
   if (String(selectedId).startsWith('user-')) {
     alert('Cannot reschedule a virtual appointment. Please book a new appointment.');
     setShowRescheduleModal(false);
@@ -389,13 +409,14 @@ const confirmReschedule = async () => {
       crewing_dept: crewingDept || null,
       operator: operator || null,
       accounting_task: accountingOption || null,
-      employee_name: employeeName || user?.first_name + ' ' + user?.last_name || 'Unknown User',
+      employee_name: employeeName || `${selectedAppointment?.user?.first_name || ''} ${selectedAppointment?.user?.last_name || ''}`.trim() || 'Unknown User',
+      // Send original purpose, not dropdown state
+      purpose: selectedAppointment.purpose.toLowerCase(),
     };
-    // console.log('Reschedule Payload:', payload); // Debug
     const response = await axios.put(
       `${apiUrl}/appointment/${selectedId}/reschedule`,
       payload,
-      { headers: { Authorization: `Bearer ${token}` ,  'ngrok-skip-browser-warning': 'true'} }
+      { headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' } }
     );
     setAppointments(prev =>
       prev.map(appt =>
@@ -405,13 +426,11 @@ const confirmReschedule = async () => {
     setShowRescheduleModal(false);
     setShowConfirmation(true);
     alert('Appointment rescheduled successfully!');
-    window.location.reload(); // Reload to reflect changes
+    window.location.reload();
   } catch (err) {
-    // console.error('Reschedule Error:', err.response?.data); // Debug
     alert('Error rescheduling appointment: ' + (err.response?.data?.message || err.message));
   }
 };
-
   const handleCancel = () => {
     if (!isAdmin) {
       alert('Only admins can cancel appointments.');
@@ -428,7 +447,7 @@ const confirmReschedule = async () => {
     try {
       const token = sessionStorage.getItem('token');
       await axios.delete(`${apiUrl}/appointment/${selectedId}/cancel`, {
-        headers: { Authorization: `Bearer ${token}` ,  'ngrok-skip-browser-warning': 'true'},
+        headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
       });
       setAppointments(prev => prev.filter(appt => appt.id !== selectedId));
       setDate('');
@@ -439,10 +458,12 @@ const confirmReschedule = async () => {
       setOperator('');
       setAccountingOption('');
       setEmployeeName('');
+      setPurpose('');
+      setCustomPurpose('');
       setSelectedId(null);
       setShowCancelModal(false);
       alert('Appointment cancelled!');
-      window.location.reload(); // Reload to reflect changes
+      window.location.reload();
     } catch (err) {
       alert('Error cancelling appointment: ' + (err.response?.data?.message || err.message));
     }
@@ -554,6 +575,8 @@ const confirmReschedule = async () => {
                       setCrewingDept('');
                       setOperator('');
                       setAccountingOption('');
+                      setPurpose('');
+                      setCustomPurpose('');
                     }}
                   >
                     <option value="">Select...</option>
@@ -625,6 +648,41 @@ const confirmReschedule = async () => {
                   onChange={(e) => setEmployeeName(e.target.value)}
                 />
               </article>
+
+             <article className="appointmentModal-box-in-right-dept-purpose">
+  <label htmlFor="purpose">Purpose of visit</label>
+  <select
+    id="purpose"
+    value={purpose || ''}
+    onChange={(e) => {
+      setPurpose(e.target.value);
+      if (e.target.value !== 'Others') {
+        setCustomPurpose('');
+      }
+    }}
+  >
+    <option value="">Select...</option>
+    {purposeOptions.map((opt) => (
+      <option key={opt} value={opt}>{opt}</option>
+    ))}
+    {purpose && !purposeOptions.includes(purpose) && (
+      <option value={purpose}>{purpose}</option>
+    )}
+  </select>
+</article>
+
+              {purpose === 'Others' && (
+                <article className="appointmentModal-box-in-right-dept-custom-purpose">
+                  <label htmlFor="customPurpose">Specify Purpose</label>
+                  <input
+                    type="text"
+                    id="customPurpose"
+                    value={customPurpose}
+                    onChange={(e) => setCustomPurpose(e.target.value)}
+                    placeholder="Enter custom purpose"
+                  />
+                </article>
+              )}
             </section>
 
             <div className="appointmentModal-box-in-right-dropdown">
@@ -698,6 +756,7 @@ const confirmReschedule = async () => {
                   endTime={endTime}
                   user={selectedAppointment.user}
                   status={selectedAppointment.status}
+                  purpose={purpose === 'Others' ? customPurpose : purpose}
                   onClose={() => setShowRescheduleModal(false)}
                   onConfirmReschedule={confirmReschedule}
                 />
@@ -720,6 +779,7 @@ const confirmReschedule = async () => {
                   startTime={selectedAppointment.start_time}
                   endTime={selectedAppointment.end_time}
                   status={selectedAppointment.status}
+                  purpose={selectedAppointment.purpose}
                   onClose={() => setShowCancelModal(false)}
                   onConfirmCancel={confirmCancel}
                 />
@@ -750,6 +810,7 @@ const confirmReschedule = async () => {
                   endTime={endTime}
                   user={selectedAppointment.user}
                   status={selectedAppointment.status}
+                  purpose={purpose === 'Others' ? customPurpose : purpose}
                   onClose={() => setShowBookModal(false)}
                   onConfirmBooking={confirmBooking}
                 />

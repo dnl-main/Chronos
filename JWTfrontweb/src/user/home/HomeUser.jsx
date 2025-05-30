@@ -31,6 +31,7 @@ const HomeUser = () => {
     operator: '',
     accounting_task: '',
     employee: '',
+    purpose: '',
   });
   const [appointmentLoading, setAppointmentLoading] = useState(true);
   const [certificateName, setCertificateName] = useState('');
@@ -56,7 +57,7 @@ const HomeUser = () => {
 
       try {
         const response = await axios.get(`${apiUrl}/certificates`, {
-          headers: { Authorization: `Bearer ${token}` , 'ngrok-skip-browser-warning': 'true'},
+          headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
         });
         const certificates = response.data.certificates || [];
         const uploaded = certificates.length;
@@ -64,7 +65,6 @@ const HomeUser = () => {
         const percentage = Math.round((uploaded / total) * 100);
         setProgress({ percentage, uploaded, total });
       } catch (error) {
-        // console.error('Failed to fetch certificates:', error.response?.data || error.message);
         alert(error.response?.data.message || 'Failed to load certificates');
       } finally {
         setCertificateLoading(false);
@@ -88,6 +88,7 @@ const HomeUser = () => {
           operator: '',
           accounting_task: '',
           employee: '',
+          purpose: '',
         });
         setAppointmentLoading(false);
         return;
@@ -109,6 +110,7 @@ const HomeUser = () => {
             operator: appointmentData.operator || '',
             accounting_task: appointmentData.accounting_task || '',
             employee: appointmentData.employee || '',
+            purpose: appointmentData.purpose || '',
           });
         } else {
           setAppointment({
@@ -120,10 +122,10 @@ const HomeUser = () => {
             operator: '',
             accounting_task: '',
             employee: '',
+            purpose: '',
           });
         }
       } catch (error) {
-        // console.error('Failed to fetch appointment:', error.response?.data || error.message);
         setAppointment({
           date: '',
           start_time: '',
@@ -133,6 +135,7 @@ const HomeUser = () => {
           operator: '',
           accounting_task: '',
           employee: '',
+          purpose: '',
         });
       } finally {
         setAppointmentLoading(false);
@@ -181,7 +184,6 @@ const HomeUser = () => {
       setSelectedStatus(userData.availability || 'Available');
       sessionStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
-      // console.error('Failed to fetch user data:', error);
       navigate('/login');
     } finally {
       setLoading(false);
@@ -201,14 +203,13 @@ const HomeUser = () => {
         const response = await axios.patch(
           `${apiUrl}/user/availability`,
           { availability: selectedStatus },
-          { headers: { Authorization: `Bearer ${token}` , 'ngrok-skip-browser-warning': 'true'} }
+          { headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' } }
         );
         const updatedUser = response.data.user;
         setUser(updatedUser);
         sessionStorage.setItem('user', JSON.stringify(updatedUser));
         alert('Status updated successfully');
       } catch (error) {
-        // console.error('Failed to auto-save status:', error.response?.data || error.message);
         alert(error.response?.data.message || 'Failed to update status');
       }
     };
@@ -223,7 +224,7 @@ const HomeUser = () => {
         navigate('/');
         return;
       }
-      await axios.post(`${apiUrl}/logout`, {}, { headers: { Authorization: `Bearer ${token}` , 'ngrok-skip-browser-warning': 'true'} });
+      await axios.post(`${apiUrl}/logout`, {}, { headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' } });
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
       navigate('/');
@@ -253,6 +254,7 @@ const HomeUser = () => {
       operator: appointment.operator || '',
       accounting_task: appointment.accounting_task || '',
       employee: appointment.employee || '',
+      purpose: appointment.purpose || '',
     });
   };
 
@@ -271,10 +273,10 @@ const HomeUser = () => {
         operator: '',
         accounting_task: '',
         employee: '',
+        purpose: '',
       });
       alert('Appointment deleted successfully');
     } catch (error) {
-      // console.error('Failed to delete appointment:', error.response?.data || error.message);
       alert(error.response?.data.message || 'Failed to delete appointment');
     }
   };
@@ -316,7 +318,7 @@ const HomeUser = () => {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
-           'ngrok-skip-browser-warning': 'true'
+          'ngrok-skip-browser-warning': 'true',
         },
       });
 
@@ -327,7 +329,7 @@ const HomeUser = () => {
       setFile(null);
 
       const updatedCertResponse = await axios.get(`${apiUrl}/certificates`, {
-        headers: { Authorization: `Bearer ${token}` , 'ngrok-skip-browser-warning': 'true'},
+        headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
       });
       const certificates = updatedCertResponse.data.certificates || [];
       const uploaded = certificates.length;
@@ -335,7 +337,6 @@ const HomeUser = () => {
       const percentage = Math.round((uploaded / total) * 100);
       setProgress({ percentage, uploaded, total });
     } catch (error) {
-      // console.error('Failed to upload certificate:', error.response?.data || error.message);
       alert(error.response?.data.message || 'Failed to upload certificate');
     }
   };
@@ -458,15 +459,15 @@ const HomeUser = () => {
                               <p className="homeUser-top-core-left-date-data-text-light">
                                 {new Date(appointment.date).toLocaleDateString('en-US', { weekday: 'long' })}
                               </p>
-   <p className="homeUser-top-core-left-date-data-text-light">
-  Department: {appointment.department ? 
-    appointment.department.charAt(0).toUpperCase() + appointment.department.slice(1) : 'N/A'}
-</p>
+                              <p className="homeUser-top-core-left-date-data-text-light">
+                                Department: {appointment.department ? 
+                                  appointment.department.charAt(0).toUpperCase() + appointment.department.slice(1) : 'N/A'}
+                              </p>
                               {appointment.department === 'crewing' && (
                                 <>
                                   <p className="homeUser-top-core-left-date-data-text-light">
-                                    Crewing Dept:{appointment.crewing_dept ? 
-    appointment.crewing_dept.charAt(0).toUpperCase() + appointment.crewing_dept.slice(1) : 'N/A'}
+                                    Crewing Dept: {appointment.crewing_dept ? 
+                                      appointment.crewing_dept.charAt(0).toUpperCase() + appointment.crewing_dept.slice(1) : 'N/A'}
                                   </p>
                                   <p className="homeUser-top-core-left-date-data-text-light">
                                     Operator: {appointment.operator || 'N/A'}
@@ -476,11 +477,15 @@ const HomeUser = () => {
                               {appointment.department === 'accounting' && (
                                 <p className="homeUser-top-core-left-date-data-text-light">
                                   Accounting Task: {appointment.accounting_task ? 
-    appointment.accounting_task.charAt(0).toUpperCase() + appointment.accounting_task.slice(1) : 'N/A'}
+                                    appointment.accounting_task.charAt(0).toUpperCase() + appointment.accounting_task.slice(1) : 'N/A'}
                                 </p>
                               )}
                               <p className="homeUser-top-core-left-date-data-text-light">
                                 Employee: {appointment.employee || 'N/A'}
+                              </p>
+                              <p className="homeUser-top-core-left-date-data-text-light">
+                                Purpose: {appointment.purpose ? 
+                                  appointment.purpose.charAt(0).toUpperCase() + appointment.purpose.slice(1) : 'N/A'}
                               </p>
                             </div>
 

@@ -380,7 +380,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
                     </div>
                   ) : (
                     selectedAppointment?.department && (
-                      <p>Select a department to view additional options</p>
+                      <p></p>
                     )
                   )}
 

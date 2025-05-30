@@ -101,7 +101,7 @@ const Account = () => {
         //   setShowChangeProfilePicture(true);
         // }
       } catch (error) {
-        console.log('Fetch User Error:', error.response?.data, error.message);
+//console.log('Fetch User Error:', error.response?.data, error.message);
         setError('Failed to load user data. Please try again.');
         navigate('/login');
       } finally {
@@ -179,7 +179,7 @@ const Account = () => {
                 className="account-box-in-card-main-dp"
                 alt="profile"
                 onError={(e) => {
-                  console.log('Image Load Error:', e);
+                  //console.log('Image Load Error:', e);
                   e.target.src = landing_dp_1;
                   setError('Failed to load profile picture.');
                 }}
