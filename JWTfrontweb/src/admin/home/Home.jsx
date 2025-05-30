@@ -39,6 +39,7 @@ const Home = () => {
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     const storedUser = sessionStorage.getItem('user');
+    const justLoggedIn = sessionStorage.getItem('justLoggedIn') === 'true';
 
     if (!token) {
       navigate('/login');
@@ -58,9 +59,10 @@ const Home = () => {
       setUser(parsedUser);
       fetchAllUsers(token);
       fetchDashboardData(token);
-      // Check if position is needed
-      if (parsedUser.needs_position) {
+      // Show alert only if just logged in and needs_position is true
+      if (justLoggedIn && parsedUser.needs_position) {
         alert('Please input your position in the Account Page.');
+        sessionStorage.removeItem('justLoggedIn'); // Clear flag to prevent repeated alerts
         navigate('/admin/account');
       }
     } else {
@@ -97,9 +99,11 @@ const Home = () => {
       fetchAllUsers(token);
       await fetchDashboardData(token);
 
-      // Alert and redirect if position is needed
-      if (loginResponse.data.needs_position) {
+      // Show alert only if just logged in and needs_position is true
+      const justLoggedIn = sessionStorage.getItem('justLoggedIn') === 'true';
+      if (justLoggedIn && loginResponse.data.needs_position) {
         alert('Please input your position in the Account Page.');
+        sessionStorage.removeItem('justLoggedIn'); // Clear flag to prevent repeated alerts
         navigate('/admin/account');
       }
     } catch (error) {

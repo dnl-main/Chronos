@@ -14,10 +14,8 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  // CHANGE: Split the single `loading` state into two separate states
-  // Original: const [loading, setLoading] = useState(false);
-  const [loginLoading, setLoginLoading] = useState(false); // New state for login form loading
-  const [forgotLoading, setForgotLoading] = useState(false); // New state for forgot password modal loading
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [hasPreFilled, setHasPreFilled] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
@@ -49,11 +47,9 @@ const Login = () => {
     sessionStorage.removeItem('user');
 
     setError('');
-    // CHANGE: Use `setLoginLoading` instead of `setLoading`
     setLoginLoading(true);
 
     try {
-      // console.log('Sending login request:', { email, password });
       const response = await axios.post(`${apiUrl}/login`, { email, password });
 
       if (response.data.status && response.data.token) {
@@ -63,18 +59,19 @@ const Login = () => {
 
         sessionStorage.setItem('token', response.data.token);
         sessionStorage.setItem('user', JSON.stringify(response.data.user));
-        // console.log('Login successful:', response.data.message);
+        sessionStorage.setItem('justLoggedIn', 'true');
 
         if (rememberMe) {
           localStorage.setItem('rememberedEmail', email);
         }
+
         // Conditionally navigate based on role and region
         if (response.data.user.role === 'admin') {
-          navigate('/admin/home'); // Redirect to admin dashboard
+          navigate('/admin/home');
         } else if (response.data.user.region) {
-          navigate('/user/homeUser'); // Navigate to home user if region exists
+          navigate('/user/homeUser');
         } else {
-          navigate('/Registration'); // Redirect to registration if region is null
+          navigate('/Registration');
         }
       } else {
         setError('Invalid credentials or incomplete response. Please try again.');
@@ -92,7 +89,6 @@ const Login = () => {
         alert('Something went wrong. Please try again.');
       }
     } finally {
-      // CHANGE: Use `setLoginLoading` instead of `setLoading`
       setLoginLoading(false);
     }
   };
@@ -103,17 +99,16 @@ const Login = () => {
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
-    e.stopPropagation(); // Prevent event bubbling to outer form
+    e.stopPropagation();
 
     setForgotError('');
     setForgotSuccess('');
-    // CHANGE: Use `setForgotLoading` instead of `setLoading`
     setForgotLoading(true);
 
     try {
       const response = await axios.post(`${apiUrl}/forgot-password`, { email: forgotEmail });
       setForgotSuccess(response.data.message || 'Password reset link sent to your email.');
-      setShowForgotPasswordModal(false); // Close modal on success
+      setShowForgotPasswordModal(false);
     } catch (error) {
       if (error.response) {
         setForgotError(error.response.data.message || 'Failed to send reset link. Please try again.');
@@ -121,7 +116,6 @@ const Login = () => {
         setForgotError('No response from server. Please check your network or server status.');
       }
     } finally {
-      // CHANGE: Use `setForgotLoading` instead of `setLoading`
       setForgotLoading(false);
     }
   };
@@ -217,7 +211,6 @@ const Login = () => {
                 </div>
               </div>
               <div className="login-right-button" style={{ marginTop: '20px' }}>
-                {/* CHANGE: Use `loginLoading` instead of `loading` for the login button */}
                 <button type="submit" id="login-submit-button-id" name="login-button" disabled={loginLoading}>
                   {loginLoading ? 'Logging in...' : 'Login'}
                 </button>
@@ -225,8 +218,6 @@ const Login = () => {
             </form>
           </div>
 
-          {/* CHANGE: Fix missing closing div tag for `login-right-spacer` */}
-          {/* Original had an incomplete `<div className="login-right-spacer">` with no closing tag */}
           <div className="login-right-spacer">
             <div className="login-right-signup">
               <p className="login-right-signup-text">Don't have an account yet? </p>
@@ -264,7 +255,6 @@ const Login = () => {
                 >
                   Cancel
                 </button>
-                {/* CHANGE: Use `forgotLoading` instead of `loading` for the forgot password button */}
                 <button
                   type="submit"
                   disabled={forgotLoading}
