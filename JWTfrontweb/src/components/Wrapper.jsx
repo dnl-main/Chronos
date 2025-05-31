@@ -73,7 +73,7 @@ const Wrapper = ({ children }) => {
           return;
         }
 
-        if (location.pathname.startsWith('/admin/')) {
+        if (location.pathname.startsWith('/admin/') || location.pathname.startsWith('/superadmin/')) {
           navigate(hasRegion ? '/user/homeuser' : '/login', { replace: true });
           setIsLoading(false);
           return;
@@ -88,7 +88,7 @@ const Wrapper = ({ children }) => {
           return;
         }
 
-        if (location.pathname.startsWith('/user/')) {
+        if (location.pathname.startsWith('/user/') || location.pathname.startsWith('/superadmin/')) {
           navigate('/admin/home', { replace: true });
           setIsLoading(false);
           return;
@@ -97,6 +97,21 @@ const Wrapper = ({ children }) => {
         // Explicitly allow /admin/* routes (including /admin/account) for admins
         if (!location.pathname.startsWith('/admin/')) {
           navigate('/admin/home', { replace: true });
+          setIsLoading(false);
+          return;
+        }
+      } else if (role === 'superadmin') {
+        if (
+          location.pathname === '/superadmin' ||
+          location.pathname === '/superadmin/'
+        ) {
+          navigate('/superadmin/homesuperadmin', { replace: true });
+          setIsLoading(false);
+          return;
+        }
+
+        if (!location.pathname.startsWith('/superadmin/homesuperadmin')) {
+          navigate('/superadmin/homesuperadmin', { replace: true });
           setIsLoading(false);
           return;
         }

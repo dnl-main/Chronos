@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfilePicController;
 use App\Http\Controllers\CrewController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SuperadminController;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
@@ -45,7 +46,7 @@ Route::middleware('jwt.auth')->group(function () {
     // User Update Routes
     Route::put('/user/update-address', [AuthController::class, 'updateAddress']);
     Route::put('/user/update-personal', [AuthController::class, 'updatePersonal']);
-    Route::post('/user/update-position', [AuthController::class, 'updatePosition']);//for admin only
+    Route::post('/user/update-position', [AuthController::class, 'updatePosition']); // for admin only
 
     // Availability Status
     Route::patch('/user/availability', [StatusController::class, 'updateAvailability']);
@@ -78,7 +79,6 @@ Route::middleware('jwt.auth')->group(function () {
     // Certificates
     Route::get('/certificates', [UploadController::class, 'getCertificates']);
     Route::post('/certificates/delete', [UploadController::class, 'deleteCertificate']);
-  
 
     // Notifications
     Route::post('/notifications/upload', [NotificationController::class, 'sendCertificateNotification']);
@@ -86,9 +86,16 @@ Route::middleware('jwt.auth')->group(function () {
     Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification']);
     Route::post('/notifications/reschedule', [NotificationController::class, 'sendRescheduleNotification']);
 
-
     // User Details
     Route::get('/users/{id}', function ($id) {
         return App\Models\User::select('id', 'first_name', 'middle_name', 'last_name', 'position')->findOrFail($id);
+    });
+
+    // Superadmin Routes
+   Route::prefix('superadmin')->middleware('role:superadmin')->group(function () {
+        Route::get('/readusers', [SuperadminController::class, 'getAllUsers']);
+        Route::post('/createusers', [SuperadminController::class, 'createUser']);
+        Route::put('/updateusers/{id}', [SuperadminController::class, 'updateUser']);
+        Route::delete('/deleteusers/{id}', [SuperadminController::class, 'deleteUser']);
     });
 });

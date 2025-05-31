@@ -35,6 +35,10 @@ import CSLogin from './deprecated/caseStudy/CSLogin';
 // Layouts
 import Admin from './layouts/Admin';
 import User from './layouts/User';
+import Superadmin from './layouts/Superadmin';
+
+// Superadmin Components
+import HomeSuperAdmin from './superadmin/home/HomeSuperAdmin';
 
 // Component
 import Wrapper from './components/Wrapper';
@@ -53,13 +57,12 @@ function App() {
               </Wrapper>
             }
           >
-            
-          {/* DEFINE DITO ADMIN FOR NO LAYOUTS */}
-          {/* 
-          <Route path="/admin/test1" element={<Test1 />} />
-          <Route path="/admin/test2" element={<Test2 />} />
-          <Route path="/admin/test3" element={<Test3 />} /> 
-          */}
+            {/* DEFINE DITO ADMIN FOR NO LAYOUTS */}
+            {/* 
+            <Route path="/admin/test1" element={<Test1 />} />
+            <Route path="/admin/test2" element={<Test2 />} />
+            <Route path="/admin/test3" element={<Test3 />} /> 
+            */}
             <Route path="home" element={<Home />} />
             <Route path="account" element={<Account />} />
             <Route path="notification" element={<Notification />} />
@@ -69,8 +72,6 @@ function App() {
             <Route path="schedule" element={<Schedule />} />
             <Route path="schedule-card" element={<ScheduleCard />} />
             <Route path="manage-appointment" element={<ManageAppointment />} />
-
-
           </Route>
 
           {/* User Routes with Layout, Wrapped */}
@@ -89,13 +90,24 @@ function App() {
             <Route path="notificationUser" element={<NotificationUser />} />
           </Route>
 
+          {/* Superadmin Routes with Layout, Wrapped */}
+          <Route
+            path="/superadmin"
+            element={
+              <Wrapper>
+                <Superadmin />
+              </Wrapper>
+            }
+          >
+            <Route path="homesuperadmin" element={<HomeSuperAdmin />} />
+          </Route>
+
           {/* Onboarding Routes */}
           <Route path="/" element={<Landing />} />
           <Route
             path="/signup"
             element={
-            <Signup />
-             
+              <Signup />
             }
           />
           <Route
@@ -114,15 +126,14 @@ function App() {
               </Wrapper>
             }
           />
-
           <Route
-           path="/reset-password" 
-           element={
-            <Wrapper>
-           <ResetPassword />
-           </Wrapper>
-           } 
-           />
+            path="/reset-password" 
+            element={
+              <Wrapper>
+                <ResetPassword />
+              </Wrapper>
+            } 
+          />
 
           {/* Case Study Routes - no layout */}
           <Route path="/caseStudy" element={<CaseStudy />} />

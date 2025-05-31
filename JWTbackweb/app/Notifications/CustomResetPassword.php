@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\Log;
 
 class CustomResetPassword extends Notification
 {
@@ -21,7 +22,18 @@ class CustomResetPassword extends Notification
 
     public function toMail($notifiable)
     {
-        $url = env('FRONTEND_URL', 'http://localhost:5173') . '/reset-password?token=' . $this->token . '&email=' . urlencode($notifiable->email);
+        // Define allowed frontend URLs based on environment
+        $isLocal = app()->environment('local');
+        $frontendUrl = $isLocal
+            ? env('FRONTEND_URL', 'http://localhost:5173') // Local development
+            : env('FRONTEND_URL', 'https://concorde-web.vercel.app'); // Production
+
+        $url = $frontendUrl . '/reset-password?token=' . $this->token . '&email=' . urlencode($notifiable->email);
+
+        // Log the values for debugging
+        Log::info('Environment: ' . app()->environment());
+        Log::info('FRONTEND_URL: ' . $frontendUrl);
+        Log::info('Reset Password URL: ' . $url);
 
         return (new MailMessage)
             ->subject('Reset Your Password')
