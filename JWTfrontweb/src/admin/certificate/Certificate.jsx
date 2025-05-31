@@ -6,7 +6,7 @@ import { Navbar } from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
 import CertificateCard from './cards/CertificateCard';
 import CertificatePopup from './CertificatePopup';
-import CertificateNotificationModal from './modals/CertificateNotificationModal'; // Import the modal
+import CertificateNotificationModal from './modals/CertificateNotificationModal';
 import Spinner from '../../components/Spinner';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Notebook from '../../assets/icons/Notebook.svg?react';
@@ -22,7 +22,7 @@ const Certificate = () => {
   const [error, setError] = useState(null);
   const [selectedTab, setSelectedTab] = useState('all');
   const [selectedCertificate, setSelectedCertificate] = useState(null);
-  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false); // State for notification modal
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const navigate = useNavigate();
 
   // Close popup handler
@@ -67,12 +67,10 @@ const Certificate = () => {
             setLoading(false);
           })
           .catch((error) => {
-            // console.error('Error in Promise.all:', error);
             setError('Failed to load data.');
             setLoading(false);
           });
       } catch (error) {
-        // console.error('Failed to parse stored user:', error);
         navigate('/login');
         setLoading(false);
       }
@@ -84,10 +82,10 @@ const Certificate = () => {
   const fetchUserData = async (token) => {
     try {
       const response = await axios.get(`${apiUrl}/user`, {
- headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
         withCredentials: true,
       });
 
@@ -100,7 +98,6 @@ const Certificate = () => {
       setUser(userData);
       await Promise.all([fetchCrewData(token), fetchCertificates(token)]);
     } catch (error) {
-      // console.error('Failed to fetch user data:', error);
       setError('Failed to load user data. Please log in again.');
       navigate('/login');
     } finally {
@@ -112,16 +109,15 @@ const Certificate = () => {
     try {
       setError(null);
       const response = await axios.get(`${apiUrl}/crew-members`, {
-   headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
         withCredentials: true,
       });
 
       setCrewData(Array.isArray(response.data) ? response.data : [response.data].filter(Boolean));
     } catch (error) {
-      // console.error('Failed to fetch crew data:', error);
       if (error.response?.status === 401) {
         setError('Unauthorized. Please log in again.');
         navigate('/login');
@@ -134,10 +130,10 @@ const Certificate = () => {
   const fetchCertificates = async (token) => {
     try {
       const response = await axios.get(`${apiUrl}/certificates`, {
-  headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
         withCredentials: true,
       });
 
@@ -147,7 +143,6 @@ const Certificate = () => {
           : [response.data.certificates].filter(Boolean)
       );
     } catch (error) {
-      // console.error('Failed to fetch certificates:', error);
       setError('Failed to load certificates.');
     }
   };
@@ -222,21 +217,21 @@ const Certificate = () => {
           </section>
 
           <section className="certificate-cards">
-            {filteredCrew.map((crew) => (
-              <CertificateCard
-                key={crew.id}
-                data={crew}
-                certificates={certificates.filter((cert) => cert.user_id === crew.id)}
-                onCertificateClick={handleCertificateClick}
-                onNotifyUpload={handleOpenNotificationModal} // Pass the notify handler
-              />
-            ))}
+            {filteredCrew
+              .filter((crew) => crew.position !== 'Unregistered') // Filter out unregistered crew
+              .map((crew) => (
+                <CertificateCard
+                  key={crew.id}
+                  data={crew}
+                  certificates={certificates.filter((cert) => cert.user_id === crew.id)}
+                  onCertificateClick={handleCertificateClick}
+                  onNotifyUpload={handleOpenNotificationModal}
+                />
+              ))}
           </section>
         </main>
       </div>
-      {/* Render the CertificatePopup */}
       <CertificatePopup certificate={selectedCertificate} onClose={handleClosePopup} />
-      {/* Render the CertificateNotificationModal */}
       {isNotificationModalOpen && <CertificateNotificationModal onClose={handleCloseNotificationModal} />}
     </div>
   );

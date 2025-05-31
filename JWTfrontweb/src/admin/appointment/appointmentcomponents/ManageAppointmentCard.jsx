@@ -66,8 +66,10 @@ const ManageAppointmentCard = ({ appointment, user, onCertificateClick }) => {
         </div>
         <div className="manageAppointment-card-availability">
           <div className="manageAppointment-card-availability-bg">
-            <Circle_Primary style={{ color: 'var(--green-indicator)', width: '1.4rem', height: '1.4rem' }} />
-            <p>{user.availability || 'N/A'}</p>
+            <Circle_Primary style={{ color: 'var(--blue-indicator)', width: '1.4rem', height: '1.4rem' }} />
+   <p>{(appointment.status || 'N/A').charAt(0).toUpperCase() + (appointment.status || 'N/A').slice(1)}</p>
+
+
           </div>
         </div>
       </div>

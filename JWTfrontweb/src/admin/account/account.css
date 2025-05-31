@@ -234,6 +234,20 @@
 								font-weight: var(--font-weight-regular);
 								font-size: var(--font-size-16);
 							}
+													.account-box-in-card-main-info-right-job-department { 
+							/* background-color: aliceblue;  */
+							display: flex;
+							flex-direction: row;
+							justify-content: flex-end;
+							align-items: center;
+							width: 100%;
+							column-gap: 8px;
+						}
+							.account-box-in-card-main-info-right-job-department p {
+								font-weight: var(--font-weight-regular);
+								font-size: var(--font-size-16);
+							}
+
 
 							.label-icon {
 								color: var(--black-color); /* Controls stroke color */
