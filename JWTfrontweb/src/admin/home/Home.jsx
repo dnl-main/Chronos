@@ -8,13 +8,12 @@ import Sidebar from '../sidebar/Sidebar';
 import ScheduleCard from '../schedule/scheduleComponents/ScheduleCard';
 import Spinner from '../../components/Spinner';
 import Appointment from '../appointment/bookAppointment/Appointment';
-import HomeCertAdmin from './HomeCertAdmin'; // Import the new component
+import HomeCertAdmin from './HomeCertAdmin';
 
 import Calendar_Event from '../../assets/icons/Calendar_Event.svg?react';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Arrow_Right_SM from '../../assets/icons/Arrow_Right_SM.svg?react';
 import Users from '../../assets/icons/Users.svg?react';
-// import Bell from '../../assets/icons/Bell.svg?react';
 import Notebook from '../../assets/icons/Notebook.svg?react';
 import Book from '../../assets/icons/Book.svg?react';
 import Calendar_Week from '../../assets/icons/Calendar_Week.svg?react';
@@ -23,10 +22,7 @@ import More_Grid_Big from '../../assets/icons/More_Grid_Big.svg?react';
 import Calendar_Check from '../../assets/icons/Calendar_Check.svg?react';
 
 const Home = () => {
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  
   const [overlayContent, setOverlayContent] = useState(null);
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -60,6 +56,12 @@ const Home = () => {
         navigate('/login');
         return;
       }
+      // Check if position or department is missing
+      if (!parsedUser.position || !parsedUser.department) {
+        alert('Please add your Job title and Department to continue');
+        navigate('/admin/account');
+        return;
+      }
       setUser(parsedUser);
       fetchAllUsers(token);
       fetchDashboardData(token);
@@ -71,10 +73,10 @@ const Home = () => {
   const fetchUserData = async (token) => {
     try {
       const response = await axios.get(`${apiUrl}/user`, {
-  headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true'
+        },
         withCredentials: true,
       });
 
@@ -87,13 +89,18 @@ const Home = () => {
         navigate('/login');
         return;
       }
+      // Check if position or department is missing
+      if (!userData.position || !userData.department) {
+        alert('Please add your Job title and Department to continue');
+        navigate('/admin/account');
+        return;
+      }
 
       setUser(userData);
       sessionStorage.setItem('user', JSON.stringify(userData));
       fetchAllUsers(token);
       await fetchDashboardData(token);
     } catch (error) {
-      // console.error('Failed to fetch user data:', error);
       setError('Failed to load user data. Please log in again.');
       navigate('/login');
     } finally {
@@ -105,50 +112,45 @@ const Home = () => {
     try {
       setError(null);
       const todayCountResponse = await axios.get(`${apiUrl}/appointment/today/count`, {
-headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true'
+        },
         withCredentials: true,
       });
-      // console.log('Today count:', todayCountResponse.data);
       setTodayCount(todayCountResponse.data.count);
 
       const upcomingCountResponse = await axios.get(`${apiUrl}/appointment/upcoming/count`, {
-headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true'
+        },
         withCredentials: true,
       });
-      // console.log('Upcoming count:', upcomingCountResponse.data);
       setUpcomingCount(upcomingCountResponse.data.count);
 
       const appointmentsResponse = await axios.get(`${apiUrl}/appointment`, {
-  headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true'
+        },
         withCredentials: true,
       });
-      // console.log('Appointments:', appointmentsResponse.data);
       const appointments = Array.isArray(appointmentsResponse.data) ? appointmentsResponse.data : [];
-      setTodayAppointments(appointments.filter(app => app.status === 'today'));
+      setTodayAppointments(appointments.filter(app => app.computed_status === 'today'));
 
       const crewCountResponse = await axios.get(`${apiUrl}/crew-members/available/count`, {
-headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true'
+        },
         withCredentials: true,
       });
-      // console.log('Crew count:', crewCountResponse.data);
       setCrewCount({
         total: crewCountResponse.data.total,
         complete: crewCountResponse.data.complete,
       });
     } catch (error) {
-      // console.error('Failed to fetch dashboard data:', error);
       setError('Failed to load dashboard data.');
     } finally {
       setLoading(false);
@@ -158,16 +160,14 @@ headers: {
   const fetchAllUsers = async (token) => {
     try {
       const response = await axios.get(`${apiUrl}/crew-members`, {
-headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true'
+        },
         withCredentials: true,
       });
-      // console.log('Fetched users:', response.data);
       setAllUsers(response.data);
       calculateJobTitleCounts(response.data);
-      // Calculate total crew count (users with non-null region)
       const userCount = response.data.filter(user => user.region != null && user.region !== '').length;
       setTotalCrewCount(userCount);
     } catch (error) {
@@ -177,13 +177,11 @@ headers: {
 
   const calculateJobTitleCounts = (users) => {
     const counts = {};
-    // console.log('Calculating job title counts for users:', users);
     users.forEach(user => {
       if (user.availability && user.availability.toLowerCase() === 'available' && user.position) {
         counts[user.position] = (counts[user.position] || 0) + 1;
       }
     });
-    // console.log('Calculated job title counts:', counts);
     setJobTitleCounts(counts);
   };
 
@@ -211,7 +209,7 @@ headers: {
               </div>
               <button 
                 className="home-top-header-button"
-                onClick={() => setIsModalOpen(true)}  // Open modal on click
+                onClick={() => setIsModalOpen(true)}
               >
                 <Calendar_Check style={{
                   width: "20px", height: "20px",
@@ -223,7 +221,7 @@ headers: {
               {isModalOpen && (
                 <Appointment onClose={() => setIsModalOpen(false)} />
               )}
-            </header> {/* home-top-header */}
+            </header>
 
             <main className="home-top-main">
               <section className="home-top-main-left">
@@ -242,7 +240,6 @@ headers: {
                       <p>{crewCount.total}</p>
                     </div>
                     <div className="home-top-main-left-up-data-complete">
-                      {/* <p>{crewCount.complete} Complete</p> */}
                     </div>
                   </div>
                   <div className="home-top-main-left-up-job">
@@ -285,7 +282,6 @@ headers: {
                       <p>{totalCrewCount}</p>
                     </div>
                     <div className="home-top-main-left-down-data-complete">
-                      {/* <p>+10 Today</p> */}
                     </div>
                   </div>
                 </main>
@@ -353,7 +349,7 @@ headers: {
                 </main>
               </section>
 
-                  <section className="home-top-main-right">
+              <section className="home-top-main-right">
                 <div className="home-top-main-right-header">
                   <div className="home-top-main-right-header-main">
                     <header>Expiring Certificates</header>
@@ -363,12 +359,11 @@ headers: {
                     <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
                   </button>
                 </div>
-                <HomeCertAdmin /> {/* Removed onFileClick and onDelete props */}
+                <HomeCertAdmin />
               </section>
             </main>
           </div>
 
-         
           <div className="home-bot">
             <header className="home-bot-header">
               <Calendar_Week
