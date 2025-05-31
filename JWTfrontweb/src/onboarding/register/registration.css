@@ -1,274 +1,260 @@
-:root {
-	--primary-color: #00889a;
-  }
+.registration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--secondary-color);
+  padding: 60px 20px;
+  box-sizing: border-box;
+}
+
+.registration-header {
+  text-align: center;
+  margin-bottom: 40px;
   
-  .registration-wrapper {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	min-height: 100vh;
-	background-color: #ffffff;
-	padding: 20px;
-  }
+}
+
+.registration-header-heading {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-40);
+  color: var(--black-color);
+}
+
+.registration-header-sub {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-16);
+  color: var(--black-color-opacity-45);
+  margin-top: 10px;
+}
+
+.registration-container {
+  width: 100%;
+  max-width: 1900px;
+  background-color: white;
+  border-radius: 20px;
+  padding: 60px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.registration-container-header {
+  text-align: left;
+  margin-bottom: 40px;
+}
+
+.registration-container-header-heading {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-32);
+  color: var(--black-color);
+}
+
+.registration-container-header-sub {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-16);
+  color: var(--black-color-opacity-45);
+  margin-top: 8px;
+}
+
+.registration-container-column-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.registration-container-column-form-address,
+.registration-container-column-form-personal {
+  flex: 1 1 48%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.registration-container-column-form-address-header,
+.registration-container-column-form-personal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
   
-  .registration {
-	background-color: #ffffff;
-	border-radius: 8px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-	width: 100%;
-	max-width: 900px;
-	overflow: hidden;
-  }
+}
+
+.registration-container-column-form-address-header-text{
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-16);
+  color: var(--black-color-opacity-45);
   
-  .registration-header {
-	background-color: #ffffff;
-	padding: 20px;
-	border-bottom: 1px solid #e9ecef;
-  }
+}
+
+.registration-container-column-form-address-header img{
+	width: 24px;
+	height: 24px;
+	
+}
+
+.registration-container-column-form-personal-header img{
+	width: 24px;
+	height: 24px;
+	
+}
+
+.registration-container-column-form-personal-header-text{
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-16);
+  color: var(--black-color-opacity-45);
+}
+
+/* Address content layout */
+.registration-container-column-form-address-content {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.registration-container-column-form-address-content-left,
+.registration-container-column-form-address-content-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/*Personal Section*/
+.registration-container-column-form-personal-content {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.registration-container-column-form-personal-content-left,
+.registration-container-column-form-personal-content-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-14);
+  color: var(--black-color);
+}
+
+.form-group label {
+  font-size: 16px;
+  font-weight: var(--font-weight-medium);
   
-  .registration-header-padding {
-	text-align: center;
-  }
+}
+
+#position {
+  background-color: var(--secondary-color);
+  border: 1px solid var(--primary-color-opacity-15);
+  border-radius: 8px;
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-light);
+  color: var(--black-color-opacity-45);
+  color: #333; 
+  outline: none;
+  box-sizing: border-box;
+}
+
+#position::placeholder {
+  color: #7a7a7a; 
+  opacity: 1;
+}
+
+#birthday {
+  background-color: var(--secondary-color);
+  border: 1px solid var(--primary-color-opacity-15);
+  border-radius: 8px;
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-light);
+  color: var(--black-color-opacity-45);
+  color: #333; 
+  outline: none;
+  box-sizing: border-box;
+}
+
+#building_number {
+  background-color: var(--secondary-color);
+  border: 1px solid var(--primary-color-opacity-15);
+  border-radius: 8px;
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-light);
+  color: var(--black-color-opacity-45);
+  color: #333; 
+  outline: none;
+  box-sizing: border-box;
+}
+
+#street {
+  background-color: var(--secondary-color);
+  border: 1px solid var(--primary-color-opacity-15);
+  border-radius: 8px;
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-light);
+  color: var(--black-color-opacity-45);
+  color: #333; 
+  outline: none;
+  box-sizing: border-box;
+}
+
+#zip_code {
+  background-color: var(--secondary-color);
+  border: 1px solid var(--primary-color-opacity-15);
+  border-radius: 8px;
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-light);
+  color: var(--black-color-opacity-45);
+  color: #333; 
+  outline: none;
+  box-sizing: border-box;
+}
+.registration-container-column-form label {
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-16);
+  color: var(--black-color);
+  margin-bottom: 6px;
   
-  .registration-header-heading {
-	font-size: 24px;
-	font-weight: 700;
-	color: #333333;
-	margin: 0;
-  }
-  
-  .registration-header-sub {
-	font-size: 14px;
-	color: #666666;
-	margin: 5px 0 0;
-  }
-  
-  .registration-container {
-	padding: 30px;
-  }
-  
-  .registration-container-padding {
-	max-width: 800px;
-	margin: 0 auto;
-  }
-  
-  .registration-container-header {
-	margin-bottom: 20px;
-  }
-  
-  .registration-container-header-sub {
-	font-size: 14px;
-	color: #666666;
-	margin: 0;
-  }
-  
-  .registration-container-header-heading {
-	font-size: 18px;
-	font-weight: 600;
-	color: #333333;
-	margin: 5px 0 0;
-  }
-  
-  .registration-container-column {
-	display: flex;
-	flex-direction: column;
-	gap: 20px;
-  }
-  
-  .registration-container-column-form {
-	display: flex;
-	flex-direction: column;
-	gap: 20px;
-  }
-  
-  .error-message {
-	color: #dc3545;
-	font-size: 14px;
-	margin-bottom: 10px;
-	text-align: center;
-  }
-  
-  .registration-container-column-form-address,
-  .registration-container-column-form-personal {
-	border: 1px solid #e9ecef;
-	border-radius: 4px;
-	padding: 20px;
-  }
-  
-  .registration-container-column-form-address-header,
-  .registration-container-column-form-personal-header {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	margin-bottom: 15px;
-  }
-  
-  .registration-container-column-form-address-header-text,
-  .registration-container-column-form-personal-header-text {
-	font-size: 16px;
-	font-weight: 600;
-	color: #333333;
-	margin: 0;
-  }
-  
-  .registration-container-column-form-address-content,
-  .registration-container-column-form-personal-content {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 20px;
-  }
-  
-  .registration-container-column-form-address-content-left,
-  .registration-container-column-form-address-content-right,
-  .registration-container-column-form-personal-content-bottom-left,
-  .registration-container-column-form-personal-content-bottom-right {
-	display: flex;
-	flex-direction: column;
-	gap: 15px;
-  }
-  
-  .registration-container-column-form-address-content-left-alike,
-  .registration-container-column-form-address-content-right-alike,
-  .registration-container-column-form-personal-content-bottom-left-alike,
-  .registration-container-column-form-personal-content-bottom-right-alike {
-	display: flex;
-	flex-direction: column;
-	gap: 5px;
-  }
-  
-  label {
-	font-size: 14px;
-	color: #333333;
-	font-weight: 500;
-  }
-  
-  select,
-  input {
-	padding: 10px;
-	border: 1px solid var(--primary-color);
-	border-radius: 4px;
-	font-size: 14px;
-	color: #333333;
-	background-color: #ffffff;
-	width: 100%;
-  }
-  
-  select:focus,
-  input:focus {
-	outline: none;
-	border-color: var(--primary-color);
-	box-shadow: 0 0 5px rgba(0, 136, 154, 0.3);
-  }
-  
-  select:disabled {
-	background-color: #e9ecef;
-	cursor: not-allowed;
-  }
-  
-  input::placeholder,
-  select option {
-	color: #999999;
-  }
-  
-  .registration-container-submit {
-	text-align: center;
-	margin-top: 20px;
-  }
-  
-  #register-button {
-	background-color: var(--primary-color);
-	color: #ffffff;
-	border: none;
-	padding: 12px 30px;
-	border-radius: 25px;
-	font-size: 16px;
-	font-weight: 600;
-	cursor: pointer;
-	transition: background-color 0.3s;
-  }
-  
-  #register-button:disabled {
-	background-color: #cccccc;
-	cursor: not-allowed;
-  }
-  
-  #register-button:hover:not(:disabled) {
-	background-color: #006d7a;
-  }
-  
-  img {
-	width: 20px;
-	height: 20px;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-	.registration {
-	  max-width: 100%;
-	  margin: 0 10px;
-	}
-  
-	.registration-container {
-	  padding: 20px;
-	}
-  
-	.registration-container-column-form-address-content,
-	.registration-container-column-form-personal-content {
-	  grid-template-columns: 1fr;
-	}
-  
-	.registration-header-heading {
-	  font-size: 20px;
-	}
-  
-	.registration-header-sub {
-	  font-size: 12px;
-	}
-  
-	.registration-container-header-heading {
-	  font-size: 16px;
-	}
-  
-	.registration-container-header-sub {
-	  font-size: 12px;
-	}
-  
-	label {
-	  font-size: 13px;
-	}
-  
-	select,
-	input {
-	  font-size: 13px;
-	  padding: 8px;
-	}
-  
-	#register-button {
-	  padding: 10px 25px;
-	  font-size: 14px;
-	}
-  }
-  
-  @media (max-width: 480px) {
-	.registration-wrapper {
-	  padding: 10px;
-	}
-  
-	.registration-header {
-	  padding: 15px;
-	}
-  
-	.registration-container {
-	  padding: 15px;
-	}
-  
-	.registration-container-column-form-address,
-	.registration-container-column-form-personal {
-	  padding: 15px;
-	}
-  
-	#register-button {
-	  width: 100%;
-	  padding: 10px;
-	}
-  }
+}
+
+.registration-container-column-form input,
+.registration-container-column-form select {
+  width: 100%;
+  height: 44px;
+  padding: 12px 20px;
+  background-color: var(--secondary-color);
+  border: 1px solid var(--primary-color-opacity-15);
+  border-radius: 8px;
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-light);
+  color: var(--black-color-opacity-45);
+  appearance: none;
+  box-sizing: border-box;
+}
+
+
+.registration-container-submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 5px;
+}
+
+.registration-container-submit button {
+  padding: 12px 32px;
+  width: 480px;
+  height: 50px;
+  background-color: var(--primary-color);
+  border-radius: 100px;
+  cursor: pointer;
+  border: none;
+  color: var(--white-color);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-16);
+}

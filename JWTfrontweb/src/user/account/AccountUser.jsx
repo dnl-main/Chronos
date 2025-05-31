@@ -33,7 +33,7 @@ const AccountUser = () => {
 
   const [personalDetails, setPersonalDetails] = useState({
     position: '',
-    secondary_position: '',
+    department: '',
     gender: '',
     civil_status: '',
     birthday: '',
@@ -75,7 +75,7 @@ const AccountUser = () => {
 
         const details = {
           position: data.position || '',
-          secondary_position: data.secondary_position || '',
+          department: data.department || '',
           gender: data.gender || '',
           civil_status: data.civil_status || '',
           birthday,
@@ -315,10 +315,10 @@ const AccountUser = () => {
                       <LabelIcon className="label-icon" />
                       <p>{user?.position || 'Loading...'}</p>
                     </div>
-                    {personalDetails.secondary_position && (
+                    {personalDetails.department && (
                       <div className="accountUser-box-in-card-main-info-right-job-title">
                         <LabelIcon className="label-icon" />
-                        <p>{personalDetails.secondary_position}</p>
+                        <p>Department: {personalDetails.department}</p>
                       </div>
                     )}
                   </div>
@@ -496,16 +496,7 @@ const AccountUser = () => {
                     </div>
                   </div>
                   <div className="accountUser-box-in-forms-personal-form-top-right">
-                    <div className="accountUser-box-in-forms-personal-form-top-right-fields">
-                      <label>Secondary Position:</label>
-                      <input
-                        type="text"
-                        name="secondary_position"
-                        value={personalDetails.secondary_position}
-                        readOnly={!isEditingPersonalDetails}
-                        onChange={handlePersonalDetailsChange}
-                      />
-                    </div>
+                    
                     <div className="accountUser-box-in-forms-personal-form-top-right-fields">
                       <label>Civil Status:</label>
                       <input

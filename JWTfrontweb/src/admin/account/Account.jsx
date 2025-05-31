@@ -212,6 +212,11 @@ const Account = () => {
                       <LabelIcon className="label-icon" />
                       <p>{user?.position || 'N/A'}</p> {/* Updated to show position instead of role */}
                     </div>
+
+                      <div className="account-box-in-card-main-info-right-job-title">
+                      <LabelIcon className="label-icon" />
+                      <p>Department: {user?.department || 'N/A'}</p> {/* Updated to show position instead of role */}
+                    </div>
                   </div>
 
                   <div className="account-box-in-card-main-info-right-buttons">

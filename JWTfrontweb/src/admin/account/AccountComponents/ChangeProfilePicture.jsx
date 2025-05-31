@@ -37,7 +37,7 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
         const response = await axios.post(`${apiUrl}/user/upload-profile-picture`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
-              'ngrok-skip-browser-warning': 'true', // Add this to bypass ngrok warning
+            'ngrok-skip-browser-warning': 'true',
             'Content-Type': 'multipart/form-data',
           },
         });
@@ -80,34 +80,35 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
       const token = sessionStorage.getItem('token');
       const response = await axios.post(
         `${apiUrl}/user/update-position`,
-        { position: selectedJob },
+        { position: selectedJob, department: selectedDept }, // Include department in payload
         {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
-              'ngrok-skip-browser-warning': 'true', // Add this to bypass ngrok warning
+            'ngrok-skip-browser-warning': 'true',
           },
         }
       );
 
       if (response.data.status) {
-        alert('Position updated successfully!');
+        alert('Position and department updated successfully!');
         setIsEditing(false);
         // Update user in sessionStorage
         const updatedUser = {
           ...JSON.parse(sessionStorage.getItem('user')),
           position: selectedJob,
+          department: selectedDept, // Update department in sessionStorage
           needs_position: false,
         };
         sessionStorage.setItem('user', JSON.stringify(updatedUser));
-        window.location.reload(); // Refresh the page after successful position update
+        window.location.reload(); // Refresh the page after successful update
         onClose(); // Close the modal
       } else {
-        setError(response.data.message || 'Failed to update position.');
+        setError(response.data.message || 'Failed to update position and department.');
       }
     } catch (error) {
       const msg = error.response?.data?.message || error.message;
-      setError(`Failed to update position: ${msg}`);
+      setError(`Failed to update position and department: ${msg}`);
     } finally {
       setLoadingPosition(false);
     }

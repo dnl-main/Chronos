@@ -84,7 +84,7 @@ const NotificationUser = () => {
                         <p>Notifications</p>
                     </header>
 
-                    <section className="notificationUser-tabs">
+                    {/* <section className="notificationUser-tabs">
                         {['all', 'rescheduled', 'canceled', 'uploaded'].map(tab => (
                             <button
                                 key={tab}
@@ -101,7 +101,7 @@ const NotificationUser = () => {
                                 <p>{tab.charAt(0).toUpperCase() + tab.slice(1)}</p>
                             </button>
                         ))}
-                    </section>
+                    </section> */}
 
                     <section className="notificationUser-container">
                         <header className="notificationUser-header-recents">

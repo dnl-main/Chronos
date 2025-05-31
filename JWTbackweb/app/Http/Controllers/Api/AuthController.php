@@ -142,77 +142,79 @@ public function signup(Request $request)
         return response()->json(auth()->user());
     }
 
-    public function registration(Request $request)
-    {
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
-        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
-            return response()->json(['message' => 'User not authenticated.'], 401);
-        }
-
-        Log::info('Registration Request Data:', $request->all());
-
-        $validator = Validator::make($request->all(), [
-            'region' => 'required|string',
-            'province' => 'required|string',
-            'city' => 'required|string',
-            'barangay' => 'required|string',
-            'street' => 'required|string',
-            'building_number' => 'required|string',
-            'zip_code' => 'required|string',
-            'gender' => 'required|string',
-            'position' => 'nullable|string',
-            'secondary_position' => 'nullable|string',
-            'civil_status' => 'required|string',
-            'birthday' => 'required|date_format:Y-m-d',
-            'availability' => 'nullable|string|in:Available,Vacation,On Board',
-        ]);
-
-        if ($validator->fails()) {
-            Log::error('Validation errors:', $validator->errors()->all());
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        $regionName = $request->input('region');
-        $provinceName = $request->input('province');
-        if ($provinceName === 'MM') {
-            $provinceName = 'Metro Manila';
-        }
-        $cityName = $request->input('city');
-        $barangayName = $request->input('barangay');
-
-        Log::info('Fetched names:', [
-            'region' => $regionName,
-            'province' => $provinceName,
-            'city' => $cityName,
-            'barangay' => $barangayName,
-            'availability' => $request->input('availability'),
-        ]);
-
-        $user->update([
-            'region' => $regionName,
-            'province' => $provinceName,
-            'city' => $cityName,
-            'barangay' => $barangayName,
-            'street' => $request->input('street'),
-            'building_number' => $request->input('building_number'),
-            'zip_code' => $request->input('zip_code'),
-            'gender' => $request->input('gender'),
-            'position' => $request->input('position'),
-            'secondary_position' => $request->input('secondary_position'),
-            'civil_status' => $request->input('civil_status'),
-            'birthday' => $request->input('birthday'),
-            'availability' => $request->input('availability'),
-        ]);
-
-        return response()->json([
-            'message' => 'Registration details updated successfully!',
-            'user' => $user,
-        ], 200);
+public function registration(Request $request)
+{
+    try {
+        $user = JWTAuth::parseToken()->authenticate();
+    } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+        return response()->json(['message' => 'User not authenticated.'], 401);
     }
+
+    Log::info('Registration Request Data:', $request->all());
+
+    $validator = Validator::make($request->all(), [
+        'region' => 'required|string',
+        'province' => 'required|string',
+        'city' => 'required|string',
+        'barangay' => 'required|string',
+        'street' => 'required|string',
+        'building_number' => 'required|string',
+        'zip_code' => 'required|string',
+        'gender' => 'required|string',
+        'position' => 'nullable|string',
+        'department' => 'nullable|string',
+        'civil_status' => 'required|string',
+        'birthday' => 'required|date_format:Y-m-d',
+        'availability' => 'nullable|string|in:Available,Vacation,On Board',
+    ]);
+
+    if ($validator->fails()) {
+        Log::error('Validation errors:', $validator->errors()->all());
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $validator->errors(),
+        ], 422);
+    }
+
+    $regionName = $request->input('region');
+    $provinceName = $request->input('province');
+    if ($provinceName === 'MM') {
+        $provinceName = 'Metro Manila';
+    }
+    $cityName = $request->input('city');
+    $barangayName = $request->input('barangay');
+    $department = 'Crew'; // Set department to "Crew" after registration
+
+    Log::info('Fetched names:', [
+        'region' => $regionName,
+        'province' => $provinceName,
+        'city' => $cityName,
+        'barangay' => $barangayName,
+        'availability' => $request->input('availability'),
+        'department' => $department,
+    ]);
+
+    $user->update([
+        'region' => $regionName,
+        'province' => $provinceName,
+        'city' => $cityName,
+        'barangay' => $barangayName,
+        'street' => $request->input('street'),
+        'building_number' => $request->input('building_number'),
+        'zip_code' => $request->input('zip_code'),
+        'gender' => $request->input('gender'),
+        'position' => $request->input('position'),
+        'department' => $department,
+        'civil_status' => $request->input('civil_status'),
+        'birthday' => $request->input('birthday'),
+        'availability' => $request->input('availability'),
+    ]);
+
+    return response()->json([
+        'message' => 'Registration details updated successfully!',
+        'user' => $user,
+    ], 200);
+}
 
     public function updateAddress(Request $request)
     {
@@ -267,7 +269,7 @@ public function signup(Request $request)
         $validator = Validator::make($request->all(), [
             'gender' => 'required|string|max:50',
             'position' => 'nullable|string|max:255',
-            'secondary_position' => 'nullable|string|max:255',
+            'department' => 'nullable|string|max:255',
             'civil_status' => 'required|string|max:50',
             'birthday' => 'required|date_format:Y-m-d',
         ]);
@@ -283,7 +285,7 @@ public function signup(Request $request)
         $user->update([
             'gender' => $request->input('gender'),
             'position' => $request->input('position'),
-            'secondary_position' => $request->input('secondary_position'),
+            'department' => $request->input('department'),
             'civil_status' => $request->input('civil_status'),
             'birthday' => $request->input('birthday'),
         ]);
@@ -307,6 +309,7 @@ public function signup(Request $request)
 
             $validator = Validator::make($request->all(), [
                 'position' => 'required|string|max:255',
+                'department' => 'nullable|string|max:255',
             ]);
 
             if ($validator->fails()) {
@@ -320,6 +323,7 @@ public function signup(Request $request)
 
             $user->update([
                 'position' => $request->input('position'),
+                'department' => $request->input('department', ''),
             ]);
 
             return response()->json([

@@ -40,7 +40,6 @@ const Registration = () => {
     zip_code: '',
     gender: '',
     position: '',
-    secondary_position: '',
     civil_status: '',
     birthday: '',
   });
@@ -55,46 +54,43 @@ const Registration = () => {
     { value: 'Separated', label: 'Separated' },
   ];
 
-  // Gender options
-  const genderOptions = [
-    { value: '', label: 'Select your gender' },
-    { value: 'Male', label: 'Male' },
-    { value: 'Female', label: 'Female' },
-  ];
+  
+// Gender options
+const genderOptions = [
+  { value: '', label: 'Select your gender' },
+  { value: 'Male', label: 'Male' },
+  { value: 'Female', label: 'Female' },
+   { value: 'Other', label: 'Other' },
+];
 
-  // Position options (title case and alphabetically sorted)
-  const positionOptions = [
-    { value: '', label: 'Select your primary position' },
-    { value: 'Able Seaman', label: 'Able Seaman' },
-    { value: 'Bosun', label: 'Bosun' },
-    { value: 'Chief Cook', label: 'Chief Cook' },
-    { value: 'Chief Engineer', label: 'Chief Engineer' },
-    { value: 'Chief Mate', label: 'Chief Mate' },
-    { value: 'Cook', label: 'Cook' },
-    { value: 'Deck Cadet', label: 'Deck Cadet' },
-    { value: 'Electrician', label: 'Electrician' },
-    { value: 'Engine Cadet', label: 'Engine Cadet' },
-    { value: 'Fitter', label: 'Fitter' },
-    { value: 'Galley Boy', label: 'Galley Boy' },
-    { value: 'Jr 3rd Mate', label: 'Jr 3rd Mate' },
-    { value: 'Jr 4th Engineer', label: 'Jr 4th Engineer' },
-    { value: 'Messman', label: 'Messman' },
-    { value: 'Ordinary Seaman', label: 'Ordinary Seaman' },
-    { value: 'Pumpman', label: 'Pumpman' },
-    { value: '2nd Engineer', label: '2nd Engineer' },
-    { value: '2nd Mate', label: '2nd Mate' },
-    { value: '3rd Engineer', label: '3rd Engineer' },
-    { value: '3rd Mate', label: '3rd Mate' },
-    { value: 'Trainee 4th Engineer', label: 'Trainee 4th Engineer' },
-    { value: 'Trainee Gas Engineer', label: 'Trainee Gas Engineer' },
-    { value: 'Trainee', label: 'Trainee' },
-    { value: 'Electrician Trainee', label: 'Electrician Trainee' },
-  ];
-
-  // Secondary position options (same as primary position options)
-  const secondaryPositionOptions = positionOptions;
-
-  // Token
+// Position options (title case and alphabetically sorted)
+const positionOptions = [
+  { value: '', label: 'Select your primary position' },
+  { value: 'Able Seaman', label: 'Able Seaman' },
+  { value: 'Bosun', label: 'Bosun' },
+  { value: 'Chief Cook', label: 'Chief Cook' },
+  { value: 'Chief Engineer', label: 'Chief Engineer' },
+  { value: 'Chief Mate', label: 'Chief Mate' },
+  { value: 'Cook', label: 'Cook' },
+  { value: 'Deck Cadet', label: 'Deck Cadet' },
+  { value: 'Electrician', label: 'Electrician' },
+  { value: 'Engine Cadet', label: 'Engine Cadet' },
+  { value: 'Fitter', label: 'Fitter' },
+  { value: 'Galley Boy', label: 'Galley Boy' },
+  { value: 'Jr 3rd Mate', label: 'Jr 3rd Mate' },
+  { value: 'Jr 4th Engineer', label: 'Jr 4th Engineer' },
+  { value: 'Messman', label: 'Messman' },
+  { value: 'Ordinary Seaman', label: 'Ordinary Seaman' },
+  { value: 'Pumpman', label: 'Pumpman' },
+  { value: '2nd Engineer', label: '2nd Engineer' },
+  { value: '2nd Mate', label: '2nd Mate' },
+  { value: '3rd Engineer', label: '3rd Engineer' },
+  { value: '3rd Mate', label: '3rd Mate' },
+  { value: 'Trainee 4th Engineer', label: 'Trainee 4th Engineer' },
+  { value: 'Trainee Gas Engineer', label: 'Trainee Gas Engineer' },
+  { value: 'Trainee', label: 'Trainee' },
+  { value: 'Electrician Trainee', label: 'Electrician Trainee' },
+];
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -281,7 +277,6 @@ const Registration = () => {
       zip_code: formData.zip_code,
       gender: formData.gender,
       position: formData.position,
-      secondary_position: formData.secondary_position,
       civil_status: formData.civil_status,
       birthday: formData.birthday,
       availability: user?.role === 'admin' ? null : 'Available',
@@ -309,7 +304,7 @@ const Registration = () => {
         alert('Register update failed. Please try again.');
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message;
+      const errorMessage = err.response?.data?.message || 'Registration failed. Please try again.';
       alert(errorMessage);
     } finally {
       setLoading(false);
@@ -565,22 +560,6 @@ const Registration = () => {
                       </div>
 
                       <div className="registration-container-column-form-personal-content-bottom-right">
-                        <div className="registration-container-column-form-personal-content-bottom-right-alike">
-                          <label htmlFor="secondary_position">Secondary Position</label>
-                          <select
-                            id="secondary_position"
-                            name="secondary_position"
-                            value={formData.secondary_position}
-                            onChange={handleChange}
-                          >
-                            {secondaryPositionOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-
                         <div className="registration-container-column-form-personal-content-bottom-right-alike">
                           <label htmlFor="civil_status">Civil status</label>
                           <select
