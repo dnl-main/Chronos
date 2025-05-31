@@ -39,7 +39,7 @@ import Superadmin from './layouts/Superadmin';
 
 // Superadmin Components
 import HomeSuperAdmin from './superadmin/home/HomeSuperAdmin';
-
+import AccountSuperadmin from './superadmin/account/AccountSuperadmin';
 // Component
 import Wrapper from './components/Wrapper';
 
@@ -100,6 +100,7 @@ function App() {
             }
           >
             <Route path="homesuperadmin" element={<HomeSuperAdmin />} />
+            <Route path="accountsuperadmin" element={<AccountSuperadmin />} />
           </Route>
 
           {/* Onboarding Routes */}

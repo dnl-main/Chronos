@@ -274,7 +274,7 @@ function HomeSuperadmin() {
     <div
       style={{
         marginTop: '80px',
-        maxWidth: '1650px',
+        maxWidth: '1000px',
         marginLeft: 'auto',
         marginRight: 'auto',
       }}
@@ -300,7 +300,7 @@ function HomeSuperadmin() {
           flexDirection: 'column',
           gap: '20px',
           marginBottom: '30px',
-          maxWidth: '800px',
+          maxWidth: '1000px',
           marginLeft: 'auto',
           marginRight: 'auto',
         }}

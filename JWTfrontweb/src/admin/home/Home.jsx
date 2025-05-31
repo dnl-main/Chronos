@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './home.css';
 
@@ -24,17 +24,18 @@ import Calendar_Check from '../../assets/icons/Calendar_Check.svg?react';
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [overlayContent, setOverlayContent] = useState(null);
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [todayCount, setTodayCount] = useState(0);
   const [upcomingCount, setUpcomingCount] = useState(0);
   const [todayAppointments, setTodayAppointments] = useState([]);
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]); // New state for upcoming appointments
   const [crewCount, setCrewCount] = useState({ total: 0, complete: 0 });
   const [totalCrewCount, setTotalCrewCount] = useState(0);
   const [error, setError] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
   const [jobTitleCounts, setJobTitleCounts] = useState({});
+  const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
@@ -56,7 +57,6 @@ const Home = () => {
         navigate('/login');
         return;
       }
-      // Check if position or department is missing
       if (!parsedUser.position || !parsedUser.department) {
         alert('Please add your Job title and Department to continue');
         navigate('/admin/account');
@@ -75,7 +75,7 @@ const Home = () => {
       const response = await axios.get(`${apiUrl}/user`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true'
+          'ngrok-skip-browser-warning': 'true',
         },
         withCredentials: true,
       });
@@ -89,7 +89,6 @@ const Home = () => {
         navigate('/login');
         return;
       }
-      // Check if position or department is missing
       if (!userData.position || !userData.department) {
         alert('Please add your Job title and Department to continue');
         navigate('/admin/account');
@@ -114,7 +113,7 @@ const Home = () => {
       const todayCountResponse = await axios.get(`${apiUrl}/appointment/today/count`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true'
+          'ngrok-skip-browser-warning': 'true',
         },
         withCredentials: true,
       });
@@ -123,7 +122,7 @@ const Home = () => {
       const upcomingCountResponse = await axios.get(`${apiUrl}/appointment/upcoming/count`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true'
+          'ngrok-skip-browser-warning': 'true',
         },
         withCredentials: true,
       });
@@ -132,24 +131,25 @@ const Home = () => {
       const appointmentsResponse = await axios.get(`${apiUrl}/appointment`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true'
+          'ngrok-skip-browser-warning': 'true',
         },
         withCredentials: true,
       });
       const appointments = Array.isArray(appointmentsResponse.data) ? appointmentsResponse.data : [];
-      setTodayAppointments(appointments.filter(app => app.computed_status === 'today'));
+      setTodayAppointments(appointments.filter((app) => app.computed_status === 'today'));
 
-      const crewCountResponse = await axios.get(`${apiUrl}/crew-members/available/count`, {
+      // Fetch upcoming appointments
+      const upcomingAppointmentsResponse = await axios.get(`${apiUrl}/appointment/upcoming`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true'
+          'ngrok-skip-browser-warning': 'true',
         },
         withCredentials: true,
       });
-      setCrewCount({
-        total: crewCountResponse.data.total,
-        complete: crewCountResponse.data.complete,
-      });
+      const upcoming = Array.isArray(upcomingAppointmentsResponse.data)
+        ? upcomingAppointmentsResponse.data
+        : [];
+      setUpcomingAppointments(upcoming);
     } catch (error) {
       setError('Failed to load dashboard data.');
     } finally {
@@ -162,13 +162,13 @@ const Home = () => {
       const response = await axios.get(`${apiUrl}/crew-members`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true'
+          'ngrok-skip-browser-warning': 'true',
         },
         withCredentials: true,
       });
       setAllUsers(response.data);
       calculateJobTitleCounts(response.data);
-      const userCount = response.data.filter(user => user.region != null && user.region !== '').length;
+      const userCount = response.data.filter((user) => user.region != null && user.region !== '').length;
       setTotalCrewCount(userCount);
     } catch (error) {
       console.error('Failed to fetch all users:', error);
@@ -177,12 +177,34 @@ const Home = () => {
 
   const calculateJobTitleCounts = (users) => {
     const counts = {};
-    users.forEach(user => {
+    users.forEach((user) => {
       if (user.availability && user.availability.toLowerCase() === 'available' && user.position) {
         counts[user.position] = (counts[user.position] || 0) + 1;
       }
     });
     setJobTitleCounts(counts);
+  };
+
+  const handleRedirectToday = () => {
+    navigate('/admin/schedule?tab=today');
+  };
+
+  const handleRedirectUpcoming = () => {
+    navigate('/admin/schedule?tab=upcoming');
+  };
+
+  // Find the nearest upcoming appointment
+  const getNearestAppointment = () => {
+    if (upcomingAppointments.length === 0) return null;
+    const today = new Date();
+    return upcomingAppointments.reduce((nearest, app) => {
+      const appDate = new Date(app.date);
+      const nearestDate = nearest ? new Date(nearest.date) : null;
+      if (!nearest || Math.abs(appDate - today) < Math.abs(nearestDate - today)) {
+        return app;
+      }
+      return nearest;
+    }, null);
   };
 
   useEffect(() => {
@@ -197,6 +219,8 @@ const Home = () => {
     return <div className="home-error">{error}</div>;
   }
 
+  const nearestAppointment = getNearestAppointment();
+
   return (
     <div className="home">
       <div className="home-box">
@@ -205,22 +229,23 @@ const Home = () => {
             <header className="home-top-header">
               <div className="home-top-header-heading">
                 <More_Grid_Big style={{ color: "var(--black-color)", width: "32px", height: "32px", "--stroke-width": "1.5px" }} />
-                <p>Dashboard</p> 
+                <p>Dashboard</p>
               </div>
-              <button 
+              <button
                 className="home-top-header-button"
                 onClick={() => setIsModalOpen(true)}
               >
-                <Calendar_Check style={{
-                  width: "20px", height: "20px",
-                  '--stroke-color': 'var(--white-color)',
-                  '--stroke-width': '7px'
-                }} />
+                <Calendar_Check
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    '--stroke-color': 'var(--white-color)',
+                    '--stroke-width': '7px',
+                  }}
+                />
                 <p>Book now</p>
               </button>
-              {isModalOpen && (
-                <Appointment onClose={() => setIsModalOpen(false)} />
-              )}
+              {isModalOpen && <Appointment onClose={() => setIsModalOpen(false)} />}
             </header>
 
             <main className="home-top-main">
@@ -231,16 +256,17 @@ const Home = () => {
                       <header>Available crew</header>
                       <Users style={{ color: "var(--black-color)", width: "20px", height: "20px" }} />
                     </div>
-                    <button className="home-top-main-left-up-header-btn">
-                      <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
-                    </button>
+                    <Link to="/admin/availability">
+                      <button className="home-top-main-left-up-header-btn">
+                        <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
+                      </button>
+                    </Link>
                   </div>
                   <div className="home-top-main-left-up-data">
                     <div className="home-top-main-left-up-data-all">
                       <p>{crewCount.total}</p>
                     </div>
-                    <div className="home-top-main-left-up-data-complete">
-                    </div>
+                    <div className="home-top-main-left-up-data-complete"></div>
                   </div>
                   <div className="home-top-main-left-up-job">
                     <header className="home-top-main-left-up-job-header">
@@ -273,16 +299,17 @@ const Home = () => {
                       <header>Total Crew</header>
                       <User_Add style={{ color: "var(--primary-color)", width: "20px", height: "20px", '--stroke-width': '7px' }} />
                     </div>
-                    <button className="home-top-main-left-down-header-btn">
-                      <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
-                    </button>
+                    <Link to="/admin/availability">
+                      <button className="home-top-main-left-down-header-btn">
+                        <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
+                      </button>
+                    </Link>
                   </div>
                   <div className="home-top-main-left-down-data">
                     <div className="home-top-main-left-down-data-all">
                       <p>{totalCrewCount}</p>
                     </div>
-                    <div className="home-top-main-left-down-data-complete">
-                    </div>
+                    <div className="home-top-main-left-down-data-complete"></div>
                   </div>
                 </main>
               </section>
@@ -294,7 +321,7 @@ const Home = () => {
                       <header>Coming today</header>
                       <Calendar_Event style={{ color: "var(--black-color)", width: "20px", height: "20px", '--stroke-width': '6px' }} />
                     </div>
-                    <button>
+                    <button onClick={handleRedirectToday}>
                       <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
                     </button>
                   </div>
@@ -327,7 +354,10 @@ const Home = () => {
                         }}
                       />
                     </div>
-                    <button className="home-top-main-left-down-header-btn">
+                    <button
+                      className="home-top-main-left-down-header-btn"
+                      onClick={handleRedirectUpcoming}
+                    >
                       <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
                     </button>
                   </div>
@@ -337,8 +367,8 @@ const Home = () => {
                   <div className="home-top-main-mid-down-time">
                     <p className="home-top-main-mid-down-time-sub">Arrival date</p>
                     <p className="home-top-main-mid-down-time-main">
-                      {todayAppointments.length > 0
-                        ? new Date(todayAppointments[0].date).toLocaleDateString('en-US', {
+                      {nearestAppointment
+                        ? new Date(nearestAppointment.date).toLocaleDateString('en-US', {
                             month: 'long',
                             day: 'numeric',
                             year: 'numeric',
@@ -355,9 +385,11 @@ const Home = () => {
                     <header>Expiring Certificates</header>
                     <Notebook style={{ color: "var(--black-color)", width: "20px", height: "20px" }} />
                   </div>
-                  <button className="home-top-main-right-header-btn">
-                    <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
-                  </button>
+                  <Link to="/admin/certificate">
+                    <button className="home-top-main-right-header-btn">
+                      <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
+                    </button>
+                  </Link>
                 </div>
                 <HomeCertAdmin />
               </section>

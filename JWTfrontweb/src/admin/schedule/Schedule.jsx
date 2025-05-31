@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import './schedule.css';
 import { Navbar } from '../navbar/Navbar';
@@ -20,6 +20,14 @@ const Schedule = () => {
   const [selectedTab, setSelectedTab] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+  const tabParam = searchParams.get('tab');
+  if (tabParam === 'today' || tabParam === 'upcoming' || tabParam === 'all') {
+    setSelectedTab(tabParam);
+  }
+  }, [searchParams]);
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');

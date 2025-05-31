@@ -59,6 +59,7 @@ Route::middleware('jwt.auth')->group(function () {
     Route::delete('/appointment', [AppointmentController::class, 'destroy']);
     Route::get('/appointment/today/count', [AppointmentController::class, 'getTodayCount']);
     Route::get('/appointment/upcoming/count', [AppointmentController::class, 'getUpcomingCount']);
+    Route::get('/appointment/upcoming', [AppointmentController::class, 'getUpcomingAppointments']);
     Route::put('/appointment/{id}/reschedule', [AppointmentController::class, 'reschedule']);
     Route::delete('/appointment/{id}/cancel', [AppointmentController::class, 'cancel']);
 
@@ -92,7 +93,7 @@ Route::middleware('jwt.auth')->group(function () {
     });
 
     // Superadmin Routes
-   Route::prefix('superadmin')->middleware('role:superadmin')->group(function () {
+        Route::prefix('superadmin')->middleware('role:superadmin')->group(function () {
         Route::get('/readusers', [SuperadminController::class, 'getAllUsers']);
         Route::post('/createusers', [SuperadminController::class, 'createUser']);
         Route::put('/updateusers/{id}', [SuperadminController::class, 'updateUser']);

@@ -57,8 +57,8 @@ const SidebarSuperadmin = () => {
    
     </div> {/* sidebar-logo */}
 
-    {/* <div className="sidebar-buttons">
-      <Link to="/admin/home">
+    <div className="sidebar-buttons">
+      <Link to="/superadmin/homesuperadmin">
         <button>
             <House_01
            style={{
@@ -70,7 +70,7 @@ const SidebarSuperadmin = () => {
            }}
          />
         </button>
-      </Link> */}
+      </Link> 
 
       
       {/* <Link to="/admin/availability">
@@ -111,6 +111,7 @@ const SidebarSuperadmin = () => {
         </button>
       </Link> */}
     {/* </div> */}
+     </div>
   </div> 
   );
 };

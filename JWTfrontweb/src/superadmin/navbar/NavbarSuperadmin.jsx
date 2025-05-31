@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './navbarsuperadmin.css';
+import AccountSuperadmin from '../account/AccountSuperadmin';
 
 import Search from '../../assets/icons/Search.svg';
 import Filter from '../../assets/icons/Filter.svg';
@@ -15,42 +16,8 @@ export const NavbarSuperadmin = () => {
       <header className="navbar-header">
         <p>Concorde</p>
       </header> {/* navbar-header */}
-
-      {/* <main className="navbar-main">
-        {/*
-
-        <div className="navbar-main-search">
-          <div className="navbar-main-search-left">
-            <img src={Search} className="" alt="Search icon" />
-            <p>Search</p>
-          </div>
-          */}
-{/*
-          <div className="navbar-main-search-right">
-            <div className="navbar-main-search-right-bg">
-              <img src={Filter} className="" alt="Filter icon" />
-            </div> 
-          </div> 
-        </div> 
-        */}
-
-{/* 
-        <div className="navbar-main-notification">
-          <Link to="/admin/notification">
-            
-              <Bell 
-                style={{ 
-                  color: "var(--primary-color)", 
-                  width: "32px", 
-                  height: "32px", 
-                  "--stroke-width": "5px"  // ✅ This works!
-                }} 
-              />
-          </Link>
-        </div> navbar-main-notification 
-
         <div className="navbar-main-account">
-          <Link to="/admin/account"> 
+          <Link to="/superadmin/accountsuperadmin"> 
             <User_Circle 
               style={{ 
                 color: "var(--primary-color)", 
@@ -61,7 +28,7 @@ export const NavbarSuperadmin = () => {
             />
           </Link>
         </div> 
-      </main>  */}
+      
     </nav>
   );
 };

@@ -110,7 +110,7 @@ const Wrapper = ({ children }) => {
           return;
         }
 
-        if (!location.pathname.startsWith('/superadmin/homesuperadmin')) {
+        if (!location.pathname.startsWith('/superadmin/')) {
           navigate('/superadmin/homesuperadmin', { replace: true });
           setIsLoading(false);
           return;

@@ -376,4 +376,51 @@ public function cancel($id)
         $appointment->delete();
         return response()->json(['message' => 'Appointment canceled successfully'], 200);
     }
+    public function getUpcomingAppointments()
+    {
+        $user = JWTAuth::user();
+
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $today = Carbon::today()->startOfDay();
+        $appointments = Appointment::with('user')
+            ->where('date', '>=', $today)
+            ->orderBy('date', 'asc')
+            ->get()
+            ->map(function ($appointment) {
+                return [
+                    'id' => $appointment->id,
+                    'user_id' => $appointment->user_id,
+                    'date' => $appointment->date,
+                    'start_time' => $appointment->start_time,
+                    'end_time' => $appointment->end_time,
+                    'department' => $appointment->department,
+                    'crewing_dept' => $appointment->crewing_dept,
+                    'operator' => $appointment->operator,
+                    'accounting_task' => $appointment->accounting_task,
+                    'employee' => $appointment->employee,
+                    'purpose' => $appointment->purpose,
+                    'status' => $appointment->status,
+                    'computed_status' => $this->getAppointmentStatus($appointment),
+                    'user' => $appointment->user ? [
+                        'first_name' => $appointment->user->first_name,
+                        'middle_name' => $appointment->user->middle_name,
+                        'last_name' => $appointment->user->last_name,
+                        'email' => $appointment->user->email,
+                        'mobile' => $appointment->user->mobile,
+                        'position' => $appointment->user->position,
+                        'department' => $appointment->user->department,
+                        'availability' => $appointment->user->availability,
+                        'gender' => $appointment->user->gender,
+                        'civil_status' => $appointment->user->civil_status,
+                        'birthday' => $appointment->user->birthday,
+                        'address' => $this->formatAddress($appointment->user),
+                    ] : null,
+                ];
+            });
+
+        return response()->json($appointments, 200);
+    }
 }

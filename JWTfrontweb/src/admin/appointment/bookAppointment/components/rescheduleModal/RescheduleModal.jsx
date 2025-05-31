@@ -8,19 +8,20 @@ const RescheduleModal = ({ date, startTime, endTime, user, status, onClose, onCo
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleRescheduleNow = () => {
-    const confirmed = window.confirm('Are you sure you want to reschedule?');
-    if (!confirmed) return;
+    // const confirmed = window.confirm('Are you sure you want to reschedule?');
+    // if (!confirmed) return;
+    setShowConfirmation(true);
 
-    if (onConfirmReschedule) {
-      onConfirmReschedule();
-      setShowConfirmation(true);
-    }
+    // if (onConfirmReschedule) {
+    //   onConfirmReschedule();
+    // }
   };
 
   const handleCloseConfirmation = () => {
     // console.log('Closing confirmation'); // Debug
-    window.location.reload();
+    onConfirmReschedule();
     setShowConfirmation(false);
+    window.location.reload();
     onClose();
   };
 

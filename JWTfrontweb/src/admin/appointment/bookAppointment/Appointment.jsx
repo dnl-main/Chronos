@@ -345,7 +345,7 @@ export default function Appointment({ onClose }) {
         mapAppointment(response.data.appointment),
       ]);
       setShowBookModal(false);
-      alert('Appointment booked successfully!');
+      // alert('Appointment booked successfully!');
       window.location.reload();
     } catch (err) {
       alert('Error booking appointment: ' + (err.response?.data?.message || err.message));
@@ -425,7 +425,7 @@ export default function Appointment({ onClose }) {
     );
     setShowRescheduleModal(false);
     setShowConfirmation(true);
-    alert('Appointment rescheduled successfully!');
+    // alert('Appointment rescheduled successfully!');
     window.location.reload();
   } catch (err) {
     alert('Error rescheduling appointment: ' + (err.response?.data?.message || err.message));
@@ -462,8 +462,8 @@ export default function Appointment({ onClose }) {
       setCustomPurpose('');
       setSelectedId(null);
       setShowCancelModal(false);
-      alert('Appointment cancelled!');
-      window.location.reload();
+      // alert('Appointment cancelled!');
+      // window.location.reload();
     } catch (err) {
       alert('Error cancelling appointment: ' + (err.response?.data?.message || err.message));
     }
@@ -562,7 +562,51 @@ export default function Appointment({ onClose }) {
           </div>
 
           {/* RIGHT PANEL */}
-          <div className="appointmentModal-box-in-right">
+          <div className="appointmentModal-box-in-right"  style={{ position: 'relative' }}>
+  {selectedId === null && (
+    <div
+      style={{
+        position: 'absolute',
+        top: 0, left: 0, right: 0, bottom: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        zIndex: 1000,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: '0.8rem',
+        padding: '1rem',
+        pointerEvents: 'all',
+        textAlign: 'center',
+      }}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="var(--primary-color)"
+        strokeWidth={1.4}
+        width="48"
+        height="48"
+        aria-hidden="true"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 21a9 9 0 100-18 9 9 0 000 18z" />
+      </svg>
+      <p
+        style={{
+          color: 'var(--primary-color)',
+          fontWeight: 'var(--font-weight-medium)',
+          fontSize: 'var(--font-size-16)',
+          maxWidth: '18rem',
+          lineHeight: 1.3,
+          userSelect: 'none',
+        }}
+      >
+        Please select a user first to manage appointments.
+      </p>
+    </div>
+  )}
+            
             <section className="appointmentModal-box-in-right-dept">
               <div className="appointmentModal-box-in-right-dept-drop">
                 <article className="appointmentModal-box-in-right-dept-drop-field">
@@ -578,6 +622,7 @@ export default function Appointment({ onClose }) {
                       setPurpose('');
                       setCustomPurpose('');
                     }}
+                    disabled={selectedId === null}
                   >
                     <option value="">Select...</option>
                     {departmentOptions.map((dept) => (
@@ -594,6 +639,7 @@ export default function Appointment({ onClose }) {
                         id="crewingDept"
                         value={crewingDept}
                         onChange={(e) => setCrewingDept(e.target.value)}
+                        disabled={selectedId === null}
                       >
                         <option value="">Select...</option>
                         {crewingDepts.map((cd) => (
@@ -609,6 +655,7 @@ export default function Appointment({ onClose }) {
                           id="operator"
                           value={operator}
                           onChange={(e) => setOperator(e.target.value)}
+                          disabled={selectedId === null}  // disabled here
                         >
                           <option value="">Select...</option>
                           {operators.map((op) => (
@@ -628,6 +675,7 @@ export default function Appointment({ onClose }) {
                         id="accountingOption"
                         value={accountingOption}
                         onChange={(e) => setAccountingOption(e.target.value)}
+                        disabled={selectedId === null}  // disabled here
                       >
                         <option value="">Select...</option>
                         {accountingOptions.map((opt) => (
@@ -639,6 +687,7 @@ export default function Appointment({ onClose }) {
                 )}
               </div>
 
+
               <article className="appointmentModal-box-in-right-dept-name">
                 <label htmlFor="employeeName">Name of employee</label>
                 <input
@@ -646,43 +695,49 @@ export default function Appointment({ onClose }) {
                   id="employeeName"
                   value={employeeName}
                   onChange={(e) => setEmployeeName(e.target.value)}
+                  disabled={selectedId === null}  // disabled here
                 />
               </article>
 
-             <article className="appointmentModal-box-in-right-dept-purpose">
-  <label htmlFor="purpose">Purpose of visit</label>
-  <select
-    id="purpose"
-    value={purpose || ''}
-    onChange={(e) => {
-      setPurpose(e.target.value);
-      if (e.target.value !== 'Others') {
-        setCustomPurpose('');
-      }
-    }}
-  >
-    <option value="">Select...</option>
-    {purposeOptions.map((opt) => (
-      <option key={opt} value={opt}>{opt}</option>
-    ))}
-    {purpose && !purposeOptions.includes(purpose) && (
-      <option value={purpose}>{purpose}</option>
-    )}
-  </select>
-</article>
-
-              {purpose === 'Others' && (
-                <article className="appointmentModal-box-in-right-dept-custom-purpose">
-                  <label htmlFor="customPurpose">Specify Purpose</label>
-                  <input
-                    type="text"
-                    id="customPurpose"
-                    value={customPurpose}
-                    onChange={(e) => setCustomPurpose(e.target.value)}
-                    placeholder="Enter custom purpose"
-                  />
+              <div className="appointmentModal-box-in-right-dept-purpose">
+                <article className="appointmentModal-box-in-right-dept-purpose">
+                  <label htmlFor="purpose">Purpose of visit</label>
+                  <select
+                    id="purpose"
+                    value={purpose || ''}
+                    onChange={(e) => {
+                      setPurpose(e.target.value);
+                      if (e.target.value !== 'Others') {
+                        setCustomPurpose('');
+                      }
+                    }}
+                    disabled={selectedId === null}  // disabled here
+                  >
+                    <option value="">Select...</option>
+                    {purposeOptions.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                    {purpose && !purposeOptions.includes(purpose) && (
+                      <option value={purpose}>{purpose}</option>
+                    )}
+                  </select>
                 </article>
-              )}
+
+                {purpose === 'Others' && (
+                  <article className="appointmentModal-box-in-right-dept-custom-purpose">
+                    <label htmlFor="customPurpose">Specify Purpose</label>
+                    <input
+                      type="text"
+                      id="customPurpose"
+                      value={customPurpose}
+                      onChange={(e) => setCustomPurpose(e.target.value)}
+                      placeholder="Enter custom purpose"
+                      disabled={selectedId === null}  // disabled here
+                    />
+                  </article>
+                )}
+              </div>
+             
             </section>
 
             <div className="appointmentModal-box-in-right-dropdown">
@@ -734,8 +789,10 @@ export default function Appointment({ onClose }) {
                         <option key={idx} value={time}>{time}</option>
                       ))}
                   </select>
+                  
                 </div>
               </div>
+              
             </div>
 
             <div className="appointmentModal-box-in-right-buttons">
