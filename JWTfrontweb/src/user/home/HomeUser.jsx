@@ -649,7 +649,7 @@ const HomeUser = () => {
                             ) : (
                               <>
                                 <p className="homeUser-top-core-right-form-file-upload-text-bold">Choose a file to upload</p>
-                                <p className="homeUser-top-core-right-form-file-upload-text-light">JPEG, PNG, and PDF formats, up to 50 MB</p>
+                                <p className="homeUser-top-core-right-form-file-upload-text-light"> PDF Only, up to 50 MB</p>
                               </>
                             )}
                           </div>
