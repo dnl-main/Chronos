@@ -35,11 +35,10 @@ import CSLogin from './deprecated/caseStudy/CSLogin';
 // Layouts
 import Admin from './layouts/Admin';
 import User from './layouts/User';
-// import Superadmin from './layouts/Superadmin';
+import Superadmin from './layouts/Superadmin';
 
-// // Superadmin Components
-// import HomeSuperAdmin from './superadmin/home/HomeSuperAdmin';
-// import AccountSuperadmin from './superadmin/account/AccountSuperadmin';
+// Superadmin Components
+import HomeSuperAdmin from './superadmin/home/HomeSuperAdmin';
 // Component
 import Wrapper from './components/Wrapper';
 
@@ -90,7 +89,7 @@ function App() {
             <Route path="notificationUser" element={<NotificationUser />} />
           </Route>
 
-          {/* Superadmin Routes with Layout, Wrapped
+          {/* Superadmin Routes with Layout, Wrapped */}
           <Route
             path="/superadmin"
             element={
@@ -100,8 +99,8 @@ function App() {
             }
           >
             <Route path="homesuperadmin" element={<HomeSuperAdmin />} />
-            <Route path="accountsuperadmin" element={<AccountSuperadmin />} />
-          </Route> */}
+         
+          </Route>
 
           {/* Onboarding Routes */}
           <Route path="/" element={<Landing />} />

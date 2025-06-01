@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
-function HomeSuperadmin() {
+function HomeSuperAdmin() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [formData, setFormData] = useState({
@@ -271,6 +271,7 @@ function HomeSuperadmin() {
   };
 
   return (
+    
     <div
       style={{
         marginTop: '80px',
@@ -292,7 +293,7 @@ function HomeSuperadmin() {
           Loading...
         </div>
       )}
-
+  
       <form
         onSubmit={handleCreateOrUpdate}
         style={{
@@ -633,4 +634,4 @@ function HomeSuperadmin() {
   );
 }
 
-export default HomeSuperadmin;
+export default HomeSuperAdmin;

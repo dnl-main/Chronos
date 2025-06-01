@@ -15,7 +15,7 @@ import Book from '../../assets/icons/Book.svg?react';
 
 
 
-const SidebarSuperadmin = () => {
+const SidebarSuperAdmin = () => {
   const navigate = useNavigate()
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const handleLogout = async () => {
@@ -57,7 +57,7 @@ const SidebarSuperadmin = () => {
    
     </div> {/* sidebar-logo */}
 
-    <div className="sidebar-buttons">
+    {/* <div className="sidebar-buttons">
       <Link to="/superadmin/homesuperadmin">
         <button>
             <House_01
@@ -109,12 +109,12 @@ const SidebarSuperadmin = () => {
             }} 
           />
         </button>
-      </Link> */}
-    {/* </div> */}
-     </div>
+      </Link> 
+    {</div> 
+     </div> */}
   </div> 
   );
 };
 
-export default SidebarSuperadmin;
+export default SidebarSuperAdmin;
 

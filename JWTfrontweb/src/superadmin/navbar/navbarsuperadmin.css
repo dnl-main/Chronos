@@ -103,3 +103,14 @@
 			background-color: var(--white-color);
 			border-radius: 100px;
 		}
+.btn-navbar{
+	    all: unset;
+    background-color: var(--white-color); 
+    border: 2px solid var(--primary-color-opacity-15); 
+    box-shadow: 0 0px 12vh var(--white-color-opacity-15);
+    border-radius: 500px;
+    padding: 1.4vh 6vh;
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-16);
+    color: var(--primary-color);
+}

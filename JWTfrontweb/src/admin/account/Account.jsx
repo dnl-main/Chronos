@@ -14,7 +14,7 @@ import LabelIcon from '../../assets/icons/Label.svg?react';
 import More_Grid_Big from '../../assets/icons/More_Grid_Big.svg?react';
 import ChangeProfilePicture from './AccountComponents/ChangeProfilePicture';
 import ResetPassword from './AccountComponents/ResetPassword';
-import landing_dp_1 from '../../assets/profiles/landing_dp_1.png';
+import defaultdp from '../../assets/profiles/defaultdp.png';
 import Spinner from '../../components/Spinner';
 
 const Account = () => {
@@ -172,15 +172,14 @@ const Account = () => {
                 <p>Logout</p>
               </button>
             </header>
-
             <main className="account-box-in-card-main">
               <img
-                src={user?.profile_picture ? `${storageUrl}/${user.profile_picture}` : landing_dp_1}
+                src={user?.profile_picture ? `${storageUrl}/${user.profile_picture}` : defaultdp}
                 className="account-box-in-card-main-dp"
                 alt="profile"
                 onError={(e) => {
                   //console.log('Image Load Error:', e);
-                  e.target.src = landing_dp_1;
+                  e.target.src = defaultdp;
                   setError('Failed to load profile picture.');
                 }}
               />
