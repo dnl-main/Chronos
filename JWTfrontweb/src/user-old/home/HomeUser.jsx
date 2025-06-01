@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import './homeUser.css';
-import './homeUserMQ.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { handleAuthToken } from '../../utils/timeout';
@@ -259,9 +258,6 @@ const HomeUser = () => {
     });
   };
 
-  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
-
-
   const handleDeleteAppointment = async () => {
     try {
       const token = sessionStorage.getItem('token');
@@ -386,6 +382,7 @@ const HomeUser = () => {
                         ? 'var(--yellow-indicator)'
                         : '#fff',
                     borderRadius: '50px',
+                    padding: '6px',
                     transition: 'background-color 0.3s ease',
                   }}
                 >
@@ -395,6 +392,7 @@ const HomeUser = () => {
                       value={selectedStatus}
                       onChange={handleStatusChange}
                       style={{
+                        padding: '4px 8px',
                         border: 'none',
                         borderRadius: '4px',
                         backgroundColor: 'inherit',
@@ -429,22 +427,29 @@ const HomeUser = () => {
                 ) : (
                   <>
                     <div className="homeUser-top-core-left-heading">
-                      <p style={{ color: appointment.date ? '#000' : '#888' }}>
-                        {appointment.date ? 'You have an appointment' : 'No appointment scheduled'}
-                      </p>
+                      {appointment.date ? (
+                        <p style={{ fontWeight: '600', fontSize: '1.1rem' }}>You have an appointment</p>
+                      ) : (
+                        <p style={{ color: '#888', fontSize: '1.1rem' }}>No appointment scheduled</p>
+                      )}
                     </div>
 
                     <div className="homeUser-top-core-left-date">
-                      <div className="homeUser-top-core-left-date-cal">
-                        <p className="homeUser-top-core-left-date-cal-regular">
-                          {appointment.date
-                            ? new Date(appointment.date).toLocaleString('en-US', { month: 'short' }).toUpperCase()
-                            : '---'}
-                        </p>
-                        <p className="homeUser-top-core-left-date-cal-semibold">
-                          {appointment.date ? new Date(appointment.date).getDate() : '--'}
-                        </p>
-                      </div>
+                      {appointment.date ? (
+                        <div className="homeUser-top-core-left-date-cal">
+                          <p className="homeUser-top-core-left-date-cal-regular">
+                            {new Date(appointment.date).toLocaleString('en-US', { month: 'short' }).toUpperCase()}
+                          </p>
+                          <p className="homeUser-top-core-left-date-cal-semibold">
+                            {new Date(appointment.date).getDate()}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="homeUser-top-core-left-date-cal">
+                          <p className="homeUser-top-core-left-date-cal-regular">---</p>
+                          <p className="homeUser-top-core-left-date-cal-semibold">--</p>
+                        </div>
+                      )}
 
                       <div className="homeUser-top-core-left-date-data">
                         {appointment.date ? (
@@ -455,85 +460,108 @@ const HomeUser = () => {
                                 {new Date(appointment.date).toLocaleDateString('en-US', { weekday: 'long' })}
                               </p>
                               <p className="homeUser-top-core-left-date-data-text-light">
-                                Department: {appointment.department ? capitalize(appointment.department) : 'N/A'}
+                                Department: {appointment.department ? 
+                                  appointment.department.charAt(0).toUpperCase() + appointment.department.slice(1) : 'N/A'}
                               </p>
-
                               {appointment.department === 'crewing' && (
                                 <>
                                   <p className="homeUser-top-core-left-date-data-text-light">
-                                    Crewing Dept: {appointment.crewing_dept ? capitalize(appointment.crewing_dept) : 'N/A'}
+                                    Crewing Dept: {appointment.crewing_dept ? 
+                                      appointment.crewing_dept.charAt(0).toUpperCase() + appointment.crewing_dept.slice(1) : 'N/A'}
                                   </p>
                                   <p className="homeUser-top-core-left-date-data-text-light">
                                     Operator: {appointment.operator || 'N/A'}
                                   </p>
                                 </>
                               )}
-
                               {appointment.department === 'accounting' && (
                                 <p className="homeUser-top-core-left-date-data-text-light">
-                                  Accounting Task: {appointment.accounting_task ? capitalize(appointment.accounting_task) : 'N/A'}
+                                  Accounting Task: {appointment.accounting_task ? 
+                                    appointment.accounting_task.charAt(0).toUpperCase() + appointment.accounting_task.slice(1) : 'N/A'}
                                 </p>
                               )}
-
                               <p className="homeUser-top-core-left-date-data-text-light">
                                 Employee: {appointment.employee || 'N/A'}
                               </p>
                               <p className="homeUser-top-core-left-date-data-text-light">
-                                Purpose: {appointment.purpose ? capitalize(appointment.purpose) : 'N/A'}
+                                Purpose: {appointment.purpose ? 
+                                  appointment.purpose.charAt(0).toUpperCase() + appointment.purpose.slice(1) : 'N/A'}
                               </p>
                             </div>
 
                             <div className="homeUser-top-core-left-date-data-cards">
-                              {['start_time', 'end_time'].map((timeType, idx) => (
-                                <div
-                                  key={timeType}
-                                  className={`homeUser-top-core-left-date-data-cards-${timeType === 'start_time' ? 'start' : 'end'}`}
-                                >
-                                  <Clock
-                                    style={{
-                                      width: '24px',
-                                      height: '24px',
-                                      '--stroke-color': 'var(--black-color-opacity-30)',
-                                      '--stroke-width': '5px',
-                                    }}
-                                  />
-                                  <div className={`homeUser-top-core-left-date-data-cards-${timeType === 'start_time' ? 'start' : 'end'}-text`}>
-                                    <p className={`homeUser-top-core-left-date-data-cards-${timeType === 'start_time' ? 'start' : 'end'}-text-light`}>
-                                      {timeType === 'start_time' ? 'Starts at' : 'Ends at'}
-                                    </p>
-                                    <p className={`homeUser-top-core-left-date-data-cards-${timeType === 'start_time' ? 'start' : 'end'}-text-medium`}>
-                                      {formatTime(appointment[timeType])}
-                                    </p>
-                                  </div>
+                              <div className="homeUser-top-core-left-date-data-cards-start">
+                                <Clock
+                                  style={{
+                                    width: '24px',
+                                    height: '24px',
+                                    '--stroke-color': 'var(--black-color-opacity-30)',
+                                    '--stroke-width': '5px',
+                                  }}
+                                />
+                                <div className="homeUser-top-core-left-date-data-cards-start-text">
+                                  <p className="homeUser-top-core-left-date-data-cards-start-text-light">Starts at</p>
+                                  <p className="homeUser-top-core-left-date-data-cards-start-text-medium">
+                                    {formatTime(appointment.start_time)}
+                                  </p>
                                 </div>
-                              ))}
+                              </div>
+
+                              <div className="homeUser-top-core-left-date-data-cards-end">
+                                <Clock
+                                  style={{
+                                    width: '24px',
+                                    height: '24px',
+                                    '--stroke-color': 'var(--black-color-opacity-30)',
+                                    '--stroke-width': '5px',
+                                  }}
+                                />
+                                <div className="homeUser-top-core-left-date-data-cards-end-text">
+                                  <p className="homeUser-top-core-left-date-data-cards-end-text-light">Ends at</p>
+                                  <p className="homeUser-top-core-left-date-data-cards-end-text-medium">
+                                    {formatTime(appointment.end_time)}
+                                  </p>
+                                </div>
+                              </div>
                             </div>
 
                             <button
                               onClick={handleDeleteAppointment}
-                              className="red-button-cancel"
+                              style={{
+                                marginTop: '1rem',
+                                padding: '8px 12px',
+                                background: '#f44336',
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                              }}
                             >
                               Delete Appointment
                             </button>
                           </>
                         ) : (
-                          <p style={{ padding: '1rem', fontStyle: 'italic' }}>You have no scheduled appointment yet.</p>
+                          <p style={{ padding: '1rem', fontStyle: 'italic' }}>
+                            You have no scheduled appointment yet.
+                          </p>
                         )}
                       </div>
                     </div>
 
-                    {!appointment.date && (
-                      <div className="homeUser-top-core-left-btn">
-                        <button onClick={() => setIsModalOpen(true)} className="homeUser-top-core-left-btn-button">
+                    <div className="homeUser-top-core-left-btn">
+                      {!appointment.date && (
+                        <button
+                          onClick={() => setIsModalOpen(true)}
+                          className="homeUser-top-core-left-btn-button"
+                        >
                           <Book style={{ color: 'var(--white-color)', width: '20px', height: '20px' }} />
                           Set Appointment
                         </button>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </>
                 )}
               </div>
-
 
               <div className="homeUser-top-core-right">
                 <div className="homeUser-top-core-right-header">
@@ -621,7 +649,7 @@ const HomeUser = () => {
                             ) : (
                               <>
                                 <p className="homeUser-top-core-right-form-file-upload-text-bold">Choose a file to upload</p>
-                                <p className="homeUser-top-core-right-form-file-upload-text-light">JPEG, PNG, and PDF formats, up to 50 MB</p>
+                                <p className="homeUser-top-core-right-form-file-upload-text-light"> PDF Only, up to 50 MB</p>
                               </>
                             )}
                           </div>

@@ -1,3 +1,4 @@
+@media (max-width: 768px) {	
 * {
 	margin: 0;
 	padding: 0;
@@ -15,7 +16,7 @@
 		height: 100%;
 		width: 100%;
 		padding-top: 72px;
-		padding-left: 72px;
+		padding-left: 0px;
 	}
 
 	.certificateUser-box-in {
@@ -25,7 +26,7 @@
 		justify-content: center;
 		align-items: center;
 		/* background-color: var(--secondary-color); */
-		padding: 40px;
+		padding: 1rem;
 		row-gap: 6vh; 
 	}
   
@@ -48,7 +49,7 @@
 				width: 100%;
 				column-gap: 2vh;
 				font-weight: var(--font-weight-medium);
-        font-size: var(--font-size-24);
+        font-size: var(--font-size-20);
         color: var(--black-color);
       }
   
@@ -58,10 +59,10 @@
 				background-color: var(--white-color);
 				display: flex;
 				flex-direction: column;
-				height: 76vh;
+				height: 100%;
 				width: 100%;
-				row-gap: 4vh;
-				padding: 4.8vh;
+				row-gap: 2vh;
+				padding: 4vh 3.2vh;
 				box-shadow: 0px 0px 20px rgba(0, 136, 154, 0.10); 
 				border-radius: 16px;
       }
@@ -76,10 +77,11 @@
         .certificateUser-top-core-cards {
           /* background-color: dodgerblue; */
 					display: flex;
-					flex-direction: row;
+					flex-direction: column;
+					justify-content: space-between;
 					align-items: center;
 					flex-grow: 1;
-					column-gap: 2%;
+          row-gap: 2vh;
         }
   
 
@@ -109,3 +111,6 @@
       background-color: darkgreen;
     }
   
+
+    
+}

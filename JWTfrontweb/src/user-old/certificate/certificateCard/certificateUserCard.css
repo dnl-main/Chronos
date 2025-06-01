@@ -2,7 +2,7 @@
 	background-color: var(--white-color);
 	display: flex;
 	flex-direction: column;
-	height: 52vh;
+	height: 60vh;
 	width: 40vh;
 	border-radius: 12px;
 	border: 2px solid var(--primary-color-opacity-15);
@@ -14,6 +14,7 @@
 		/* background-color: deepskyblue; */
 		display: flex;
 		flex-direction: column;
+		flex-grow: 1;
 		padding: 2.8vh;
 		row-gap: 3vh;
 		border-bottom: 2px solid var(--primary-color-opacity-15);
@@ -88,25 +89,10 @@
 		/* background-color: paleturquoise; */
 		display: flex;
 		flex-direction: column;
-		/* height: 40%; */
-		flex-grow: 1;
+		height: 40%;
 		background-color: var(--secondary-color-opacity-45);
 		row-gap: 2vh;
 		padding: 2.8vh;
-	}
-
-	.certificateUser-top-core-cards-card-down-upload {
-		/* background-color: paleturquoise; */
-		display: flex;
-		flex-direction: column;
-		row-gap: 2vh;
-	}
-
-	.certificateUser-top-core-cards-card-down-delete {
-		/* background-color: paleturquoise; */
-		display: flex;
-		flex-direction: column;
-		row-gap: 2vh;
 	}
 
 		.certificateUser-top-core-cards-card-down-text {

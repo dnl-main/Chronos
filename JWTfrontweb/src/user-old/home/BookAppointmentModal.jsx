@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './BookAppointmentModal.css';
-import './BookAppointmentModalMQ.css';
 import axios from 'axios';
 import Calendar from 'react-calendar';
 

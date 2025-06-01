@@ -1,0 +1,61 @@
+.certificate-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.certificate-popup {
+  background-color: var(--white-color);
+  border-radius: 12px;
+  width: 80vw;
+  max-width: 800px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 0px 20px rgba(0, 136, 154, 0.2);
+  overflow: hidden;
+}
+
+.certificate-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1vh 1vw;
+  background-color: var(--secondary-color-opacity-60);
+  border-bottom: 2px solid var(--primary-color-opacity-15);
+}
+
+.certificate-popup-header h2 {
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-20);
+  color: var(--black-color);
+  margin: 0;
+}
+
+.certificate-popup-close {
+  all: unset;
+  font-size: var(--font-size-24);
+  color: var(--black-color);
+  cursor: pointer;
+  padding: 0 0.5vw;
+}
+
+.certificate-popup-content {
+  flex: 1;
+  padding: 2vh 2vw;
+  overflow: auto;
+}
+
+.certificate-popup-file {
+  width: 100%;
+  height: 60vh;
+  border: none;
+  object-fit: contain;
+}

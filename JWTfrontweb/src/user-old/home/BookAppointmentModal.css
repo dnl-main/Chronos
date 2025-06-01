@@ -1,0 +1,394 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.bookModalUser {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
+
+.bookModalUser-box {
+	background-color: white;
+	border-radius: 1rem;
+	width: 52vw;
+	height: 88vh;
+	max-height: 95vh; /* ensures modal fits viewport on small screens */
+	overflow: hidden; /* avoids unintended scroll leaks */
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+	display: flex;
+	flex-direction: column;
+}
+
+.bookModalUser-box-in {
+	background-color: var(--white-color);
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start; /* changed from center for natural top-to-bottom flow */
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	padding: 1rem;
+	flex-grow: 1;
+	overflow-y: auto; /* make inner content scrollable if too tall */
+}
+
+.bookModalUser-box-in-header {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	column-gap: 24%;
+	flex-shrink: 0; /* prevents shrinking when content overflows */
+	padding-bottom: 1rem;
+}
+
+.bookModalUser-box-in-header-btn {
+	all: unset;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	align-self: flex-start;
+	padding: 0.4rem;
+	border-radius: 500px;
+	background-color: var(--secondary-color);
+	cursor: pointer;
+	transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.bookModalUser-box-in-header-btn:hover {
+	background-color: var(--secondary-color);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.bookModalUser-box-in-header-btn:focus {
+	outline: 2px solid var(--primary-color);
+	outline-offset: 2px;
+}
+
+.bookModalUser-box-in-header-btn:active {
+	transform: scale(0.95);
+	background-color: var(--secondary-color-active);
+}
+
+.bookModalUser-box-in-header-heading {
+	display: flex;
+	align-items: center;
+	column-gap: 1rem;
+	color: var(--black-color);
+	font-weight: var(--font-weight-medium);
+	font-size: var(--font-size-20);
+}
+
+
+	.bookModalUser-box-in-core {
+		/* background-color: darkblue; */
+		background-color: var(--secondary-color);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		flex-grow: 1;
+		padding: 2vh;
+		column-gap: 2vh;
+		border-radius: 1rem;
+
+	}
+
+	.bookModalUser-box-in-core label {
+		color: var(--black-color-opacity-60);
+			font-weight: var(--font-weight-medium);
+			font-size: var(--font-size-12);
+
+	}
+		.bookModalUser-box-in-core-calendar {
+			/* background-color: gray; */
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 50%;
+			height: 100%;
+		}
+
+
+
+
+
+		
+.bookModalUser-box-in-core-data {
+	display: flex;
+	flex-direction: column;
+	row-gap: 2vh;
+	width: 50%;
+	height: 100%;
+	box-sizing: border-box;
+	font-family: var(--font-family);
+	/* background-color: green; */
+}
+
+.bookModalUser-box-in-core-data article {
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.4vh;
+}
+
+.bookModalUser-box-in-core-data-dept {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 54%;
+	row-gap: 2vh;
+	/* background-color: RED; */
+}
+
+.bookModalUser-box-in-core-data-dept-drop {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	row-gap: 2vh;
+}
+
+.bookModalUser-box-in-core-data select,
+.bookModalUser-box-in-core-data input {
+	padding: 0.4rem 1rem;
+	border-radius: 0.3rem;
+	border: 2px solid var(--primary-color-opacity-30);
+	background-color: var(--white-color);
+	color: var(--black-color);
+	font-size: var(--font-size-12);
+	font-weight: var(--font-weight-medium);
+	cursor: pointer;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.bookModalUser-box-in-core-data-dept-drop-select {
+	display: flex;
+	width: 100%;
+	column-gap: 2vh;
+}
+
+.bookModalUser-box-in-core-data-dept-drop-select-inner,
+.bookModalUser-box-in-core-data-dept-drop-select-operator {
+	width: 50%;
+}
+
+.bookModalUser-box-in-core-data-dept-purpose {
+	display: flex;
+	column-gap: 2vh;
+	width: 100%;
+	/* background-color: blue; */
+}
+
+.bookModalUser-box-in-core-data-dept-purpose > article {
+	display: flex;
+	flex-direction: column;
+	row-gap: 0.4vh;
+	width: 100%;
+}
+
+.bookModalUser-box-in-core-data-dept-purpose-field label,
+.bookModalUser-box-in-core-data-dept-purpose-others label {
+	color: var(--black-color-opacity-60);
+	font-weight: var(--font-weight-medium);
+	font-size: var(--font-size-12);
+}
+
+.bookModalUser-box-in-core-data-dept-purpose-field {
+	/* Add specific styles if needed */
+}
+
+.bookModalUser-box-in-core-data-dept-purpose-others {
+	/* Add specific styles if needed */
+}
+
+.bookModalUser-box-in-core-data-day {
+	display: flex;
+	flex-direction: column;
+	row-gap: 2vh;
+	width: 100%;
+	height: 26%;
+	/* background-color: violet; */
+}
+
+.bookModalUser-box-in-core-data-day-date {
+	/* Add styles if needed */
+}
+
+.bookModalUser-box-in-core-data-day-time {
+	display: flex;
+	column-gap: 2vh;
+	width: 100%;
+}
+
+.bookModalUser-box-in-core-data-day-time-start,
+.bookModalUser-box-in-core-data-day-time-end {
+	width: 50%;
+}
+
+.bookModalUser-box-in-core-data-buttons {
+	display: flex;
+	width: 100%;
+	/* height: 12%; */
+	flex-grow: 1;
+	justify-content: end;
+	align-items: end;
+	box-sizing: border-box;
+	/* background-color: yellow; */
+}
+
+.bookModalUser-box-in-core-data-buttons-book {
+	all: unset;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 6vh;
+	column-gap: 0.4rem;
+	background-color: var(--primary-color);
+	border-radius: 500px;
+	border: 2px solid var(--white-color-opacity-15);
+	box-shadow: 0 0 12px rgba(0, 136, 154, 0.15);
+	color: var(--white-color);
+	font-weight: var(--font-weight-medium);
+	font-size: var(--font-size-16);
+	cursor: pointer;
+}
+
+
+
+
+				
+
+
+
+
+
+
+
+
+.homeUser-calendar {
+  border: 1px solid var(--primary-color-opacity-30);
+  border-radius: 8px;
+  background-color: var(--white-color);
+  color: var(--black-color);
+  width: 100%;
+  height: 68%;
+  margin: 0 auto;
+  padding: 0 4vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  box-sizing: border-box;
+}
+
+.homeUser-calendar button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--black-color-opacity-60);
+  font-weight: var(--font-weight-semibold);
+  padding: 8px 6px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.homeUser-calendar button:hover,
+.homeUser-calendar button:focus {
+  background-color: var(--primary-color-opacity-15);
+  color: var(--primary-color);
+  outline: none;
+}
+
+.homeUser-calendar .react-calendar__tile {
+  border-radius: 600px;
+  padding: 1.8vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  color: var(--black-color);
+}
+
+.homeUser-calendar .react-calendar__tile:hover {
+  background-color: var(--primary-color-opacity-30);
+  color: var(--white-color);
+}
+
+.homeUser-calendar .react-calendar__tile--active {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  font-weight: var(--font-weight-bold);
+}
+
+.homeUser-calendar .react-calendar__tile--now {
+  background-color: var(--primary-color-opacity-15);
+  color: var(--primary-color);
+  font-weight: var(--font-weight-semibold);
+  border-radius: 500px;
+}
+
+.homeUser-calendar .react-calendar__navigation {
+  margin-bottom: 4%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+.homeUser-calendar .react-calendar__navigation button {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-16);
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.homeUser-calendar .react-calendar__navigation button:hover,
+.homeUser-calendar .react-calendar__navigation button:focus {
+  background-color: var(--primary-color-opacity-15);
+  color: var(--primary-color);
+  outline: none;
+}
+
+.homeUser-calendar .react-calendar__month-view__weekdays {
+  display: flex;
+  justify-content: center;
+  padding: 0 4px;
+  margin-bottom: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.homeUser-calendar .react-calendar__month-view__weekdays__weekday {
+  flex: 1;
+  text-align: center;
+  font-weight: var(--font-weight-semibold);
+  color: var(--primary-color);
+  font-size: var(--font-size-12);
+}
+
+.homeUser-calendar .react-calendar__navigation__label {
+  color: var(--black-color);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-20);
+  flex-grow: 1;
+  text-align: center;
+  user-select: none;
+}
+
+

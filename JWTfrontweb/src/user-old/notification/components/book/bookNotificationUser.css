@@ -1,4 +1,4 @@
-.uploadNotificationUser-cards-card {  
+.bookNotificationUser-cards-card {  
 	/* background-color: mediumseagreen;  */
 	
 	display: flex;
@@ -12,30 +12,30 @@
 	box-shadow: 0px 0px 20px rgba(0, 136, 154, 0.10); 
 }
 
-	.uploadNotificationUser-cards-card-indicator {  
+	.bookNotificationUser-cards-card-indicator {  
 		/* background-color: seagreen;  */
 		height: 100%;
 		width: 1.4%;
 		/* !!! CHANGE ALL FROM 1.8% TO 1.4% */
-		background-color: var(--yellow-indicator-opacity-60);
+		background-color: var(--green-indicator-opacity-60);
 		border-top-left-radius: 12px;
 		border-bottom-left-radius: 12px;
 		/* !!! CHANGE ALL FROM 20PX TO 12PX */
 	}
 
-	.uploadNotificationUser-cards-card-info {  
+	.bookNotificationUser-cards-card-info {  
 		/* background-color: palegreen;  */
 		display: flex;
 		flex-direction: row;
 		justify-content: start;
 		align-items: center;
 		height: 100%;
-		width: 64.6%; 
+		width: 90.6%; 
 		padding-left: 1vw;
 		column-gap: 1vw;
 	}
 
-		.uploadNotificationUser-cards-card-info-details {  
+		.bookNotificationUser-cards-card-info-details {  
 			/* background-color: darkolivegreen;  */
 			display: flex;
 			flex-direction: column;
@@ -45,7 +45,7 @@
 			row-gap: 1.4vh;
 		}
 
-			.uploadNotificationUser-cards-card-info-details-main {  
+			.bookNotificationUser-cards-card-info-details-main {  
 				/* background-color: olive;  */
 				display: flex;
 				flex-direction: row;
@@ -55,28 +55,28 @@
 				
 			}
 
-				.uploadNotificationUser-cards-card-info-details-main-name {  
+				.bookNotificationUser-cards-card-info-details-main-name {  
 					/* background-color: yellowgreen;  */
 					font-weight: var(--font-weight-medium);
 					font-size: var(--font-size-16);
 					color: var(--black-color-opacity-60);
 				}
 
-				.uploadNotificationUser-cards-card-info-details-main-time {  
+				.bookNotificationUser-cards-card-info-details-main-time {  
 					/* background-color: greenyellow;  */
 					font-weight: var(--font-weight-light);
 					font-size: var(--font-size-8);
 					color: var(--black-color-opacity-60);
 				}
 
-				.uploadNotificationUser-cards-card-info-details-main-role {  
+				.bookNotificationUser-cards-card-info-details-main-role {  
 					/* background-color: lawngreen;  */
 					font-weight: var(--font-weight-light);
 					font-size: var(--font-size-8);
 					color: var(--black-color-opacity-60);
 				}
 
-			.uploadNotificationUser-cards-card-info-details-sub {  
+			.bookNotificationUser-cards-card-info-details-sub {  
 				/* background-color: chartreuse;  */
 				display: flex;
 				flex-direction: row;
@@ -85,35 +85,33 @@
 				column-gap: 1vh;
 			}
 
-				.uploadNotificationUser-cards-card-info-details-sub-detail {  
+				.bookNotificationUser-cards-card-info-details-sub-detail {  
 					/* background-color: lightgreen;  */
 					font-weight: var(--font-weight-light);
 					font-size: var(--font-size-16);
 					color: var(--black-color);
 				}
 
-				.uploadNotificationUser-cards-card-info-details-sub-name {  
+				.bookNotificationUser-cards-card-info-details-sub-name {  
 					/* background-color: mediumaquamarine; */
 					font-weight: var(--font-weight-medium);
 					font-size: var(--font-size-16);
 					color: var(--black-color); 
 				}
 
-			.uploadNotificationUser-cards-card-info-details-box {  
+			.bookNotificationUser-cards-card-info-details-box {  
 				/* background-color: darkred;  */
 				display: flex;
 				flex-direction: row;
 				column-gap: 1vh;
-				width: 100%;
 			}
 
-				.uploadNotificationUser-cards-card-info-details-box-date {  
+				.bookNotificationUser-cards-card-info-details-box-date {  
 					/* background-color: crimson;  */
 					display: flex;
 					flex-direction: row;
-					justify-content: start;
+					justify-content: center;
 					align-items: center;
-					width: 60%;
 					column-gap: 1vh;
 					padding: 1vh;
 					background-color: var(--secondary-color-opacity-60);
@@ -121,28 +119,28 @@
 					border: 2px solid var(--primary-color-opacity-15);
 				}
 
-					.uploadNotificationUser-cards-card-info-details-box-date-day {  
+					.bookNotificationUser-cards-card-info-details-box-date-day {  
 						/* background-color: firebrick;  */
 						display: flex;
 						flex-direction: column;
 					}
 
-						.uploadNotificationUser-cards-card-info-details-box-date-day-day {  
+						.bookNotificationUser-cards-card-info-details-box-date-day-day {  
 							/* background-color: indianred;  */
 							font-weight: var(--font-weight-light);
 							font-size: var(--font-size-8);
 							color: var(--black-color-opacity-60);
 						}
 
-						.uploadNotificationUser-cards-card-info-details-box-date-day-date {  
+						.bookNotificationUser-cards-card-info-details-box-date-day-date {  
 							/* background-color: lightcoral;  */
 							font-weight: var(--font-weight-medium);
 							font-size: var(--font-size-12);
 							color: var(--black-color);
 						}
 
-				/* .uploadNotificationUser-cards-card-info-details-box-start {  
-
+				.bookNotificationUser-cards-card-info-details-box-start {  
+					/* background-color: sienna; */
 					display: flex;
 					flex-direction: row;
 					justify-content: center;
@@ -154,25 +152,28 @@
 					border: 2px solid var(--primary-color-opacity-15);
 				}
 
-					.uploadNotificationUser-cards-card-info-details-box-start-time {  
-						
+					.bookNotificationUser-cards-card-info-details-box-start-time {  
+						/* background-color: peru;  */
 						display: flex;
 						flex-direction: column;
 					}
 
-						.uploadNotificationUser-cards-card-info-details-box-start-time-text {  
+						.bookNotificationUser-cards-card-info-details-box-start-time-text {  
+							/* background-color: sandybrown;  */
 							font-weight: var(--font-weight-light);
 							font-size: var(--font-size-8);
 							color: var(--black-color-opacity-60);
 						}
 
-						.uploadNotificationUser-cards-card-info-details-box-start-time-date {  
+						.bookNotificationUser-cards-card-info-details-box-start-time-date {  
+							/* background-color: burlywood;  */
 							font-weight: var(--font-weight-medium);
 							font-size: var(--font-size-12);
 							color: var(--black-color);
 						}
 
-				.uploadNotificationUser-cards-card-info-details-box-end {  
+				.bookNotificationUser-cards-card-info-details-box-end {  
+					/* background-color: chocolate;  */
 					display: flex;
 					flex-direction: row;
 					justify-content: center;
@@ -184,35 +185,38 @@
 					border: 2px solid var(--primary-color-opacity-15);
 				}
 
-					.uploadNotificationUser-cards-card-info-details-box-end-time {  
+					.bookNotificationUser-cards-card-info-details-box-end-time {  
+						/* background-color: tan;  */
 						display: flex;
 						flex-direction: column;
 					}
 
-						.uploadNotificationUser-cards-card-info-details-box-end-time-text {  
+						.bookNotificationUser-cards-card-info-details-box-end-time-text {  
+							/* background-color: moccasin;  */
 							font-weight: var(--font-weight-light);
 							font-size: var(--font-size-8);
 							color: var(--black-color-opacity-60);
 						}
 
-						.uploadNotificationUser-cards-card-info-details-box-end-time-date {  
+						.bookNotificationUser-cards-card-info-details-box-end-time-date {  
+							/* background-color: wheat;  */
 							font-weight: var(--font-weight-medium);
 							font-size: var(--font-size-12);
 							color: var(--black-color);
-						} */
+						}
 
 
 
-/* 
-      .uploadNotificationUser-cards-card-role {  
+
+      /* .bookNotificationUser-cards-card-role {  
 				display: flex;
         justify-content: start;
         align-items: center;
 				height: 100%;
-				width: 26%;  
+				width: 26%;  26 is given to profile
       }
 
-        .uploadNotificationUser-cards-card-role-title {  
+        .bookNotificationUser-cards-card-role-title {  
           background-color: var(--white-color);
           display: flex;
           flex-direction: row;
@@ -225,13 +229,14 @@
           border: 2px solid var(--primary-color-opacity-15);
         }
 
-          .uploadNotificationUser-cards-card-role-title p {  
+          .bookNotificationUser-cards-card-role-title p {  
             font-weight: var(--font-weight-medium);
             font-size: var(--font-size-16);
             color: var(--black-color); 
-          }
+          } */
 
-      .uploadNotificationUser-cards-card-button {  
+      .bookNotificationUser-cards-card-button {  
+        /* background-color: goldenrod; */
 				display: flex;
 				justify-content: center;
 				align-items: center;
@@ -239,7 +244,8 @@
 				width: 8%; 
       }
 
-      .uploadNotificationUser-cards-card-button button {
+      .bookNotificationUser-cards-card-button button {
+        /* background-color: lightpink; */
         all: unset;
         display: flex;
         justify-content: center;
@@ -249,6 +255,4 @@
         min-width: 60px;
         border-radius: 500px;
       } 
-
-	  
-			 */
+			

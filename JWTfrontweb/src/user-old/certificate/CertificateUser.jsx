@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './CertificateUser.css';
-import './certificateUserMQ.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import CertificateUserCard from './certificateCard/CertificateUserCard';

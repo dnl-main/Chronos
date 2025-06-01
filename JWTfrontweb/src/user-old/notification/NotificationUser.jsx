@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './notificationUser.css';
-import './notificationUserMQ.css';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Bell from '../../assets/icons/Bell.svg?react';
 import UploadNotificationUser from './components/upload/UploadNotificationUser';

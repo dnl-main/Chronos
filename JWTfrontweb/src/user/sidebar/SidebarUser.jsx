@@ -1,80 +1,113 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './sidebarUser.css';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import concorde_logo from '../../assets/logo/concorde_logo.webp';
 import House_01 from '../../assets/icons/House_01.svg?react';
 import Notebook from '../../assets/icons/Notebook.svg?react';
 import axios from 'axios';
-import { useEffect } from 'react';
 
 const SidebarUser = () => {
-  const navigate = useNavigate()
+  const [isOpen, setIsOpen] = useState(false);
+  const sidebarRef = useRef(null);
+
+  const toggleSidebar = () => setIsOpen(prev => !prev);
+
+  const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
+
   const handleLogout = async () => {
     try {
       const token = sessionStorage.getItem('token');
-      // console.log(import.meta.env.VITE_API_BASE_URL);
 
       if (!token) {
-        // console.warn('No token found, logging out anyway.');
         navigate('/');
         return;
       }
 
       await axios.post(`${apiUrl}/logout`, {}, {
         headers: {
-          Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true'
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
         },
       });
 
-      sessionStorage.removeItem('token'); // Clear token
-      sessionStorage.removeItem('user'); // Clear user data
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
       navigate('/');
     } catch (error) {
-      // console.error('Logout failed:', error);
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
       navigate('/');
     }
   };
-  return (
-    <div className="sidebarUser">
-      <div className="sidebarUser-logo">
-        <button onClick={handleLogout}>
-            <img src={concorde_logo} className="" alt="main icon" />
-        </button>
-      </div> {/* sidebarUser-logo */}
 
-      <div className="sidebarUser-buttons">
-        <button>
-          <Link to="/user/homeUser">
-     <House_01
-  style={{
-    color: "var(--primary-color)",
-    '--stroke-color': 'var(--primary-color)',
-    width: "32px",
-    height: "32px",
-    '--stroke-width': '4px'
-  }}
-/>
-          </Link>
-        </button>
-      
-        <button>
-          <Link to="/user/certificateUser">
-            <Notebook 
-              style={{ 
-                color: "var(--primary-color)", 
-                width: "32px", 
-                height: "32px", 
-                "--stroke-width": "4px"  
-              }} 
-            />
-          </Link>
-        </button>
-      </div> {/* sidebarUser-buttons */}
-    </div>
+  // === Auto-close sidebar on mouse leave (mobile only) ===
+  useEffect(() => {
+    const sidebar = sidebarRef.current;
+
+    const handleMouseLeave = () => {
+      if (window.innerWidth <= 768) {
+        setIsOpen(false);
+      }
+    };
+
+    if (sidebar) {
+      sidebar.addEventListener('mouseleave', handleMouseLeave);
+    }
+
+    return () => {
+      if (sidebar) {
+        sidebar.removeEventListener('mouseleave', handleMouseLeave);
+      }
+    };
+  }, []);
+
+  return (
+    <>
+      {/* Hamburger Toggle for Mobile */}
+      <button className="hamburger" onClick={toggleSidebar} aria-label="Toggle sidebar">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div ref={sidebarRef} className={`sidebarUser ${isOpen ? 'open' : ''}`}>
+        <div className="sidebarUser-logo">
+          <button onClick={handleLogout}>
+            <img src={concorde_logo} alt="main icon" />
+          </button>
+        </div>
+
+        <div className="sidebarUser-buttons">
+          <button>
+            <Link to="/user/homeUser">
+              <House_01
+                style={{
+                  color: 'var(--primary-color)',
+                  '--stroke-color': 'var(--primary-color)',
+                  width: '32px',
+                  height: '32px',
+                  '--stroke-width': '4px',
+                }}
+              />
+            </Link>
+          </button>
+
+          <button>
+            <Link to="/user/certificateUser">
+              <Notebook
+                style={{
+                  color: 'var(--primary-color)',
+                  width: '32px',
+                  height: '32px',
+                  '--stroke-width': '4px',
+                }}
+              />
+            </Link>
+          </button>
+        </div>
+      </div>
+    </>
   );
 };
 

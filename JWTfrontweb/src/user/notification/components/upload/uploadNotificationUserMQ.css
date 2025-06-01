@@ -1,3 +1,4 @@
+@media (max-width: 768px) {	
 .uploadNotificationUser-cards-card {  
 	/* background-color: mediumseagreen;  */
 	
@@ -5,7 +6,7 @@
 	flex-direction: row;
 	align-items: center;
 	background-color: var(--white-color);
-	height: 20vh;
+	height: 12vh;
 	width: 100%;
 	border-radius: 12px;
 	/* !!! CHANGE ALL FROM 20PX TO 12PX */
@@ -15,7 +16,7 @@
 	.uploadNotificationUser-cards-card-indicator {  
 		/* background-color: seagreen;  */
 		height: 100%;
-		width: 1.4%;
+		width: 3%;
 		/* !!! CHANGE ALL FROM 1.8% TO 1.4% */
 		background-color: var(--yellow-indicator-opacity-60);
 		border-top-left-radius: 12px;
@@ -30,9 +31,9 @@
 		justify-content: start;
 		align-items: center;
 		height: 100%;
-		width: 64.6%; 
-		padding-left: 1vw;
-		column-gap: 1vw;
+		width: 97%; 
+		padding-left: 2vh;
+		column-gap: 2vh;
 	}
 
 		.uploadNotificationUser-cards-card-info-details {  
@@ -42,7 +43,7 @@
 			justify-content: center;
 			align-items: start;
 			height: 100%;
-			row-gap: 1.4vh;
+			row-gap: 0.8vh;
 		}
 
 			.uploadNotificationUser-cards-card-info-details-main {  
@@ -250,5 +251,5 @@
         border-radius: 500px;
       } 
 
-	  
-			 */
+*/	  
+}		 

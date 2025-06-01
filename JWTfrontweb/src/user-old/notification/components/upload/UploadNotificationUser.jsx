@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './uploadNotificationUser.css';
-import './uploadNotificationUserMQ.css';
 import Calendar_Week from '../../../../assets/icons/Calendar_Week.svg?react';
 import Circle_Primary from '../../../../assets/icons/Circle_Primary.svg?react';
 

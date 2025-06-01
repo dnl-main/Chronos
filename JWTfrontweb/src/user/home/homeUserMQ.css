@@ -1,4 +1,5 @@
-* {
+@media (max-width: 768px) {	
+ * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
@@ -14,7 +15,7 @@
 	height: 100%;
   width: 100%;
   padding-top: 72px;
-  padding-left: 72px;
+  padding-left: 0px;
 } 
 .homeUser-box-in { 
 	/* background-color: indianred; */
@@ -23,7 +24,7 @@
 	justify-content: center;
 	align-items: center;
   background-color: var(--secondary-color);
-  padding: 40px;
+  padding: 1rem;
   row-gap: 6vh;   
 } 
 .homeUser-top { 
@@ -31,7 +32,7 @@
 	display: flex;
 	flex-direction: column;
 	width: 100%;
-	height: 70vh;
+	height: 100%;
 	row-gap: 2vh;
 } 
   .homeUser-top-header { 
@@ -44,7 +45,7 @@
 			display: flex;
 			align-items: center;
 			font-weight: var(--font-weight-medium);
-      font-size: var(--font-size-24);
+      font-size: var(--font-size-20);
       color: var(--black-color);
 			column-gap: 2vh;
 		} 
@@ -52,13 +53,12 @@
 			display: flex;
 			align-items: center;
 			font-weight: var(--font-weight-medium);
-			font-size: var(--font-size-16);
+			font-size: var(--font-size-20);
 			color: var(--black-color);
 			column-gap: 2vh;
 		} 
 			.homeUser-top-header-right-status {
 				background-color: var(--white-color);
-				padding: 0.8vh;
 				border-radius: 500px;
 			}
 				.homeUser-top-header-right-status-in {
@@ -66,27 +66,23 @@
 					justify-content: center;
 					align-items: center;
 					column-gap: 1vh;
-					padding: 1vh 2vh;
 				}
 
 				.status-available {
 					background-color: var(--green-indicator); 
 					color: black;
-					padding: 4px 8px;
 					border-radius: 4px;
 				}
 				  
 				.status-onboard {
 					background-color: var(--yellow-indicator);
 					color: black;
-					padding: 4px 8px;
 					border-radius: 4px;
 				}
 				  
 				.status-vacation {
 					background-color: var(--red-indicator); 
 					color: black;
-					padding: 4px 8px;
 					border-radius: 4px;
 				}
 				  
@@ -97,27 +93,27 @@
 				justify-content: center;
 				align-items: center;
 				background-color: var(--white-color);
-				padding: 2.2vh;
 				border-radius: 500px;
 			}
   .homeUser-top-core { 
 		/* background-color: darkgreen;  */
 		display: flex;
+		flex-direction: column;
 		justify-content: center;
 		align-items: center;
 		height: 100%;
 		width: 100%;
-		column-gap: 2vh;
+		row-gap: 4vh;
 	} 
     .homeUser-top-core-left { 
 			/* background-color: forestgreen;  */
 			display: flex;
 			flex-direction: column;
 			height: 100%;
-			width: 50%;
+			width: 100%;
 			background-color: var(--white-color);
-			padding: 4vh;
-			row-gap: 4vh;
+			padding: 2.8vh;
+			row-gap: 2vh;
 			border-radius: 16px;
 			box-shadow: 0px 0px 20px rgba(0, 136, 154, 0.10); 
 		} 
@@ -133,32 +129,33 @@
       .homeUser-top-core-left-heading {
 				 /* background-color: palegreen;  */
 				font-weight: var(--font-weight-bold);
-        font-size: var(--font-size-20);
+        font-size: var(--font-size-16);
         color: var(--black-color);
 			} 
       .homeUser-top-core-left-date { 
 				/* background-color: lightgreen;  */
 				display: flex;
+				flex-direction: column;
 				justify-content: center;
 				align-items: center;
 				background-color: var(--white-color);
 				height: 100%;
-				padding: 5vh;
-				column-gap: 2vh;
+				padding: 2vh 3.2vh;
+				row-gap: 2vh;
 				border-radius: 12px;
 				border: 2px solid var(--primary-color-opacity-15);
 			} 
         .homeUser-top-core-left-date-cal { 
 					background-color: var(--secondary-color); 
-					padding: 2vh;
-					border-radius: 12px;
+					padding: 2vh 5.4vh;
+					border-radius: 0.4rem;
 					border: 2px solid var(--primary-color-opacity-15);
 					display: flex;
 					flex-direction: column;
 					justify-content: center;
 					align-items: center;
 					height: 100%;
-					width: 30%;
+					width: 40%;
 				} 
 					.homeUser-top-core-left-date-cal-regular {
 						font-weight: var(--font-weight-regular);
@@ -167,7 +164,7 @@
 					}
 					.homeUser-top-core-left-date-cal-semibold {
 						font-weight: var(--font-weight-semibold);
-						font-size: var(--font-size-28);
+						font-size: var(--font-size-24);
 						color: var(--primary-color); 
 					}
         .homeUser-top-core-left-date-data { 
@@ -175,19 +172,20 @@
 					display: flex;
 					flex-direction: column;
 					height: 100%;
-					width: 70%;
+					width: 100%;
 					row-gap: 2vh;
 				} 
           .homeUser-top-core-left-date-data-text { 
 						/* background-color: dodgerblue; */
 						display: flex; 
 						flex-direction: column;
-						row-gap: 1vh;
+						row-gap: 0.6vh;
 					} 
             .homeUser-top-core-left-date-data-text-regular {
 							 /* background-color: deepskyblue; */
+							text-align: center;
 							font-weight: var(--font-weight-regular);
-							font-size: var(--font-size-16);
+							font-size: var(--font-size-12);
 							color: var(--black-color); 
 						} 
             .homeUser-top-core-left-date-data-text-light { 
@@ -201,13 +199,16 @@
 						display: flex;
 						align-items: center;
 						column-gap: 2vh;
+						/* background-color: antiquewhite; */
+						width: 100%;
 					} 
             .homeUser-top-core-left-date-data-cards-start { 
 							/* background-color: red;  */
 							display: flex;
-							justify-content: center;
+							justify-content: start;
 							align-items: center;
 							background-color: var(--white-color);
+							width: 50%;
 							column-gap: 1vh;
 							padding: 0.8vh 1.8vh;
 							border-radius: 8px;
@@ -229,9 +230,10 @@
             .homeUser-top-core-left-date-data-cards-end { 
 							/* background-color: gold; */
 							display: flex;
-							justify-content: center;
+							justify-content: start;
 							align-items: center;
 							background-color: var(--white-color);
+							width: 50%;
 							column-gap: 1vh;
 							padding: 0.8vh 1.8vh;
 							border-radius: 8px;
@@ -262,8 +264,8 @@
 					display: flex;
 					justify-content: center;
 					align-items: center;
-					height: 1.8vh;
-					width: 15vw;
+					height: 1.6vh;
+					width: 100%;
 					padding: 2vh;
 					column-gap: 1.4vh;
 					border-radius: 500px;
@@ -281,23 +283,24 @@
 					align-items: center;
 					height: 1.8vh;
 					width: 100%;
-					padding: 2vh;
+					padding: 2vh 0vh;
 					column-gap: 1.4vh;
 					border-radius: 500px;
 					background-color: var(--red-indicator);
 					font-weight: var(--font-weight-semibold);
 					font-size: var(--font-size-16);
 					color: var(--white-color);
-				}
+				} 
+
 
     .homeUser-top-core-right { 
 			/* background-color: darkslateblue; */
 			display: flex;
 			flex-direction: column;
 			height: 100%;
-			width: 50%;
+			width: 100%;
 			background-color: var(--white-color);
-			padding: 4vh;
+			padding: 2.8vh;
 			row-gap: 4vh;
 			border-radius: 16px;
 			box-shadow: 0px 0px 20px rgba(0, 136, 154, 0.10); 
@@ -348,14 +351,14 @@
         .homeUser-top-core-right-progress-bar {
 					 /* background-color: darkkhaki; */
 					background-color: var(--primary-color-opacity-15);
-					height: 2.4vh;
+					height: 2vh;
 					width: 100%;
 					border-radius: 500px;
 				 } 
           .homeUser-top-core-right-progress-bar-primary {
 						 /* background-color: khaki;  */
 						background-color: var(--primary-color);
-						height: 2.4vh;
+						height: 2vh;
 						width: 75%;
 						border-radius: 500px;
 					} 
@@ -363,16 +366,17 @@
       .homeUser-top-core-right-form {
 				/* background-color: darkslateblue; */
 				display: flex;
+				flex-direction: column;
 				justify-content: center;
 				align-items: center;
 				flex-grow: 1;
-				column-gap: 4%;
+				row-gap: 4vh;
 			}
 				.homeUser-top-core-right-form-file {
 					/* background-color: slateblue; */
 					display: flex;
 					flex-direction: column;
-					width: 58%;
+					width: 100%;
 					height: 100%;
 					row-gap: 2vh;
 
@@ -406,8 +410,9 @@
 						justify-content: center;
 						align-items: center;
 						flex-grow: 1;
-						background-color: var(--secondary-color-opacity-30);
-						row-gap: 1vh;
+						/* background-color: var(--secondary-color-opacity-30); */
+						/* row-gap: 1vh; */
+						padding: 2.8vh;
 						border-radius: 8px;
 						background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='rgba(0%2C136%2C154%2C0.3)' stroke-width='4' stroke-dasharray='20' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
 
@@ -454,8 +459,9 @@
 					display: flex;
 					flex-direction: column;
 					align-items: center;
-					width: 38%;
+					width: 100%;
 					height: 100%;
+					row-gap: 4vh;
 				}
 					.homeUser-top-core-right-form-input-fields {
 						/* background-color: mediumseagreen; */
@@ -527,4 +533,5 @@
 
 .homeUser-top-core-right-form-file-upload-remove:hover {
   stroke: var(--black-color);
+}
 }

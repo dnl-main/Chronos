@@ -203,8 +203,9 @@
 
 
 
-/* 
+
       .uploadNotificationUser-cards-card-role {  
+        /* background-color: darkgoldenrod; */
 				display: flex;
         justify-content: start;
         align-items: center;
@@ -232,6 +233,7 @@
           }
 
       .uploadNotificationUser-cards-card-button {  
+        /* background-color: goldenrod; */
 				display: flex;
 				justify-content: center;
 				align-items: center;
@@ -240,6 +242,7 @@
       }
 
       .uploadNotificationUser-cards-card-button button {
+        /* background-color: lightpink; */
         all: unset;
         display: flex;
         justify-content: center;
@@ -251,4 +254,4 @@
       } 
 
 	  
-			 */
+			
