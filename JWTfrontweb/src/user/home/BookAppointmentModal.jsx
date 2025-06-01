@@ -27,6 +27,17 @@ for (let hour = 9; hour <= 18; hour++) {
   }
 }
 
+  const formatLocalDate = (inputDate) => {
+    const dateObj = new Date(inputDate);
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+
+
+
 const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
   const [department, setDepartment] = useState('');
   const [crewingDept, setCrewingDept] = useState('');
@@ -62,111 +73,153 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
     fetchUserId();
   }, []);
 
-  const formatLocalDate = (inputDate) => {
-    const dateObj = new Date(inputDate);
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+
+
+
+
+  const isFormValid = () => {
+  if (!userId || !department || !employeeName.trim() || !purpose || !date || !startTime || !endTime) return false;
+  if (department === 'Crewing' && (!crewingDept || !operator)) return false;
+  if (department === 'Accounting' && !accountingOption) return false;
+  if (purpose === 'Others' && !customPurpose.trim()) return false;
+  if (employeeName.trim().length < 3) return false;
+  if (purpose === 'Others' && customPurpose.trim().length < 3) return false;
+  // Additional validation like date/time comparisons can be added here if needed
+  return true;
+};
+
+const sanitizeInput = (input) => {
+  // Simple sanitization: remove <, >, &, ", ', and backticks
+  return input.replace(/[<>&"'`]/g, '');
+};
+
+
+
+const handleBook = async () => {
+  const trimmedEmployeeName = employeeName.trim();
+  const trimmedCustomPurpose = customPurpose.trim();
+
+  // Sanitize inputs
+  const safeEmployeeName = sanitizeInput(trimmedEmployeeName);
+  const safeCustomPurpose = sanitizeInput(trimmedCustomPurpose);
+
+  if (!userId) {
+    alert('User information not loaded. Please try again.');
+    return;
+  }
+
+  if (!department) {
+    alert('Please select a department.');
+    return;
+  }
+
+  if (department === 'Crewing') {
+    if (!crewingDept) {
+      alert('Please select a Crewing Department.');
+      return;
+    }
+    if (!operator) {
+      alert('Please select an Operator.');
+      return;
+    }
+  }
+
+  if (department === 'Accounting' && !accountingOption) {
+    alert('Please select an Accounting Task.');
+    return;
+  }
+
+  if (!safeEmployeeName) {
+    alert('Please enter the name of the employee.');
+    return;
+  }
+
+  if (safeEmployeeName.length < 3) {
+    alert('Employee name must be at least 3 characters.');
+    return;
+  }
+
+  if (!purpose) {
+    alert('Please select a purpose.');
+    return;
+  }
+
+  if (purpose === 'Others' && !safeCustomPurpose) {
+    alert('Please specify your purpose of visit.');
+    return;
+  }
+
+  if (purpose === 'Others' && safeCustomPurpose.length < 3) {
+    alert('Custom purpose must be at least 3 characters.');
+    return;
+  }
+
+  if (!date) {
+    alert('Please select a date.');
+    return;
+  }
+
+  const today = new Date();
+  const selectedDate = new Date(date);
+  today.setHours(0, 0, 0, 0);
+  selectedDate.setHours(0, 0, 0, 0);
+  if (selectedDate < today) {
+    alert('Please select a valid date (today or later).');
+    return;
+  }
+
+  if (!startTime || !endTime) {
+    alert('Please select both start and end time.');
+    return;
+  }
+
+  const startMinutes = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
+  const endMinutes = parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1]);
+
+  if (endMinutes <= startMinutes) {
+    alert('End time must be after start time.');
+    return;
+  }
+
+  const formattedDate = formatLocalDate(date);
+  const token = sessionStorage.getItem('token');
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+
+  const payload = {
+    user_id: userId,
+    department: department.toLowerCase(),
+    crewing_dept: department === 'Crewing' ? crewingDept.toLowerCase() : undefined,
+    operator: department === 'Crewing' ? operator.toLowerCase() : undefined,
+    accounting_task: department === 'Accounting' ? accountingOption.toLowerCase() : undefined,
+    employee_name: safeEmployeeName,
+    purpose: purpose === 'Others' ? safeCustomPurpose : purpose.toLowerCase(),
+    date: formattedDate,
+    start_time: startTime,
+    end_time: endTime,
   };
 
-  const handleBook = async () => {
-    if (!userId) {
-      alert('User information not loaded. Please try again.');
-      return;
-    }
+  try {
+    const response = await axios.post(`${apiUrl}/appointment`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true',
+      },
+    });
 
-    if (!department || !employeeName || !purpose || !date || !startTime || !endTime) {
-      alert('Please complete all required fields before booking.');
-      return;
-    }
+    alert('Appointment booked successfully!');
+    if (typeof onAppointmentBooked === 'function') onAppointmentBooked(response.data.appointment);
+    if (typeof onClose === 'function') onClose();
+  } catch (error) {
+    const errorMessage = error.response?.data?.message ||
+                         error.response?.data?.errors?.department?.[0] ||
+                         error.response?.data?.errors?.purpose?.[0] ||
+                         'Failed to book appointment. Please check your inputs and try again.';
+    alert(errorMessage);
+  }
+};
 
-    if (department === 'Crewing' && (!crewingDept || !operator)) {
-      alert('Please select a crewing department and operator.');
-      return;
-    }
 
-    if (department === 'Accounting' && !accountingOption) {
-      alert('Please select an accounting task.');
-      return;
-    }
 
-    if (purpose === 'Others' && !customPurpose) {
-      alert('Please specify the purpose of visit.');
-      return;
-    }
-
-    const today = new Date();
-    const selectedDate = new Date(date);
-    today.setHours(0, 0, 0, 0);
-    selectedDate.setHours(0, 0, 0, 0);
-
-    if (selectedDate < today) {
-      alert('Please select a current or future date.');
-      return;
-    }
-
-    const startMinutes = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
-    const endMinutes = parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1]);
-    if (endMinutes <= startMinutes) {
-      alert('End time must be after start time.');
-      return;
-    }
-
-    const formattedDate = formatLocalDate(date);
-    const token = sessionStorage.getItem('token');
-    const apiUrl = import.meta.env.VITE_API_BASE_URL;
-
-    const payload = {
-      user_id: userId,
-      department: department.toLowerCase(),
-      crewing_dept: department === 'Crewing' ? crewingDept.toLowerCase() : undefined,
-      operator: department === 'Crewing' ? operator.toLowerCase() : undefined,
-      accounting_task: department === 'Accounting' ? accountingOption.toLowerCase() : undefined,
-      employee_name: employeeName,
-      purpose: purpose === 'Others' ? customPurpose : purpose.toLowerCase(),
-      date: formattedDate,
-      start_time: startTime,
-      end_time: endTime,
-    };
-
-    try {
-      const response = await axios.post(`${apiUrl}/appointment`, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true',
-        },
-      });
-
-      const appointment = response.data.appointment;
-
-      alert('Appointment booked successfully!');
-
-      if (typeof onAppointmentBooked === 'function') {
-        onAppointmentBooked({
-          date: appointment.date,
-          start_time: appointment.start_time,
-          end_time: appointment.end_time,
-          department: appointment.department,
-          crewing_dept: appointment.crewing_dept,
-          operator: appointment.operator,
-          accounting_task: appointment.accounting_task,
-          employee: appointment.employee,
-          purpose: appointment.purpose,
-        });
-      }
-
-      if (typeof onClose === 'function') {
-        onClose();
-      }
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || 
-                          error.response?.data?.errors?.department?.[0] || 
-                          error.response?.data?.errors?.purpose?.[0] || 
-                          'Failed to book appointment. Please check your inputs and try again.';
-      alert(errorMessage);
-    }
-  };
 
   return (
     <div className="bookModalUser">
@@ -276,36 +329,43 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
                     type="text"
                     id="employeeName"
                     value={employeeName}
-                    onChange={(e) => setEmployeeName(e.target.value)}
+                    maxLength={50}
+                    onChange={(e) => {
+                      // Remove numbers and trimStart spaces
+                      const filteredValue = e.target.value.replace(/[0-9]/g, '').trimStart();
+                      setEmployeeName(filteredValue);
+                    }}
                   />
+
                 </article>
 
-                <article className="bookModalUser-box-in-core-data-dept-purpose">
-                  <label htmlFor="purpose">Purpose of visit</label>
-                  <select
-                    id="purpose"
-                    value={purpose}
-                    onChange={(e) => setPurpose(e.target.value)}
-                  >
-                    <option value="">Select...</option>
-                    {purposeOptions.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </select>
-                </article>
-
-                {purpose === 'Others' && (
-                  <article className="bookModalUser-box-in-core-data-dept-custom-purpose">
-                    <label htmlFor="customPurpose">Specify Purpose</label>
-                    <input
-                      type="text"
-                      id="customPurpose"
-                      value={customPurpose}
-                      onChange={(e) => setCustomPurpose(e.target.value)}
-                      placeholder="Enter custom purpose"
-                    />
+                <div className="bookModalUser-box-in-core-data-dept-purpose">
+                  <article className="bookModalUser-box-in-core-data-dept-purpose-field">
+                    <label htmlFor="purpose">Purpose of visit</label>
+                    <select
+                      id="purpose"
+                      value={purpose}
+                      onChange={(e) => setPurpose(e.target.value)}
+                    >
+                      <option value="">Select...</option>
+                      {purposeOptions.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
                   </article>
-                )}
+
+                  {purpose === 'Others' && (
+                    <article className="bookModalUser-box-in-core-data-dept-purpose-others">
+                      <label htmlFor="customPurpose">Specify Purpose</label>
+                      <input
+                        type="text"
+                        id="customPurpose"
+                        value={customPurpose}
+                        onChange={(e) => setCustomPurpose(e.target.value.trimStart())}
+                      />
+                    </article>
+                  )}
+                </div>
               </section>
 
               <section className="bookModalUser-box-in-core-data-day">
@@ -322,32 +382,41 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
 
                 <main className="bookModalUser-box-in-core-data-day-time">
                   <article className="bookModalUser-box-in-core-data-day-time-start">
-                    <label htmlFor="startTime">Start time</label>
-                    <select
-                      id="startTime"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                    >
-                      <option value="">Select...</option>
-                      {times.map((time, idx) => (
-                        <option key={idx} value={time}>{time}</option>
-                      ))}
-                    </select>
-                  </article>
+  <label htmlFor="startTime">Start time</label>
+  <select
+    id="startTime"
+    value={startTime}
+    onChange={(e) => {
+      setStartTime(e.target.value);
+      setEndTime(''); // Reset end time when start time changes
+    }}
+  >
+    <option value="">Select...</option>
+    {times.map((time, idx) => (
+      <option key={idx} value={time}>{time}</option>
+    ))}
+  </select>
+</article>
 
-                  <article className="bookModalUser-box-in-core-data-day-time-end">
-                    <label htmlFor="endTime">End time</label>
-                    <select
-                      id="endTime"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                    >
-                      <option value="">Select...</option>
-                      {times.map((time, idx) => (
-                        <option key={idx} value={time}>{time}</option>
-                      ))}
-                    </select>
-                  </article>
+<article className="bookModalUser-box-in-core-data-day-time-end">
+  <label htmlFor="endTime">End time</label>
+  <select
+    id="endTime"
+    value={endTime}
+    onChange={(e) => setEndTime(e.target.value)}
+  >
+    <option value="">Select...</option>
+    {startTime 
+      ? times.slice(times.findIndex(t => t === startTime) + 1).map((time, idx) => (
+          <option key={idx} value={time}>{time}</option>
+        ))
+      : times.map((time, idx) => (
+          <option key={idx} value={time}>{time}</option>
+        ))
+    }
+  </select>
+</article>
+
                 </main>
               </section>
 
@@ -355,6 +424,8 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
                 <button
                   className="bookModalUser-box-in-core-data-buttons-book"
                   onClick={handleBook}
+                  disabled={!isFormValid()}
+
                 >
                   <Calendar_Check
                     style={{

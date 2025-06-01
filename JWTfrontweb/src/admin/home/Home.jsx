@@ -8,6 +8,7 @@ import Sidebar from '../sidebar/Sidebar';
 import ScheduleCard from '../schedule/scheduleComponents/ScheduleCard';
 import Spinner from '../../components/Spinner';
 import Appointment from '../appointment/bookAppointment/Appointment';
+import ManageAppointment from '../appointment/ManageAppointment'; // Import ManageAppointment
 import HomeCertAdmin from './HomeCertAdmin';
 
 import Calendar_Event from '../../assets/icons/Calendar_Event.svg?react';
@@ -23,14 +24,16 @@ import Calendar_Check from '../../assets/icons/Calendar_Check.svg?react';
 
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // New state for edit modal
+  const [selectedAppointmentData, setSelectedAppointmentData] = useState(null); // State for edit appointment data
   const [overlayContent, setOverlayContent] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [todayCount, setTodayCount] = useState(0);
   const [upcomingCount, setUpcomingCount] = useState(0);
   const [todayAppointments, setTodayAppointments] = useState([]);
-  const [upcomingAppointments, setUpcomingAppointments] = useState([]); // New state for upcoming appointments
-  const [crewCount, setCrewCount] = useState({ total: 0, complete: 0 });
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [availableCrewCount, setAvailableCrewCount] = useState(0);
   const [totalCrewCount, setTotalCrewCount] = useState(0);
   const [error, setError] = useState(null);
   const [allUsers, setAllUsers] = useState([]);
@@ -138,7 +141,6 @@ const Home = () => {
       const appointments = Array.isArray(appointmentsResponse.data) ? appointmentsResponse.data : [];
       setTodayAppointments(appointments.filter((app) => app.computed_status === 'today'));
 
-      // Fetch upcoming appointments
       const upcomingAppointmentsResponse = await axios.get(`${apiUrl}/appointment/upcoming`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -168,6 +170,10 @@ const Home = () => {
       });
       setAllUsers(response.data);
       calculateJobTitleCounts(response.data);
+      const availableCount = response.data.filter(
+        (user) => user.availability && user.availability.toLowerCase() === 'available'
+      ).length;
+      setAvailableCrewCount(availableCount);
       const userCount = response.data.filter((user) => user.region != null && user.region !== '').length;
       setTotalCrewCount(userCount);
     } catch (error) {
@@ -193,7 +199,6 @@ const Home = () => {
     navigate('/admin/schedule?tab=upcoming');
   };
 
-  // Find the nearest upcoming appointment
   const getNearestAppointment = () => {
     if (upcomingAppointments.length === 0) return null;
     const today = new Date();
@@ -205,6 +210,23 @@ const Home = () => {
       }
       return nearest;
     }, null);
+  };
+
+  // Handle edit click from ScheduleCard
+  const handleEditClick = ({ appointment, user, bookedAppointments }) => {
+    setSelectedAppointmentData({ appointment, user, bookedAppointments });
+    setIsEditModalOpen(true);
+  };
+
+  // Handle closing the edit modal and refreshing appointments
+  const handleEditModalClose = () => {
+    setIsEditModalOpen(false);
+    setSelectedAppointmentData(null);
+    // Refresh appointments after closing
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      fetchDashboardData(token);
+    }
   };
 
   useEffect(() => {
@@ -264,7 +286,7 @@ const Home = () => {
                   </div>
                   <div className="home-top-main-left-up-data">
                     <div className="home-top-main-left-up-data-all">
-                      <p>{crewCount.total}</p>
+                      <p>{availableCrewCount}</p>
                     </div>
                     <div className="home-top-main-left-up-data-complete"></div>
                   </div>
@@ -416,6 +438,7 @@ const Home = () => {
                     appointment={app}
                     user={app.user}
                     allAppointments={todayAppointments}
+                    onEditClick={handleEditClick} // Pass the edit handler
                   />
                 ))
               ) : (
@@ -425,6 +448,15 @@ const Home = () => {
           </div>
         </main>
       </div>
+
+      {isEditModalOpen && selectedAppointmentData && (
+        <ManageAppointment
+          appointment={selectedAppointmentData.appointment}
+          user={selectedAppointmentData.user}
+          bookedAppointments={selectedAppointmentData.bookedAppointments}
+          onClose={handleEditModalClose}
+        />
+      )}
     </div>
   );
 };

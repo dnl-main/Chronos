@@ -5,6 +5,7 @@ import './signup.css';
 import concorde from '../../assets/logo/concorde.png';
 import signup_auth from '../../assets/overlay/signup_auth.png';
 
+
 const Signup = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const [password, setPassword] = useState('');
@@ -24,39 +25,72 @@ const Signup = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
 
-  // Validate password and confirm password
-  const validatePassword = (password, confirmPassword) => {
-    let errors = {};
 
-    if (password.length < 8) {
-      errors.password = 'Password must be at least 8 characters long.';
-    }
-    if (!/[A-Z]/.test(password)) {
-      errors.password = errors.password
-        ? `${errors.password} Must contain at least one uppercase letter.`
-        : 'Password must contain at least one uppercase letter.';
-    }
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      errors.password = errors.password
-        ? `${errors.password} Must contain at least one special character.`
-        : 'Password must contain at least one special character.';
-    }
-    if (confirmPassword !== password) {
-      errors.confirmPassword = 'Passwords do not match.';
+
+
+
+
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  let sanitizedValue = value;
+
+  // Sanitize name fields: only allow letters, spaces, and hyphens
+  if (['first_name', 'middle_name', 'last_name'].includes(name)) {
+    sanitizedValue = value.replace(/[^a-zA-Z\s\-]/g, '');
+  }
+
+  // Sanitize mobile number: allow only digits
+  if (name === 'mobile') {
+    sanitizedValue = value.replace(/\D/g, '');
+  }
+
+  // Lowercase email input for consistency
+  if (name === 'email') {
+    sanitizedValue = value.toLowerCase();
+  }
+
+  if (name === 'password') {
+    setPassword(sanitizedValue);
+  } else if (name === 'confirmPassword') {
+    setConfirmPassword(sanitizedValue);
+  } else {
+    setFormData({ ...formData, [name]: sanitizedValue });
+  }
+};
+
+
+  const validateForm = () => {
+  const newErrors = {};
+
+  // Name validations
+  if (!formData.first_name.trim()) {
+    newErrors.first_name = ['First name is required.'];
+  }
+  if (!formData.last_name.trim()) {
+    newErrors.last_name = ['Last name is required.'];
+  }
+
+  // Email validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim()) {
+      newErrors.email = ['Email is required.'];
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = ['Enter a valid email address.'];
     }
 
-    return errors;
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'password') {
-      setPassword(value);
-    } else if (name === 'confirmPassword') {
-      setConfirmPassword(value);
-    } else {
-      setFormData({ ...formData, [name]: value });
+    // Mobile validation
+    if (!formData.mobile.trim()) {
+      newErrors.mobile = ['Mobile number is required.'];
+    } else if (!/^\d{10,15}$/.test(formData.mobile)) {
+      newErrors.mobile = ['Enter a valid mobile number (10-15 digits).'];
     }
+
+    // Merge with password validation
+    const passwordErrors = validatePassword(password, confirmPassword);
+    if (passwordErrors.password) newErrors.password = passwordErrors.password;
+    if (passwordErrors.confirmPassword) newErrors.confirmPassword = passwordErrors.confirmPassword;
+
+    return newErrors;
   };
 
   const handleSubmit = async (e) => {
@@ -64,8 +98,7 @@ const Signup = () => {
     setLoading(true);
     setErrors({});
 
-    // Validate passwords
-    const validationErrors = validatePassword(password, confirmPassword);
+    const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       setLoading(false);
@@ -75,7 +108,7 @@ const Signup = () => {
     const role = formData.email.endsWith('@friendmar.com.ph') ? 'admin' : 'user';
     const dataToSend = {
       ...formData,
-      password, // Use password from state
+      password,
       middle_name: formData.middle_name.trim() === '' ? null : formData.middle_name.trim(),
       role,
     };
@@ -83,35 +116,82 @@ const Signup = () => {
     try {
       const response = await axios.post(`${apiUrl}/signup`, dataToSend);
       alert('Signup Successful!');
-      // console.log('Response:', response.data);
-
       setFormData({ first_name: '', middle_name: '', last_name: '', email: '', mobile: '', password: '' });
       setPassword('');
       setConfirmPassword('');
-
-      // Redirect based on role (admin vs user)
-      if (role === 'admin') {
-        navigate('/login');
-      } else {
-        navigate('/login');
-      }
+      navigate('/login');
     } catch (error) {
-      if (error.response) {
-        // console.log('Error:', error.response.data);
-        if (error.response.status === 422) {
-          setErrors(error.response.data.errors);
-        } else {
-          alert(error.response.data.message || 'Something went wrong!');
-        }
+      if (error.response && error.response.status === 422) {
+        setErrors(error.response.data.errors);
       } else {
-        alert('Server error. Please try again later.');
+        alert(error.response?.data?.message || 'Something went wrong!');
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLoginClick = () => {
+const validatePassword = (password, confirmPassword, email = '') => {
+  const errors = {};
+
+  const rules = [
+    {
+      test: password.length >= 8,
+      message: 'Password must be at least 8 characters long.'
+    },
+    {
+      test: /[A-Z]/.test(password),
+      message: 'Must contain at least one uppercase letter.'
+    },
+    {
+      test: /[a-z]/.test(password),
+      message: 'Must contain at least one lowercase letter.'
+    },
+    {
+      test: /[0-9]/.test(password),
+      message: 'Must contain at least one number.'
+    },
+    {
+      test: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+      message: 'Must contain at least one special character.'
+    },
+    {
+      test: !/\s/.test(password),
+      message: 'Must not contain spaces.'
+    },
+    {
+      test: !email || password.toLowerCase() !== email.toLowerCase(),
+      message: 'Password should not be the same as your email.'
+    }
+  ];
+
+  // Combine failed messages
+  const failedMessages = rules.filter(rule => !rule.test).map(rule => rule.message);
+  if (failedMessages.length > 0) {
+    errors.password = failedMessages.join(' ');
+  }
+
+  if (confirmPassword !== password) {
+    errors.confirmPassword = 'Passwords do not match.';
+  }
+
+  return errors;
+};
+
+
+const handleTogglePassword = () => {
+  setShowPassword(prev => !prev);
+};
+
+const handleToggleConfirmPassword = () => {
+  setShowConfirmPassword(prev => !prev);
+};
+
+
+  
+
+
+const handleLoginClick = () => {
     navigate('/login');
   };
 
@@ -217,25 +297,11 @@ const Signup = () => {
                 onChange={handleChange}
                 placeholder="Enter your password"
                 required
-                style={{
-                  width: '100%',
-                  paddingRight: '40px',
-                }}
+                style={{ width: '100%', paddingRight: '40px' }}
               />
               <div
-                onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: 'absolute',
-                  right: '15px',
-                  top: '55px',
-                  transform: 'translateY(-50%)',
-                  cursor: 'pointer',
-                  height: '20px',
-                  width: '20px',
-                  borderRadius: '50%',
-                  backgroundColor: showPassword ? '#00889a' : '#ccc',
-                  zIndex: 1,
-                }}
+                className={`password-toggle ${showPassword ? 'visible' : 'hidden'}`}
+                onClick={handleTogglePassword}
                 title={showPassword ? 'Hide password' : 'Show password'}
               />
               {errors.password && <p className="error-message">{errors.password}</p>}
@@ -250,29 +316,16 @@ const Signup = () => {
                 onChange={handleChange}
                 placeholder="Confirm your password"
                 required
-                style={{
-                  width: '100%',
-                  paddingRight: '40px',
-                }}
+                style={{ width: '100%', paddingRight: '40px' }}
               />
               <div
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                style={{
-                  position: 'absolute',
-                  right: '15px',
-                  top: '55px',
-                  transform: 'translateY(-50%)',
-                  cursor: 'pointer',
-                  height: '20px',
-                  width: '20px',
-                  borderRadius: '50%',
-                  backgroundColor: showConfirmPassword ? '#00889a' : '#ccc',
-                  zIndex: 1,
-                }}
+                className={`password-toggle ${showConfirmPassword ? 'visible' : 'hidden'}`}
+                onClick={handleToggleConfirmPassword}
                 title={showConfirmPassword ? 'Hide password' : 'Show password'}
               />
               {errors.confirmPassword && <p className="error-message">{errors.confirmPassword}</p>}
             </div>
+
 
             {/*TNC*/}
             <div className="signup-right-terms">

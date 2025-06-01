@@ -53,6 +53,35 @@ const AccountUser = () => {
   const [originalAddressDetails, setOriginalAddressDetails] = useState(null);
   const isAddressModified = JSON.stringify(addressDetails) !== JSON.stringify(originalAddressDetails);
 
+  // Position options
+  const positionOptions = [
+    { value: '', label: 'Select your position' },
+    { value: 'Able Seaman', label: 'Able Seaman' },
+    { value: 'Bosun', label: 'Bosun' },
+    { value: 'Chief Cook', label: 'Chief Cook' },
+    { value: 'Chief Engineer', label: 'Chief Engineer' },
+    { value: 'Chief Mate', label: 'Chief Mate' },
+    { value: 'Cook', label: 'Cook' },
+    { value: 'Deck Cadet', label: 'Deck Cadet' },
+    { value: 'Electrician', label: 'Electrician' },
+    { value: 'Engine Cadet', label: 'Engine Cadet' },
+    { value: 'Fitter', label: 'Fitter' },
+    { value: 'Galley Boy', label: 'Galley Boy' },
+    { value: 'Jr 3rd Mate', label: 'Jr 3rd Mate' },
+    { value: 'Jr 4th Engineer', label: 'Jr 4th Engineer' },
+    { value: 'Messman', label: 'Messman' },
+    { value: 'Ordinary Seaman', label: 'Ordinary Seaman' },
+    { value: 'Pumpman', label: 'Pumpman' },
+    { value: '2nd Engineer', label: '2nd Engineer' },
+    { value: '2nd Mate', label: '2nd Mate' },
+    { value: '3rd Engineer', label: '3rd Engineer' },
+    { value: '3rd Mate', label: '3rd Mate' },
+    { value: 'Trainee 4th Engineer', label: 'Trainee 4th Engineer' },
+    { value: 'Trainee Gas Engineer', label: 'Trainee Gas Engineer' },
+    { value: 'Trainee', label: 'Trainee' },
+    { value: 'Electrician Trainee', label: 'Electrician Trainee' },
+  ];
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -93,7 +122,7 @@ const AccountUser = () => {
 
         // Fetch profile picture from profile_pictures table
         const profilePictureResponse = await axios.get(`${apiUrl}/user/profile-picture`, {
-          headers: { Authorization: `Bearer ${token}` , 'ngrok-skip-browser-warning': 'true'},
+          headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
         });
 
         setUser({
@@ -105,7 +134,6 @@ const AccountUser = () => {
         setAddressDetails(address);
         setOriginalAddressDetails(address);
       } catch (error) {
-        // console.log('Fetch User Error:', error.response?.data, error.message);
         alert('Failed to fetch user: ' + error.message);
         setError('Failed to load user data. Please try again.');
       } finally {
@@ -146,7 +174,9 @@ const AccountUser = () => {
         navigate('/login');
         return;
       }
-      await axios.post(`${apiUrl}/logout`, {}, { headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' } });
+      await axios.post(`${apiUrl}/logout`, {}, { 
+        headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' } 
+      });
     } catch (error) {
       alert('Logout failed: ' + error.message);
     } finally {
@@ -184,7 +214,6 @@ const AccountUser = () => {
         ? Object.values(error.response.data.errors).flat().join(' ')
         : error.message;
       alert('Failed to save address: ' + errorMessage);
-
     } finally {
       setLoading(false);
     }
@@ -203,9 +232,7 @@ const AccountUser = () => {
       setSuccess(null);
       const token = sessionStorage.getItem('token');
       const response = await axios.put(`${apiUrl}/user/update-personal`, details, {
-        headers: { Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true'
-         },
+        headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
       });
       setUser((prevUser) => ({
         ...prevUser,
@@ -241,7 +268,7 @@ const AccountUser = () => {
       profile_picture: profilePictureUrl,
     }));
     setShowChangeProfilePicture(false);
-    window.location.reload(); // Refresh the page after successful upload
+    window.location.reload();
   };
 
   let formattedPhone = 'Loading...';
@@ -284,7 +311,6 @@ const AccountUser = () => {
                 className="accountUser-box-in-card-main-dp"
                 alt="profile"
                 onError={(e) => {
-                  // console.log('Image Load Error:', e);
                   e.target.src = defaultdp;
                 }}
               />
@@ -351,8 +377,6 @@ const AccountUser = () => {
                 <p>Home address</p>
               </div>
               <form className="accountUser-box-in-forms-address-form">
-                {/* {error && <div className="error-message">{error}</div>} */}
-                {/* {success && <div className="success-message">{success}</div>} */}
                 <div className="accountUser-box-in-forms-address-form-left">
                   <div className="accountUser-box-in-forms-address-form-left-fields">
                     <label>Province</label>
@@ -467,22 +491,25 @@ const AccountUser = () => {
             <section className="accountUser-box-in-forms-personal">
               <div className="accountUser-box-in-forms-personal-header">
                 <img src={User_Square} className="delete" alt="calendar icon" />
-                {/* <p>Personal details</p> */}
+                <p>Personal details</p>
               </div>
               <form className="accountUser-box-in-forms-personal-form">
-                {/* {error && <div className="error-message">{error}</div>} */}
-                {/* {success && <div className="success-message">{success}</div>} */}
                 <div className="accountUser-box-in-forms-personal-form-top">
                   <div className="accountUser-box-in-forms-personal-form-top-left">
                     <div className="accountUser-box-in-forms-personal-form-top-left-fields">
                       <label>Position:</label>
-                      <input
-                        type="text"
+                      <select
                         name="position"
                         value={personalDetails.position}
-                        readOnly={!isEditingPersonalDetails}
                         onChange={handlePersonalDetailsChange}
-                      />
+                        disabled={!isEditingPersonalDetails}
+                      >
+                        {positionOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div className="accountUser-box-in-forms-personal-form-top-left-fields">
                       <label>Gender:</label>
@@ -496,7 +523,6 @@ const AccountUser = () => {
                     </div>
                   </div>
                   <div className="accountUser-box-in-forms-personal-form-top-right">
-                    
                     <div className="accountUser-box-in-forms-personal-form-top-right-fields">
                       <label>Civil Status:</label>
                       <input

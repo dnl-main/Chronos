@@ -22,12 +22,8 @@ class CustomResetPassword extends Notification
 
     public function toMail($notifiable)
     {
-        // Define allowed frontend URLs based on environment
-        $isLocal = app()->environment('local');
-        $frontendUrl = $isLocal
-            ? env('FRONTEND_URL', 'http://localhost:5173') // Local development
-            : env('FRONTEND_URL', 'https://concorde-web.vercel.app'); // Production
-
+        // Use the Concorde link directly
+        $frontendUrl = 'https://concorde-web.vercel.app';
         $url = $frontendUrl . '/reset-password?token=' . $this->token . '&email=' . urlencode($notifiable->email);
 
         // Log the values for debugging

@@ -480,7 +480,7 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
       setSelectedId(null);
       setShowCancelModal(false);
       // alert('Appointment cancelled!');
-      // window.location.reload();
+       window.location.reload();
     } catch (err) {
       alert('Error cancelling appointment: ' + (err.response?.data?.message || err.message));
     }
