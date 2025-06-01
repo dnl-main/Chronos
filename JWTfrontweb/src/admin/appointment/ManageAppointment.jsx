@@ -12,16 +12,27 @@ import CancelSummaryModal from './appointmentcomponents/appointmentmodal/CancelS
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
+const purposeOptions = ['Document submission', 'Contract Signing', 'Training', 'Allowance Distribution', 'Others'];
+
 const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose }) => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedUser, setSelectedUser] = useState(user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [purpose, setPurpose] = useState('');
+  const [customPurpose, setCustomPurpose] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (appointment) {
+      const normalizePurpose = (p) => {
+        if (!p || typeof p !== 'string') return '';
+        const lowerPurpose = p.toLowerCase();
+        const matchingOption = purposeOptions.find(opt => opt.toLowerCase() === lowerPurpose);
+        return matchingOption || p.charAt(0).toUpperCase() + p.slice(1);
+      };
+
       const newSelectedAppointment = {
         ...appointment,
         original_date: appointment.date || '',
@@ -32,8 +43,11 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
         operator: appointment.operator || '',
         accountingOption: appointment.accounting_task || '',
         employeeName: appointment.employee || (user ? `${user.first_name} ${user.last_name}` : ''),
+        purpose: normalizePurpose(appointment.purpose),
       };
       setSelectedAppointment(newSelectedAppointment);
+      setPurpose(newSelectedAppointment.purpose || '');
+      setCustomPurpose(newSelectedAppointment.purpose === 'Others' ? newSelectedAppointment.purpose : '');
     }
     setSelectedUser(user);
   }, [appointment, user]);
@@ -124,6 +138,18 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
       return;
     }
 
+    if (!purpose) {
+      const errorMsg = 'Please select a Purpose of visit.';
+      setError(errorMsg);
+      return;
+    }
+
+    if (purpose === 'Others' && !customPurpose) {
+      const errorMsg = 'Please specify the purpose of visit.';
+      setError(errorMsg);
+      return;
+    }
+
     const isValidDate = (date) => {
       if (!date) return false;
       const parsed = new Date(date);
@@ -156,6 +182,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
         operator: selectedAppointment.operator ? selectedAppointment.operator.toLowerCase() : null,
         accounting_task: selectedAppointment.accountingOption || null,
         employee_name: selectedAppointment.employeeName,
+        purpose: purpose === 'Others' ? customPurpose.toLowerCase() : purpose.toLowerCase(),
       };
 
       if (!token) {
@@ -166,10 +193,10 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
         `${apiUrl}/appointment/${selectedAppointment.id}/reschedule`,
         payload,
         {
-     headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
           withCredentials: true,
         }
       );
@@ -207,10 +234,10 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
       const response = await axios.delete(
         `${apiUrl}/appointment/${selectedAppointment.id}`,
         {
-    headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
           withCredentials: true,
         }
       );
@@ -240,7 +267,9 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
     selectedAppointment?.department &&
     selectedAppointment?.employeeName &&
     (selectedAppointment?.department !== 'crewing' || selectedAppointment?.operator) &&
-    (selectedAppointment?.department !== 'accounting' || selectedAppointment?.accountingOption);
+    (selectedAppointment?.department !== 'accounting' || selectedAppointment?.accountingOption) &&
+    purpose &&
+    (purpose !== 'Others' || customPurpose);
 
   return (
     <>
@@ -286,6 +315,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
                           ...appointment,
                           start_time: normalizeTime(appointment.start_time),
                           end_time: normalizeTime(appointment.end_time),
+                          purpose: purpose || '',
                         });
                         setSelectedUser(user);
                       }}
@@ -321,6 +351,8 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
                           operator: '',
                           accountingOption: '',
                         }));
+                        setPurpose('');
+                        setCustomPurpose('');
                       }}
                     >
                       <option value="">Select...</option>
@@ -424,6 +456,43 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
                     }}
                   />
                 </article>
+
+                <div className="editAppointment-box-in-right-dept-purpose">
+                  <article className="editAppointment-box-in-right-dept-purpose">
+                    <label htmlFor="purpose">Purpose of visit</label>
+                    <select
+                      id="purpose"
+                      value={purpose || ''}
+                      onChange={(e) => {
+                        setPurpose(e.target.value);
+                        if (e.target.value !== 'Others') {
+                          setCustomPurpose('');
+                        }
+                      }}
+                    >
+                      <option value="">Select...</option>
+                      {purposeOptions.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                      {purpose && !purposeOptions.includes(purpose) && (
+                        <option value={purpose}>{purpose}</option>
+                      )}
+                    </select>
+                  </article>
+
+                  {purpose === 'Others' && (
+                    <article className="editAppointment-box-in-right-dept-custom-purpose">
+                      <label htmlFor="customPurpose">Specify Purpose</label>
+                      <input
+                        type="text"
+                        id="customPurpose"
+                        value={customPurpose}
+                        onChange={(e) => setCustomPurpose(e.target.value)}
+                        placeholder="Enter custom purpose"
+                      />
+                    </article>
+                  )}
+                </div>
               </main>
 
               <main className="editAppointment-box-in-right-dropdown">
@@ -439,6 +508,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
                         date: e.target.value,
                       });
                     }}
+                    min={new Date().toISOString().split('T')[0]}
                   />
                 </article>
 
@@ -502,7 +572,10 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
 
       {isModalOpen && (
         <AppointmentSummaryModal
-          appointment={selectedAppointment}
+          appointment={{
+            ...selectedAppointment,
+            purpose: purpose === 'Others' ? customPurpose : purpose,
+          }}
           user={selectedUser}
           onClose={() => {
             setIsModalOpen(false);
@@ -516,7 +589,10 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
 
       {isCancelModalOpen && (
         <CancelSummaryModal
-          appointment={selectedAppointment}
+          appointment={{
+            ...selectedAppointment,
+            purpose: purpose === 'Others' ? customPurpose : purpose,
+          }}
           user={selectedUser}
           onClose={() => {
             setIsCancelModalOpen(false);
