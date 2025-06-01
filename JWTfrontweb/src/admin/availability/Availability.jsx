@@ -5,6 +5,7 @@ import './availability.css';
 import { Navbar } from '../navbar/Navbar';
 import Sidebar from '../sidebar/Sidebar';
 import AvailabilityCard from './availabilityComponents/AvailabilityCard';
+import Appointment from '../appointment/bookAppointment/Appointment';
 import Spinner from '../../components/Spinner';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Users from '../../assets/icons/Users.svg?react';
@@ -19,6 +20,8 @@ const Availability = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedTab, setSelectedTab] = useState('all');
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,7 +43,6 @@ const Availability = () => {
       Promise.all([fetchCrewData(token), fetchCertificates(token)])
         .then(() => setLoading(false))
         .catch((error) => {
-          // console.error('Error in Promise.all:', error);
           setError('Failed to load data.');
           setLoading(false);
         });
@@ -52,10 +54,10 @@ const Availability = () => {
   const fetchUserData = async (token) => {
     try {
       const response = await axios.get(`${apiUrl}/user`, {
-   headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
         withCredentials: true,
       });
       const userData = response.data;
@@ -67,7 +69,6 @@ const Availability = () => {
       setUser(userData);
       await Promise.all([fetchCrewData(token), fetchCertificates(token)]);
     } catch (error) {
-      // console.error('Failed to fetch user data:', error);
       setError('Failed to load user data. Please log in again.');
       navigate('/login');
     } finally {
@@ -79,16 +80,15 @@ const Availability = () => {
     try {
       setError(null);
       const response = await axios.get(`${apiUrl}/crew-members`, {
-       headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
         withCredentials: true,
       });
       const crew = Array.isArray(response.data) ? response.data : [response.data].filter(Boolean);
       setCrewData(crew);
     } catch (error) {
-      // console.error('Failed to fetch crew data:', error);
       if (error.response?.status === 401) {
         setError('Unauthorized. Please log in again.');
         navigate('/login');
@@ -101,21 +101,29 @@ const Availability = () => {
   const fetchCertificates = async (token) => {
     try {
       const response = await axios.get(`${apiUrl}/certificates`, {
-headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
         withCredentials: true,
       });
       const certs = Array.isArray(response.data.certificates)
         ? response.data.certificates
         : [response.data.certificates].filter(Boolean);
-      // console.log('Certificates:', certs); // Debug log
       setCertificates(certs);
     } catch (error) {
-      // console.error('Failed to fetch certificates:', error);
       setError('Failed to load certificates.');
     }
+  };
+
+  const handleOpenAppointment = (userId) => {
+    setSelectedUserId(userId);
+    setShowAppointmentModal(true);
+  };
+
+  const handleCloseAppointment = () => {
+    setShowAppointmentModal(false);
+    setSelectedUserId(null);
   };
 
   if (loading) return <Spinner />;
@@ -126,7 +134,6 @@ headers: {
   // Process crew data with certificate status
   const processedCrewData = crewData.map((member) => {
     const memberCertificates = certificates.filter((cert) => cert.user_id === member.id);
-    // console.log(`Certificates for ${member.id}:`, memberCertificates); // Debug log
     const certificateTypes = new Set(memberCertificates.map((cert) => cert.certificate_type));
     const requiredTypes = ['Medical', 'Training', 'Contract', 'Employee ID'];
     const hasAllCertificates = requiredTypes.every((type) => certificateTypes.has(type));
@@ -178,7 +185,11 @@ headers: {
                 {processedCrewData
                   .filter((member) => member.availability?.toLowerCase() === 'available')
                   .map((member) => (
-                    <AvailabilityCard key={member.id} data={member} />
+                    <AvailabilityCard
+                      key={member.id}
+                      data={member}
+                      onOpenAppointment={handleOpenAppointment}
+                    />
                   ))}
               </section>
             </>
@@ -192,7 +203,11 @@ headers: {
                 {processedCrewData
                   .filter((member) => member.availability?.toLowerCase() === 'vacation')
                   .map((member) => (
-                    <AvailabilityCard key={member.id} data={member} />
+                    <AvailabilityCard
+                      key={member.id}
+                      data={member}
+                      onOpenAppointment={handleOpenAppointment}
+                    />
                   ))}
               </section>
             </>
@@ -206,13 +221,27 @@ headers: {
                 {processedCrewData
                   .filter((member) => member.availability?.toLowerCase() === 'on board')
                   .map((member) => (
-                    <AvailabilityCard key={member.id} data={member} />
+                    <AvailabilityCard
+                      key={member.id}
+                      data={member}
+                      onOpenAppointment={handleOpenAppointment}
+                    />
                   ))}
               </section>
             </>
           )}
         </main>
       </div>
+
+      {/* Appointment Modal */}
+      {showAppointmentModal && (
+        <div className="appointment-modal-overlay">
+          <Appointment
+            onClose={handleCloseAppointment}
+            userId={selectedUserId}
+          />
+        </div>
+      )}
     </div>
   );
 };

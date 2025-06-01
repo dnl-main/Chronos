@@ -6,7 +6,7 @@ import Phone from '../../../assets/icons/Phone.svg?react';
 import Mail from '../../../assets/icons/Mail.svg?react';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
 
-const AvailabilityCard = ({ data }) => {
+const AvailabilityCard = ({ data, onOpenAppointment }) => {
   const fullName = data
     ? `${data.first_name}${data.middle_name ? ` ${data.middle_name.charAt(0)}.` : ''} ${data.last_name}`
     : 'Loading...';
@@ -95,7 +95,7 @@ const AvailabilityCard = ({ data }) => {
       </div>
 
       <div className="availability-box-in-cards-card-button">
-        <button>
+        <button onClick={() => onOpenAppointment(data.id)}>
           <Calendar_Add className="availability-box-in-cards-card-button-svg" />
         </button>
       </div>
