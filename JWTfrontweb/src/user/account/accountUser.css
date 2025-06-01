@@ -610,3 +610,341 @@
   cursor: pointer;
 }
 
+/*MQ*/
+@media (max-width: 1080px) and (max-height: 1920px) {
+  .accountUser-box-in-card {
+    background-color: white;
+  }
+
+  .accountUser-box-in-card-header {
+    visibility: hidden;
+    position: relative;
+  }
+
+  .accountUser-box-in-card-header-btn {
+    visibility: visible;
+    position: relative;
+    top: 0;
+    left: 580px;
+  }
+
+  .accountUser-box-in-card-main {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto; 
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  .accountUser-box-in-card-main-bg {
+    width: 100%;
+    min-height: 400px;
+    background-color: var(--primary-color);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 8px;
+    position: relative;
+    bottom: 300px;
+  }
+
+  .accountUser-box-in-card-main-dp {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 300px;
+    min-height: 300px;
+    position: relative;
+    top: 200px;
+    z-index: 2;
+  }
+
+  .accountUser-box-in-card-main-info-left-text {
+    text-align: center;
+    position: relative;
+    left: 340px;
+    bottom: 270px;
+  }
+
+  .accountUser-box-in-card-main-info-left-contact {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    bottom: 250px;
+    left: 30px;
+    gap: 10px;
+    
+  }
+
+  .accountUser-box-in-card-main-info-left-contact p {
+    font-size: var(--font-size-16);
+  }
+
+  .accountUser-box-in-card-main-info-right-job-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+   
+  }
+
+  .accountUser-box-in-card-main-info-right-job-header {
+    text-align: left;
+    font-weight: bold;
+    font-size: var(--font-size-20);
+    position: static;
+    margin-right: 130px; 
+  }
+
+  .accountUser-box-in-card-main-info-right-job {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    right: 680px;
+    bottom: 30px;
+  }
+
+  .accountUser-box-in-card-main-info-right-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 150%;
+    column-gap: clamp(2vh, 4vh, 6vh);
+    position: relative;
+    bottom: 10px;
+    left: 80px;
+  }
+
+  .accountUser-box-in-card-main-info-right-buttons-password {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 360px;
+    border-radius: 50px;
+    color: #00899A;
+    font-size: 28px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: relative;
+    bottom: 10px;
+  }
+
+  .accountUser-box-in-card-main-info-right-buttons-profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 360px;
+    border-radius: 50px;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: relative;
+    bottom: 10px;
+  }
+
+  .accountUser-box-in-card-main-info-right-buttons-password {
+    right: 150px;
+  }
+
+  .accountUser-box-in-card-main-info-right-buttons-profile {
+    right: 190px;
+  }
+
+
+  /* HOME ADDRESS SECTION */
+  .accountUser-box-in-forms {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 105%;
+    height: 100%;
+    max-width: 1200px;
+    box-sizing: border-box;
+    padding: 16px; 
+    right: 50px;
+  }
+
+  .accountUser-box-in-forms-address {
+    width: 100%;
+    background-color: transparent;
+    border-radius: 12px;
+    padding: 16px; 
+  }
+
+  .accountUser-box-in-forms-address-header {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px; 
+  }
+
+  .accountUser-box-in-forms-address-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+
+  }
+
+  .accountUser-box-in-forms-address-form-left-fields,
+  .accountUser-box-in-forms-address-form-right-fields {
+    width: 200%;
+    border-radius: 10px;
+    position: relative;
+    align-self: flex-start;
+    right: 190px;
+    bottom: 10px;
+  }
+
+  .accountUser-box-in-forms-address-form-left-fields label,
+  .accountUser-box-in-forms-address-form-right-fields label {
+    font-size: var(--font-size-20);
+  }
+
+  .accountUser-box-in-forms-address-form-left-fields input,
+  .accountUser-box-in-forms-address-form-right-fields input {
+    font-size: var(--font-size-16);
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+  .accountUser-box-in-forms-address-button {
+    display: flex;
+    justify-content: flex-end;
+    position: relative;
+    top: 20px;
+    right: 170px;
+    background-color: transparent;
+  }
+
+  .accountUser-box-in-forms-address-button button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 95px;
+    width: 500px;
+    padding: 8px 12px;
+    border: 1px solid #00899A;
+    border-radius: 50px;
+    background-color: white;
+    color: #00899A;
+    font-size: var(--font-size-20);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  /*PERSONAL SECTION */
+  .accountUser-box-in-forms-personal {
+    width: 100%;
+    border-radius: 12px;
+    padding: 16px; 
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px; 
+  }
+
+  .accountUser-box-in-forms-personal-header {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px; 
+    position: static;
+  }
+
+  .accountUser-box-in-forms-personal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .accountUser-box-in-forms-personal-form-top {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .accountUser-box-in-forms-personal-form-top-left,
+  .accountUser-box-in-forms-personal-form-top-right {
+    width: 100%;
+  }
+
+  .accountUser-box-in-forms-personal-form-top-right-fields,
+  .accountUser-box-in-forms-personal-form-top-left-fields {
+    width: 100%;
+    border-radius: 10px;
+    position: relative;
+    align-self: stretch;
+  }
+
+  .accountUser-box-in-forms-personal-form-top-right-fields label,
+  .accountUser-box-in-forms-personal-form-top-left-fields label,
+  .accountUser-box-in-forms-personal-form-bottom label {
+    font-size: var(--font-size-20);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .accountUser-box-in-forms-personal-form-top-right-fields input,
+  .accountUser-box-in-forms-personal-form-top-left-fields input,
+  .accountUser-box-in-forms-personal-form-bottom input {
+    font-size: var(--font-size-16);
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+  .accountUser-box-in-forms-personal-form-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .accountUser-box-in-forms-personal-button {
+    display: flex;
+    justify-content: flex-end;
+    position: relative;
+    top: 20px;
+    right: 150px;
+    background-color: transparent;
+  }
+
+  .accountUser-box-in-forms-personal-button button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 90px;
+    width: 500px;
+    padding: 8px 12px;
+    border: 1px solid #00899A;
+    border-radius: 50px;
+    background-color: white;
+    color: #00899A;
+    font-size: 28px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+}

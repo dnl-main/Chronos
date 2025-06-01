@@ -226,6 +226,45 @@
 	text-align: center;
 }
 
+.changePP-upload-buttons {
+	display: flex;
+	gap: 1.5vh;
+	margin-top: 1.2vh;
+}
+
+.changePP-upload-button {
+	all: unset;
+	padding: 1vh 2vh;
+	font-size: var(--font-size-12);
+	font-weight: var(--font-weight-semibold);
+	border-radius: 0.6vh;
+	cursor: pointer;
+	box-shadow: 0px 0px 8px rgba(0, 136, 154, 0.05);
+	text-align: center;
+	transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.changePP-upload-button-choose {
+	background-color: var(--white-color);
+	color: var(--primary-color);
+	border: 2px solid var(--primary-color);
+}
+
+.changePP-upload-button-choose:hover:not(:disabled) {
+	background-color: var(--primary-color-opacity-05);
+}
+
+.changePP-upload-button-confirm {
+	background-color: var(--primary-color);
+	color: var(--white-color);
+	border: 2px solid var(--primary-color);
+}
+
+.changePP-upload-button-confirm:hover:not(:disabled) {
+	background-color: var(--primary-color-dark);
+}
+
+
 @keyframes loading {
 	0% {
 		transform: translateX(-100%);

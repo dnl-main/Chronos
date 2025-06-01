@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import './changeProfilePicture.css';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
 import axios from 'axios';
@@ -18,43 +18,60 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
   const [selectedDept, setSelectedDept] = useState('');
   const [jobTitles, setJobTitles] = useState([]);
   const [selectedJob, setSelectedJob] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
 
-  const [isEditing, setIsEditing] = useState(true); // Start in editing mode
+  const [isEditing, setIsEditing] = useState(true);
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
   const baseUrl = import.meta.env.VITE_BASE_URL || 'http://127.0.0.1:8000';
 
-  const handleFileChange = async (e) => {
+  useEffect(() => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    if (user) {
+      setSelectedDept(user.department || '');
+      setSelectedJob(user.position || '');
+    }
+  }, []);
+
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setLoadingProfilePicture(true);
-      setError(null);
-      const formData = new FormData();
-      formData.append('profile_picture', file);
+      setSelectedFile(file);
+    }
+  };
 
-      try {
-        const token = sessionStorage.getItem('token');
-        const response = await axios.post(`${apiUrl}/user/upload-profile-picture`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'ngrok-skip-browser-warning': 'true',
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+  const handleConfirmUpload = async () => {
+    if (!selectedFile) return;
 
-        if (response.data.success) {
-          const imageUrl = `${baseUrl}/storage/${response.data.profile_picture}`;
-          onSave(imageUrl);
-          alert('Profile picture updated successfully!');
-        } else {
-          setError(response.data.message || 'Failed to upload profile picture.');
-        }
-      } catch (error) {
-        const msg = error.response?.data?.message || error.message;
-        setError(`Upload failed: ${msg}`);
-      } finally {
-        setLoadingProfilePicture(false);
+    setLoadingProfilePicture(true);
+    setError(null);
+
+    const formData = new FormData();
+    formData.append('profile_picture', selectedFile);
+
+    try {
+      const token = sessionStorage.getItem('token');
+      const response = await axios.post(`${apiUrl}/user/upload-profile-picture`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data.success) {
+        const imageUrl = `${baseUrl}/storage/${response.data.profile_picture}`;
+        onSave(imageUrl);
+        alert('Profile picture updated successfully!');
+      } else {
+        setError(response.data.message || 'Failed to upload profile picture.');
       }
+    } catch (error) {
+      const msg = error.response?.data?.message || error.message;
+      setError(`Upload failed: ${msg}`);
+    } finally {
+      setLoadingProfilePicture(false);
+      setSelectedFile(null);
     }
   };
 
@@ -62,7 +79,7 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
     const dept = e.target.value;
     setSelectedDept(dept);
     setJobTitles(departments[dept] || []);
-    setSelectedJob(''); // Reset job title when department changes
+    setSelectedJob('');
   };
 
   const handleEdit = () => setIsEditing(true);
@@ -80,7 +97,7 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
       const token = sessionStorage.getItem('token');
       const response = await axios.post(
         `${apiUrl}/user/update-position`,
-        { position: selectedJob, department: selectedDept }, // Include department in payload
+        { position: selectedJob, department: selectedDept },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -93,16 +110,15 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
       if (response.data.status) {
         alert('Position and department updated successfully!');
         setIsEditing(false);
-        // Update user in sessionStorage
         const updatedUser = {
           ...JSON.parse(sessionStorage.getItem('user')),
           position: selectedJob,
-          department: selectedDept, // Update department in sessionStorage
+          department: selectedDept,
           needs_position: false,
         };
         sessionStorage.setItem('user', JSON.stringify(updatedUser));
-        window.location.reload(); // Refresh the page after successful update
-        onClose(); // Close the modal
+        window.location.reload();
+        onClose();
       } else {
         setError(response.data.message || 'Failed to update position and department.');
       }
@@ -118,7 +134,7 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
     setSelectedDept('');
     setSelectedJob('');
     setIsEditing(false);
-    onClose(); // Close the modal on discard
+    onClose();
   };
 
   return (
@@ -155,14 +171,26 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
           )}
           {error && <p className="error-message" style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
 
-          <button
-            className="changePP-main-buttons-confirm"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={loadingProfilePicture}
-            style={{ marginTop: '15px' }}
-          >
-            {loadingProfilePicture ? 'Uploading...' : 'Upload'}
-          </button>
+          <div className="changePP-upload-buttons">
+  <button
+    className="changePP-upload-button changePP-upload-button-choose"
+    onClick={() => fileInputRef.current?.click()}
+    disabled={loadingProfilePicture}
+  >
+    Choose Picture
+  </button>
+
+  {selectedFile && (
+    <button
+      className="changePP-upload-button changePP-upload-button-confirm"
+      onClick={handleConfirmUpload}
+      disabled={loadingProfilePicture}
+    >
+      {loadingProfilePicture ? 'Uploading...' : 'Confirm Upload'}
+    </button>
+  )}
+</div>
+
         </div>
 
         <div className="changePP-main-fields">

@@ -162,7 +162,7 @@ const Account = () => {
                 <More_Grid_Big
                   style={{ color: 'var(--black-color)', width: '32px', height: '32px', '--stroke-width': '1.5px' }}
                 />
-                <p>Account</p>
+                <p className="accountUser-box-in-card-header-left-semi">Account</p>
               </div>
               <button
                 className="account-box-in-card-header-btn"
