@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import NavbarSuperAdmin from '../superadmin/navbar/NavbarSuperadmin';
-import SidebarSuperAdmin from '../superadmin/sidebar/SidebarSuperAdmin';
+import SidebarSuperAdmin from '../superadmin/sidebar/SidebarSuperadmin';
 import { jwtDecode } from 'jwt-decode';
 
 const Superadmin = () => {
