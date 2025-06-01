@@ -610,3 +610,44 @@
   cursor: pointer;
 }
 
+								.accountUser-box-in-forms-address-form select {
+					min-height: 40px;
+					height: 100%;
+					width: 100%;
+				}
+
+								.accountUser-box-in-forms select {
+			border: 2px solid var(--primary-color-opacity-15);
+			border-radius: 8px;
+			padding-left: 12px;
+			
+		}
+
+						.accountUser-box-in-forms-address-form select::placeholder {
+					font-weight: var(--font-weight-light);
+					font-size: var(--font-size-12);
+				}
+
+											.accountUser-box-in-forms-personal-form select {
+					min-height: 40px;
+					height: 100%;
+					width: 100%;
+				}
+				.accountUser-box-in-forms-personal-form select::placeholder {
+					font-weight: var(--font-weight-light);
+					font-size: var(--font-size-12);
+				}
+
+				
+    .accountUser-box-in-forms-personal-form-top-right-fields select,
+  .accountUser-box-in-forms-personal-form-top-left-fields select,
+  .accountUser-box-in-forms-personal-form-bottom select {
+    font-size: var(--font-size-16);
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+
