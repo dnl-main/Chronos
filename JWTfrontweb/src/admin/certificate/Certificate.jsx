@@ -7,6 +7,7 @@ import Sidebar from '../sidebar/Sidebar';
 import CertificateCard from './cards/CertificateCard';
 import CertificatePopup from './CertificatePopup';
 import CertificateNotificationModal from './modals/CertificateNotificationModal';
+import Appointment from '../appointment/bookAppointment/Appointment';
 import Spinner from '../../components/Spinner';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Notebook from '../../assets/icons/Notebook.svg?react';
@@ -23,6 +24,8 @@ const Certificate = () => {
   const [selectedTab, setSelectedTab] = useState('all');
   const [selectedCertificate, setSelectedCertificate] = useState(null);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false); // New state for Appointment modal
+  const [selectedUserId, setSelectedUserId] = useState(null); // New state for selected user ID
   const navigate = useNavigate();
 
   // Close popup handler
@@ -42,6 +45,17 @@ const Certificate = () => {
 
   const handleCloseNotificationModal = () => {
     setIsNotificationModalOpen(false);
+  };
+
+  // Appointment modal handlers
+  const handleOpenAppointmentModal = (userId) => {
+    setSelectedUserId(userId); // Store the selected user ID
+    setIsAppointmentModalOpen(true); // Open the Appointment modal
+  };
+
+  const handleCloseAppointmentModal = () => {
+    setIsAppointmentModalOpen(false); // Close the Appointment modal
+    setSelectedUserId(null); // Clear the selected user ID
   };
 
   useEffect(() => {
@@ -218,7 +232,7 @@ const Certificate = () => {
 
           <section className="certificate-cards">
             {filteredCrew
-              .filter((crew) => crew.position !== 'Unregistered') // Filter out unregistered crew
+              .filter((crew) => crew.position !== 'Unregistered')
               .map((crew) => (
                 <CertificateCard
                   key={crew.id}
@@ -226,6 +240,7 @@ const Certificate = () => {
                   certificates={certificates.filter((cert) => cert.user_id === crew.id)}
                   onCertificateClick={handleCertificateClick}
                   onNotifyUpload={handleOpenNotificationModal}
+                  onOpenAppointmentModal={handleOpenAppointmentModal} // Pass the new handler
                 />
               ))}
           </section>
@@ -233,6 +248,12 @@ const Certificate = () => {
       </div>
       <CertificatePopup certificate={selectedCertificate} onClose={handleClosePopup} />
       {isNotificationModalOpen && <CertificateNotificationModal onClose={handleCloseNotificationModal} />}
+      {isAppointmentModalOpen && (
+        <Appointment
+          onClose={handleCloseAppointmentModal}
+          userId={selectedUserId} // Pass the selected user ID
+        />
+      )}
     </div>
   );
 };

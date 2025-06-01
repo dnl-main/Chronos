@@ -8,7 +8,7 @@ import Note_Search from '../../../assets/icons/Note_Search.svg?react';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
-const CertificateCard = ({ data, certificates, onCertificateClick, onNotifyUpload }) => {
+const CertificateCard = ({ data, certificates, onCertificateClick, onNotifyUpload,onOpenAppointmentModal }) => {
     const fullName = [data.first_name, data.middle_name, data.last_name].filter(Boolean).join(' ');
 
     const formatDate = (dateString) => {
@@ -133,7 +133,7 @@ const CertificateCard = ({ data, certificates, onCertificateClick, onNotifyUploa
                 })}
             </section>
             <section className="certificate-cards-card-button">
-                <button>
+              <button onClick={() => onOpenAppointmentModal(data.id)}>
                     <Calendar_Add className="certificate-cards-card-button-svg" />
                 </button>
             </section>

@@ -52,7 +52,7 @@
     }
 
   .account-box-in-card-header-left { 
-    / background-color: mediumblue;  */
+    /* background-color: mediumblue;  */
     display: flex;
     justify-content: start;
     align-items: center;
