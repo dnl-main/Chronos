@@ -21,7 +21,7 @@ const RescheduleModal = ({ date, startTime, endTime, user, status, onClose, onCo
     // console.log('Closing confirmation'); // Debug
     onConfirmReschedule();
     setShowConfirmation(false);
-    window.location.reload();
+    //window.location.reload();
     onClose();
   };
 
@@ -54,7 +54,7 @@ const RescheduleModal = ({ date, startTime, endTime, user, status, onClose, onCo
             <div className="bookModal-box-in-date-cards">
               <div className="bookModal-box-in-date-cards-day">
                 <Circle_Primary style={{ color: 'var(--blue-indicator)', width: '20px', height: '20px' }} />
-                <div classNameName="bookModal-box-in-date-cards-day-text">
+                <div className="bookModal-box-in-date-cards-day-text">
                   <p className="bookModal-box-in-date-cards-day-text-light">Appointment date</p>
                   <p className="bookModal-box-in-date-cards-day-text-semibold">{date || 'N/A'}</p>
                 </div>

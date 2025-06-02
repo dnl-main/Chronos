@@ -14,7 +14,7 @@ const CancelConfirmation = ({ onClose }) => {
 <button
   onClick={() => {
     onClose();
-    window.location.reload();
+    // window.location.reload();
   }}
   className="confirmationModal-button"
 >

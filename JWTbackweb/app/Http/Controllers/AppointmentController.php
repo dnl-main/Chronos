@@ -215,9 +215,7 @@ class AppointmentController extends Controller
     public function update(Request $request, $id)
     {
         $user = JWTAuth::user();
-        if ($user->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+  
 
         $appointment = Appointment::find($id);
         if (!$appointment) {

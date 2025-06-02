@@ -38,7 +38,7 @@ const BookModal = ({ date, startTime, endTime, user, status, onClose, onConfirmB
     
 
 		onClose();  // Now close BookModal when user closes confirmation
-    window.location.reload();
+    // window.location.reload();
 	};
 
   return (

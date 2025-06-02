@@ -165,29 +165,37 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
       }
     };
 
-    const fetchAppointments = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/appointment`, {
-          headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
-        });
-        const data = Array.isArray(response.data) ? response.data : response.data.id ? [response.data] : [];
-        const mappedAppointments = data.map(mapAppointment);
-        setAppointments(mappedAppointments);
-        // Pre-select user if userId is provided
-        if (userId) {
-          const userAppointment = mappedAppointments.find(
-            appt => appt.user_id === userId && (appt.status === 'available' || appt.status === 'booked')
-          );
-          if (userAppointment) {
-            setSelectedId(userAppointment.id);
-          }
-        }
-        return data;
-      } catch (err) {
-        setError('Error fetching appointments: ' + (err.response?.data?.message || err.message));
-        return [];
+   const fetchAppointments = async () => {
+  try {
+    const response = await axios.get(`${apiUrl}/appointment`, {
+      headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
+    });
+    const data = Array.isArray(response.data) ? response.data : response.data.id ? [response.data] : [];
+    // Filter out past appointments
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const filteredAppointments = data.filter(appointment => {
+      if (!appointment.date) return true; // Keep appointments without a date (if any)
+      const appointmentDate = new Date(appointment.date);
+      return appointmentDate >= today;
+    });
+    const mappedAppointments = filteredAppointments.map(mapAppointment);
+    setAppointments(mappedAppointments);
+    // Pre-select user if userId is provided
+    if (userId) {
+      const userAppointment = mappedAppointments.find(
+        appt => appt.user_id === userId && (appt.status === 'available' || appt.status === 'booked')
+      );
+      if (userAppointment) {
+        setSelectedId(userAppointment.id);
       }
-    };
+    }
+    return filteredAppointments;
+  } catch (err) {
+    setError('Error fetching appointments: ' + (err.response?.data?.message || err.message));
+    return [];
+  }
+};
 
     const fetchAvailableUsers = async (existingAppointments) => {
       try {
@@ -370,6 +378,7 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
   };
 
   const handleReschedule = () => {
+    
     if (!isAdmin) {
       alert('Only admins can reschedule appointments.');
       return;
@@ -442,7 +451,7 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
       setShowRescheduleModal(false);
       setShowConfirmation(true);
       // alert('Appointment rescheduled successfully!');
-      window.location.reload();
+      // window.location.reload();
     } catch (err) {
       alert('Error rescheduling appointment: ' + (err.response?.data?.message || err.message));
     }
@@ -815,6 +824,7 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
               <button
                 className="appointmentModal-box-in-right-buttons-reschedule"
                 onClick={handleReschedule}
+                
                 style={{
                   cursor: !isAdmin || selectedId === null || !selectedAppointment || selectedAppointment.status !== 'booked' ? 'not-allowed' : 'pointer',
                 }}

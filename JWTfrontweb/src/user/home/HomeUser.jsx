@@ -23,7 +23,9 @@ const HomeUser = () => {
   const [loading, setLoading] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [appointment, setAppointment] = useState({
+    
     date: '',
     start_time: '',
     end_time: '',
@@ -81,6 +83,7 @@ const HomeUser = () => {
       const token = sessionStorage.getItem('token');
       if (!token) {
         setAppointment({
+        
           date: '',
           start_time: '',
           end_time: '',
@@ -103,6 +106,7 @@ const HomeUser = () => {
         const appointmentData = Array.isArray(response.data) ? response.data[0] : response.data;
         if (appointmentData && appointmentData.date) {
           setAppointment({
+            id: appointmentData.id || null,
             date: appointmentData.date || '',
             start_time: appointmentData.start_time || '',
             end_time: appointmentData.end_time || '',
@@ -115,6 +119,7 @@ const HomeUser = () => {
           });
         } else {
           setAppointment({
+            id: null,
             date: '',
             start_time: '',
             end_time: '',
@@ -128,6 +133,7 @@ const HomeUser = () => {
         }
       } catch (error) {
         setAppointment({
+          id: null,
           date: '',
           start_time: '',
           end_time: '',
@@ -247,6 +253,7 @@ const HomeUser = () => {
 
   const handleAppointmentBooked = (appointment) => {
     setAppointment({
+      id: appointment.id || null,
       date: appointment.date || '',
       start_time: appointment.start_time || '',
       end_time: appointment.end_time || '',
@@ -261,7 +268,6 @@ const HomeUser = () => {
 
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
-
   const handleDeleteAppointment = async () => {
     try {
       const token = sessionStorage.getItem('token');
@@ -269,6 +275,7 @@ const HomeUser = () => {
         headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
       });
       setAppointment({
+        id: null,
         date: '',
         start_time: '',
         end_time: '',
@@ -370,6 +377,14 @@ const HomeUser = () => {
                 <BookAppointmentModal
                   onClose={() => setIsModalOpen(false)}
                   onAppointmentBooked={handleAppointmentBooked}
+                />
+              )}
+              {isRescheduleModalOpen && (
+                <BookAppointmentModal
+                  onClose={() => setIsRescheduleModalOpen(false)}
+                  onAppointmentBooked={handleAppointmentBooked}
+                  appointment={appointment}
+                  isReschedule={true}
                 />
               )}
 
@@ -509,12 +524,20 @@ const HomeUser = () => {
                               ))}
                             </div>
 
-                            <button
-                              onClick={handleDeleteAppointment}
-                              className="red-button-cancel"
-                            >
-                              Delete Appointment
-                            </button>
+                            <div className="homeUser-top-core-left-date-data-buttons">
+                              <button
+                                onClick={handleDeleteAppointment}
+                                className="red-button-cancel"
+                              >
+                                Delete Appointment
+                              </button>
+                              <button
+                                onClick={() => setIsRescheduleModalOpen(true)}
+                                className="red-button-cancel"
+                              >
+                                Reschedule Appointment
+                              </button>
+                            </div>
                           </>
                         ) : (
                           <p style={{ padding: '1rem', fontStyle: 'italic' }}>You have no scheduled appointment yet.</p>
@@ -533,7 +556,6 @@ const HomeUser = () => {
                   </>
                 )}
               </div>
-
 
               <div className="homeUser-top-core-right">
                 <div className="homeUser-top-core-right-header">

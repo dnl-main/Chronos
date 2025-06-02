@@ -12,14 +12,14 @@ import Calendar_Check from '../../assets/icons/Calendar_Check.svg?react';
 const departmentOptions = ['Crewing', 'Medical', 'Accounting'];
 const crewingDepts = ['Maran Gas', 'Maran Dry', 'Maran Tankers'];
 const operators = [
-  'Fleet crew manager',
-  'Senior fleet crew operator',
-  'Crew operator 1',
-  'Crew operator 2',
-  'Crew operator 3',
+  'Fleet Crew Manager',
+  'Senior Fleet Crew Operator',
+  'Crew Operator 1',
+  'Crew Operator 2',
+  'Crew Operator 3',
 ];
-const accountingOptions = ['Allotment', 'Final balance', 'Check releasing'];
-const purposeOptions = ['Document submission', 'Contract Signing', 'Training', 'Allowance Distribution', 'Others'];
+const accountingOptions = ['Allotment', 'Final Balance', 'Check Releasing'];
+const purposeOptions = ['Document Submission', 'Contract Signing', 'Training', 'Allowance Distribution', 'Others'];
 const times = [];
 for (let hour = 9; hour <= 18; hour++) {
   times.push(`${hour.toString().padStart(2, '0')}:00`);
@@ -28,28 +28,26 @@ for (let hour = 9; hour <= 18; hour++) {
   }
 }
 
-  const formatLocalDate = (inputDate) => {
-    const dateObj = new Date(inputDate);
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
+const formatLocalDate = (inputDate) => {
+  if (!inputDate) return '';
+  const dateObj = new Date(inputDate);
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
-
-
-
-const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
-  const [department, setDepartment] = useState('');
-  const [crewingDept, setCrewingDept] = useState('');
-  const [operator, setOperator] = useState('');
-  const [accountingOption, setAccountingOption] = useState('');
-  const [employeeName, setEmployeeName] = useState('');
-  const [purpose, setPurpose] = useState('');
-  const [customPurpose, setCustomPurpose] = useState('');
-  const [date, setDate] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
+const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, isReschedule = false }) => {
+  const [department, setDepartment] = useState(appointment.department ? appointment.department.charAt(0).toUpperCase() + appointment.department.slice(1) : '');
+  const [crewingDept, setCrewingDept] = useState(appointment.crewing_dept ? appointment.crewing_dept.charAt(0).toUpperCase() + appointment.crewing_dept.slice(1) : '');
+  const [operator, setOperator] = useState(appointment.operator ? appointment.operator.charAt(0).toUpperCase() + appointment.operator.slice(1) : '');
+  const [accountingOption, setAccountingOption] = useState(appointment.accounting_task ? appointment.accounting_task.charAt(0).toUpperCase() + appointment.accounting_task.slice(1) : '');
+  const [employeeName, setEmployeeName] = useState(appointment.employee || '');
+  const [purpose, setPurpose] = useState(appointment.purpose ? (purposeOptions.includes(appointment.purpose.charAt(0).toUpperCase() + appointment.purpose.slice(1)) ? appointment.purpose.charAt(0).toUpperCase() + appointment.purpose.slice(1) : 'Others') : '');
+  const [customPurpose, setCustomPurpose] = useState(appointment.purpose && !purposeOptions.includes(appointment.purpose.charAt(0).toUpperCase() + appointment.purpose.slice(1)) ? appointment.purpose : '');
+  const [date, setDate] = useState(formatLocalDate(appointment.date));
+  const [startTime, setStartTime] = useState(appointment.start_time || '');
+  const [endTime, setEndTime] = useState(appointment.end_time || '');
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
@@ -74,153 +72,151 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked }) => {
     fetchUserId();
   }, []);
 
-
-
-
-
   const isFormValid = () => {
-  if (!userId || !department || !employeeName.trim() || !purpose || !date || !startTime || !endTime) return false;
-  if (department === 'Crewing' && (!crewingDept || !operator)) return false;
-  if (department === 'Accounting' && !accountingOption) return false;
-  if (purpose === 'Others' && !customPurpose.trim()) return false;
-  if (employeeName.trim().length < 3) return false;
-  if (purpose === 'Others' && customPurpose.trim().length < 3) return false;
-  // Additional validation like date/time comparisons can be added here if needed
-  return true;
-};
-
-const sanitizeInput = (input) => {
-  // Simple sanitization: remove <, >, &, ", ', and backticks
-  return input.replace(/[<>&"'`]/g, '');
-};
-
-
-
-const handleBook = async () => {
-  const trimmedEmployeeName = employeeName.trim();
-  const trimmedCustomPurpose = customPurpose.trim();
-
-  // Sanitize inputs
-  const safeEmployeeName = sanitizeInput(trimmedEmployeeName);
-  const safeCustomPurpose = sanitizeInput(trimmedCustomPurpose);
-
-  if (!userId) {
-    alert('User information not loaded. Please try again.');
-    return;
-  }
-
-  if (!department) {
-    alert('Please select a department.');
-    return;
-  }
-
-  if (department === 'Crewing') {
-    if (!crewingDept) {
-      alert('Please select a Crewing Department.');
-      return;
-    }
-    if (!operator) {
-      alert('Please select an Operator.');
-      return;
-    }
-  }
-
-  if (department === 'Accounting' && !accountingOption) {
-    alert('Please select an Accounting Task.');
-    return;
-  }
-
-  if (!safeEmployeeName) {
-    alert('Please enter the name of the employee.');
-    return;
-  }
-
-  if (safeEmployeeName.length < 3) {
-    alert('Employee name must be at least 3 characters.');
-    return;
-  }
-
-  if (!purpose) {
-    alert('Please select a purpose.');
-    return;
-  }
-
-  if (purpose === 'Others' && !safeCustomPurpose) {
-    alert('Please specify your purpose of visit.');
-    return;
-  }
-
-  if (purpose === 'Others' && safeCustomPurpose.length < 3) {
-    alert('Custom purpose must be at least 3 characters.');
-    return;
-  }
-
-  if (!date) {
-    alert('Please select a date.');
-    return;
-  }
-
-  const today = new Date();
-  const selectedDate = new Date(date);
-  today.setHours(0, 0, 0, 0);
-  selectedDate.setHours(0, 0, 0, 0);
-  if (selectedDate < today) {
-    alert('Please select a valid date (today or later).');
-    return;
-  }
-
-  if (!startTime || !endTime) {
-    alert('Please select both start and end time.');
-    return;
-  }
-
-  const startMinutes = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
-  const endMinutes = parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1]);
-
-  if (endMinutes <= startMinutes) {
-    alert('End time must be after start time.');
-    return;
-  }
-
-  const formattedDate = formatLocalDate(date);
-  const token = sessionStorage.getItem('token');
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
-
-  const payload = {
-    user_id: userId,
-    department: department.toLowerCase(),
-    crewing_dept: department === 'Crewing' ? crewingDept.toLowerCase() : undefined,
-    operator: department === 'Crewing' ? operator.toLowerCase() : undefined,
-    accounting_task: department === 'Accounting' ? accountingOption.toLowerCase() : undefined,
-    employee_name: safeEmployeeName,
-    purpose: purpose === 'Others' ? safeCustomPurpose : purpose.toLowerCase(),
-    date: formattedDate,
-    start_time: startTime,
-    end_time: endTime,
+    if (!userId || !department || !employeeName.trim() || !purpose || !date || !startTime || !endTime) return false;
+    if (department === 'Crewing' && (!crewingDept || !operator)) return false;
+    if (department === 'Accounting' && !accountingOption) return false;
+    if (purpose === 'Others' && !customPurpose.trim()) return false;
+    if (employeeName.trim().length < 3) return false;
+    if (purpose === 'Others' && customPurpose.trim().length < 3) return false;
+    return true;
   };
 
-  try {
-    const response = await axios.post(`${apiUrl}/appointment`, payload, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true',
-      },
-    });
+  const sanitizeInput = (input) => {
+    return input.replace(/[<>&"'`]/g, '');
+  };
 
-    alert('Appointment booked successfully!');
-    if (typeof onAppointmentBooked === 'function') onAppointmentBooked(response.data.appointment);
-    if (typeof onClose === 'function') onClose();
-  } catch (error) {
-    const errorMessage = error.response?.data?.message ||
-                         error.response?.data?.errors?.department?.[0] ||
-                         error.response?.data?.errors?.purpose?.[0] ||
-                         'Failed to book appointment. Please check your inputs and try again.';
-    alert(errorMessage);
-  }
-};
+  const handleBook = async () => {
+    const trimmedEmployeeName = employeeName.trim();
+    const trimmedCustomPurpose = customPurpose.trim();
 
+    const safeEmployeeName = sanitizeInput(trimmedEmployeeName);
+    const safeCustomPurpose = sanitizeInput(trimmedCustomPurpose);
 
+    if (!userId) {
+      alert('User information not loaded. Please try again.');
+      return;
+    }
 
+    if (!department) {
+      alert('Please select a department.');
+      return;
+    }
+
+    if (department === 'Crewing') {
+      if (!crewingDept) {
+        alert('Please select a Crewing Department.');
+        return;
+      }
+      if (!operator) {
+        alert('Please select an Operator.');
+        return;
+      }
+    }
+
+    if (department === 'Accounting' && !accountingOption) {
+      alert('Please select an Accounting Task.');
+      return;
+    }
+
+    if (!safeEmployeeName) {
+      alert('Please enter the name of the employee.');
+      return;
+    }
+
+    if (safeEmployeeName.length < 3) {
+      alert('Employee name must be at least 3 characters.');
+      return;
+    }
+
+    if (!purpose) {
+      alert('Please select a purpose.');
+      return;
+    }
+
+    if (purpose === 'Others' && !safeCustomPurpose) {
+      alert('Please specify your purpose of visit.');
+      return;
+    }
+
+    if (purpose === 'Others' && safeCustomPurpose.length < 3) {
+      alert('Custom purpose must be at least 3 characters.');
+      return;
+    }
+
+    if (!date) {
+      alert('Please select a date.');
+      return;
+    }
+
+    const today = new Date();
+    const selectedDate = new Date(date);
+    today.setHours(0, 0, 0, 0);
+    selectedDate.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      alert('Please select a valid date (today or later).');
+      return;
+    }
+
+    if (!startTime || !endTime) {
+      alert('Please select both start and end time.');
+      return;
+    }
+
+    const startMinutes = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
+    const endMinutes = parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1]);
+
+    if (endMinutes <= startMinutes) {
+      alert('End time must be after start time.');
+      return;
+    }
+
+    const formattedDate = formatLocalDate(date);
+    const token = sessionStorage.getItem('token');
+    const apiUrl = import.meta.env.VITE_API_BASE_URL;
+
+    const payload = {
+      user_id: userId,
+      department: department.toLowerCase(),
+      crewing_dept: department === 'Crewing' ? crewingDept.toLowerCase() : undefined,
+      operator: department === 'Crewing' ? operator.toLowerCase() : undefined,
+      accounting_task: department === 'Accounting' ? accountingOption.toLowerCase() : undefined,
+      employee_name: safeEmployeeName,
+      purpose: purpose === 'Others' ? safeCustomPurpose : purpose.toLowerCase(),
+      date: formattedDate,
+      start_time: startTime,
+      end_time: endTime,
+    };
+
+    try {
+      let response;
+      if (isReschedule && appointment.id) {
+        response = await axios.patch(`${apiUrl}/appointment/${appointment.id}`, payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
+        });
+      } else {
+        response = await axios.post(`${apiUrl}/appointment`, payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
+        });
+      }
+
+      alert(isReschedule ? 'Appointment rescheduled successfully!' : 'Appointment booked successfully!');
+      if (typeof onAppointmentBooked === 'function') onAppointmentBooked(response.data.appointment);
+      if (typeof onClose === 'function') onClose();
+    } catch (error) {
+      const errorMessage = error.response?.data?.message ||
+                           error.response?.data?.errors?.department?.[0] ||
+                           error.response?.data?.errors?.purpose?.[0] ||
+                           (isReschedule ? 'Failed to reschedule appointment. Please check your inputs and try again.' : 'Failed to book appointment. Please check your inputs and try again.');
+      alert(errorMessage);
+    }
+  };
 
   return (
     <div className="bookModalUser">
@@ -235,7 +231,7 @@ const handleBook = async () => {
             </button>
             <div className="bookModalUser-box-in-header-heading">
               <Book style={{ color: "var(--black-color-opacity-45)", width: "32px", height: "32px", '--stroke-width': '4px' }} />
-              Book an appointment
+              {isReschedule ? 'Reschedule an appointment' : 'Book an appointment'}
             </div>
           </div>
 
@@ -332,12 +328,10 @@ const handleBook = async () => {
                     value={employeeName}
                     maxLength={50}
                     onChange={(e) => {
-                      // Remove numbers and trimStart spaces
                       const filteredValue = e.target.value.replace(/[0-9]/g, '').trimStart();
                       setEmployeeName(filteredValue);
                     }}
                   />
-
                 </article>
 
                 <div className="bookModalUser-box-in-core-data-dept-purpose">
@@ -383,41 +377,40 @@ const handleBook = async () => {
 
                 <main className="bookModalUser-box-in-core-data-day-time">
                   <article className="bookModalUser-box-in-core-data-day-time-start">
-  <label htmlFor="startTime">Start time</label>
-  <select
-    id="startTime"
-    value={startTime}
-    onChange={(e) => {
-      setStartTime(e.target.value);
-      setEndTime(''); // Reset end time when start time changes
-    }}
-  >
-    <option value="">Select...</option>
-    {times.map((time, idx) => (
-      <option key={idx} value={time}>{time}</option>
-    ))}
-  </select>
-</article>
+                    <label htmlFor="startTime">Start time</label>
+                    <select
+                      id="startTime"
+                      value={startTime}
+                      onChange={(e) => {
+                        setStartTime(e.target.value);
+                        setEndTime('');
+                      }}
+                    >
+                      <option value="">Select...</option>
+                      {times.map((time, idx) => (
+                        <option key={idx} value={time}>{time}</option>
+                      ))}
+                    </select>
+                  </article>
 
-<article className="bookModalUser-box-in-core-data-day-time-end">
-  <label htmlFor="endTime">End time</label>
-  <select
-    id="endTime"
-    value={endTime}
-    onChange={(e) => setEndTime(e.target.value)}
-  >
-    <option value="">Select...</option>
-    {startTime 
-      ? times.slice(times.findIndex(t => t === startTime) + 1).map((time, idx) => (
-          <option key={idx} value={time}>{time}</option>
-        ))
-      : times.map((time, idx) => (
-          <option key={idx} value={time}>{time}</option>
-        ))
-    }
-  </select>
-</article>
-
+                  <article className="bookModalUser-box-in-core-data-day-time-end">
+                    <label htmlFor="endTime">End time</label>
+                    <select
+                      id="endTime"
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
+                    >
+                      <option value="">Select...</option>
+                      {startTime
+                        ? times.slice(times.findIndex(t => t === startTime) + 1).map((time, idx) => (
+                            <option key={idx} value={time}>{time}</option>
+                          ))
+                        : times.map((time, idx) => (
+                            <option key={idx} value={time}>{time}</option>
+                          ))
+                      }
+                    </select>
+                  </article>
                 </main>
               </section>
 
@@ -426,7 +419,6 @@ const handleBook = async () => {
                   className="bookModalUser-box-in-core-data-buttons-book"
                   onClick={handleBook}
                   disabled={!isFormValid()}
-
                 >
                   <Calendar_Check
                     style={{
@@ -436,7 +428,7 @@ const handleBook = async () => {
                       '--stroke-width': '7px',
                     }}
                   />
-                  <p>Book now</p>
+                  <p>{isReschedule ? 'Reschedule now' : 'Book now'}</p>
                 </button>
               </section>
             </div>
