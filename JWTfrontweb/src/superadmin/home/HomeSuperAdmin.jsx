@@ -1,12 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import './HomeSuperAdmin.css';
+import user_square from '../../assets/icons/user_square.png';
+import calendar_week from '../../assets/icons/calendar_week.png';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { handleAuthToken } from '../../utils/timeout';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
-function HomeSuperAdmin() {
+const HomeSuperAdmin = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
+  const [regions, setRegions] = useState([]);
+  const [provinces, setProvinces] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [barangays, setBarangays] = useState([]);
+  const [selectedRegion, setSelectedRegion] = useState('');
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedBarangay, setSelectedBarangay] = useState('');
   const [formData, setFormData] = useState({
     first_name: '',
     middle_name: '',
@@ -17,10 +29,6 @@ function HomeSuperAdmin() {
     role: 'user',
     position: '',
     department: '',
-    region: '',
-    province: '',
-    city: '',
-    barangay: '',
     street: '',
     building_number: '',
     zip_code: '',
@@ -32,22 +40,138 @@ function HomeSuperAdmin() {
   const [editingUserId, setEditingUserId] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [regions, setRegions] = useState([]);
-  const [provinces, setProvinces] = useState([]);
-  const [cities, setCities] = useState([]);
-  const [barangays, setBarangays] = useState([]);
 
+  // Drag-to-scroll state
+  const tableRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  // Dropdown options
+  const genderOptions = [
+    { value: '', label: 'Select your gender' },
+    { value: 'Male', label: 'Male' },
+    { value: 'Female', label: 'Female' },
+    { value: 'Other', label: 'Other' },
+  ];
+
+  const civilStatusOptions = [
+    { value: '', label: 'Select your civil status' },
+    { value: 'Single', label: 'Single' },
+    { value: 'Married', label: 'Married' },
+    { value: 'Widowed', label: 'Widowed' },
+    { value: 'Divorced', label: 'Divorced' },
+    { value: 'Separated', label: 'Separated' },
+  ];
+
+  const positionOperations = [
+    { value: '', label: 'Select your primary position' },
+    { value: 'Able Seaman', label: 'Able Seaman' },
+    { value: 'Bosun', label: 'Bosun' },
+    { value: 'Chief Cook', label: 'Chief Cook' },
+    { value: 'Chief Engineer', label: 'Chief Engineer' },
+    { value: 'Chief Mate', label: 'Chief Mate' },
+    { value: 'Cook', label: 'Cook' },
+    { value: 'Deck Cadet', label: 'Deck Cadet' },
+    { value: 'Electrician', label: 'Electrician' },
+    { value: 'Engine Cadet', label: 'Engine Cadet' },
+    { value: 'Fitter', label: 'Fitter' },
+    { value: 'Galley Boy', label: 'Galley Boy' },
+    { value: 'Jr 3rd Mate', label: 'Jr 3rd Mate' },
+    { value: 'Jr 4th Engineer', label: 'Jr 4th Engineer' },
+    { value: 'Messman', label: 'Messman' },
+    { value: 'Ordinary Seaman', label: 'Ordinary Seaman' },
+    { value: 'Pumpman', label: 'Pumpman' },
+    { value: '2nd Engineer', label: '2nd Engineer' },
+    { value: '2nd Mate', label: '2nd Mate' },
+    { value: '3rd Engineer', label: '3rd Engineer' },
+    { value: '3rd Mate', label: '3rd Mate' },
+    { value: 'Trainee 4th Engineer', label: 'Trainee 4th Engineer' },
+    { value: 'Trainee Gas Engineer', label: 'Trainee Gas Engineer' },
+    { value: 'Trainee', label: 'Trainee' },
+    { value: 'Electrician Trainee', label: 'Electrician Trainee' },
+  ];
+
+  const availabilityOptions = [
+    { value: '', label: 'Select availability' },
+    { value: 'Available', label: 'Available' },
+    { value: 'Vacation', label: 'Vacation' },
+    { value: 'On Board', label: 'On Board' },
+  ];
+
+  const roleOptions = [
+    { value: 'user', label: 'User' },
+    { value: 'admin', label: 'Admin' },
+    { value: 'superadmin', label: 'Superadmin' },
+  ];
+
+  // Derived names for submission
+  const selectedRegionName =
+    selectedRegion === '130000000'
+      ? 'National Capital Region'
+      : regions.find((r) => r.code === selectedRegion)?.name || '';
+  const selectedProvinceName =
+    selectedRegion === '130000000'
+      ? 'Metro Manila'
+      : selectedProvince === 'MM'
+      ? 'Metro Manila'
+      : provinces.find((p) => p.code === selectedProvince)?.name || '';
+  const selectedCityName = cities.find((c) => c.code === selectedCity)?.name || '';
+  const selectedBarangayName = barangays.find((b) => b.code === selectedBarangay)?.name || '';
+
+  // Drag-to-scroll event handlers
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartX(e.pageX - tableRef.current.offsetLeft);
+    setScrollLeft(tableRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - tableRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Adjust drag speed
+    tableRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleTouchStart = (e) => {
+    setIsDragging(true);
+    setStartX(e.touches[0].pageX - tableRef.current.offsetLeft);
+    setScrollLeft(tableRef.current.scrollLeft);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging) return;
+    const x = e.touches[0].pageX - tableRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Adjust drag speed
+    tableRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
+  // Authentication and initial data fetching
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     const storedUser = sessionStorage.getItem('user');
 
-    // Redirect to login if no token
+    handleAuthToken(token, storedUser ? JSON.parse(storedUser) : null, navigate);
+
     if (!token) {
+      setLoading(false);
       navigate('/login');
       return;
     }
 
-    // Check and parse stored user
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
@@ -72,12 +196,14 @@ function HomeSuperAdmin() {
       navigate('/login');
     }
 
-    // Fetch users
     const fetchUsers = async () => {
       setLoading(true);
       try {
         const response = await axios.get(`${apiUrl}/superadmin/readusers`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
         });
         setUsers(response.data.users);
         setError(null);
@@ -89,11 +215,10 @@ function HomeSuperAdmin() {
       }
     };
 
-    // Fetch regions
     const fetchRegions = async () => {
       try {
         const response = await axios.get(`${apiUrl}/regions`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { 'ngrok-skip-browser-warning': 'true' },
         });
         setRegions(response.data);
       } catch (error) {
@@ -105,74 +230,112 @@ function HomeSuperAdmin() {
     fetchRegions();
   }, [navigate]);
 
-  // Fetch provinces when region changes
+  // Fetch provinces
   useEffect(() => {
-    if (formData.region) {
+    if (!selectedRegion) {
+      setProvinces([]);
+      setCities([]);
+      setBarangays([]);
+      setSelectedProvince('');
+      setSelectedCity('');
+      setSelectedBarangay('');
+      return;
+    }
+
+    if (selectedRegion === '130000000') {
+      setProvinces([{ code: 'MM', name: 'Metro Manila' }]);
+      setSelectedProvince('MM');
+      setCities([]);
+      setBarangays([]);
+      setSelectedCity('');
+      setSelectedBarangay('');
+    } else {
       const fetchProvinces = async () => {
         try {
-          const response = await axios.get(`${apiUrl}/provinces?region=${formData.region}`, {
-            headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` },
+          const response = await axios.get(`${apiUrl}/provinces`, {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+              'ngrok-skip-browser-warning': 'true',
+            },
           });
-          setProvinces(response.data);
+          const filteredProvinces = response.data.filter(
+            (province) => province.regionCode === selectedRegion
+          );
+          setProvinces(filteredProvinces);
+          setSelectedProvince('');
           setCities([]);
           setBarangays([]);
-          setFormData((prev) => ({ ...prev, province: '', city: '', barangay: '' }));
+          setSelectedCity('');
+          setSelectedBarangay('');
         } catch (error) {
           console.error('Error fetching provinces:', error);
         }
       };
       fetchProvinces();
-    } else {
-      setProvinces([]);
+    }
+  }, [selectedRegion]);
+
+  // Fetch cities
+  useEffect(() => {
+    if (!selectedProvince) {
       setCities([]);
       setBarangays([]);
-      setFormData((prev) => ({ ...prev, province: '', city: '', barangay: '' }));
+      setSelectedCity('');
+      setSelectedBarangay('');
+      return;
     }
-  }, [formData.region]);
 
-  // Fetch cities when province changes
-  useEffect(() => {
-    if (formData.province) {
-      const fetchCities = async () => {
-        try {
-          const response = await axios.get(`${apiUrl}/cities-municipalities?province=${formData.province}`, {
-            headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` },
-          });
-          setCities(response.data);
-          setBarangays([]);
-          setFormData((prev) => ({ ...prev, city: '', barangay: '' }));
-        } catch (error) {
-          console.error('Error fetching cities:', error);
-        }
-      };
-      fetchCities();
-    } else {
-      setCities([]);
-      setBarangays([]);
-      setFormData((prev) => ({ ...prev, city: '', barangay: '' }));
-    }
-  }, [formData.province]);
+    const fetchCities = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/cities-municipalities`, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
+        });
+        const filteredCities =
+          selectedProvince === 'MM'
+            ? response.data.filter((city) => city.regionCode === '130000000')
+            : response.data.filter((city) => city.provinceCode === selectedProvince);
+        setCities(filteredCities);
+        setSelectedCity('');
+        setBarangays([]);
+        setSelectedBarangay('');
+      } catch (error) {
+        console.error('Error fetching cities:', error);
+      }
+    };
+    fetchCities();
+  }, [selectedProvince]);
 
-  // Fetch barangays when city changes
+  // Fetch barangays
   useEffect(() => {
-    if (formData.city) {
-      const fetchBarangays = async () => {
-        try {
-          const response = await axios.get(`${apiUrl}/barangays?city=${formData.city}`, {
-            headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` },
-          });
-          setBarangays(response.data);
-          setFormData((prev) => ({ ...prev, barangay: '' }));
-        } catch (error) {
-          console.error('Error fetching barangays:', error);
-        }
-      };
-      fetchBarangays();
-    } else {
+    if (!selectedCity) {
       setBarangays([]);
-      setFormData((prev) => ({ ...prev, barangay: '' }));
+      setSelectedBarangay('');
+      return;
     }
-  }, [formData.city]);
+
+    const fetchBarangays = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/barangays`, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
+        });
+        const filteredBarangays = response.data.filter(
+          (barangay) =>
+            barangay.cityCode === selectedCity || barangay.municipalityCode === selectedCity
+        );
+        setBarangays(filteredBarangays);
+        setSelectedBarangay('');
+      } catch (error) {
+        console.error('Error fetching barangays:', error);
+      }
+    };
+    fetchBarangays();
+  }, [selectedCity]);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -181,17 +344,64 @@ function HomeSuperAdmin() {
   const handleCreateOrUpdate = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
+
+    // Validate required fields
+    const requiredFields = [
+      'first_name',
+      'last_name',
+      'email',
+      'mobile',
+      'street',
+      'building_number',
+      'zip_code',
+      'gender',
+      'civil_status',
+      'birthday',
+      'role',
+    ];
+    const missingFields = requiredFields.filter((field) => !formData[field]);
+    if (
+      missingFields.length > 0 ||
+      !selectedRegion ||
+      !selectedProvince ||
+      !selectedCity ||
+      !selectedBarangay
+    ) {
+      setError('Please fill in all required fields.');
+      setLoading(false);
+      return;
+    }
+
     const token = sessionStorage.getItem('token');
+    const submissionData = {
+      ...formData,
+      region: selectedRegionName,
+      province: selectedProvinceName,
+      city: selectedCityName,
+      barangay: selectedBarangayName,
+    };
+
     try {
       if (editingUserId) {
-        const response = await axios.put(`${apiUrl}/superadmin/updateusers/${editingUserId}`, formData, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.put(
+          `${apiUrl}/superadmin/updateusers/${editingUserId}`,
+          submissionData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'ngrok-skip-browser-warning': 'true',
+            },
+          }
+        );
         setUsers(users.map((user) => (user.id === editingUserId ? response.data.user : user)));
         setEditingUserId(null);
       } else {
-        const response = await axios.post(`${apiUrl}/superadmin/createusers`, formData, {
-          headers: { Authorization: `Bearer ${token}` },
+        const response = await axios.post(`${apiUrl}/superadmin/createusers`, submissionData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
         });
         setUsers([...users, response.data.user]);
       }
@@ -205,10 +415,6 @@ function HomeSuperAdmin() {
         role: 'user',
         position: '',
         department: '',
-        region: '',
-        province: '',
-        city: '',
-        barangay: '',
         street: '',
         building_number: '',
         zip_code: '',
@@ -217,6 +423,10 @@ function HomeSuperAdmin() {
         birthday: '',
         availability: '',
       });
+      setSelectedRegion('');
+      setSelectedProvince('');
+      setSelectedCity('');
+      setSelectedBarangay('');
       setError(null);
     } catch (error) {
       setError(error.response?.data?.message || 'Error saving user');
@@ -226,7 +436,7 @@ function HomeSuperAdmin() {
     }
   };
 
-  const handleEdit = (user) => {
+  const handleEdit = async (user) => {
     setEditingUserId(user.id);
     setFormData({
       first_name: user.first_name || '',
@@ -238,10 +448,6 @@ function HomeSuperAdmin() {
       role: user.role || 'user',
       position: user.position || '',
       department: user.department || '',
-      region: user.region || '',
-      province: user.province || '',
-      city: user.city || '',
-      barangay: user.barangay || '',
       street: user.street || '',
       building_number: user.building_number || '',
       zip_code: user.zip_code || '',
@@ -250,7 +456,44 @@ function HomeSuperAdmin() {
       birthday: user.birthday || '',
       availability: user.availability || '',
     });
-    setError(null);
+
+    // Set location dropdowns
+    if (user.region) {
+      setSelectedRegion(user.region === 'National Capital Region' ? '130000000' : '');
+      const regionResponse = await axios.get(`${apiUrl}/regions`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' },
+      });
+      const region = regionResponse.data.find((r) => r.name === user.region);
+      if (region) setSelectedRegion(region.code);
+    }
+
+    if (user.province) {
+      if (user.region === 'National Capital Region') {
+        setSelectedProvince('MM');
+      } else {
+        const provinceResponse = await axios.get(`${apiUrl}/provinces`, {
+          headers: { 'ngrok-skip-browser-warning': 'true' },
+        });
+        const province = provinceResponse.data.find((p) => p.name === user.province);
+        if (province) setSelectedProvince(province.code);
+      }
+    }
+
+    if (user.city) {
+      const cityResponse = await axios.get(`${apiUrl}/cities-municipalities`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' },
+      });
+      const city = cityResponse.data.find((c) => c.name === user.city);
+      if (city) setSelectedCity(city.code);
+    }
+
+    if (user.barangay) {
+      const barangayResponse = await axios.get(`${apiUrl}/barangays`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' },
+      });
+      const barangay = barangayResponse.data.find((b) => b.name === user.barangay);
+      if (barangay) setSelectedBarangay(barangay.code);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -258,7 +501,10 @@ function HomeSuperAdmin() {
     const token = sessionStorage.getItem('token');
     try {
       await axios.delete(`${apiUrl}/superadmin/deleteusers/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
       });
       setUsers(users.filter((user) => user.id !== id));
       setError(null);
@@ -270,368 +516,462 @@ function HomeSuperAdmin() {
     }
   };
 
+  if (loading && !users.length) {
+    return null;
+  }
+
   return (
+    <div className="registration-wrapper">
+      <div className="registration">
+        <div className="registration-header">
+          <div className="registration-header-padding">
+            <p className="registration-header-heading">Superadmin Dashboard</p>
+            <p className="registration-header-sub">Manage users and data</p>
+          </div>
+        </div>
+
+        <div className="registration-container">
+          <div className="registration-container-padding">
+            <div className="registration-container-header">
+              <p className="registration-container-header-sub">User administration</p>
+              <p className="registration-container-header-heading">Create or update user profiles</p>
+            </div>
+
+            <div className="registration-container-column">
+              <form className="registration-container-column-form" onSubmit={handleCreateOrUpdate}>
+                {error && <div className="error-message">{error}</div>}
+
+                <div className="registration-container-column-form-address">
+                  <div className="registration-container-column-form-address-header">
+                    <img src={calendar_week} alt="calendar_week icon" />
+                    <p className="registration-container-column-form-address-header-text">Home address</p>
+                  </div>
+
+                  <div className="registration-container-column-form-address-content">
+                    <div className="registration-container-column-form-address-content-left">
+                      <div className="registration-container-column-form-address-content-left-alike">
+                        <label htmlFor="region">Region</label>
+                        <select
+                          id="region"
+                          name="region"
+                          value={selectedRegion}
+                          onChange={(e) => setSelectedRegion(e.target.value)}
+                          required
+                        >
+                          <option value="">Select your region</option>
+                          {regions.map((region) => (
+                            <option key={region.code} value={region.code}>
+                              {region.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="registration-container-column-form-address-content-left-alike">
+                        <label htmlFor="province">Province</label>
+                        <select
+                          id="province"
+                          name="province"
+                          value={selectedProvince}
+                          onChange={(e) => setSelectedProvince(e.target.value)}
+                          required
+                          disabled={selectedRegion === '130000000' || !selectedRegion}
+                        >
+                          <option value="">Select your province</option>
+                          {provinces.map((province) => (
+                            <option key={province.code} value={province.code}>
+                              {province.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="registration-container-column-form-address-content-left-alike">
+                        <label htmlFor="barangay">Barangay</label>
+                        <select
+                          id="barangay"
+                          name="barangay"
+                          value={selectedBarangay}
+                          onChange={(e) => setSelectedBarangay(e.target.value)}
+                          required
+                          disabled={!selectedCity}
+                        >
+                          <option value="">Select your barangay</option>
+                          {barangays.map((barangay) => (
+                            <option key={barangay.code} value={barangay.code}>
+                              {barangay.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="registration-container-column-form-address-content-left-alike">
+                        <label htmlFor="street">Street</label>
+                        <input
+                          type="text"
+                          id="street"
+                          name="street"
+                          placeholder="Enter your street"
+                          value={formData.street}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="registration-container-column-form-address-content-right">
+                      <div className="registration-container-column-form-address-content-right-alike">
+                        <label htmlFor="city">City/Municipality</label>
+                        <select
+                          id="city"
+                          name="city"
+                          value={selectedCity}
+                          onChange={(e) => setSelectedCity(e.target.value)}
+                          required
+                          disabled={!selectedProvince}
+                        >
+                          <option value="">Select your city/municipality</option>
+                          {cities.map((city) => (
+                            <option key={city.code} value={city.code}>
+                              {city.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="registration-container-column-form-address-content-right-alike">
+                        <label htmlFor="zip_code">Zip code</label>
+                        <input
+                          type="text"
+                          id="zip_code"
+                          name="zip_code"
+                          placeholder="Enter your zip code"
+                          value={formData.zip_code}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+
+                      <div className="registration-container-column-form-address-content-right-alike">
+                        <label htmlFor="building_number">Building number</label>
+                        <input
+                          type="text"
+                          id="building_number"
+                          name="building_number"
+                          placeholder="Enter your building number"
+                          value={formData.building_number}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+               <div className="registration-container-column-form-personal">
+  <div className="registration-container-column-form-personal-header">
+    <img src={user_square} alt="user_square icon" />
+    <p className="registration-container-column-form-personal-header-text">
+      Personal & Employment Details
+    </p>
+  </div>
+
+  <div className="registration-container-column-form-personal-content">
+    <div className="registration-container-column-form-personal-content-left">
+      <div className="registration-container-column-form-personal-content-left-alike">
+        <label htmlFor="first_name">First Name</label>
+        <input
+          type="text"
+          id="first_name"
+          name="first_name"
+          placeholder="Enter your first name"
+          value={formData.first_name}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+
+      <div className="registration-container-column-form-personal-content-left-alike">
+        <label htmlFor="middle_name">Middle Name</label>
+        <input
+          type="text"
+          id="middle_name"
+          name="middle_name"
+          placeholder="Enter your middle name"
+          value={formData.middle_name}
+          onChange={handleInputChange}
+        />
+      </div>
+
+      <div className="registration-container-column-form-personal-content-left-alike">
+        <label htmlFor="last_name">Last Name</label>
+        <input
+          type="text"
+          id="last_name"
+          name="last_name"
+          placeholder="Enter your last name"
+          value={formData.last_name}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+      <div className="registration-container-column-form-personal-content-right-alike">
+        <label htmlFor="mobile">Mobile</label>
+        <input
+          type="text"
+          id="mobile"
+          name="mobile"
+          placeholder="Enter your mobile number"
+          value={formData.mobile}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+
     
-    <div
-      style={{
-        marginTop: '80px',
-        maxWidth: '1000px',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-      }}
-    >
-      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Superadmin Dashboard</h1>
+    </div>
 
-      {error && (
-        <div style={{ color: 'red', textAlign: 'center', marginBottom: '10px' }}>
-          {error}
-        </div>
-      )}
+    <div className="registration-container-column-form-personal-content-right">
+  <div className="registration-container-column-form-personal-content-left-alike">
+        <label htmlFor="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Enter your email"
+          value={formData.email}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+      <div className="registration-container-column-form-personal-content-right-alike">
+        <label htmlFor="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder={editingUserId ? 'New Password (optional)' : 'Enter your password'}
+          value={formData.password}
+          onChange={handleInputChange}
+          required={!editingUserId}
+        />
+      </div>
 
-      {loading && (
-        <div style={{ textAlign: 'center', marginBottom: '10px' }}>
-          Loading...
-        </div>
-      )}
-  
-      <form
-        onSubmit={handleCreateOrUpdate}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px',
-          marginBottom: '30px',
-          maxWidth: '1000px',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-        }}
-      >
-        <div style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '4px' }}>
-          <h3>Personal Information</h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-            <input
-              type="text"
-              name="first_name"
-              value={formData.first_name}
-              onChange={handleInputChange}
-              placeholder="First Name"
-              required
-              style={{ padding: '8px', width: '200px' }}
-            />
-            <input
-              type="text"
-              name="middle_name"
-              value={formData.middle_name}
-              onChange={handleInputChange}
-              placeholder="Middle Name"
-              style={{ padding: '8px', width: '200px' }}
-            />
-            <input
-              type="text"
-              name="last_name"
-              value={formData.last_name}
-              onChange={handleInputChange}
-              placeholder="Last Name"
-              required
-              style={{ padding: '8px', width: '200px' }}
-            />
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="Email"
-              required
-              style={{ padding: '8px', width: '200px' }}
-            />
-            <input
-              type="text"
-              name="mobile"
-              value={formData.mobile}
-              onChange={handleInputChange}
-              placeholder="Mobile"
-              required
-              style={{ padding: '8px', width: '200px' }}
-            />
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              placeholder={editingUserId ? 'New Password (optional)' : 'Password'}
-              required={!editingUserId}
-              style={{ padding: '8px', width: '200px' }}
-            />
-            <input
-              type="date"
-              name="birthday"
-              value={formData.birthday}
-              onChange={handleInputChange}
-              placeholder="Birthday (YYYY-MM-DD)"
-              style={{ padding: '8px', width: '200px' }}
-            />
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={handleInputChange}
-              style={{ padding: '8px', width: '200px' }}
-            >
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-            <select
-              name="civil_status"
-              value={formData.civil_status}
-              onChange={handleInputChange}
-              style={{ padding: '8px', width: '200px' }}
-            >
-              <option value="">Select Civil Status</option>
-              <option value="Single">Single</option>
-              <option value="Married">Married</option>
-              <option value="Divorced">Divorced</option>
-              <option value="Widowed">Widowed</option>
-            </select>
-          </div>
-        </div>
-        <div style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '4px' }}>
-          <h3>Employment Information</h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleInputChange}
-              required
-              style={{ padding: '8px', width: '200px' }}
-            >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-              <option value="superadmin">Superadmin</option>
-            </select>
-            <input
-              type="text"
-              name="position"
-              value={formData.position}
-              onChange={handleInputChange}
-              placeholder="Position"
-              style={{ padding: '8px', width: '200px' }}
-            />
-            <input
-              type="text"
-              name="department"
-              value={formData.department}
-              onChange={handleInputChange}
-              placeholder="Department"
-              style={{ padding: '8px', width: '200px' }}
-            />
-            <select
-              name="availability"
-              value={formData.availability}
-              onChange={handleInputChange}
-              style={{ padding: '8px', width: '200px' }}
-            >
-              <option value="">Select Availability</option>
-              <option value="Available">Available</option>
-              <option value="Vacation">Vacation</option>
-              <option value="On Board">On Board</option>
-            </select>
-          </div>
-        </div>
-        <div style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '4px' }}>
-          <h3>Address Information</h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-            <select
-              name="region"
-              value={formData.region}
-              onChange={handleInputChange}
-              style={{ padding: '8px', width: '200px' }}
-            >
-              <option value="">Select Region</option>
-              {regions.map((region) => (
-                <option key={region.code} value={region.code}>
-                  {region.name}
-                </option>
-              ))}
-            </select>
-            <select
-              name="province"
-              value={formData.province}
-              onChange={handleInputChange}
-              style={{ padding: '8px', width: '200px' }}
-              disabled={!formData.region}
-            >
-              <option value="">Select Province</option>
-              {provinces.map((province) => (
-                <option key={province.code} value={province.code}>
-                  {province.name}
-                </option>
-              ))}
-            </select>
-            <select
-              name="city"
-              value={formData.city}
-              onChange={handleInputChange}
-              style={{ padding: '8px', width: '200px' }}
-              disabled={!formData.province}
-            >
-              <option value="">Select City/Municipality</option>
-              {cities.map((city) => (
-                <option key={city.code} value={city.code}>
-                  {city.name}
-                </option>
-              ))}
-            </select>
-            <select
-              name="barangay"
-              value={formData.barangay}
-              onChange={handleInputChange}
-              style={{ padding: '8px', width: '200px' }}
-              disabled={!formData.city}
-            >
-              <option value="">Select Barangay</option>
-              {barangays.map((barangay) => (
-                <option key={barangay.code} value={barangay.code}>
-                  {barangay.name}
-                </option>
-              ))}
-            </select>
-            <input
-              type="text"
-              name="street"
-              value={formData.street}
-              onChange={handleInputChange}
-              placeholder="Street"
-              style={{ padding: '8px', width: '200px' }}
-            />
-            <input
-              type="text"
-              name="building_number"
-              value={formData.building_number}
-              onChange={handleInputChange}
-              placeholder="Building Number"
-              style={{ padding: '8px', width: '200px' }}
-            />
-            <input
-              type="text"
-              name="zip_code"
-              value={formData.zip_code}
-              onChange={handleInputChange}
-              placeholder="Zip Code"
-              style={{ padding: '8px', width: '200px' }}
-            />
-          </div>
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: loading ? '#6c757d' : '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            alignSelf: 'center',
-            cursor: loading ? 'not-allowed' : 'pointer',
-          }}
+      <div className="registration-container-column-form-personal-content-right-alike">
+        <label htmlFor="birthday">Birthday</label>
+        <input
+          type="date"
+          id="birthday"
+          name="birthday"
+          value={formData.birthday}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+
+      <div className="registration-container-column-form-personal-content-right-alike">
+        <label htmlFor="role">Role</label>
+        <select
+          id="role"
+          name="role"
+          value={formData.role}
+          onChange={handleInputChange}
+          required
         >
-          {editingUserId ? 'Update User' : 'Create User'}
-        </button>
-      </form>
+          {roleOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  </div>
 
-      <div style={{ overflowX: 'auto' }}>
-        <table
-          border="1"
-          style={{
-            width: '100%',
-            maxWidth: '100%',
-            borderCollapse: 'collapse',
-            backgroundColor: '#fff',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          }}
+  <div className="registration-container-column-form-personal-content">
+    <div className="registration-container-column-form-personal-content-left">
+      <div className="registration-container-column-form-personal-content-left-alike">
+        <label htmlFor="position">Primary Position</label>
+        <select
+          id="position"
+          name="position"
+          value={formData.position}
+          onChange={handleInputChange}
         >
-          <thead>
-            <tr style={{ backgroundColor: '#f8f9fa' }}>
-              <th style={{ padding: '10px' }}>ID</th>
-              <th style={{ padding: '10px' }}>First Name</th>
-              <th style={{ padding: '10px' }}>Middle Name</th>
-              <th style={{ padding: '10px' }}>Last Name</th>
-              <th style={{ padding: '10px' }}>Email</th>
-              <th style={{ padding: '10px' }}>Mobile</th>
-              <th style={{ padding: '10px' }}>Role</th>
-              <th style={{ padding: '10px' }}>Position</th>
-              <th style={{ padding: '10px' }}>Department</th>
-              <th style={{ padding: '10px' }}>Region</th>
-              <th style={{ padding: '10px' }}>Province</th>
-              <th style={{ padding: '10px' }}>City</th>
-              <th style={{ padding: '10px' }}>Barangay</th>
-              <th style={{ padding: '10px' }}>Street</th>
-              <th style={{ padding: '10px' }}>Zip Code</th>
-              <th style={{ padding: '10px' }}>Gender</th>
-              <th style={{ padding: '10px' }}>Civil Status</th>
-              <th style={{ padding: '10px' }}>Birthday</th>
-              <th style={{ padding: '10px' }}>Availability</th>
-              <th style={{ padding: '10px' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td style={{ padding: '10px' }}>{user.id}</td>
-                <td style={{ padding: '10px' }}>{user.first_name || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.middle_name || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.last_name || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.email || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.mobile || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.role || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.position || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.department || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.region || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.province || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.city || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.barangay || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.street || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.zip_code || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.gender || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.civil_status || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.birthday || '-'}</td>
-                <td style={{ padding: '10px' }}>{user.availability || '-'}</td>
-                <td style={{ padding: '10px' }}>
-                  <button
-                    onClick={() => handleEdit(user)}
-                    style={{
-                      marginRight: '5px',
-                      padding: '5px 10px',
-                      backgroundColor: '#28a745',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                    }}
-                  >
-                    Edit
+          {positionOperations.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="registration-container-column-form-personal-content-left-alike">
+        <label htmlFor="gender">Gender</label>
+        <select
+          id="gender"
+          name="gender"
+          value={formData.gender}
+          onChange={handleInputChange}
+          required
+        >
+          {genderOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+
+    <div className="registration-container-column-form-personal-content-right">
+      <div className="registration-container-column-form-personal-content-right-alike">
+        <label htmlFor="department">Department</label>
+        <input
+          type="text"
+          id="department"
+          name="department"
+          placeholder="Enter your department"
+          value={formData.department}
+          onChange={handleInputChange}
+        />
+      </div>
+
+      <div className="registration-container-column-form-personal-content-right-alike">
+        <label htmlFor="civil_status">Civil Status</label>
+        <select
+          id="civil_status"
+          name="civil_status"
+          value={formData.civil_status}
+          onChange={handleInputChange}
+          required
+        >
+          {civilStatusOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="registration-container-column-form-personal-content-right-alike">
+        <label htmlFor="availability">Availability</label>
+        <select
+          id="availability"
+          name="availability"
+          value={formData.availability}
+          onChange={handleInputChange}
+        >
+          {availabilityOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+                <div className="registration-container-submit">
+                  <button type="submit" disabled={loading}>
+                    {loading ? 'Processing...' : editingUserId ? 'Update User' : 'Create User'}
                   </button>
-                  <button
-                    onClick={() => handleDelete(user.id)}
-                    disabled={user.role === 'superadmin' || loading}
-                    style={{
-                      padding: '5px 10px',
-                      backgroundColor: user.role === 'superadmin' || loading ? '#6c757d' : '#dc3545',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: user.role === 'superadmin' || loading ? 'not-allowed' : 'pointer',
-                    }}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div className="registration-container">
+          <div className="registration-container-padding">
+            <div className="registration-container-header">
+              <p className="registration-container-header-sub">User list</p>
+              <p className="registration-container-header-heading">Manage existing users</p>
+            </div>
+            <div
+              className="table-section"
+              ref={tableRef}
+              onMouseDown={handleMouseDown}
+              onMouseLeave={handleMouseLeave}
+              onMouseUp={handleMouseUp}
+              onMouseMove={handleMouseMove}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Actions</th>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Middle Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Role</th>
+                    <th>Position</th>
+                    <th>Department</th>
+                    <th>Region</th>
+                    <th>Province</th>
+                    <th>City</th>
+                    <th>Barangay</th>
+                    <th>Street</th>
+                    <th>Zip Code</th>
+                    <th>Gender</th>
+                    <th>Civil Status</th>
+                    <th>Birthday</th>
+                    <th>Availability</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr key={user.id}>
+                      <td>
+                        <button
+                          onClick={() => handleEdit(user)}
+                          className="edit-button"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(user.id)}
+                          disabled={user.role === 'superadmin' || loading}
+                          className="delete-button"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                      <td>{user.id}</td>
+                      <td>{user.first_name || '-'}</td>
+                      <td>{user.middle_name || '-'}</td>
+                      <td>{user.last_name || '-'}</td>
+                      <td>{user.email || '-'}</td>
+                      <td>{user.mobile || '-'}</td>
+                      <td>{user.role || '-'}</td>
+                      <td>{user.position || '-'}</td>
+                      <td>{user.department || '-'}</td>
+                      <td>{user.region || '-'}</td>
+                      <td>{user.province || '-'}</td>
+                      <td>{user.city || '-'}</td>
+                      <td>{user.barangay || '-'}</td>
+                      <td>{user.street || '-'}</td>
+                      <td>{user.zip_code || '-'}</td>
+                      <td>{user.gender || '-'}</td>
+                      <td>{user.civil_status || '-'}</td>
+                      <td>{user.birthday || '-'}</td>
+                      <td>{user.availability || '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
-}
+};
 
 export default HomeSuperAdmin;

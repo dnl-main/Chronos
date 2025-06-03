@@ -1,0 +1,288 @@
+/* Prevent horizontal scrolling on the entire page */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden; /* Disable horizontal scroll */
+}
+
+.registration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 60px 20px;
+  box-sizing: border-box;
+  margin-left: 72px; /* Offset for sidebar width */
+  max-width: calc(100% - 72px); /* Ensure it fits within viewport minus sidebar */
+}
+
+.registration-header {
+  text-align: center;
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+.registration-header-heading {
+  margin-top: 40px;
+  font-weight: 600;
+  font-size: 40px;
+  color: #333;
+}
+
+.registration-header-sub {
+  font-weight: 600;
+  font-size: 16px;
+  color: #666;
+  margin-top: 10px;
+}
+
+.registration-container {
+  width: 100%;
+  max-width: 1900px;
+  background-color: white;
+  border-radius: 20px;
+  padding: 60px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow-x: hidden; /* Prevent overflow within container */
+}
+
+.registration-container-header {
+  text-align: left;
+  margin-bottom: 40px;
+}
+
+.registration-container-header-heading {
+  font-weight: 600;
+  font-size: 32px;
+  color: #333;
+}
+
+.registration-container-header-sub {
+  font-weight: 600;
+  font-size: 16px;
+  color: #666;
+  margin-top: 8px;
+}
+
+.registration-container-column-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center; /* Center the form columns */
+}
+
+.registration-container-column-form-address,
+.registration-container-column-form-personal {
+  flex: 1 1 48%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.registration-container-column-form-address-header,
+.registration-container-column-form-personal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.registration-container-column-form-address-header-text,
+.registration-container-column-form-personal-header-text {
+  font-weight: 600;
+  font-size: 16px;
+  color: #666;
+}
+
+.registration-container-column-form-address-content,
+.registration-container-column-form-personal-content {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.registration-container-column-form-address-content-left,
+.registration-container-column-form-address-content-right,
+.registration-container-column-form-personal-content-left,
+.registration-container-column-form-personal-content-right {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+}
+
+.form-group label {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.registration-container-column-form input,
+.registration-container-column-form select {
+  width: 100%;
+  height: 44px;
+  padding: 12px 20px;
+  background-color: #f5f5f5;
+  border: 1px solid #e0f7f9;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 300;
+  color: #666;
+  appearance: none;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.registration-container-column-form input:focus,
+.registration-container-column-form select:focus {
+  outline: none;
+  border-color: #b3e5fc;
+  background-color: #fff;
+}
+
+.registration-container-column-form input::placeholder,
+.registration-container-column-form select option[disabled] {
+  color: #7a7a7a;
+  opacity: 1;
+}
+
+.registration-container-column-form select {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><polygon points="0,0 12,0 6,12" fill="#666"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  cursor: pointer;
+}
+
+/* Style for the select dropdown options */
+.registration-container-column-form select option {
+  background-color: #fff;
+  color: #333;
+  padding: 10px 20px;
+}
+
+/* Ensures the dropdown itself matches the input style when expanded */
+.registration-container-column-form select::-ms-expand {
+  display: none; /* Hide default arrow in IE */
+}
+
+.registration-container-submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 5px;
+}
+
+.registration-container-submit button {
+  padding: 12px 32px;
+  width: 480px;
+  height: 50px;
+  background-color: #00889a;
+  border-radius: 100px;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.table-section {
+  margin-top: 40px;
+  overflow-x: hidden; /* Hide horizontal scrollbar */
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  cursor: grab; /* Indicate draggability */
+  user-select: none; /* Prevent text selection while dragging */
+}
+
+.table-section:active {
+  cursor: grabbing; /* Change cursor when dragging */
+}
+
+.table {
+  width: 100%;
+  min-width: 2000px; /* Ensure table is wide enough to require dragging */
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table thead {
+  background-color: #00889a; /* Match primary color */
+  color: #fff;
+}
+
+.table thead th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #00889a;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.table tbody tr:nth-child(odd) {
+  background-color: #fff;
+}
+
+.table td {
+  padding: 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table td:first-child {
+  white-space: nowrap; /* Prevent buttons from wrapping */
+}
+
+.edit-button,
+.delete-button {
+  padding: 4px 16px;
+  height: 32px;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px; /* Slightly smaller for better fit */
+  color: #ffffff;
+  margin-right: 8px; /* Space between buttons */
+  margin-bottom: 8px;
+}
+
+.edit-button {
+  background-color: #00889a;
+}
+
+.delete-button {
+  background-color: #ff0000;
+}
+
+.delete-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
