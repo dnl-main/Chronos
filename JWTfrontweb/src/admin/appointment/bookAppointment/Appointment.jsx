@@ -211,7 +211,7 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
         const availableAppointments = availableUsers
           .filter(user => 
             !bookedUserIds.has(user.id) && 
-            ['available', 'on board'].includes(user.availability?.toLowerCase())
+            ['available'].includes(user.availability?.toLowerCase())
           )
           .map(user => ({
             id: `user-${user.id}`,
@@ -361,7 +361,7 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
         throw new Error('Start time and end time are required.');
       }
       const response = await axios.post(
-        `${apiUrl}/appointment`,
+        `${apiUrl}/appointment/book`,
         payload,
         { headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' } }
       );
@@ -629,7 +629,7 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
                     userSelect: 'none',
                   }}
                 >
-                  Please select a user first to manage appointments.
+                  Please select an available or booked user first to manage appointments.
                 </p>
               </div>
             )}

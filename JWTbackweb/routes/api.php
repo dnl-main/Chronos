@@ -62,6 +62,7 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('/appointment/upcoming', [AppointmentController::class, 'getUpcomingAppointments']);
     Route::put('/appointment/{id}/reschedule', [AppointmentController::class, 'reschedule']);
     Route::delete('/appointment/{id}/cancel', [AppointmentController::class, 'cancel']);
+    Route::post('/appointment/book', [AppointmentController::class, 'book']);
 
     // Profile Picture Upload
     Route::post('/user/upload-profile-picture', [ProfilePicController::class, 'upload']);
@@ -83,9 +84,6 @@ Route::middleware('jwt.auth')->group(function () {
 
     // Notifications
     Route::post('/notifications/upload', [NotificationController::class, 'sendCertificateNotification']);
-    Route::get('/notifications', [NotificationController::class, 'getUserNotifications']);
-    Route::delete('/notifications/{id}', [NotificationController::class, 'deleteNotification']);
-    Route::post('/notifications/reschedule', [NotificationController::class, 'sendRescheduleNotification']);
 
     // User Details
     Route::get('/users/{id}', function ($id) {
