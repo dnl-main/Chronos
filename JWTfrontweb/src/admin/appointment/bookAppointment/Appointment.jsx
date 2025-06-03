@@ -449,9 +449,10 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
         )
       );
       setShowRescheduleModal(false);
+      window.location.reload();
       setShowConfirmation(true);
       // alert('Appointment rescheduled successfully!');
-      // window.location.reload();
+      
     } catch (err) {
       alert('Error rescheduling appointment: ' + (err.response?.data?.message || err.message));
     }
