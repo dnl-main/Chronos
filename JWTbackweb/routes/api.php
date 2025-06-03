@@ -94,7 +94,8 @@ Route::middleware('jwt.auth')->group(function () {
         Route::prefix('superadmin')->middleware('role:superadmin')->group(function () {
         Route::get('/readusers', [SuperadminController::class, 'getAllUsers']);
         Route::post('/createusers', [SuperadminController::class, 'createUser']);
-        Route::put('/updateusers/{id}', [SuperadminController::class, 'updateUser']);
         Route::delete('/deleteusers/{id}', [SuperadminController::class, 'deleteUser']);
+        Route::put('/updateusers/personal/{id}', [SuperadminController::class, 'updateUserPersonalDetails']);
+        Route::put('/updateusers/address/{id}', [SuperadminController::class, 'updateUserAddress']);
     });
 });

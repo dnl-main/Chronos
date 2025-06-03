@@ -70,7 +70,7 @@ class SuperadminController extends Controller
                 'email' => 'required|string|email|max:255|unique:users',
                 'mobile' => 'required|string|max:20|unique:users',
                 'password' => 'required|string|min:6',
-                'role' => 'required|string|in:user,admin,superadmin', // Allow superadmin
+                'role' => 'required|string|in:user,admin,superadmin',
                 'position' => 'nullable|string|max:255',
                 'department' => 'nullable|string|max:255',
                 'region' => 'nullable|string|max:255',
@@ -150,7 +150,7 @@ class SuperadminController extends Controller
                 'email' => 'required|string|email|max:255|unique:users,email,' . $id,
                 'mobile' => 'required|string|max:20|unique:users,mobile,' . $id,
                 'password' => 'nullable|string|min:6',
-                'role' => 'required|string|in:user,admin,superadmin', // Allow superadmin
+                'role' => 'required|string|in:user,admin,superadmin',
                 'position' => 'nullable|string|max:255',
                 'department' => 'nullable|string|max:255',
                 'region' => 'nullable|string|max:255',
@@ -212,6 +212,133 @@ class SuperadminController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Failed to update user',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function updateUserPersonalDetails(Request $request, $id)
+    {
+        try {
+            $user = User::find($id);
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not found',
+                ], 404);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'first_name' => 'required|string|max:255',
+                'middle_name' => 'nullable|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+                'mobile' => 'required|string|max:20|unique:users,mobile,' . $id,
+                'password' => 'nullable|string|min:6',
+                'role' => 'required|string|in:user,admin,superadmin',
+                'position' => 'nullable|string|max:255',
+                'department' => 'nullable|string|max:255',
+                'gender' => 'nullable|string|max:50',
+                'civil_status' => 'nullable|string|max:50',
+                'birthday' => 'nullable|date_format:Y-m-d',
+                'availability' => 'nullable|string|in:Available,Vacation,On Board',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            $data = $request->only([
+                'first_name',
+                'middle_name',
+                'last_name',
+                'email',
+                'mobile',
+                'role',
+                'position',
+                'department',
+                'gender',
+                'civil_status',
+                'birthday',
+                'availability',
+            ]);
+
+            if ($request->has('password') && $request->password) {
+                $data['password'] = Hash::make($request->password);
+            }
+
+            $user->update($data);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'User personal details updated successfully',
+                'user' => $user,
+            ], 200);
+        } catch (Exception $e) {
+            Log::error('Error updating user personal details:', ['error' => $e->getMessage()]);
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to update user personal details',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function updateUserAddress(Request $request, $id)
+    {
+        try {
+            $user = User::find($id);
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not found',
+                ], 404);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'region' => 'required|string|max:255',
+                'province' => 'required|string|max:255',
+                'city' => 'required|string|max:255',
+                'barangay' => 'required|string|max:255',
+                'street' => 'required|string|max:255',
+                'building_number' => 'required|string|max:50',
+                'zip_code' => 'required|string|max:10',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            $data = $request->only([
+                'region',
+                'province',
+                'city',
+                'barangay',
+                'street',
+                'building_number',
+                'zip_code',
+            ]);
+
+            $user->update($data);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'User address updated successfully',
+                'user' => $user,
+            ], 200);
+        } catch (Exception $e) {
+            Log::error('Error updating user address:', ['error' => $e->getMessage()]);
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to update user address',
                 'error' => $e->getMessage(),
             ], 500);
         }

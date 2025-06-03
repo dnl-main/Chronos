@@ -232,7 +232,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
       }
 
       const response = await axios.delete(
-        `${apiUrl}/appointment/${selectedAppointment.id}`,
+        `${apiUrl}/appointment/${selectedAppointment.id}/cancel`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

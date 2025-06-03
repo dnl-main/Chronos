@@ -342,17 +342,19 @@ const HomeSuperAdmin = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleCreateOrUpdate = async (e) => {
+  // Handle create user
+  const handleCreateUser = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    // Validate required fields
+    // Validate all required fields for creating a user
     const requiredFields = [
       'first_name',
       'last_name',
       'email',
       'mobile',
+      'password',
       'street',
       'building_number',
       'zip_code',
@@ -384,28 +386,13 @@ const HomeSuperAdmin = () => {
     };
 
     try {
-      if (editingUserId) {
-        const response = await axios.put(
-          `${apiUrl}/superadmin/updateusers/${editingUserId}`,
-          submissionData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'ngrok-skip-browser-warning': 'true',
-            },
-          }
-        );
-        setUsers(users.map((user) => (user.id === editingUserId ? response.data.user : user)));
-        setEditingUserId(null);
-      } else {
-        const response = await axios.post(`${apiUrl}/superadmin/createusers`, submissionData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'ngrok-skip-browser-warning': 'true',
-          },
-        });
-        setUsers([...users, response.data.user]);
-      }
+      const response = await axios.post(`${apiUrl}/superadmin/createusers`, submissionData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
+      });
+      setUsers([...users, response.data.user]);
       setFormData({
         first_name: '',
         middle_name: '',
@@ -430,14 +417,183 @@ const HomeSuperAdmin = () => {
       setSelectedBarangay('');
       setError(null);
     } catch (error) {
-      setError(error.response?.data?.message || 'Error saving user');
-      console.error('Error saving user:', error);
+      setError(error.response?.data?.message || 'Error creating user');
+      console.error('Error creating user:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle update address
+  const handleUpdateAddress = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    // Validate required address fields
+    const requiredAddressFields = ['street', 'building_number', 'zip_code'];
+    const missingFields = requiredAddressFields.filter((field) => !formData[field]);
+    if (
+      missingFields.length > 0 ||
+      !selectedRegion ||
+      !selectedProvince ||
+      !selectedCity ||
+      !selectedBarangay
+    ) {
+      setError('Please fill in all required address fields.');
+      setLoading(false);
+      return;
+    }
+
+    const token = sessionStorage.getItem('token');
+    const submissionData = {
+      region: selectedRegionName,
+      province: selectedProvinceName,
+      city: selectedCityName,
+      barangay: selectedBarangayName,
+      street: formData.street,
+      building_number: formData.building_number,
+      zip_code: formData.zip_code,
+    };
+
+    try {
+      const response = await axios.put(
+        `${apiUrl}/superadmin/updateusers/address/${editingUserId}`,
+        submissionData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
+        }
+      );
+      setUsers(users.map((user) => (user.id === editingUserId ? response.data.user : user)));
+      setEditingUserId(null);
+      setFormData({
+        first_name: '',
+        middle_name: '',
+        last_name: '',
+        email: '',
+        mobile: '',
+        password: '',
+        role: 'user',
+        position: '',
+        department: '',
+        street: '',
+        building_number: '',
+        zip_code: '',
+        gender: '',
+        civil_status: '',
+        birthday: '',
+        availability: '',
+      });
+      setSelectedRegion('');
+      setSelectedProvince('');
+      setSelectedCity('');
+      setSelectedBarangay('');
+      setError(null);
+    } catch (error) {
+      const errorMessage = error.response?.data?.errors
+        ? Object.values(error.response.data.errors).flat().join(', ')
+        : error.response?.data?.message || 'Error updating address';
+      setError(errorMessage);
+      console.error('Error updating address:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle update personal details
+  const handleUpdatePersonalDetails = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    // Validate required personal details fields
+    const requiredPersonalFields = [
+      'first_name',
+      'last_name',
+      'email',
+      'mobile',
+      'role',
+    ];
+    const missingFields = requiredPersonalFields.filter((field) => !formData[field]);
+    if (missingFields.length > 0) {
+      setError('Please fill in all required personal details fields.');
+      setLoading(false);
+      return;
+    }
+
+    const token = sessionStorage.getItem('token');
+    const submissionData = {
+      first_name: formData.first_name,
+      middle_name: formData.middle_name,
+      last_name: formData.last_name,
+      email: formData.email,
+      mobile: formData.mobile,
+      password: formData.password || undefined, // Only include password if provided
+      role: formData.role,
+      position: formData.position,
+      department: formData.department,
+      gender: formData.gender,
+      civil_status: formData.civil_status,
+      birthday: formData.birthday,
+      availability: formData.availability,
+    };
+
+    try {
+      const response = await axios.put(
+        `${apiUrl}/superadmin/updateusers/personal/${editingUserId}`,
+        submissionData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
+        }
+      );
+      setUsers(users.map((user) => (user.id === editingUserId ? response.data.user : user)));
+      setEditingUserId(null);
+      setFormData({
+        first_name: '',
+        middle_name: '',
+        last_name: '',
+        email: '',
+        mobile: '',
+        password: '',
+        role: 'user',
+        position: '',
+        department: '',
+        street: '',
+        building_number: '',
+        zip_code: '',
+        gender: '',
+        civil_status: '',
+        birthday: '',
+        availability: '',
+      });
+      setSelectedRegion('');
+      setSelectedProvince('');
+      setSelectedCity('');
+      setSelectedBarangay('');
+      setError(null);
+    } catch (error) {
+      const errorMessage = error.response?.data?.errors
+        ? Object.values(error.response.data.errors).flat().join(', ')
+        : error.response?.data?.message || 'Error updating personal details';
+      setError(errorMessage);
+      console.error('Error updating personal details:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleEdit = async (user) => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+
     setEditingUserId(user.id);
     setFormData({
       first_name: user.first_name || '',
@@ -458,7 +614,6 @@ const HomeSuperAdmin = () => {
       availability: user.availability || '',
     });
 
-    // Set location dropdowns
     if (user.region) {
       setSelectedRegion(user.region === 'National Capital Region' ? '130000000' : '');
       const regionResponse = await axios.get(`${apiUrl}/regions`, {
@@ -539,7 +694,7 @@ const HomeSuperAdmin = () => {
             </div>
 
             <div className="registration-container-column">
-              <form className="registration-container-column-form" onSubmit={handleCreateOrUpdate}>
+              <form className="registration-container-column-form">
                 {error && <div className="error-message">{error}</div>}
 
                 <div className="registration-container-column-form-address">
@@ -669,234 +824,253 @@ const HomeSuperAdmin = () => {
                   </div>
                 </div>
 
-               <div className="registration-container-column-form-personal">
-  <div className="registration-container-column-form-personal-header">
-    <img src={user_square} alt="user_square icon" />
-    <p className="registration-container-column-form-personal-header-text">
-      Personal & Employment Details
-    </p>
-  </div>
+                <div className="registration-container-column-form-personal">
+                  <div className="registration-container-column-form-personal-header">
+                    <img src={user_square} alt="user_square icon" />
+                    <p className="registration-container-column-form-personal-header-text">
+                      Personal & Employment Details
+                    </p>
+                  </div>
 
-  <div className="registration-container-column-form-personal-content">
-    <div className="registration-container-column-form-personal-content-left">
-      <div className="registration-container-column-form-personal-content-left-alike">
-        <label htmlFor="first_name">First Name</label>
-        <input
-          type="text"
-          id="first_name"
-          name="first_name"
-          placeholder="Enter your first name"
-          value={formData.first_name}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
+                  <div className="registration-container-column-form-personal-content">
+                    <div className="registration-container-column-form-personal-content-left">
+                      <div className="registration-container-column-form-personal-content-left-alike">
+                        <label htmlFor="first_name">First Name</label>
+                        <input
+                          type="text"
+                          id="first_name"
+                          name="first_name"
+                          placeholder="Enter your first name"
+                          value={formData.first_name}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
 
-      <div className="registration-container-column-form-personal-content-left-alike">
-        <label htmlFor="middle_name">Middle Name</label>
-        <input
-          type="text"
-          id="middle_name"
-          name="middle_name"
-          placeholder="Enter your middle name"
-          value={formData.middle_name}
-          onChange={handleInputChange}
-        />
-      </div>
+                      <div className="registration-container-column-form-personal-content-left-alike">
+                        <label htmlFor="middle_name">Middle Name</label>
+                        <input
+                          type="text"
+                          id="middle_name"
+                          name="middle_name"
+                          placeholder="Enter your middle name"
+                          value={formData.middle_name}
+                          onChange={handleInputChange}
+                        />
+                      </div>
 
-      <div className="registration-container-column-form-personal-content-left-alike">
-        <label htmlFor="last_name">Last Name</label>
-        <input
-          type="text"
-          id="last_name"
-          name="last_name"
-          placeholder="Enter your last name"
-          value={formData.last_name}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-      <div className="registration-container-column-form-personal-content-right-alike">
-        <label htmlFor="mobile">Mobile</label>
-        <input
-          type="text"
-          id="mobile"
-          name="mobile"
-          placeholder="Enter your mobile number"
-          value={formData.mobile}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
+                      <div className="registration-container-column-form-personal-content-left-alike">
+                        <label htmlFor="last_name">Last Name</label>
+                        <input
+                          type="text"
+                          id="last_name"
+                          name="last_name"
+                          placeholder="Enter your last name"
+                          value={formData.last_name}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="mobile">Mobile</label>
+                        <input
+                          type="text"
+                          id="mobile"
+                          name="mobile"
+                          placeholder="Enter your mobile number"
+                          value={formData.mobile}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                    </div>
 
-    
-    </div>
+                    <div className="registration-container-column-form-personal-content-right">
+                      <div className="registration-container-column-form-personal-content-left-alike">
+                        <label htmlFor="email">Email</label>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          placeholder="Enter your email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="password">Password</label>
+                        <div style={{ position: 'relative' }}>
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            id="password"
+                            name="password"
+                            placeholder={editingUserId ? 'New Password (optional)' : 'Enter your password'}
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            required={!editingUserId}
+                            style={{ paddingRight: '40px' }}
+                          />
+                          <div
+                            onClick={() => setShowPassword(!showPassword)}
+                            style={{
+                              position: 'absolute',
+                              right: '15px',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              cursor: 'pointer',
+                              height: '20px',
+                              width: '20px',
+                              borderRadius: '50%',
+                              backgroundColor: showPassword ? '#00889A' : '#ccc',
+                              zIndex: 1,
+                            }}
+                            title={showPassword ? 'Hide password' : 'Show password'}
+                          />
+                        </div>
+                      </div>
 
-    <div className="registration-container-column-form-personal-content-right">
-  <div className="registration-container-column-form-personal-content-left-alike">
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          placeholder="Enter your email"
-          value={formData.email}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-  <div className="registration-container-column-form-personal-content-right-alike">
-  <label htmlFor="password">Password</label>
-  <div style={{ position: 'relative' }}>
-    <input
-      type={showPassword ? 'text' : 'password'}
-      id="password"
-      name="password"
-      placeholder={editingUserId ? 'New Password (optional)' : 'Enter your password'}
-      value={formData.password}
-      onChange={handleInputChange}
-      required={!editingUserId}
-      style={{ paddingRight: '40px' }} // Add padding to avoid overlap with toggle
-    />
-    <div
-      onClick={() => setShowPassword(!showPassword)}
-      style={{
-        position: 'absolute',
-        right: '15px',
-        top: '50%',
-        transform: 'translateY(-50%)',
-        cursor: 'pointer',
-        height: '20px',
-        width: '20px',
-        borderRadius: '50%',
-        backgroundColor: showPassword ? '#00889A' : '#ccc',
-        zIndex: 1,
-      }}
-      title={showPassword ? 'Hide password' : 'Show password'}
-    />
-  </div>
-</div>
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="birthday">Birthday</label>
+                        <input
+                          type="date"
+                          id="birthday"
+                          name="birthday"
+                          value={formData.birthday}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
 
-      <div className="registration-container-column-form-personal-content-right-alike">
-        <label htmlFor="birthday">Birthday</label>
-        <input
-          type="date"
-          id="birthday"
-          name="birthday"
-          value={formData.birthday}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="role">Role</label>
+                        <select
+                          id="role"
+                          name="role"
+                          value={formData.role}
+                          onChange={handleInputChange}
+                          required
+                        >
+                          {roleOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
 
-      <div className="registration-container-column-form-personal-content-right-alike">
-        <label htmlFor="role">Role</label>
-        <select
-          id="role"
-          name="role"
-          value={formData.role}
-          onChange={handleInputChange}
-          required
-        >
-          {roleOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
-  </div>
+                  <div className="registration-container-column-form-personal-content">
+                    <div className="registration-container-column-form-personal-content-left">
+                      <div className="registration-container-column-form-personal-content-left-alike">
+                        <label htmlFor="position">Primary Position</label>
+                        <select
+                          id="position"
+                          name="position"
+                          value={formData.position}
+                          onChange={handleInputChange}
+                        >
+                          {positionOperations.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-  <div className="registration-container-column-form-personal-content">
-    <div className="registration-container-column-form-personal-content-left">
-      <div className="registration-container-column-form-personal-content-left-alike">
-        <label htmlFor="position">Primary Position</label>
-        <select
-          id="position"
-          name="position"
-          value={formData.position}
-          onChange={handleInputChange}
-        >
-          {positionOperations.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
+                      <div className="registration-container-column-form-personal-content-left-alike">
+                        <label htmlFor="gender">Gender</label>
+                        <select
+                          id="gender"
+                          name="gender"
+                          value={formData.gender}
+                          onChange={handleInputChange}
+                          required
+                        >
+                          {genderOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
 
-      <div className="registration-container-column-form-personal-content-left-alike">
-        <label htmlFor="gender">Gender</label>
-        <select
-          id="gender"
-          name="gender"
-          value={formData.gender}
-          onChange={handleInputChange}
-          required
-        >
-          {genderOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
+                    <div className="registration-container-column-form-personal-content-right">
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="department">Department</label>
+                        <input
+                          type="text"
+                          id="department"
+                          name="department"
+                          placeholder="Enter your department"
+                          value={formData.department}
+                          onChange={handleInputChange}
+                        />
+                      </div>
 
-    <div className="registration-container-column-form-personal-content-right">
-      <div className="registration-container-column-form-personal-content-right-alike">
-        <label htmlFor="department">Department</label>
-        <input
-          type="text"
-          id="department"
-          name="department"
-          placeholder="Enter your department"
-          value={formData.department}
-          onChange={handleInputChange}
-        />
-      </div>
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="civil_status">Civil Status</label>
+                        <select
+                          id="civil_status"
+                          name="civil_status"
+                          value={formData.civil_status}
+                          onChange={handleInputChange}
+                          required
+                        >
+                          {civilStatusOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-      <div className="registration-container-column-form-personal-content-right-alike">
-        <label htmlFor="civil_status">Civil Status</label>
-        <select
-          id="civil_status"
-          name="civil_status"
-          value={formData.civil_status}
-          onChange={handleInputChange}
-          required
-        >
-          {civilStatusOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="registration-container-column-form-personal-content-right-alike">
-        <label htmlFor="availability">Availability</label>
-        <select
-          id="availability"
-          name="availability"
-          value={formData.availability}
-          onChange={handleInputChange}
-        >
-          {availabilityOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
-  </div>
-</div>
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="availability">Availability</label>
+                        <select
+                          id="availability"
+                          name="availability"
+                          value={formData.availability}
+                          onChange={handleInputChange}
+                        >
+                          {availabilityOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="registration-container-submit">
-                  <button type="submit" disabled={loading}>
-                    {loading ? 'Processing...' : editingUserId ? 'Update User' : 'Create User'}
-                  </button>
+                  {editingUserId ? (
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button
+                        type="button"
+                        onClick={handleUpdateAddress}
+                        disabled={loading}
+                        style={{ flex: 1 }}
+                      >
+                        {loading ? 'Processing...' : 'Update Address'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleUpdatePersonalDetails}
+                        disabled={loading}
+                        style={{ flex: 1 }}
+                      >
+                        {loading ? 'Processing...' : 'Update Personal Details'}
+                      </button>
+                    </div>
+                  ) : (
+                    <button type="submit" onClick={handleCreateUser} disabled={loading}>
+                      {loading ? 'Processing...' : 'Create User'}
+                    </button>
+                  )}
                 </div>
               </form>
             </div>
@@ -949,10 +1123,7 @@ const HomeSuperAdmin = () => {
                   {users.map((user) => (
                     <tr key={user.id}>
                       <td>
-                        <button
-                          onClick={() => handleEdit(user)}
-                          className="edit-button"
-                        >
+                        <button onClick={() => handleEdit(user)} className="edit-button">
                           Edit
                         </button>
                         <button
