@@ -10,6 +10,7 @@ const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 const HomeSuperAdmin = () => {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
   const [users, setUsers] = useState([]);
   const [regions, setRegions] = useState([]);
   const [provinces, setProvinces] = useState([]);
@@ -744,18 +745,37 @@ const HomeSuperAdmin = () => {
           required
         />
       </div>
-      <div className="registration-container-column-form-personal-content-right-alike">
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          placeholder={editingUserId ? 'New Password (optional)' : 'Enter your password'}
-          value={formData.password}
-          onChange={handleInputChange}
-          required={!editingUserId}
-        />
-      </div>
+  <div className="registration-container-column-form-personal-content-right-alike">
+  <label htmlFor="password">Password</label>
+  <div style={{ position: 'relative' }}>
+    <input
+      type={showPassword ? 'text' : 'password'}
+      id="password"
+      name="password"
+      placeholder={editingUserId ? 'New Password (optional)' : 'Enter your password'}
+      value={formData.password}
+      onChange={handleInputChange}
+      required={!editingUserId}
+      style={{ paddingRight: '40px' }} // Add padding to avoid overlap with toggle
+    />
+    <div
+      onClick={() => setShowPassword(!showPassword)}
+      style={{
+        position: 'absolute',
+        right: '15px',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        cursor: 'pointer',
+        height: '20px',
+        width: '20px',
+        borderRadius: '50%',
+        backgroundColor: showPassword ? '#00889A' : '#ccc',
+        zIndex: 1,
+      }}
+      title={showPassword ? 'Hide password' : 'Show password'}
+    />
+  </div>
+</div>
 
       <div className="registration-container-column-form-personal-content-right-alike">
         <label htmlFor="birthday">Birthday</label>
