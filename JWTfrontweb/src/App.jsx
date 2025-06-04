@@ -28,10 +28,6 @@ import CertificateUserCard from './user/certificate/certificateCard/CertificateU
 import HomeUser from './user/home/HomeUser';
 import NotificationUser from './user/notification/NotificationUser';
 
-// Case Study Components
-import CaseStudy from './deprecated/caseStudy/CaseStudy';
-import CSLogin from './deprecated/caseStudy/CSLogin';
-
 // Layouts
 import Admin from './layouts/Admin';
 import User from './layouts/User';
