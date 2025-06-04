@@ -135,9 +135,7 @@ function App() {
             } 
           />
 
-          {/* Case Study Routes - no layout */}
-          <Route path="/caseStudy" element={<CaseStudy />} />
-          <Route path="/caseLogin" element={<CSLogin />} />
+   
         </Routes>
       </Router>
     </div>
