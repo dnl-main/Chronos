@@ -354,7 +354,7 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
         crewing_dept: department === 'Crewing' && crewingDept ? crewingDept.toLowerCase() : null,
         operator: department === 'Crewing' && operator ? operator.toLowerCase() : null,
         accounting_task: department === 'Accounting' && accountingOption ? accountingOption.toLowerCase() : null,
-        employee_name: employeeName || `${selectedAppointment?.user?.first_name || ''} ${selectedAppointment?.user?.last_name || ''}`.trim() || 'Unknown User',
+        employee_name: employeeName.trim(), 
         purpose: purpose === 'Others' ? customPurpose.toLowerCase() : purpose.toLowerCase(),
       };
       if (!payload.start_time || !payload.end_time) {

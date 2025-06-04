@@ -14,6 +14,33 @@ const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 const purposeOptions = ['Document submission', 'Contract Signing', 'Training', 'Allowance Distribution', 'Others'];
 
+const times = [];
+for (let hour = 9; hour <= 18; hour++) {
+  const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+  const period = hour < 12 ? 'AM' : 'PM';
+  times.push(`${displayHour}:00 ${period}`);
+  if (hour !== 18) {
+    times.push(`${displayHour}:30 ${period}`);
+  }
+}
+
+const to24HourFormat = (time12h) => {
+  if (!time12h) return '';
+  const [time, period] = time12h.split(' ');
+  let [hours, minutes] = time.split(':').map(Number);
+  if (period === 'PM' && hours !== 12) hours += 12;
+  if (period === 'AM' && hours === 12) hours = 0;
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+};
+
+const to12HourFormat = (time24h) => {
+  if (!time24h) return '';
+  const [hours, minutes] = time24h.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHour = hours % 12 === 0 ? 12 : hours % 12;
+  return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
+};
+
 const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose }) => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedUser, setSelectedUser] = useState(user);
@@ -36,8 +63,8 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
       const newSelectedAppointment = {
         ...appointment,
         original_date: appointment.date || '',
-        start_time: normalizeTime(appointment.start_time) || '',
-        end_time: normalizeTime(appointment.end_time) || '',
+        start_time: to12HourFormat(appointment.start_time) || '',
+        end_time: to12HourFormat(appointment.end_time) || '',
         department: appointment.department || 'crewing',
         crewingDept: appointment.crewing_dept || '',
         operator: appointment.operator || '',
@@ -53,9 +80,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
   }, [appointment, user]);
 
   const normalizeTime = (time) => {
-    if (!time) return '';
-    const [hours, minutes] = time.split(':').slice(0, 2);
-    return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+    return to24HourFormat(time);
   };
 
   const formatDate = (dateString) => {
@@ -73,15 +98,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
 
   const formatTime = (timeString) => {
     if (!timeString) return '--:--';
-    const [hours, minutes] = timeString.split(':');
-    if (isNaN(hours) || isNaN(minutes)) return '--:--';
-    const date = new Date();
-    date.setHours(parseInt(hours), parseInt(minutes));
-    return date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true,
-    });
+    return timeString; // Already in 12-hour format
   };
 
   const departmentOptions = ['crewing', 'medical', 'accounting'];
@@ -155,16 +172,19 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
       const parsed = new Date(date);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      return parsed >= today;
+      return parsed >= today && !isNaN(parsed);
     };
 
     if (!isValidDate(selectedAppointment.date)) {
-      const errorMsg = 'Date must be today or in the future.';
+      const errorMsg = 'Date must be today or in the future in YYYY-MM-DD format.';
       setError(errorMsg);
       return;
     }
 
-    if (selectedAppointment.end_time <= selectedAppointment.start_time) {
+    const startMinutes = parseInt(to24HourFormat(selectedAppointment.start_time).split(':')[0]) * 60 + parseInt(to24HourFormat(selectedAppointment.start_time).split(':')[1]);
+    const endMinutes = parseInt(to24HourFormat(selectedAppointment.end_time).split(':')[0]) * 60 + parseInt(to24HourFormat(selectedAppointment.end_time).split(':')[1]);
+
+    if (endMinutes <= startMinutes) {
       const errorMsg = 'End time must be after start time.';
       setError(errorMsg);
       return;
@@ -175,8 +195,8 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
       const payload = {
         ...(selectedUser?.id && { user_id: selectedUser.id }),
         date: selectedAppointment.date,
-        start_time: normalizeTime(selectedAppointment.start_time),
-        end_time: normalizeTime(selectedAppointment.end_time),
+        start_time: to24HourFormat(selectedAppointment.start_time),
+        end_time: to24HourFormat(selectedAppointment.end_time),
         department: selectedAppointment.department.toLowerCase(),
         crewing_dept: selectedAppointment.crewingDept || null,
         operator: selectedAppointment.operator ? selectedAppointment.operator.toLowerCase() : null,
@@ -249,6 +269,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
       const errorMessage = error.response?.data?.message || 'Failed to cancel appointment.';
       setError(errorMessage);
       if (error.response?.status === 401 || error.response?.status === 403) {
+        setError('You are not authorized to cancel appointments. Please contact an admin.');
         onClose();
         window.location.href = '/login';
       }
@@ -263,7 +284,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
     selectedAppointment?.date &&
     selectedAppointment?.start_time &&
     selectedAppointment?.end_time &&
-    selectedAppointment?.end_time > selectedAppointment?.start_time &&
+    to24HourFormat(selectedAppointment?.end_time) > to24HourFormat(selectedAppointment?.start_time) &&
     selectedAppointment?.department &&
     selectedAppointment?.employeeName &&
     (selectedAppointment?.department !== 'crewing' || selectedAppointment?.operator) &&
@@ -313,8 +334,8 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
                       onSelect={() => {
                         setSelectedAppointment({
                           ...appointment,
-                          start_time: normalizeTime(appointment.start_time),
-                          end_time: normalizeTime(appointment.end_time),
+                          start_time: to12HourFormat(appointment.start_time),
+                          end_time: to12HourFormat(appointment.end_time),
                           purpose: purpose || '',
                         });
                         setSelectedUser(user);
@@ -443,7 +464,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
                 </div>
 
                 <article className="editAppointment-box-in-right-dept-name">
-                  <label htmlFor="employeeName">Name of employee</label>
+                  <label htmlFor="employeeName">Name</label>
                   <input
                     type="text"
                     id="employeeName"
@@ -499,7 +520,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
                 <article className="editAppointment-box-in-right-dropdown-date">
                   <label htmlFor="date">Date</label>
                   <input
-                    type="date"
+                    type="text"
                     id="date"
                     value={selectedAppointment?.date || ''}
                     onChange={(e) => {
@@ -508,40 +529,55 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
                         date: e.target.value,
                       });
                     }}
-                    min={new Date().toISOString().split('T')[0]}
+                    placeholder="YYYY-MM-DD"
                   />
                 </article>
 
                 <div className="editAppointment-box-in-right-dropdown-time">
                   <article className="editAppointment-box-in-right-dropdown-time-start">
                     <label htmlFor="startTime">Starts at</label>
-                    <input
-                      type="time"
+                    <select
                       id="startTime"
-                      className="editAppointment-box-in-right-dropdown-time-start-input"
                       value={selectedAppointment?.start_time || ''}
                       onChange={(e) => {
                         setSelectedAppointment({
                           ...selectedAppointment,
-                          start_time: normalizeTime(e.target.value),
+                          start_time: e.target.value,
                         });
+                        setSelectedAppointment((prev) => ({
+                          ...prev,
+                          end_time: '',
+                        }));
                       }}
-                    />
+                    >
+                      <option value="">Select...</option>
+                      {times.map((time, idx) => (
+                        <option key={idx} value={time}>{time}</option>
+                      ))}
+                    </select>
                   </article>
                   <article className="editAppointment-box-in-right-dropdown-time-end">
                     <label htmlFor="endTime">Ends at</label>
-                    <input
-                      type="time"
+                    <select
                       id="endTime"
-                      className="editAppointment-box-in-right-dropdown-time-end-input"
                       value={selectedAppointment?.end_time || ''}
                       onChange={(e) => {
                         setSelectedAppointment({
                           ...selectedAppointment,
-                          end_time: normalizeTime(e.target.value),
+                          end_time: e.target.value,
                         });
                       }}
-                    />
+                    >
+                      <option value="">Select...</option>
+                      {selectedAppointment?.start_time
+                        ? times.slice(times.findIndex(t => t === selectedAppointment.start_time) + 1).map((time, idx) => (
+                            <option key={idx} value={time}>{time}</option>
+                          ))
+                        : times.map((time, idx) => (
+                            <option key={idx} value={time}>{time}</option>
+                          ))
+                      }
+                    </select>
                   </article>
                 </div>
               </main>
@@ -575,6 +611,8 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
           appointment={{
             ...selectedAppointment,
             purpose: purpose === 'Others' ? customPurpose : purpose,
+            start_time: to24HourFormat(selectedAppointment.start_time),
+            end_time: to24HourFormat(selectedAppointment.end_time),
           }}
           user={selectedUser}
           onClose={() => {
@@ -592,6 +630,8 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
           appointment={{
             ...selectedAppointment,
             purpose: purpose === 'Others' ? customPurpose : purpose,
+            start_time: to24HourFormat(selectedAppointment.start_time),
+            end_time: to24HourFormat(selectedAppointment.end_time),
           }}
           user={selectedUser}
           onClose={() => {
