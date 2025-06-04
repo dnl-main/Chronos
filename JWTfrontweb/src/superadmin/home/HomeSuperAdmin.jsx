@@ -29,6 +29,7 @@ const HomeSuperAdmin = () => {
     password: '',
     role: 'user',
     position: '',
+    custom_position: '',
     department: '',
     street: '',
     building_number: '',
@@ -41,6 +42,7 @@ const HomeSuperAdmin = () => {
   const [editingUserId, setEditingUserId] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isCustomPosition, setIsCustomPosition] = useState(false); 
 
   // Drag-to-scroll state
   const tableRef = useRef(null);
@@ -91,6 +93,7 @@ const HomeSuperAdmin = () => {
     { value: 'Trainee Gas Engineer', label: 'Trainee Gas Engineer' },
     { value: 'Trainee', label: 'Trainee' },
     { value: 'Electrician Trainee', label: 'Electrician Trainee' },
+    { value: 'Others', label: 'Others' },
   ];
 
   const availabilityOptions = [
@@ -146,8 +149,7 @@ const HomeSuperAdmin = () => {
     if (!isDragging) return;
     e.preventDefault();
     const x = e.pageX - tableRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // Adjust drag speed
-    tableRef.current.scrollLeft = scrollLeft - walk;
+    const walk = (x - startX) * 2; 
   };
 
   const handleTouchStart = (e) => {
@@ -159,12 +161,24 @@ const HomeSuperAdmin = () => {
   const handleTouchMove = (e) => {
     if (!isDragging) return;
     const x = e.touches[0].pageX - tableRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // Adjust drag speed
+    const walk = (x - startX) * 2; 
     tableRef.current.scrollLeft = scrollLeft - walk;
   };
 
   const handleTouchEnd = () => {
     setIsDragging(false);
+  };
+
+  // Handle input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === 'position') {
+      setIsCustomPosition(value === 'Others');
+      if (value !== 'Others') {
+        setFormData((prev) => ({ ...prev, custom_position: '' }));
+      }
+    }
   };
 
   // Authentication and initial data fetching
@@ -345,10 +359,6 @@ const HomeSuperAdmin = () => {
     fetchBarangays();
   }, [selectedCity]);
 
-  const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
   // Handle create user
   const handleCreateUser = async (e) => {
     e.preventDefault();
@@ -376,9 +386,10 @@ const HomeSuperAdmin = () => {
       !selectedRegion ||
       !selectedProvince ||
       !selectedCity ||
-      !selectedBarangay
+      !selectedBarangay ||
+      (formData.position === 'Others' && !formData.custom_position)
     ) {
-      setError('Please fill in all required fields.');
+      setError('Please fill in all required fields, including custom position if "Others" is selected.');
       setLoading(false);
       return;
     }
@@ -390,6 +401,7 @@ const HomeSuperAdmin = () => {
       province: selectedProvinceName,
       city: selectedCityName,
       barangay: selectedBarangayName,
+      position: formData.position === 'Others' ? formData.custom_position : formData.position,
     };
 
     try {
@@ -409,6 +421,7 @@ const HomeSuperAdmin = () => {
         password: '',
         role: 'user',
         position: '',
+        custom_position: '',
         department: '',
         street: '',
         building_number: '',
@@ -422,6 +435,7 @@ const HomeSuperAdmin = () => {
       setSelectedProvince('');
       setSelectedCity('');
       setSelectedBarangay('');
+      setIsCustomPosition(false);
       setError(null);
     } catch (error) {
       setError(error.response?.data?.message || 'Error creating user');
@@ -485,6 +499,7 @@ const HomeSuperAdmin = () => {
         password: '',
         role: 'user',
         position: '',
+        custom_position: '',
         department: '',
         street: '',
         building_number: '',
@@ -498,6 +513,7 @@ const HomeSuperAdmin = () => {
       setSelectedProvince('');
       setSelectedCity('');
       setSelectedBarangay('');
+      setIsCustomPosition(false);
       setError(null);
     } catch (error) {
       const errorMessage = error.response?.data?.errors
@@ -525,8 +541,8 @@ const HomeSuperAdmin = () => {
       'role',
     ];
     const missingFields = requiredPersonalFields.filter((field) => !formData[field]);
-    if (missingFields.length > 0) {
-      setError('Please fill in all required personal details fields.');
+    if (missingFields.length > 0 || (formData.position === 'Others' && !formData.custom_position)) {
+      setError('Please fill in all required personal details fields, including custom position if "Others" is selected.');
       setLoading(false);
       return;
     }
@@ -538,9 +554,9 @@ const HomeSuperAdmin = () => {
       last_name: formData.last_name,
       email: formData.email,
       mobile: formData.mobile,
-      password: formData.password || undefined, // Only include password if provided
+      password: formData.password || undefined,
       role: formData.role,
-      position: formData.position,
+      position: formData.position === 'Others' ? formData.custom_position : formData.position,
       department: formData.department,
       gender: formData.gender,
       civil_status: formData.civil_status,
@@ -570,6 +586,7 @@ const HomeSuperAdmin = () => {
         password: '',
         role: 'user',
         position: '',
+        custom_position: '',
         department: '',
         street: '',
         building_number: '',
@@ -583,6 +600,7 @@ const HomeSuperAdmin = () => {
       setSelectedProvince('');
       setSelectedCity('');
       setSelectedBarangay('');
+      setIsCustomPosition(false);
       setError(null);
     } catch (error) {
       const errorMessage = error.response?.data?.errors
@@ -602,6 +620,8 @@ const HomeSuperAdmin = () => {
     });
 
     setEditingUserId(user.id);
+    const isOthers = !positionOperations.some((opt) => opt.value === user.position && opt.value !== '');
+    setIsCustomPosition(isOthers);
     setFormData({
       first_name: user.first_name || '',
       middle_name: user.middle_name || '',
@@ -610,7 +630,8 @@ const HomeSuperAdmin = () => {
       mobile: user.mobile || '',
       password: '',
       role: user.role || 'user',
-      position: user.position || '',
+      position: isOthers ? 'Others' : user.position || '',
+      custom_position: isOthers ? user.position || '' : '',
       department: user.department || '',
       street: user.street || '',
       building_number: user.building_number || '',
@@ -986,7 +1007,20 @@ const HomeSuperAdmin = () => {
                           ))}
                         </select>
                       </div>
-
+                      {isCustomPosition && (
+                        <div className="registration-container-column-form-personal-content-left-alike">
+                          <label htmlFor="custom_position">Specify Position</label>
+                          <input
+                            type="text"
+                            id="custom_position"
+                            name="custom_position"
+                            placeholder="Enter custom position"
+                            value={formData.custom_position}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                      )}
                       <div className="registration-container-column-form-personal-content-left-alike">
                         <label htmlFor="gender">Gender</label>
                         <select
