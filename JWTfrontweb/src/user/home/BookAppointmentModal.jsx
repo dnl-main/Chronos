@@ -22,9 +22,11 @@ const accountingOptions = ['Allotment', 'Final Balance', 'Check Releasing'];
 const purposeOptions = ['Document Submission', 'Contract Signing', 'Training', 'Allowance Distribution', 'Others'];
 const times = [];
 for (let hour = 9; hour <= 18; hour++) {
-  times.push(`${hour.toString().padStart(2, '0')}:00`);
+  const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+  const period = hour < 12 ? 'AM' : 'PM';
+  times.push(`${displayHour}:00 ${period}`);
   if (hour !== 18) {
-    times.push(`${hour.toString().padStart(2, '0')}:30`);
+    times.push(`${displayHour}:30 ${period}`);
   }
 }
 
@@ -37,6 +39,25 @@ const formatLocalDate = (inputDate) => {
   return `${year}-${month}-${day}`;
 };
 
+
+const to24HourFormat = (time12h) => {
+  if (!time12h) return '';
+  const [time, period] = time12h.split(' ');
+  let [hours, minutes] = time.split(':').map(Number);
+  if (period === 'PM' && hours !== 12) hours += 12;
+  if (period === 'AM' && hours === 12) hours = 0;
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+};
+
+
+const to12HourFormat = (time24h) => {
+  if (!time24h) return '';
+  const [hours, minutes] = time24h.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHour = hours % 12 === 0 ? 12 : hours % 12;
+  return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
+};
+
 const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, isReschedule = false }) => {
   const [department, setDepartment] = useState(appointment.department ? appointment.department.charAt(0).toUpperCase() + appointment.department.slice(1) : '');
   const [crewingDept, setCrewingDept] = useState(appointment.crewing_dept ? appointment.crewing_dept.charAt(0).toUpperCase() + appointment.crewing_dept.slice(1) : '');
@@ -46,8 +67,8 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
   const [purpose, setPurpose] = useState(appointment.purpose ? (purposeOptions.includes(appointment.purpose.charAt(0).toUpperCase() + appointment.purpose.slice(1)) ? appointment.purpose.charAt(0).toUpperCase() + appointment.purpose.slice(1) : 'Others') : '');
   const [customPurpose, setCustomPurpose] = useState(appointment.purpose && !purposeOptions.includes(appointment.purpose.charAt(0).toUpperCase() + appointment.purpose.slice(1)) ? appointment.purpose : '');
   const [date, setDate] = useState(formatLocalDate(appointment.date));
-  const [startTime, setStartTime] = useState(appointment.start_time || '');
-  const [endTime, setEndTime] = useState(appointment.end_time || '');
+  const [startTime, setStartTime] = useState(appointment.start_time ? to12HourFormat(appointment.start_time) : '');
+  const [endTime, setEndTime] = useState(appointment.end_time ? to12HourFormat(appointment.end_time) : '');
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
@@ -163,8 +184,8 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
       return;
     }
 
-    const startMinutes = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
-    const endMinutes = parseInt(endTime.split(':')[0]) * 60 + parseInt(endTime.split(':')[1]);
+    const startMinutes = parseInt(to24HourFormat(startTime).split(':')[0]) * 60 + parseInt(to24HourFormat(startTime).split(':')[1]);
+    const endMinutes = parseInt(to24HourFormat(endTime).split(':')[0]) * 60 + parseInt(to24HourFormat(endTime).split(':')[1]);
 
     if (endMinutes <= startMinutes) {
       alert('End time must be after start time.');
@@ -184,8 +205,8 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
       employee_name: safeEmployeeName,
       purpose: purpose === 'Others' ? safeCustomPurpose : purpose.toLowerCase(),
       date: formattedDate,
-      start_time: startTime,
-      end_time: endTime,
+      start_time: to24HourFormat(startTime),
+      end_time: to24HourFormat(endTime),
     };
 
     try {

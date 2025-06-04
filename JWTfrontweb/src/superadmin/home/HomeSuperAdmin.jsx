@@ -40,7 +40,6 @@ const HomeSuperAdmin = () => {
     availability: '',
   });
   const [editingUserId, setEditingUserId] = useState(null);
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isCustomPosition, setIsCustomPosition] = useState(false); 
 
@@ -150,6 +149,7 @@ const HomeSuperAdmin = () => {
     e.preventDefault();
     const x = e.pageX - tableRef.current.offsetLeft;
     const walk = (x - startX) * 2; 
+    tableRef.current.scrollLeft = scrollLeft - walk;
   };
 
   const handleTouchStart = (e) => {
@@ -228,9 +228,8 @@ const HomeSuperAdmin = () => {
           },
         });
         setUsers(response.data.users);
-        setError(null);
       } catch (error) {
-        setError(error.response?.data?.message || 'Error fetching users');
+        alert(error.response?.data?.message || 'Error fetching users');
         console.error('Error fetching users:', error);
       } finally {
         setLoading(false);
@@ -244,6 +243,7 @@ const HomeSuperAdmin = () => {
         });
         setRegions(response.data);
       } catch (error) {
+        alert('Error fetching regions');
         console.error('Error fetching regions:', error);
       }
     };
@@ -290,6 +290,7 @@ const HomeSuperAdmin = () => {
           setSelectedCity('');
           setSelectedBarangay('');
         } catch (error) {
+          alert('Error fetching provinces');
           console.error('Error fetching provinces:', error);
         }
       };
@@ -324,6 +325,7 @@ const HomeSuperAdmin = () => {
         setBarangays([]);
         setSelectedBarangay('');
       } catch (error) {
+        alert('Error fetching cities');
         console.error('Error fetching cities:', error);
       }
     };
@@ -353,6 +355,7 @@ const HomeSuperAdmin = () => {
         setBarangays(filteredBarangays);
         setSelectedBarangay('');
       } catch (error) {
+        alert('Error fetching barangays');
         console.error('Error fetching barangays:', error);
       }
     };
@@ -363,7 +366,6 @@ const HomeSuperAdmin = () => {
   const handleCreateUser = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     // Validate all required fields for creating a user
     const requiredFields = [
@@ -389,7 +391,7 @@ const HomeSuperAdmin = () => {
       !selectedBarangay ||
       (formData.position === 'Others' && !formData.custom_position)
     ) {
-      setError('Please fill in all required fields, including custom position if "Others" is selected.');
+      alert('Please fill in all required fields, including custom position if "Others" is selected.');
       setLoading(false);
       return;
     }
@@ -436,9 +438,8 @@ const HomeSuperAdmin = () => {
       setSelectedCity('');
       setSelectedBarangay('');
       setIsCustomPosition(false);
-      setError(null);
     } catch (error) {
-      setError(error.response?.data?.message || 'Error creating user');
+      alert(error.response?.data?.message || 'Error creating user');
       console.error('Error creating user:', error);
     } finally {
       setLoading(false);
@@ -449,7 +450,6 @@ const HomeSuperAdmin = () => {
   const handleUpdateAddress = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     // Validate required address fields
     const requiredAddressFields = ['street', 'building_number', 'zip_code'];
@@ -461,7 +461,7 @@ const HomeSuperAdmin = () => {
       !selectedCity ||
       !selectedBarangay
     ) {
-      setError('Please fill in all required address fields.');
+      alert('Please fill in all required address fields.');
       setLoading(false);
       return;
     }
@@ -514,12 +514,11 @@ const HomeSuperAdmin = () => {
       setSelectedCity('');
       setSelectedBarangay('');
       setIsCustomPosition(false);
-      setError(null);
     } catch (error) {
       const errorMessage = error.response?.data?.errors
         ? Object.values(error.response.data.errors).flat().join(', ')
         : error.response?.data?.message || 'Error updating address';
-      setError(errorMessage);
+      alert(errorMessage);
       console.error('Error updating address:', error);
     } finally {
       setLoading(false);
@@ -530,7 +529,6 @@ const HomeSuperAdmin = () => {
   const handleUpdatePersonalDetails = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     // Validate required personal details fields
     const requiredPersonalFields = [
@@ -542,7 +540,7 @@ const HomeSuperAdmin = () => {
     ];
     const missingFields = requiredPersonalFields.filter((field) => !formData[field]);
     if (missingFields.length > 0 || (formData.position === 'Others' && !formData.custom_position)) {
-      setError('Please fill in all required personal details fields, including custom position if "Others" is selected.');
+      alert('Please fill in all required personal details fields, including custom position if "Others" is selected.');
       setLoading(false);
       return;
     }
@@ -601,12 +599,11 @@ const HomeSuperAdmin = () => {
       setSelectedCity('');
       setSelectedBarangay('');
       setIsCustomPosition(false);
-      setError(null);
     } catch (error) {
       const errorMessage = error.response?.data?.errors
         ? Object.values(error.response.data.errors).flat().join(', ')
         : error.response?.data?.message || 'Error updating personal details';
-      setError(errorMessage);
+      alert(errorMessage);
       console.error('Error updating personal details:', error);
     } finally {
       setLoading(false);
@@ -691,9 +688,8 @@ const HomeSuperAdmin = () => {
         },
       });
       setUsers(users.filter((user) => user.id !== id));
-      setError(null);
     } catch (error) {
-      setError(error.response?.data?.message || 'Error deleting user');
+      alert(error.response?.data?.message || 'Error deleting user');
       console.error('Error deleting user:', error);
     } finally {
       setLoading(false);
@@ -723,8 +719,6 @@ const HomeSuperAdmin = () => {
 
             <div className="registration-container-column">
               <form className="registration-container-column-form">
-                {error && <div className="error-message">{error}</div>}
-
                 <div className="registration-container-column-form-address">
                   <div className="registration-container-column-form-address-header">
                     <img src={calendar_week} alt="calendar_week icon" />
