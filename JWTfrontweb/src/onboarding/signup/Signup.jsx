@@ -344,25 +344,155 @@ const handleLoginClick = () => {
             {isModalVisible && (
               <div className="modal-tnc-overlay">
                 <div className="modal-tnc-content">
-                  <h2>Terms and Conditions</h2>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-                    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-                    in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-                    officia deserunt mollit anim id est laborum.
-                  </p>
-                  <p>
-                              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                    eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-                    ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-                    in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-                    officia deserunt mollit anim id est laborum.
-                  </p>
+                <h2>Terms and Conditions</h2>
+                <br></br>
+<p>
+  <strong>For Centralized Data Management for Optimized Crew Scheduling System in Friendly Maritime Services Inc.</strong>
+</p>
+
+<ol>
+  <li>
+    <strong>Acceptance of Terms</strong><br />
+    By accessing or using the Centralized Data Management for Optimized Crew Scheduling System ("the System"), you ("User" or "FMS") agree to be bound by these Terms and Conditions ("Terms"). If you do not agree, you must immediately discontinue use.
+  </li>
+
+  <li>
+    <strong>System Overview</strong><br />
+    The System provides:
+    <ul>
+      <li>Automated crew scheduling and deployment optimization</li>
+      <li>Certification tracking and compliance management</li>
+      <li>Data analytics for workforce planning</li>
+    </ul>
+  </li>
+
+  <li>
+    <strong>User Accounts</strong>
+    <ol type="a">
+      <li>
+        <strong>Registration</strong>
+        <ul>
+          <li>Must provide accurate and current information</li>
+          <li>Each user receives unique login credentials</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Account Security</strong>
+        <ul>
+          <li>Users are responsible for maintaining confidentiality</li>
+          <li>Must immediately report unauthorized access</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+
+  <li>
+    <strong>Data Management</strong>
+    <ol type="a">
+      <li>
+        <strong>Data Collected</strong>
+        <ul>
+          <li><strong>Admin Profiles:</strong> Full Name, Job Title, Department, Contact Number, Email</li>
+          <li><strong>User Profiles:</strong> Full Name, Gender, Birthday, Civil Status, Gmail, Phone Number, Address Information (Building No. & Street, Barangay, City/Municipality, Province, Region, Zip Code), Employment Details (Position, Employee ID)</li>
+          <li><strong>Employment Data:</strong> Rank/Position, Assigned Vessel, Contract Details (Start/End Date, Type)</li>
+          <li><strong>Certifications and Trainings:</strong> License/Certification Name, Training Records, Medical Certificates, Issue Date, Expiry Date</li>
+          <li><strong>Scheduling and Deployment:</strong> Availability Status (Active/On Leave/Unavailable), Onboarding Date, Offboarding Date, Assignment Schedule</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Data Use</strong>
+        <ul>
+          <li>Solely for maritime crew management purposes</li>
+          <li>No commercial use or third-party sharing without consent</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Data Retention</strong>
+        <ul>
+          <li>Active crew data retained indefinitely</li>
+          <li>Inactive data anonymized after 2 years</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+
+  <li>
+    <strong>User Obligations</strong>
+    <ol type="a">
+      <li>
+        <strong>FMS agrees to:</strong>
+        <ul>
+          <li>Maintain accurate crew records</li>
+          <li>Obtain necessary consents for data processing</li>
+          <li>Use the System only for intended purposes</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Prohibited Actions:</strong>
+        <ul>
+          <li>Reverse engineering or copying System features</li>
+          <li>Using the System for unlawful purposes</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+
+  <li>
+    <strong>Intellectual Property</strong><br />
+    All System software, algorithms, and interfaces remain property of The Researchers. FMS is granted a limited, non-exclusive license to use the System.
+  </li>
+
+  <li>
+    <strong>Privacy and Security</strong>
+    <ol type="a">
+      <li>
+        <strong>Security Measures</strong>
+        <ul>
+          <li>Data encryption in transit and at rest</li>
+          <li>Regular security audits</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Breach Notification</strong>
+        <ul>
+          <li>Any breach must be reported within 24 hours</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+
+  <li>
+    <strong>Limitation of Liability</strong><br />
+    The Researchers are not liable for:
+    <ul>
+      <li>Indirect or consequential damages</li>
+      <li>Data loss due to user negligence</li>
+    </ul>
+  </li>
+
+  <li>
+    <strong>Termination</strong>
+    <ul>
+      <li>Either party may terminate with 30 days' notice</li>
+      <li>Upon termination:
+        <ul>
+          <li>All access revoked</li>
+          <li>Data returned or securely deleted</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    <strong>Modifications</strong>
+    <ul>
+      <li>Terms may be updated with 15 days' notice</li>
+      <li>Continued use constitutes acceptance</li>
+    </ul>
+  </li>
+</ol>
+
+  
                   <div className="modal-button">
                   <button onClick={closeModal}>Close</button>
                   </div>

@@ -106,6 +106,13 @@ const HomeSuperAdmin = () => {
     { value: 'superadmin', label: 'Superadmin' },
   ];
 
+  // Calculate max date for 18 years ago
+  const getMaxDate = () => {
+    const today = new Date();
+    const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+    return maxDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+  };
+
   // Derived names for submission
   const selectedRegionName =
     selectedRegion === '130000000'
@@ -938,6 +945,7 @@ const HomeSuperAdmin = () => {
                           name="birthday"
                           value={formData.birthday}
                           onChange={handleInputChange}
+                          max={getMaxDate()}
                           required
                         />
                       </div>

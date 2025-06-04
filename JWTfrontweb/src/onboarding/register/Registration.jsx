@@ -54,46 +54,53 @@ const Registration = () => {
     { value: 'Separated', label: 'Separated' },
   ];
 
-  
-// Gender options
-const genderOptions = [
-  { value: '', label: 'Select your gender' },
-  { value: 'Male', label: 'Male' },
-  { value: 'Female', label: 'Female' },
-   { value: 'Other', label: 'Other' },
-];
+  // Gender options
+  const genderOptions = [
+    { value: '', label: 'Select your gender' },
+    { value: 'Male', label: 'Male' },
+    { value: 'Female', label: 'Female' },
+    { value: 'Other', label: 'Other' },
+  ];
 
-// Position options (title case and alphabetically sorted)
-const positionOptions = [
-  { value: '', label: 'Select your primary position' },
-  { value: 'Able Seaman', label: 'Able Seaman' },
-  { value: 'Bosun', label: 'Bosun' },
-  { value: 'Chief Cook', label: 'Chief Cook' },
-  { value: 'Chief Engineer', label: 'Chief Engineer' },
-  { value: 'Chief Mate', label: 'Chief Mate' },
-  { value: 'Cook', label: 'Cook' },
-  { value: 'Deck Cadet', label: 'Deck Cadet' },
-  { value: 'Electrician', label: 'Electrician' },
-  { value: 'Engine Cadet', label: 'Engine Cadet' },
-  { value: 'Fitter', label: 'Fitter' },
-  { value: 'Galley Boy', label: 'Galley Boy' },
-  { value: 'Jr 3rd Mate', label: 'Jr 3rd Mate' },
-  { value: 'Jr 4th Engineer', label: 'Jr 4th Engineer' },
-  { value: 'Messman', label: 'Messman' },
-  { value: 'Ordinary Seaman', label: 'Ordinary Seaman' },
-  { value: 'Pumpman', label: 'Pumpman' },
-  { value: '2nd Engineer', label: '2nd Engineer' },
-  { value: '2nd Mate', label: '2nd Mate' },
-  { value: '3rd Engineer', label: '3rd Engineer' },
-  { value: '3rd Mate', label: '3rd Mate' },
-  { value: 'Trainee 4th Engineer', label: 'Trainee 4th Engineer' },
-  { value: 'Trainee Gas Engineer', label: 'Trainee Gas Engineer' },
-  { value: 'Trainee', label: 'Trainee' },
-  { value: 'Electrician Trainee', label: 'Electrician Trainee' },
-];
+  // Position options
+  const positionOptions = [
+    { value: '', label: 'Select your primary position' },
+    { value: 'Able Seaman', label: 'Able Seaman' },
+    { value: 'Bosun', label: 'Bosun' },
+    { value: 'Chief Cook', label: 'Chief Cook' },
+    { value: 'Chief Engineer', label: 'Chief Engineer' },
+    { value: 'Chief Mate', label: 'Chief Mate' },
+    { value: 'Cook', label: 'Cook' },
+    { value: 'Deck Cadet', label: 'Deck Cadet' },
+    { value: 'Electrician', label: 'Electrician' },
+    { value: 'Engine Cadet', label: 'Engine Cadet' },
+    { value: 'Fitter', label: 'Fitter' },
+    { value: 'Galley Boy', label: 'Galley Boy' },
+    { value: 'Jr 3rd Mate', label: 'Jr 3rd Mate' },
+    { value: 'Jr 4th Engineer', label: 'Jr 4th Engineer' },
+    { value: 'Messman', label: 'Messman' },
+    { value: 'Ordinary Seaman', label: 'Ordinary Seaman' },
+    { value: 'Pumpman', label: 'Pumpman' },
+    { value: '2nd Engineer', label: '2nd Engineer' },
+    { value: '2nd Mate', label: '2nd Mate' },
+    { value: '3rd Engineer', label: '3rd Engineer' },
+    { value: '3rd Mate', label: '3rd Mate' },
+    { value: 'Trainee 4th Engineer', label: 'Trainee 4th Engineer' },
+    { value: 'Trainee Gas Engineer', label: 'Trainee Gas Engineer' },
+    { value: 'Trainee', label: 'Trainee' },
+    { value: 'Electrician Trainee', label: 'Electrician Trainee' },
+  ];
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+// Function to get the maximum date for the birthday input
+  const getMaxDate = () => {
+    const today = new Date();
+    const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+    return maxDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+  };
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
@@ -518,6 +525,7 @@ const positionOptions = [
                         placeholder=""
                         value={formData.birthday}
                         onChange={handleChange}
+                        max={getMaxDate()}
                         required
                       />
                     </div>
@@ -590,7 +598,7 @@ const positionOptions = [
                     {loading ? 'Registering...' : 'Register'}
                   </button>
                 </div>
-              </form> 
+              </form>
             </div>
           </div>
         </div>

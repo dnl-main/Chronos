@@ -286,7 +286,10 @@ body {
   overflow-y: auto; /* For long content, make it scrollable */
 }
 
-
+.modal-tnc-content p,
+.modal-tnc-content li {
+  text-align: left;
+}
 /* 🔁 Responsive Styles */
 
 /* Tablet: Stacks vertically */
