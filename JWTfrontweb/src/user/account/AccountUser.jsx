@@ -83,6 +83,24 @@ const AccountUser = () => {
     { value: 'Electrician Trainee', label: 'Electrician Trainee' },
   ];
 
+  // Gender options
+  const genderOptions = [
+    { value: '', label: 'Select gender' },
+    { value: 'Male', label: 'Male' },
+    { value: 'Female', label: 'Female' },
+    { value: 'Others', label: 'Others' },
+  ];
+
+  // Civil Status options
+  const civilStatusOptions = [
+    { value: '', label: 'Select civil status' },
+    { value: 'Single', label: 'Single' },
+    { value: 'Married', label: 'Married' },
+    { value: 'Divorced', label: 'Divorced' },
+    { value: 'Widowed', label: 'Widowed' },
+    { value: 'Separated', label: 'Separated' },
+  ];
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -157,7 +175,7 @@ const AccountUser = () => {
   };
 
   const validatePersonalDetails = (details) => {
-    const requiredFields = ['gender', 'civil_status', 'birthday'];
+    const requiredFields = ['gender', 'civil_status', 'birthday', 'position'];
     const errors = [];
     requiredFields.forEach((field) => {
       if (!details[field]) {
@@ -514,25 +532,35 @@ const AccountUser = () => {
                     </div>
                     <div className="accountUser-box-in-forms-personal-form-top-left-fields">
                       <label>Gender:</label>
-                      <input
-                        type="text"
+                      <select
                         name="gender"
                         value={personalDetails.gender}
-                        readOnly={!isEditingPersonalDetails}
                         onChange={handlePersonalDetailsChange}
-                      />
+                        disabled={!isEditingPersonalDetails}
+                      >
+                        {genderOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                   <div className="accountUser-box-in-forms-personal-form-top-right">
                     <div className="accountUser-box-in-forms-personal-form-top-right-fields">
                       <label>Civil Status:</label>
-                      <input
-                        type="text"
+                      <select
                         name="civil_status"
                         value={personalDetails.civil_status}
-                        readOnly={!isEditingPersonalDetails}
                         onChange={handlePersonalDetailsChange}
-                      />
+                        disabled={!isEditingPersonalDetails}
+                      >
+                        {civilStatusOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                 </div>

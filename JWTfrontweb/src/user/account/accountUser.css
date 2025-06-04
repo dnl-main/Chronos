@@ -642,7 +642,7 @@
     .accountUser-box-in-forms-personal-form-top-right-fields select,
   .accountUser-box-in-forms-personal-form-top-left-fields select,
   .accountUser-box-in-forms-personal-form-bottom select {
-    font-size: var(--font-size-16);
+    font-size: var(--font-size-10);
     width: 100%;
     padding: 8px;
     border-radius: 6px;
