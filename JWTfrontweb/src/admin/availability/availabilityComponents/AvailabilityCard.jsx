@@ -45,6 +45,11 @@ const AvailabilityCard = ({ data, onOpenAppointment }) => {
   const certificate = data.completionStatus || 'Incomplete';
   const certificateColor = data.completionColor || 'var(--red-indicator)';
 
+  // Format mobile number to remove leading '0' if present
+  const formattedMobile = data.mobile
+    ? `(+63) ${data.mobile.startsWith('0') ? data.mobile.slice(1) : data.mobile}`
+    : 'Loading...';
+
   return (
     <main className="availability-box-in-cards-card">
       <div
@@ -66,7 +71,7 @@ const AvailabilityCard = ({ data, onOpenAppointment }) => {
       <div className="availability-box-in-cards-card-contact">
         <div className="availability-box-in-cards-card-contact-mobile">
           <Phone className="availability-box-in-cards-card-contact-mobile-svg" />
-          <p>{data.mobile ? `(+63) ${data.mobile}` : 'Loading...'}</p>
+          <p>{formattedMobile}</p>
         </div>
         <div className="availability-box-in-cards-card-contact-email">
           <Mail className="availability-box-in-cards-card-contact-email-svg" />
