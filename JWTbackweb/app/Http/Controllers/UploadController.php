@@ -15,7 +15,7 @@ class UploadController extends Controller
     {
         // Validate the request
         $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:jpg,jpeg,png|max:30000', // 30MB max
+            'file' => 'required|mimes:jpg,jpeg,png,pdf|max:30000', // 30MB max
             'certificate_name' => 'required|string|max:255',
             'certificate_type' => 'required|string|in:Medical,Training,Contract,Employee ID',
             'expiration_date' => 'nullable|date|after:today',

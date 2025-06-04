@@ -34,7 +34,7 @@ class ChangePasswordController extends Controller
         $user->password = Hash::make($request->new_password);
         $user->save();
 
-        // Optionally invalidate the current token to force re-login
+        // Invalidate the current JWT token
         JWTAuth::invalidate(JWTAuth::getToken());
 
         return response()->json([

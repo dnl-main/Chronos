@@ -10,7 +10,7 @@ class CrewController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api'); // Ensure JWT authentication
+        $this->middleware('auth:api');
     }
 
     public function getCrewMembers()
