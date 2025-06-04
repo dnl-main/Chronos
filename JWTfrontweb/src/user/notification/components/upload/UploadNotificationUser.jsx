@@ -34,28 +34,28 @@ const UploadNotificationUser = ({ notification, onDelete }) => {
         }
     }, [notification.user_id]);
 
-    const handleDelete = async () => {
-        try {
-            const token = sessionStorage.getItem('token');
-            await axios.delete(`${apiUrl}/notifications/${notification.id}`, {
-           headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
-                withCredentials: true,
-            });
-            // console.log('Notification deleted:', notification.id); // Debug
-            onDelete(notification.id); // Notify parent to refresh
-            alert('Notification deleted successfully'); // Replace with toast in production
-        } catch (err) {
-            // console.error('Failed to delete notification:', err);
-            alert('Failed to delete notification');
-        }
-    };
+    // const handleDelete = async () => {
+    //     try {
+    //         const token = sessionStorage.getItem('token');
+    //         await axios.delete(`${apiUrl}/notifications/${notification.id}`, {
+    //        headers: {
+    //     Authorization: `Bearer ${token}`,
+    //     'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
+    //   },
+    //             withCredentials: true,
+    //         });
+    //         // console.log('Notification deleted:', notification.id); // Debug
+    //         onDelete(notification.id); // Notify parent to refresh
+    //         alert('Notification deleted successfully'); // Replace with toast in production
+    //     } catch (err) {
+    //         // console.error('Failed to delete notification:', err);
+    //         alert('Failed to delete notification');
+    //     }
+    // };
 
     // Determine display text based on certificate type
     const displayCertificateType = notification.certificate_type?.toLowerCase() === 'contract' || 
-                                 notification.certificate_type?.toLowerCase() === 'id' 
+                                 notification.certificate_type?.toLowerCase() === 'employee id' 
                                  ? notification.certificate_type 
                                  : `${notification.certificate_type || 'Unknown'} Certificate`;
 

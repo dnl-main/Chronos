@@ -656,7 +656,7 @@ const HomeUser = () => {
 
                           <input
                             type="file"
-                            accept=".pdf"
+                            accept=".jpg,.jpeg,.png,pdf"
                             onChange={(e) => setFile(e.target.files[0])}
                             required
                             style={{ display: 'none' }}

@@ -319,7 +319,7 @@ class AppointmentController extends Controller
             'operator' => 'required_if:department,crewing|in:fleet crew manager,senior fleet crew operator,crew operator 1,crew operator 2,crew operator 3|nullable',
             'accounting_task' => 'required_if:department,accounting|in:allotment,final balance,check releasing|nullable',
             'employee_name' => 'required|string|max:255',
-            'purpose' => 'sometimes|string|max:255', // Changed to optional
+            'purpose' => 'sometimes|string|max:255', 
         ]);
 
         $appointment->update([
@@ -332,16 +332,25 @@ class AppointmentController extends Controller
             'operator' => $validated['operator'] ?? null,
             'accounting_task' => $validated['accounting_task'] ?? null,
             'employee' => $validated['employee_name'],
-            'purpose' => $validated['purpose'] ?? $appointment->purpose, // Preserve existing purpose
+            'purpose' => $validated['purpose'] ?? $appointment->purpose, 
             'status' => 'booked',
         ]);
 
-        // Fetch the user associated with the appointment
+      
         $recipient = User::find($appointment->user_id);
         if ($recipient && $recipient->email) {
-            // Send email notification
+         
             Mail::raw(
-                "Your appointment has been rescheduled.\n\nYour new scheduled date is: {$appointment->date}\n\nPlease visit your account for more details.",
+                "Your appointment has been rescheduled.\n\n" .
+                "Details of your new appointment:\n" .
+                "Date: {$appointment->date}\n" .
+                "Start Time: {$appointment->start_time}\n" .
+                "End Time: {$appointment->end_time}\n" .
+                "Department: {$appointment->department}\n" .
+                "Employee: {$appointment->employee}\n" .
+                "Purpose: {$appointment->purpose}\n" .
+                "Please visit your account for more details.".
+                "If you have any questions or need to reschedule, please contact us at: Concorde@fmssupport.com.ph\n\n",
                 function ($message) use ($recipient, $appointment) {
                     $message->to($recipient->email)
                             ->subject('Your Appointment Has Been Rescheduled');
@@ -385,16 +394,16 @@ class AppointmentController extends Controller
             return response()->json(['message' => 'Only upcoming or today\'s appointments can be canceled'], 400);
         }
 
-        // Store appointment date before deletion
         $appointmentDate = $appointment->date;
         $recipient = User::find($appointment->user_id);
 
         $appointment->delete();
 
-        // Send email notification if user exists and has an email
+    
         if ($recipient && $recipient->email) {
             Mail::raw(
-                "Your appointment scheduled for {$appointmentDate} has been canceled.\n\nPlease visit your account for more details.",
+                "Your appointment scheduled for {$appointmentDate} has been canceled.\n\n" .
+                "If you have any questions or need to reschedule, please contact us at: Concorde@fmssupport.com.ph\n\n",
                 function ($message) use ($recipient) {
                     $message->to($recipient->email)
                             ->subject('Your Appointment Has Been Canceled');
@@ -489,12 +498,21 @@ class AppointmentController extends Controller
             'status' => 'booked',
         ]);
 
-        // Fetch the user associated with the appointment
+     
         $recipient = User::find($appointment->user_id);
         if ($recipient && $recipient->email) {
-            // Send email notification
+          
             Mail::raw(
-                "You have an appointment scheduled at {$appointment->date}.\n\nPlease visit your account for more details.",
+                "You have an appointment scheduled.\n\n" .
+                "Details of your appointment:\n" .
+                "Date: {$appointment->date}\n" .
+                "Start Time: {$appointment->start_time}\n" .
+                "End Time: {$appointment->end_time}\n" .
+                "Department: {$appointment->department}\n" .
+                "Employee: {$appointment->employee}\n" .
+                "Purpose: {$appointment->purpose}\n" .
+                "Please visit your account for more details.".
+                "If you have any questions or need to reschedule, please contact us at: Concorde@fmssupport.com.ph\n\n",
                 function ($message) use ($recipient) {
                     $message->to($recipient->email)
                             ->subject('Your Appointment Has Been Scheduled');
@@ -520,5 +538,4 @@ class AppointmentController extends Controller
             ]
         ], 201);
     }
-
 }

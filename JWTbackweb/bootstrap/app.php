@@ -21,7 +21,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Register route middleware for web and API routes
         $middleware->alias([
-            'admin.storage' => \App\Http\Middleware\AdminStorageAccess::class,
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
     })

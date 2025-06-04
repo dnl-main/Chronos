@@ -53,28 +53,4 @@ class NotificationController extends Controller
     }
 
 
-    public function sendRescheduleNotification(Request $request)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'appointment_date' => 'required|date_format:Y-m-d',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
-        ]);
-
-        try {
-            $user = User::findOrFail($request->user_id);
-            Log::info('Sending reschedule notification to user ID: ' . $user->id . ', Date: ' . $request->appointment_date);
-            $user->notify(new RescheduleNotification(
-                $request->appointment_date,
-                $request->start_time,
-                $request->end_time
-            ));
-            Log::info('Reschedule notification sent successfully for user ID: ' . $user->id);
-            return response()->json(['message' => 'Reschedule notification sent successfully'], 200);
-        } catch (\Exception $e) {
-            Log::error('Failed to send reschedule notification: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to send reschedule notification'], 500);
-        }
-    }
 }

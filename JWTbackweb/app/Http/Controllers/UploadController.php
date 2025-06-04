@@ -15,7 +15,7 @@ class UploadController extends Controller
     {
         // Validate the request
         $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:pdf|max:30000', // 30MB max
+            'file' => 'required|mimes:jpg,jpeg,png|max:30000', // 30MB max
             'certificate_name' => 'required|string|max:255',
             'certificate_type' => 'required|string|in:Medical,Training,Contract,Employee ID',
             'expiration_date' => 'nullable|date|after:today',
@@ -101,9 +101,9 @@ class UploadController extends Controller
                 'expiration_date' => $request->expiration_date ? Carbon::parse($request->expiration_date)->toDateString() : null,
             ]);
 
-            // Return a response with the file path and success message
+            
             return response()->json([
-                'message' => 'PDF uploaded and saved successfully!',
+                'message' => 'File uploaded and saved successfully!',
                 'file_path' => Storage::url($relativePath),
                 'certificate' => $certificate
             ], 201);

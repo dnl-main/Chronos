@@ -12,7 +12,7 @@ class ProfilePicController extends Controller
 {
     public function upload(Request $request)
     {
-        // Log request details for debugging
+       
         \Log::info('Upload Request:', [
             'method' => $request->method(),
             'files' => $request->allFiles(),

@@ -644,14 +644,14 @@ const HomeUser = () => {
                             ) : (
                               <>
                                 <p className="homeUser-top-core-right-form-file-upload-text-bold">Choose a file to upload</p>
-                                <p className="homeUser-top-core-right-form-file-upload-text-light"> PDF only up to 30 MB</p>
+                                <p className="homeUser-top-core-right-form-file-upload-text-light"> JPG, PNG and PDF only up to 30 MB</p>
                               </>
                             )}
                           </div>
 
                           <input
                             type="file"
-                            accept=".pdf"
+                            accept=".jpg,.jpeg,.png,pdf"
                             onChange={(e) => setFile(e.target.files[0])}
                             required
                             style={{ display: 'none' }}

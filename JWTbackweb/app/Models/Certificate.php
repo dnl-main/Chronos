@@ -14,7 +14,7 @@ class Certificate extends Model
         'expiration_date',
     ];
 
-    // Optional: Define relationship with User model
+
     public function user()
     {
         return $this->belongsTo(User::class);

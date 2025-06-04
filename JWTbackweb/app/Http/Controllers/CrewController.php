@@ -15,7 +15,7 @@ class CrewController extends Controller
 
     public function getCrewMembers()
     {
-        // Ensure only admins can access this endpoint
+        
         if (Auth::user()->role !== 'admin') {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
@@ -28,7 +28,7 @@ class CrewController extends Controller
 
     public function getAvailableCrewCount()
     {
-        // Ensure only admins can access this endpoint
+        
         if (Auth::user()->role !== 'admin') {
             return response()->json(['error' => 'Unauthorized'], 403);
         }

@@ -46,7 +46,7 @@ Route::middleware('jwt.auth')->group(function () {
     // User Update Routes
     Route::put('/user/update-address', [AuthController::class, 'updateAddress']);
     Route::put('/user/update-personal', [AuthController::class, 'updatePersonal']);
-    Route::post('/user/update-position', [AuthController::class, 'updatePosition']); // for admin only
+    Route::post('/user/update-position', [AuthController::class, 'updatePosition']); // admin only
 
     // Availability Status
     Route::patch('/user/availability', [StatusController::class, 'updateAvailability']);
@@ -56,13 +56,13 @@ Route::middleware('jwt.auth')->group(function () {
     Route::post('/appointment', [AppointmentController::class, 'store']);
     Route::patch('/appointment/{id}', [AppointmentController::class, 'update']);
     Route::delete('/appointment/{id}', [AppointmentController::class, 'delete']);
-    Route::delete('/appointment', [AppointmentController::class, 'destroy']);
-    Route::get('/appointment/today/count', [AppointmentController::class, 'getTodayCount']);
-    Route::get('/appointment/upcoming/count', [AppointmentController::class, 'getUpcomingCount']);
-    Route::get('/appointment/upcoming', [AppointmentController::class, 'getUpcomingAppointments']);
-    Route::put('/appointment/{id}/reschedule', [AppointmentController::class, 'reschedule']);
-    Route::delete('/appointment/{id}/cancel', [AppointmentController::class, 'cancel']);
-    Route::post('/appointment/book', [AppointmentController::class, 'book']);
+     Route::delete('/appointment', [AppointmentController::class, 'destroy']);// user delete
+    Route::get('/appointment/today/count', [AppointmentController::class, 'getTodayCount']);//admin only
+    Route::get('/appointment/upcoming/count', [AppointmentController::class, 'getUpcomingCount']);//admin only
+    Route::get('/appointment/upcoming', [AppointmentController::class, 'getUpcomingAppointments']);//admin only
+    Route::put('/appointment/{id}/reschedule', [AppointmentController::class, 'reschedule']);//admin only
+    Route::delete('/appointment/{id}/cancel', [AppointmentController::class, 'cancel']);//admin only
+    Route::post('/appointment/book', [AppointmentController::class, 'book']);// admin only
 
     // Profile Picture Upload
     Route::post('/user/upload-profile-picture', [ProfilePicController::class, 'upload']);
@@ -70,7 +70,7 @@ Route::middleware('jwt.auth')->group(function () {
 
     // Change Password
     Route::post('/change-password', [ChangePasswordController::class, 'changePassword']);
-
+    Route::get('/notifications', [NotificationController::class, 'getUserNotifications']);
     // Crew Controller
     Route::get('/crew-members', [CrewController::class, 'getCrewMembers']);
     Route::get('/crew-members/available/count', [CrewController::class, 'getAvailableCrewCount']);
