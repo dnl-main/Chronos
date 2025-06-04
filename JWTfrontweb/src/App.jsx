@@ -31,7 +31,7 @@ import NotificationUser from './user/notification/NotificationUser';
 // Layouts
 import Admin from './layouts/Admin';
 import User from './layouts/User';
-import Superadmin from './layouts/SuperAdmin';
+import SuperAdmin from './layouts/SuperAdmin';
 
 // Superadmin Components
 import HomeSuperAdmin from './superadmin/home/HomeSuperAdmin';
@@ -90,7 +90,7 @@ function App() {
             path="/superadmin"
             element={
               <Wrapper>
-                <Superadmin />
+                <SuperAdmin />
               </Wrapper>
             }
           >

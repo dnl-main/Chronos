@@ -4,7 +4,7 @@ import NavbarSuperAdmin from '../superadmin/navbar/NavbarSuperadmin';
 import SidebarSuperAdmin from '../superadmin/sidebar/SidebarSuperadmin';
 import { jwtDecode } from 'jwt-decode';
 
-const Superadmin = () => {
+const SuperAdmin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,4 +44,4 @@ const Superadmin = () => {
   );
 };
 
-export default Superadmin;
+export default SuperAdmin;
