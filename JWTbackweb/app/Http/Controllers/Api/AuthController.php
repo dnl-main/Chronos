@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-use Validator;
-use JWTAuth;
+use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Exception;
 
 class AuthController extends Controller
@@ -19,7 +19,7 @@ class AuthController extends Controller
             // Check if the user is already authenticated via JWT
             try {
                 $user = JWTAuth::parseToken()->authenticate();
-                // If authenticated, return user data with needs_position
+        
                $needsPosition = $user->role === 'admin' && $user->position === null;
                 return response()->json([
                     'status' => true,
@@ -29,10 +29,10 @@ class AuthController extends Controller
                     'needs_position' => $needsPosition,
                 ], 200);
             } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
-                // No valid token, proceed with credential-based login
+               
             }
 
-            // Validate input for credential-based login
+           
             $validator = Validator::make($request->all(), [
                 'email' => 'required|string|email|max:255',
                 'password' => 'required|string|min:6',
@@ -139,7 +139,12 @@ public function signup(Request $request)
 
     public function getUser(Request $request)
     {
-        return response()->json(auth()->user());
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+            return response()->json($user);
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return response()->json(['message' => 'User not authenticated.'], 401);
+        }
     }
 
 public function registration(Request $request)
