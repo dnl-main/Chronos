@@ -25,7 +25,6 @@ const HomeUser = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [appointment, setAppointment] = useState({
-    
     date: '',
     start_time: '',
     end_time: '',
@@ -44,6 +43,7 @@ const HomeUser = () => {
   const [progress, setProgress] = useState({ percentage: 0, uploaded: 0, total: 4 });
   const [certificateLoading, setCertificateLoading] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dateError, setDateError] = useState(''); // New state for date error
 
   const statusOptions = ['On Board', 'Available', 'Vacation'];
   const certificateTypes = ['Medical', 'Training', 'Contract', 'Employee ID'];
@@ -83,7 +83,6 @@ const HomeUser = () => {
       const token = sessionStorage.getItem('token');
       if (!token) {
         setAppointment({
-        
           date: '',
           start_time: '',
           end_time: '',
@@ -297,7 +296,14 @@ const HomeUser = () => {
     e.preventDefault();
 
     if (!file || !certificateName || !certificateType) {
-      alert('Please fill all required fields and select a file.');
+      setDateError('Please fill all required fields and select a file.');
+      return;
+    }
+
+    // Check if expiration date is today
+    const today = new Date().toISOString().split('T')[0];
+    if (expirationDate === today) {
+      setDateError('Expiration date cannot be today. Please select a future date.');
       return;
     }
 
@@ -338,6 +344,7 @@ const HomeUser = () => {
       setCertificateType('');
       setExpirationDate('');
       setFile(null);
+      setDateError(''); // Clear error on successful submission
 
       const updatedCertResponse = await axios.get(`${apiUrl}/certificates`, {
         headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
@@ -348,7 +355,7 @@ const HomeUser = () => {
       const percentage = Math.round((uploaded / total) * 100);
       setProgress({ percentage, uploaded, total });
     } catch (error) {
-      alert(error.response?.data.message || 'Failed to upload certificate');
+      setDateError(error.response?.data.message || 'Failed to upload certificate');
     }
   };
 
@@ -704,10 +711,21 @@ const HomeUser = () => {
                             <input
                               type="date"
                               value={expirationDate}
-                              onChange={(e) => setExpirationDate(e.target.value)}
+                              onChange={(e) => {
+                                const selectedDate = e.target.value;
+                                const today = new Date().toISOString().split('T')[0];
+                                if (selectedDate === today) {
+                                  setDateError('Expiration date cannot be today. Please select a future date.');
+                                  setExpirationDate('');
+                                } else {
+                                  setDateError('');
+                                  setExpirationDate(selectedDate);
+                                }
+                              }}
                               min={new Date().toISOString().split('T')[0]}
                               required
                             />
+                            {dateError && <p style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>{dateError}</p>}
                           </div>
                         </div>
 
