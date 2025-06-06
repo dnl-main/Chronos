@@ -342,7 +342,7 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
                 </div>
 
                 <article className="bookModalUser-box-in-core-data-dept-name">
-                  <label htmlFor="employeeName">Name of employee</label>
+                  <label htmlFor="employeeName">Assigned to: </label>
                   <input
                     type="text"
                     id="employeeName"

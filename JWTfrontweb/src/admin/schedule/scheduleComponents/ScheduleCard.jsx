@@ -83,7 +83,7 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
         </div>
 
         <div className="schedule-today-cards-card-contact-email">
-          <p>Employee: {appointment.employee || 'N/A'}</p>
+          <p>Assigned to: {appointment.employee || 'N/A'}</p>
         </div>
 
         

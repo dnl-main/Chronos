@@ -491,7 +491,7 @@ const HomeUser = () => {
                               )}
 
                               <p className="homeUser-top-core-left-date-data-text-light">
-                                Employee: {appointment.employee || 'N/A'}
+                                Assigned to: {appointment.employee || 'N/A'}
                               </p>
                               <p className="homeUser-top-core-left-date-data-text-light">
                                 Purpose: {appointment.purpose ? capitalize(appointment.purpose) : 'N/A'}
