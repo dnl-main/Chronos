@@ -8,7 +8,7 @@ import Sidebar from '../sidebar/Sidebar';
 import ScheduleCard from '../schedule/scheduleComponents/ScheduleCard';
 import Spinner from '../../components/Spinner';
 import Appointment from '../appointment/bookAppointment/Appointment';
-import ManageAppointment from '../appointment/ManageAppointment'; // Import ManageAppointment
+import ManageAppointment from '../appointment/ManageAppointment';
 import HomeCertAdmin from './HomeCertAdmin';
 
 import Calendar_Event from '../../assets/icons/Calendar_Event.svg?react';
@@ -24,8 +24,8 @@ import Calendar_Check from '../../assets/icons/Calendar_Check.svg?react';
 
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // New state for edit modal
-  const [selectedAppointmentData, setSelectedAppointmentData] = useState(null); // State for edit appointment data
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedAppointmentData, setSelectedAppointmentData] = useState(null);
   const [overlayContent, setOverlayContent] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,6 +33,7 @@ const Home = () => {
   const [upcomingCount, setUpcomingCount] = useState(0);
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [pendingAppointments, setPendingAppointments] = useState([]); // New state for pending appointments
   const [availableCrewCount, setAvailableCrewCount] = useState(0);
   const [totalCrewCount, setTotalCrewCount] = useState(0);
   const [error, setError] = useState(null);
@@ -139,7 +140,10 @@ const Home = () => {
         withCredentials: true,
       });
       const appointments = Array.isArray(appointmentsResponse.data) ? appointmentsResponse.data : [];
-      setTodayAppointments(appointments.filter((app) => app.computed_status === 'today'));
+      setTodayAppointments(
+        appointments.filter((app) => app.computed_status === 'today' && app.status !== 'pending')
+      );
+      setPendingAppointments(appointments.filter((app) => app.status === 'pending')); // Set pending appointments
 
       const upcomingAppointmentsResponse = await axios.get(`${apiUrl}/appointment/upcoming`, {
         headers: {
@@ -199,6 +203,10 @@ const Home = () => {
     navigate('/admin/schedule?tab=upcoming');
   };
 
+  const handleRedirectPending = () => {
+    navigate('/admin/schedule?tab=pending');
+  };
+
   const getNearestAppointment = () => {
     if (upcomingAppointments.length === 0) return null;
     const today = new Date();
@@ -212,17 +220,14 @@ const Home = () => {
     }, null);
   };
 
-  // Handle edit click from ScheduleCard
   const handleEditClick = ({ appointment, user, bookedAppointments }) => {
     setSelectedAppointmentData({ appointment, user, bookedAppointments });
     setIsEditModalOpen(true);
   };
 
-  // Handle closing the edit modal and refreshing appointments
   const handleEditModalClose = () => {
     setIsEditModalOpen(false);
     setSelectedAppointmentData(null);
-    // Refresh appointments after closing
     const token = sessionStorage.getItem('token');
     if (token) {
       fetchDashboardData(token);
@@ -438,11 +443,41 @@ const Home = () => {
                     appointment={app}
                     user={app.user}
                     allAppointments={todayAppointments}
-                    onEditClick={handleEditClick} // Pass the edit handler
+                    onEditClick={handleEditClick}
                   />
                 ))
               ) : (
                 <p>No appointments today.</p>
+              )}
+            </div>
+
+            <header className="home-bot-header">
+              <Calendar_Week
+                style={{
+                  width: "24px",
+                  height: "24px",
+                  '--stroke-width': '2px',
+                  '--stroke-color': 'var(--black-color)',
+                }}
+              />
+              <p>Pending</p>
+              <button onClick={handleRedirectPending}>
+                <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
+              </button>
+            </header>
+            <div className="home-bot-cards">
+              {pendingAppointments.length > 0 ? (
+                pendingAppointments.slice(0, 3).map((app) => (
+                  <ScheduleCard
+                    key={app.id}
+                    appointment={app}
+                    user={app.user}
+                    allAppointments={pendingAppointments}
+                    onEditClick={handleEditClick}
+                  />
+                ))
+              ) : (
+                <p>No pending appointments.</p>
               )}
             </div>
           </div>
