@@ -182,32 +182,32 @@ const Schedule = () => {
             </button> */}
           </section>
 
-          {(selectedTab === 'today' || selectedTab === 'all') && (
-            <>
-              <header className="schedule-header-today">
-                <p>Today</p>
-              </header>
-              <section className="schedule-today">
-                <div className="schedule-today-cards">
-                  {appointments
-                    .filter((app) => normalizeDate(app.date) === today && app.status !== 'completed')
-                    .sort(sortAppointmentsByDate)
-                    .map((app) => (
-                      <ScheduleCard
-                        key={app.id}
-                        appointment={app}
-                        user={app.user}
-                        allAppointments={appointments}
-                        onEditClick={handleEditClick}
-                      />
-                    ))}
-                  {appointments.filter((app) => normalizeDate(app.date) === today && app.status !== 'completed').length === 0 && (
-                    <p style={{ color: '#888', padding: '1rem' }}>No appointments today.</p>
-                  )}
-                </div>
-              </section>
-            </>
-          )}
+{(selectedTab === 'today' || selectedTab === 'all') && (
+  <>
+    <header className="schedule-header-today">
+      <p>Today</p>
+    </header>
+    <section className="schedule-today">
+      <div className="schedule-today-cards">
+        {appointments
+          .filter((app) => normalizeDate(app.date) === today && app.status !== 'completed' && app.status !== 'pending')
+          .sort(sortAppointmentsByDate)
+          .map((app) => (
+            <ScheduleCard
+              key={app.id}
+              appointment={app}
+              user={app.user}
+              allAppointments={appointments}
+              onEditClick={handleEditClick}
+            />
+          ))}
+        {appointments.filter((app) => normalizeDate(app.date) === today && app.status !== 'completed' && app.status !== 'pending').length === 0 && (
+          <p style={{ color: '#888', padding: '1rem' }}>No appointments today.</p>
+        )}
+      </div>
+    </section>
+  </>
+)}
 
 {(selectedTab === 'upcoming' || selectedTab === 'all') && (
   <>

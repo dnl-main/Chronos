@@ -57,19 +57,26 @@ const to12HourFormat = (time24h) => {
 };
 
 const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, isReschedule = false }) => {
-  const [department, setDepartment] = useState(appointment.department ? appointment.department.charAt(0).toUpperCase() + appointment.department.slice(1) : '');
-  const [crewingDept, setCrewingDept] = useState(appointment.crewing_dept ? appointment.crewing_dept.charAt(0).toUpperCase() + appointment.crewing_dept.slice(1) : '');
-  const [operator, setOperator] = useState(appointment.operator ? appointment.operator.charAt(0).toUpperCase() + appointment.operator.slice(1) : '');
-  const [accountingOption, setAccountingOption] = useState(appointment.accounting_task ? appointment.accounting_task.charAt(0).toUpperCase() + appointment.accounting_task.slice(1) : '');
+  const [department, setDepartment] = useState(appointment.department ? 
+    departmentOptions.find(opt => opt.toLowerCase() === appointment.department.toLowerCase()) || '' : '');
+  const [crewingDept, setCrewingDept] = useState(appointment.crewing_dept ? 
+    crewingDepts.find(opt => opt.toLowerCase() === appointment.crewing_dept.toLowerCase()) || '' : '');
+  const [operator, setOperator] = useState(appointment.operator ? 
+    operators.find(opt => opt.toLowerCase() === appointment.operator.toLowerCase()) || '' : '');
+  const [accountingOption, setAccountingOption] = useState(appointment.accounting_task ? 
+    accountingOptions.find(opt => opt.toLowerCase() === appointment.accounting_task.toLowerCase()) || '' : '');
   const [employeeName, setEmployeeName] = useState(appointment.employee || '');
-  const [purpose, setPurpose] = useState(appointment.purpose ? (purposeOptions.includes(appointment.purpose.charAt(0).toUpperCase() + appointment.purpose.slice(1)) ? appointment.purpose.charAt(0).toUpperCase() + appointment.purpose.slice(1) : 'Others') : '');
-  const [customPurpose, setCustomPurpose] = useState(appointment.purpose && !purposeOptions.includes(appointment.purpose.charAt(0).toUpperCase() + appointment.purpose.slice(1)) ? appointment.purpose : '');
+  const [purpose, setPurpose] = useState(appointment.purpose ? 
+    purposeOptions.find(opt => opt.toLowerCase() === appointment.purpose.toLowerCase()) || 'Others' : '');
+  const [customPurpose, setCustomPurpose] = useState(appointment.purpose && 
+    !purposeOptions.find(opt => opt.toLowerCase() === appointment.purpose.toLowerCase()) ? appointment.purpose : '');
   const [date, setDate] = useState(formatLocalDate(appointment.date));
   const [startTime, setStartTime] = useState(appointment.start_time ? to12HourFormat(appointment.start_time) : '');
   const [endTime, setEndTime] = useState(appointment.end_time ? to12HourFormat(appointment.end_time) : '');
   const [userId, setUserId] = useState(null);
-  const [admins, setAdmins] = useState([]); // New state for admins
-  const [filteredAdmins, setFilteredAdmins] = useState([]); // New state for filtered admins
+  const [admins, setAdmins] = useState([]);
+  const [filteredAdmins, setFilteredAdmins] = useState([]);
+  const [isAdminsLoaded, setIsAdminsLoaded] = useState(false);
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -106,10 +113,12 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
           },
         });
         setAdmins(response.data);
-        setFilteredAdmins(response.data); 
+        setFilteredAdmins(response.data);
+        setIsAdminsLoaded(true);
       } catch (error) {
         console.error('Failed to fetch admins:', error.response?.data || error.message);
         alert('Unable to fetch admin list. Please try again.');
+        setIsAdminsLoaded(true);
       }
     };
 
@@ -118,22 +127,27 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
 
   // Filter admins based on department selection
   useEffect(() => {
+    if (!isAdminsLoaded) return;
+
+    let filtered = admins;
     if (department) {
-      const filtered = admins.filter(admin =>
+      filtered = admins.filter(admin =>
         admin.department?.toLowerCase() === department.toLowerCase()
       );
-      setFilteredAdmins(filtered);
-      // Reset employeeName if it doesn't match any filtered admin
-      if (employeeName && !filtered.some(admin => `${admin.first_name} ${admin.last_name}` === employeeName)) {
+    }
+    setFilteredAdmins(filtered);
+
+    // Validate employeeName only after admins are loaded
+    if (employeeName) {
+      const isValidAdmin = filtered.some(admin => `${admin.first_name} ${admin.last_name}` === employeeName);
+      if (!isValidAdmin && department && !isReschedule) {
         setEmployeeName('');
-      }
-    } else {
-      setFilteredAdmins(admins); // Show all admins if no department selected
-      if (employeeName && !admins.some(admin => `${admin.first_name} ${admin.last_name}` === employeeName)) {
+      } else if (!isValidAdmin && department && isReschedule) {
+        // During reschedule, only reset if department is set and employeeName is invalid
         setEmployeeName('');
       }
     }
-  }, [department, admins, employeeName]);
+  }, [department, admins, employeeName, isReschedule, isAdminsLoaded]);
 
   const isFormValid = () => {
     if (!userId || !department || !employeeName || !purpose || !date || !startTime || !endTime) return false;
@@ -307,11 +321,21 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
                       id="department"
                       value={department}
                       onChange={(e) => {
-                        setDepartment(e.target.value);
+                        const newDepartment = e.target.value;
+                        setDepartment(newDepartment);
                         setCrewingDept('');
                         setOperator('');
                         setAccountingOption('');
-                        setEmployeeName(''); // Reset employeeName on department change
+                        // Only reset employeeName if the new department invalidates it
+                        if (employeeName && filteredAdmins.length > 0) {
+                          const isValidAdmin = filteredAdmins.some(admin => 
+                            `${admin.first_name} ${admin.last_name}` === employeeName && 
+                            (!newDepartment || admin.department?.toLowerCase() === newDepartment.toLowerCase())
+                          );
+                          if (!isValidAdmin) {
+                            setEmployeeName('');
+                          }
+                        }
                       }}
                     >
                       <option value="">Select...</option>
@@ -371,8 +395,7 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
                         </select>
                       </article>
                     </div>
-                  )
-                  }
+                  )}
                 </div>
 
                 <article className="bookModalUser-box-in-core-data-dept-name">
