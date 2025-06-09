@@ -16,7 +16,8 @@ class Appointment extends Model
         'operator',
         'accounting_task',
         'employee',
-    'purpose', ];
+    'purpose',
+'status', ];
     public function user()
     {
         return $this->belongsTo(User::class);

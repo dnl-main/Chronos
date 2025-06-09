@@ -54,15 +54,17 @@ Route::middleware('jwt.auth')->group(function () {
     // Appointment Routes
     Route::get('/appointment', [AppointmentController::class, 'index']);
     Route::post('/appointment', [AppointmentController::class, 'store']);
+    Route::post('/appointment/schedule', [AppointmentController::class, 'schedule']);
     Route::patch('/appointment/{id}', [AppointmentController::class, 'update']);
     Route::delete('/appointment/{id}', [AppointmentController::class, 'delete']);
-     Route::delete('/appointment', [AppointmentController::class, 'destroy']);// user delete
+    Route::delete('/appointment', [AppointmentController::class, 'destroy']);// user delete
     Route::get('/appointment/today/count', [AppointmentController::class, 'getTodayCount']);//admin only
     Route::get('/appointment/upcoming/count', [AppointmentController::class, 'getUpcomingCount']);//admin only
     Route::get('/appointment/upcoming', [AppointmentController::class, 'getUpcomingAppointments']);//admin only
     Route::put('/appointment/{id}/reschedule', [AppointmentController::class, 'reschedule']);//admin only
     Route::delete('/appointment/{id}/cancel', [AppointmentController::class, 'cancel']);//admin only
     Route::post('/appointment/book', [AppointmentController::class, 'book']);// admin only
+    Route::put('/appointment/{id}/book-status', [AppointmentController::class, 'bookStatus']);
 
     // Profile Picture Upload
     Route::post('/user/upload-profile-picture', [ProfilePicController::class, 'upload']);
@@ -74,6 +76,7 @@ Route::middleware('jwt.auth')->group(function () {
     // Crew Controller
     Route::get('/crew-members', [CrewController::class, 'getCrewMembers']);
     Route::get('/crew-members/available/count', [CrewController::class, 'getAvailableCrewCount']);
+    Route::get('/crew-members/admin', [CrewController::class, 'getAdmin']);
 
     // File Upload
     Route::post('/upload-certificate', [UploadController::class, 'upload']);

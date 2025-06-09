@@ -15,7 +15,6 @@ class CrewController extends Controller
 
     public function getCrewMembers()
     {
-        
         if (Auth::user()->role !== 'admin') {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
@@ -28,7 +27,6 @@ class CrewController extends Controller
 
     public function getAvailableCrewCount()
     {
-        
         if (Auth::user()->role !== 'admin') {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
@@ -50,5 +48,17 @@ class CrewController extends Controller
             'total' => $totalCount,
             'complete' => $completeCount,
         ]);
+    }
+
+    public function getAdmin()
+    {
+                if (Auth::user()->role !== 'user') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        $admins = User::where('role', 'admin')
+            ->select('first_name', 'last_name', 'department')
+            ->get();
+
+        return response()->json($admins);
     }
 }

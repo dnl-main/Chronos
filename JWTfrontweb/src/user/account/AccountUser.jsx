@@ -101,6 +101,13 @@ const AccountUser = () => {
     { value: 'Separated', label: 'Separated' },
   ];
 
+  // Calculate the max date for 18 years old
+  const getMaxDate = () => {
+    const today = new Date();
+    today.setFullYear(today.getFullYear() - 18);
+    return today.toISOString().split('T')[0];
+  };
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -182,6 +189,25 @@ const AccountUser = () => {
         errors.push(`${field.charAt(0).toUpperCase() + field.slice(1)} is required.`);
       }
     });
+
+    // Validate age (must be at least 18 years old)
+    if (details.birthday) {
+      const birthday = new Date(details.birthday);
+      const today = new Date();
+      const age = today.getFullYear() - birthday.getFullYear();
+      const monthDiff = today.getMonth() - birthday.getMonth();
+      const dayDiff = today.getDate() - birthday.getDate();
+
+      // Adjust age if birthday hasn't occurred this year
+      if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+        age--;
+      }
+
+      if (age < 18) {
+        errors.push('You must be at least 18 years old.');
+      }
+    }
+
     return errors;
   };
 
@@ -570,6 +596,7 @@ const AccountUser = () => {
                     type="date"
                     name="birthday"
                     value={personalDetails.birthday}
+                    max={getMaxDate()}
                     readOnly={!isEditingPersonalDetails}
                     onChange={handlePersonalDetailsChange}
                   />

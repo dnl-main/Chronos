@@ -39,7 +39,6 @@ const formatLocalDate = (inputDate) => {
   return `${year}-${month}-${day}`;
 };
 
-
 const to24HourFormat = (time12h) => {
   if (!time12h) return '';
   const [time, period] = time12h.split(' ');
@@ -48,7 +47,6 @@ const to24HourFormat = (time12h) => {
   if (period === 'AM' && hours === 12) hours = 0;
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 };
-
 
 const to12HourFormat = (time24h) => {
   if (!time24h) return '';
@@ -70,12 +68,15 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
   const [startTime, setStartTime] = useState(appointment.start_time ? to12HourFormat(appointment.start_time) : '');
   const [endTime, setEndTime] = useState(appointment.end_time ? to12HourFormat(appointment.end_time) : '');
   const [userId, setUserId] = useState(null);
+  const [admins, setAdmins] = useState([]); // New state for admins
+  const [filteredAdmins, setFilteredAdmins] = useState([]); // New state for filtered admins
 
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+
+  // Fetch user ID
   useEffect(() => {
     const fetchUserId = async () => {
       const token = sessionStorage.getItem('token');
-      const apiUrl = import.meta.env.VITE_API_BASE_URL;
-
       try {
         const response = await axios.get(`${apiUrl}/user`, {
           headers: {
@@ -91,14 +92,54 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
     };
 
     fetchUserId();
-  }, []);
+  }, [apiUrl]);
+
+  // Fetch admins
+  useEffect(() => {
+    const fetchAdmins = async () => {
+      const token = sessionStorage.getItem('token');
+      try {
+        const response = await axios.get(`${apiUrl}/crew-members/admin`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
+        });
+        setAdmins(response.data);
+        setFilteredAdmins(response.data); 
+      } catch (error) {
+        console.error('Failed to fetch admins:', error.response?.data || error.message);
+        alert('Unable to fetch admin list. Please try again.');
+      }
+    };
+
+    fetchAdmins();
+  }, [apiUrl]);
+
+  // Filter admins based on department selection
+  useEffect(() => {
+    if (department) {
+      const filtered = admins.filter(admin =>
+        admin.department?.toLowerCase() === department.toLowerCase()
+      );
+      setFilteredAdmins(filtered);
+      // Reset employeeName if it doesn't match any filtered admin
+      if (employeeName && !filtered.some(admin => `${admin.first_name} ${admin.last_name}` === employeeName)) {
+        setEmployeeName('');
+      }
+    } else {
+      setFilteredAdmins(admins); // Show all admins if no department selected
+      if (employeeName && !admins.some(admin => `${admin.first_name} ${admin.last_name}` === employeeName)) {
+        setEmployeeName('');
+      }
+    }
+  }, [department, admins, employeeName]);
 
   const isFormValid = () => {
-    if (!userId || !department || !employeeName.trim() || !purpose || !date || !startTime || !endTime) return false;
+    if (!userId || !department || !employeeName || !purpose || !date || !startTime || !endTime) return false;
     if (department === 'Crewing' && (!crewingDept || !operator)) return false;
     if (department === 'Accounting' && !accountingOption) return false;
     if (purpose === 'Others' && !customPurpose.trim()) return false;
-    if (employeeName.trim().length < 3) return false;
     if (purpose === 'Others' && customPurpose.trim().length < 3) return false;
     return true;
   };
@@ -108,10 +149,7 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
   };
 
   const handleBook = async () => {
-    const trimmedEmployeeName = employeeName.trim();
     const trimmedCustomPurpose = customPurpose.trim();
-
-    const safeEmployeeName = sanitizeInput(trimmedEmployeeName);
     const safeCustomPurpose = sanitizeInput(trimmedCustomPurpose);
 
     if (!userId) {
@@ -140,13 +178,8 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
       return;
     }
 
-    if (!safeEmployeeName) {
-      alert('Please enter the name of the employee.');
-      return;
-    }
-
-    if (safeEmployeeName.length < 3) {
-      alert('Employee name must be at least 3 characters.');
+    if (!employeeName) {
+      alert('Please select an admin.');
       return;
     }
 
@@ -194,7 +227,6 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
 
     const formattedDate = formatLocalDate(date);
     const token = sessionStorage.getItem('token');
-    const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
     const payload = {
       user_id: userId,
@@ -202,7 +234,7 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
       crewing_dept: department === 'Crewing' ? crewingDept.toLowerCase() : undefined,
       operator: department === 'Crewing' ? operator.toLowerCase() : undefined,
       accounting_task: department === 'Accounting' ? accountingOption.toLowerCase() : undefined,
-      employee_name: safeEmployeeName,
+      employee_name: employeeName,
       purpose: purpose === 'Others' ? safeCustomPurpose : purpose.toLowerCase(),
       date: formattedDate,
       start_time: to24HourFormat(startTime),
@@ -219,7 +251,7 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
           },
         });
       } else {
-        response = await axios.post(`${apiUrl}/appointment`, payload, {
+        response = await axios.post(`${apiUrl}/appointment/schedule`, payload, {
           headers: {
             Authorization: `Bearer ${token}`,
             'ngrok-skip-browser-warning': 'true',
@@ -279,6 +311,7 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
                         setCrewingDept('');
                         setOperator('');
                         setAccountingOption('');
+                        setEmployeeName(''); // Reset employeeName on department change
                       }}
                     >
                       <option value="">Select...</option>
@@ -338,21 +371,24 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
                         </select>
                       </article>
                     </div>
-                  )}
+                  )
+                  }
                 </div>
 
                 <article className="bookModalUser-box-in-core-data-dept-name">
-                  <label htmlFor="employeeName">Assigned to: </label>
-                  <input
-                    type="text"
+                  <label htmlFor="employeeName">Assigned to</label>
+                  <select
                     id="employeeName"
                     value={employeeName}
-                    maxLength={50}
-                    onChange={(e) => {
-                      const filteredValue = e.target.value.replace(/[0-9]/g, '').trimStart();
-                      setEmployeeName(filteredValue);
-                    }}
-                  />
+                    onChange={(e) => setEmployeeName(e.target.value)}
+                  >
+                    <option value="">Select an admin...</option>
+                    {filteredAdmins.map((admin) => (
+                      <option key={`${admin.first_name}-${admin.last_name}`} value={`${admin.first_name} ${admin.last_name}`}>
+                        {`${admin.first_name} ${admin.last_name} (${admin.department || 'No Department'})`}
+                      </option>
+                    ))}
+                  </select>
                 </article>
 
                 <div className="bookModalUser-box-in-core-data-dept-purpose">

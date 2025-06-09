@@ -120,7 +120,7 @@ function mapAppointment(appointment) {
   };
 }
 
-export default function Appointment({ onClose, userId }) { // Add userId prop
+export default function Appointment({ onClose, userId }) {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
@@ -165,37 +165,35 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
       }
     };
 
-   const fetchAppointments = async () => {
-  try {
-    const response = await axios.get(`${apiUrl}/appointment`, {
-      headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
-    });
-    const data = Array.isArray(response.data) ? response.data : response.data.id ? [response.data] : [];
-    // Filter out past appointments
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const filteredAppointments = data.filter(appointment => {
-      if (!appointment.date) return true; // Keep appointments without a date (if any)
-      const appointmentDate = new Date(appointment.date);
-      return appointmentDate >= today;
-    });
-    const mappedAppointments = filteredAppointments.map(mapAppointment);
-    setAppointments(mappedAppointments);
-    // Pre-select user if userId is provided
-    if (userId) {
-      const userAppointment = mappedAppointments.find(
-        appt => appt.user_id === userId && (appt.status === 'available' || appt.status === 'booked')
-      );
-      if (userAppointment) {
-        setSelectedId(userAppointment.id);
+    const fetchAppointments = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/appointment`, {
+          headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
+        });
+        const data = Array.isArray(response.data) ? response.data : response.data.id ? [response.data] : [];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const filteredAppointments = data.filter(appointment => {
+          if (!appointment.date) return true;
+          const appointmentDate = new Date(appointment.date);
+          return appointmentDate >= today;
+        });
+        const mappedAppointments = filteredAppointments.map(mapAppointment);
+        setAppointments(mappedAppointments);
+        if (userId) {
+          const userAppointment = mappedAppointments.find(
+            appt => appt.user_id === userId && (appt.status === 'available' || appt.status === 'booked' || appt.status === 'pending')
+          );
+          if (userAppointment) {
+            setSelectedId(userAppointment.id);
+          }
+        }
+        return filteredAppointments;
+      } catch (err) {
+        setError('Error fetching appointments: ' + (err.response?.data?.message || err.message));
+        return [];
       }
-    }
-    return filteredAppointments;
-  } catch (err) {
-    setError('Error fetching appointments: ' + (err.response?.data?.message || err.message));
-    return [];
-  }
-};
+    };
 
     const fetchAvailableUsers = async (existingAppointments) => {
       try {
@@ -205,7 +203,7 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
         const availableUsers = response.data;
         const bookedUserIds = new Set(
           existingAppointments
-            .filter(appt => appt.status === 'booked')
+            .filter(appt => appt.status === 'booked' || appt.status === 'pending')
             .map(appt => appt.user_id)
         );
         const availableAppointments = availableUsers
@@ -238,7 +236,6 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
           ...prev.filter(appt => !String(appt.id).startsWith('user-')),
           ...availableAppointments,
         ]);
-        // If userId is provided and no appointment was found, select the available user
         if (userId && !selectedId) {
           const userAppointment = availableAppointments.find(appt => appt.user_id === userId);
           if (userAppointment) {
@@ -257,7 +254,7 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
     };
 
     initialize();
-  }, [navigate, apiUrl, userId]); // Add userId to dependency array
+  }, [navigate, apiUrl, userId]);
 
   useEffect(() => {
     if (!selectedAppointment) {
@@ -370,7 +367,6 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
         mapAppointment(response.data.appointment),
       ]);
       setShowBookModal(false);
-      // alert('Appointment booked successfully!');
       window.location.reload();
     } catch (err) {
       alert('Error booking appointment: ' + (err.response?.data?.message || err.message));
@@ -378,7 +374,6 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
   };
 
   const handleReschedule = () => {
-    
     if (!isAdmin) {
       alert('Only admins can reschedule appointments.');
       return;
@@ -451,8 +446,6 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
       setShowRescheduleModal(false);
       window.location.reload();
       setShowConfirmation(true);
-      // alert('Appointment rescheduled successfully!');
-      
     } catch (err) {
       alert('Error rescheduling appointment: ' + (err.response?.data?.message || err.message));
     }
@@ -489,8 +482,7 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
       setCustomPurpose('');
       setSelectedId(null);
       setShowCancelModal(false);
-      // alert('Appointment cancelled!');
-       window.location.reload();
+      window.location.reload();
     } catch (err) {
       alert('Error cancelling appointment: ' + (err.response?.data?.message || err.message));
     }
@@ -538,6 +530,13 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
                   >
                     <Circle_Primary style={{ width: "20px", height: "20px" }} />
                     <p>Booked</p>
+                  </button>
+                  <button
+                    className={`appointmentModal-box-in-left-core-top-tabs-pending ${filter === 'pending' ? 'active' : ''}`}
+                    onClick={() => setFilter('pending')}
+                  >
+                    <Circle_Primary style={{ width: "20px", height: "20px" }} />
+                    <p>Pending</p>
                   </button>
                 </div>
 
@@ -629,7 +628,7 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
                     userSelect: 'none',
                   }}
                 >
-                  Please select an available or booked user first to manage appointments.
+                  Please select an available, booked, or pending user first to manage appointments.
                 </p>
               </div>
             )}
@@ -714,7 +713,6 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
                 )}
               </div>
 
-
               <article className="appointmentModal-box-in-right-dept-name">
                 <label htmlFor="employeeName">Name of employee</label>
                 <input
@@ -764,7 +762,6 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
                   </article>
                 )}
               </div>
-
             </section>
 
             <div className="appointmentModal-box-in-right-dropdown">
@@ -816,7 +813,6 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
                         <option key={idx} value={time}>{time}</option>
                       ))}
                   </select>
-
                 </div>
               </div>
             </div>
@@ -825,7 +821,6 @@ export default function Appointment({ onClose, userId }) { // Add userId prop
               <button
                 className="appointmentModal-box-in-right-buttons-reschedule"
                 onClick={handleReschedule}
-                
                 style={{
                   cursor: !isAdmin || selectedId === null || !selectedAppointment || selectedAppointment.status !== 'booked' ? 'not-allowed' : 'pointer',
                 }}

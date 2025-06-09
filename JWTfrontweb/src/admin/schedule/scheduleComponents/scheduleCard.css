@@ -200,6 +200,7 @@
 		align-items: center;
 		height: 100%;
 		width: 8%;
+		margin-right: 5%;
 	}
 
 		.schedule-today-cards-card-button button {
@@ -213,3 +214,8 @@
 			min-width: 60px;
 			border-radius: 500px;
 		} 
+
+/* New style for pending appointments */
+.schedule-today-cards-card-indicator-pending {
+  background-color: #f1c40f; /* Yellow color for pending status */
+}

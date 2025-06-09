@@ -1,7 +1,11 @@
 import React from 'react';
+import axios from 'axios';
 import './scheduleCard.css';
 import Edit_Pencil_01 from '../../../assets/icons/Edit_Pencil_01.svg?react';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
+import Check from '../../../assets/icons/Check.svg?react'; // Assuming a check icon for the book button
+
+const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) => {
   if (!appointment || !user) {
@@ -11,7 +15,6 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
   const isUpcoming = (dateString) => {
     const today = new Date();
     const appointmentDate = new Date(dateString);
-    // Consider an appointment upcoming if it's after today
     return appointmentDate > today;
   };
 
@@ -20,8 +23,8 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
     const isUpcomingAppointment = isUpcoming(dateString);
     return {
       day: isUpcomingAppointment
-        ? date.toLocaleString('en-US', { month: 'short' }) // e.g., "Jan"
-        : date.toLocaleString('en-US', { weekday: 'short' }), // e.g., "Sat"
+        ? date.toLocaleString('en-US', { month: 'short' })
+        : date.toLocaleString('en-US', { weekday: 'short' }),
       date: date.getDate(),
     };
   };
@@ -38,13 +41,44 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
     return purpose.charAt(0).toUpperCase() + purpose.slice(1);
   };
 
+  const handleBookAppointment = async () => {
+    try {
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found.');
+      }
+
+      await axios.put(
+        `${apiUrl}/appointment/${appointment.id}/book-status`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
+          withCredentials: true,
+        }
+      );
+
+      // Optionally, trigger a refresh or update the UI
+      window.location.reload(); // Simple refresh; consider state management for better UX
+    } catch (error) {
+      
+      alert(error.response?.data?.message || 'Failed to book appointment.');
+    }
+  };
+
   const { day, date } = formatDate(appointment.date);
   const startTime = formatTime(appointment.start_time);
   const endTime = formatTime(appointment.end_time);
 
+  const indicatorClass = appointment.status === 'pending' 
+    ? 'schedule-today-cards-card-indicator schedule-today-cards-card-indicator-pending'
+    : 'schedule-today-cards-card-indicator';
+
   return (
     <main className="schedule-today-cards-card">
-      <section className="schedule-today-cards-card-indicator"></section>
+      <section className={indicatorClass}></section>
 
       <section className="schedule-today-cards-card-date">
         <p className="schedule-today-cards-card-date-day">{day}</p>
@@ -85,11 +119,24 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
         <div className="schedule-today-cards-card-contact-email">
           <p>Assigned to: {appointment.employee || 'N/A'}</p>
         </div>
-
-        
       </section>
 
       <section className="schedule-today-cards-card-button">
+        {appointment.status === 'pending' && (
+          <button
+            onClick={handleBookAppointment}
+            style={{ marginRight: '10px' }}
+          >
+            <Check
+              style={{
+                color: "var(--white-color)",
+                width: "32px",
+                height: "32px",
+                "--stroke-width": "2px",
+              }}
+            />
+          </button>
+        )}
         <button
           onClick={() =>
             onEditClick({

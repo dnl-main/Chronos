@@ -55,6 +55,7 @@
 .schedule-tabs-all,
 .schedule-tabs-today,
 .schedule-tabs-upcoming,
+.schedule-tabs-pending,
 .schedule-tabs-completed {
 	all: unset;
 	display: flex;

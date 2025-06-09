@@ -116,7 +116,9 @@ class AppointmentController extends Controller
     public function getUpcomingCount()
     {
         $today = Carbon::today()->startOfDay();
-        $count = Appointment::where('date', '>=', $today)->count();
+        $count = Appointment::where('date', '>=', $today)
+                            ->where('status', 'booked')
+                            ->count();
         return response()->json(['count' => $count], 200);
     }
 
@@ -169,6 +171,62 @@ class AppointmentController extends Controller
             'employee' => $validated['employee_name'],
             'purpose' => $validated['purpose'],
             'status' => 'booked',
+        ]);
+
+        return response()->json([
+            'appointment' => [
+                'id' => $appointment->id,
+                'user_id' => $appointment->user_id,
+                'date' => $appointment->date,
+                'start_time' => $appointment->start_time,
+                'end_time' => $appointment->end_time,
+                'department' => $appointment->department,
+                'crewing_dept' => $appointment->crewing_dept,
+                'operator' => $appointment->operator,
+                'accounting_task' => $appointment->accounting_task,
+                'employee' => $appointment->employee,
+                'purpose' => $appointment->purpose,
+                'status' => $appointment->status,
+                'computed_status' => $this->getAppointmentStatus($appointment),
+            ]
+        ], 201);
+    }
+
+    public function schedule(Request $request)
+    {
+        $user = JWTAuth::user();
+
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'date' => 'required|date|after_or_equal:today',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'department' => 'required|in:crewing,medical,accounting',
+            'crewing_dept' => 'required_if:department,crewing|in:maran gas,maran dry,maran tankers|nullable',
+            'operator' => 'required_if:department,crewing|in:fleet crew manager,senior fleet crew operator,crew operator 1,crew operator 2,crew operator 3|nullable',
+            'accounting_task' => 'required_if:department,accounting|in:allotment,final balance,check releasing|nullable',
+            'employee_name' => 'required|string|max:255',
+            'purpose' => 'required|string|max:255',
+        ]);
+
+        if ($user->role !== 'admin' && $validated['user_id'] != $user->id) {
+            return response()->json(['message' => 'Unauthorized: Cannot book for another user'], 403);
+        }
+
+        Appointment::where('user_id', $validated['user_id'])->delete();
+
+        $appointment = Appointment::create([
+            'user_id' => $validated['user_id'],
+            'date' => $validated['date'],
+            'start_time' => $validated['start_time'],
+            'end_time' => $validated['end_time'],
+            'department' => $validated['department'],
+            'crewing_dept' => $validated['crewing_dept'] ?? null,
+            'operator' => $validated['operator'] ?? null,
+            'accounting_task' => $validated['accounting_task'] ?? null,
+            'employee' => $validated['employee_name'],
+            'purpose' => $validated['purpose'],
+            'status' => 'pending',
         ]);
 
         return response()->json([
@@ -336,10 +394,8 @@ class AppointmentController extends Controller
             'status' => 'booked',
         ]);
 
-      
         $recipient = User::find($appointment->user_id);
         if ($recipient && $recipient->email) {
-         
             Mail::raw(
                 "Your appointment has been rescheduled.\n\n" .
                 "Details of your new appointment:\n" .
@@ -399,7 +455,6 @@ class AppointmentController extends Controller
 
         $appointment->delete();
 
-    
         if ($recipient && $recipient->email) {
             Mail::raw(
                 "Your appointment scheduled for {$appointmentDate} has been canceled.\n\n" .
@@ -413,6 +468,7 @@ class AppointmentController extends Controller
 
         return response()->json(['message' => 'Appointment canceled successfully'], 200);
     }
+
     public function getUpcomingAppointments()
     {
         $user = JWTAuth::user();
@@ -498,10 +554,8 @@ class AppointmentController extends Controller
             'status' => 'booked',
         ]);
 
-     
         $recipient = User::find($appointment->user_id);
         if ($recipient && $recipient->email) {
-          
             Mail::raw(
                 "You have an appointment scheduled.\n\n" .
                 "Details of your appointment:\n" .
@@ -537,5 +591,69 @@ class AppointmentController extends Controller
                 'computed_status' => $this->getAppointmentStatus($appointment),
             ]
         ], 201);
+    }
+
+    public function bookStatus($id)
+    {
+        $user = JWTAuth::user();
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $appointment = Appointment::find($id);
+        if (!$appointment) {
+            return response()->json(['message' => 'Appointment not found'], 404);
+        }
+
+        if ($appointment->status !== 'pending') {
+            return response()->json(['message' => 'Only pending appointments can be booked'], 400);
+        }
+
+        if (!$appointment->date || $this->getAppointmentStatus($appointment) === 'completed') {
+            return response()->json(['message' => 'Only upcoming or today\'s appointments can be booked'], 400);
+        }
+
+        $appointment->update([
+            'status' => 'booked',
+        ]);
+
+        $recipient = User::find($appointment->user_id);
+        if ($recipient && $recipient->email) {
+            Mail::raw(
+                "Your appointment has been confirmed\n\n" .
+                "Details of your appointment:\n" .
+                "Date: {$appointment->date}\n" .
+                "Start Time: {$appointment->start_time}\n" .
+                "End Time: {$appointment->end_time}\n" .
+                "Department: {$appointment->department}\n" .
+                "Employee: {$appointment->employee}\n" .
+                "Purpose: {$appointment->purpose}\n" .
+                "Please visit your account for more details.".
+                "If you have any questions or concerns, please contact us at: Concorde@fmssupport.com.ph\n\n",
+                function ($message) use ($recipient) {
+                    $message->to($recipient->email)
+                            ->subject('Your Appointment Has Been Confirmed');
+                }
+            );
+        }
+
+        return response()->json([
+            'message' => 'Appointment status updated to booked',
+            'appointment' => [
+                'id' => $appointment->id,
+                'user_id' => $appointment->user_id,
+                'date' => $appointment->date,
+                'start_time' => $appointment->start_time,
+                'end_time' => $appointment->end_time,
+                'department' => $appointment->department,
+                'crewing_dept' => $appointment->crewing_dept,
+                'operator' => $appointment->operator,
+                'accounting_task' => $appointment->accounting_task,
+                'employee' => $appointment->employee,
+                'purpose' => $appointment->purpose,
+                'status' => $appointment->status,
+                'computed_status' => $this->getAppointmentStatus($appointment),
+            ],
+        ], 200);
     }
 }
