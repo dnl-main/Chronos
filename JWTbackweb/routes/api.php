@@ -13,6 +13,7 @@ use App\Http\Controllers\CrewController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SuperadminController;
+use App\Http\Controllers\PingController;
 
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
@@ -90,11 +91,12 @@ Route::middleware('jwt.auth')->group(function () {
 
     // Notifications
     Route::post('/notifications/upload', [NotificationController::class, 'sendCertificateNotification']);
+    Route::post('/ping', [PingController::class, 'sendNotificationEmail']);
 
     // User Details
     Route::get('/users/{id}', function ($id) {
-        return App\Models\User::select('id', 'first_name', 'middle_name', 'last_name', 'position')->findOrFail($id);
-    });
+    return App\Models\User::select('id', 'first_name', 'middle_name', 'last_name', 'position', 'email')->findOrFail($id);
+    })->middleware('jwt.auth');
 
     // Superadmin Routes
         Route::prefix('superadmin')->middleware('role:superadmin')->group(function () {

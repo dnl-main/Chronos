@@ -38,16 +38,46 @@ const HomeUser = () => {
   });
   const [appointmentLoading, setAppointmentLoading] = useState(true);
   const [certificateName, setCertificateName] = useState('');
-  const [certificateType, setCertificateType] = useState('');
+  const [primaryCertificateType, setPrimaryCertificateType] = useState('');
+  const [subCertificateType, setSubCertificateType] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
   const [file, setFile] = useState(null);
   const [progress, setProgress] = useState({ percentage: 0, uploaded: 0, total: 4 });
   const [certificateLoading, setCertificateLoading] = useState(true);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dateError, setDateError] = useState('');
 
   const statusOptions = ['On Board', 'Available', 'Vacation'];
-  const certificateTypes = ['Medical', 'Training', 'Contract', 'Employee ID'];
+  const certificateCategories = {
+    Medical: [
+      'Health Check',
+      'Vaccination',
+      'Medical Certificate / Fitness for Sea Service',
+      'Vaccinations',
+      'Health Insurance',
+    ],
+    Training: [
+      'Workshop',
+      'Certification',
+      'Seaman Training I',
+      'Leadership Training I',
+      'Seaman Training II',
+      'Leadership Training II',
+      'Leadership Training III',
+      'Safety Certificates / Basic Safety Training & Crowd Management',
+    ],
+    Seminar: ['Conference', 'Webinar', 'PDOS'],
+    'Employee Document': [
+      'ID Card',
+      'Contract',
+      'Passport',
+      'Seaman’s Book',
+      'Uniform / Work Clothing / Appearance',
+      'Crew ID-Card',
+      'C1/D Visa',
+      'Criminal Record Certificate',
+    ],
+  };
+  const primaryTypes = Object.keys(certificateCategories);
 
   // Fetch user certificates
   useEffect(() => {
@@ -304,7 +334,7 @@ const HomeUser = () => {
   const handleCertificateSubmit = async (e) => {
     e.preventDefault();
 
-    if (!file || !certificateName || !certificateType) {
+    if (!file || !certificateName || !primaryCertificateType || !subCertificateType) {
       setDateError('Please fill all required fields and select a file.');
       return;
     }
@@ -318,20 +348,7 @@ const HomeUser = () => {
 
     const token = sessionStorage.getItem('token');
     try {
-      const certResponse = await axios.get(`${apiUrl}/certificates`, {
-        headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
-      });
-      const existingCert = certResponse.data.certificates.find(
-        (cert) => cert.certificate_type === certificateType
-      );
-
-      if (existingCert) {
-        const confirmReplace = window.confirm(
-          `A ${certificateType} certificate already exists. Uploading a new one will replace the existing certificate. Do you want to proceed?`
-        );
-        if (!confirmReplace) return;
-      }
-
+      const certificateType = `${primaryCertificateType}-${subCertificateType}`;
       const formData = new FormData();
       formData.append('file', file);
       formData.append('certificate_name', certificateName);
@@ -350,7 +367,8 @@ const HomeUser = () => {
 
       alert('Certificate uploaded successfully!');
       setCertificateName('');
-      setCertificateType('');
+      setPrimaryCertificateType('');
+      setSubCertificateType('');
       setExpirationDate('');
       setFile(null);
       setDateError('');
@@ -602,19 +620,12 @@ const HomeUser = () => {
                   <>
                     <div className="homeUser-top-core-right-progress">
                       <div className="homeUser-top-core-right-progress-text">
-                        <p className="homeUser-top-core-right-progress-text-light">Your progress</p>
+                  
                         <div className="homeUser-top-core-right-progress-text-box">
-                          <p className="homeUser-top-core-right-progress-text-box-regular">{progress.percentage}% complete</p>
-                          <p className="homeUser-top-core-right-progress-text-box-light">{progress.uploaded} out of {progress.total} uploaded</p>
+             
                         </div>
                       </div>
 
-                      <div className="homeUser-top-core-right-progress-bar">
-                        <div
-                          className="homeUser-top-core-right-progress-bar-primary"
-                          style={{ width: `${progress.percentage}%` }}
-                        ></div>
-                      </div>
                     </div>
 
                     <form onSubmit={handleCertificateSubmit} className="homeUser-top-core-right-form">
@@ -699,18 +710,38 @@ const HomeUser = () => {
                         <div className="homeUser-top-core-right-form-input-fields">
                           <div className="homeUser-top-core-right-form-input-fields-select">
                             <select
-                              value={certificateType}
-                              onChange={(e) => setCertificateType(e.target.value)}
+                              value={primaryCertificateType}
+                              onChange={(e) => {
+                                setPrimaryCertificateType(e.target.value);
+                                setSubCertificateType('');
+                              }}
                               required
                             >
                               <option value="" disabled>Select certificate type</option>
-                              {certificateTypes.map((type) => (
+                              {primaryTypes.map((type) => (
                                 <option key={type} value={type}>
                                   {type}
                                 </option>
                               ))}
                             </select>
                           </div>
+
+                          {primaryCertificateType && (
+                            <div className="homeUser-top-core-right-form-input-fields-select">
+                              <select
+                                value={subCertificateType}
+                                onChange={(e) => setSubCertificateType(e.target.value)}
+                                required
+                              >
+                                <option value="" disabled>Select sub-type</option>
+                                {certificateCategories[primaryCertificateType].map((subType) => (
+                                  <option key={subType} value={subType}>
+                                    {subType}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
 
                           <div className="homeUser-top-core-right-form-input-fields-text">
                             <input

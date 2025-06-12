@@ -67,9 +67,6 @@ const CertificatePopup = ({ certificate, onClose, onDelete }) => {
           )}
         </div>
         <div className="certificate-popup-footer">
-          <button className="certificate-popup-delete" onClick={handleDelete}>
-            Delete Certificate
-          </button>
         </div>
       </div>
     </div>

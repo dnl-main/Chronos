@@ -8,16 +8,45 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Certificate;
 use Carbon\Carbon;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Mail;
 
 class UploadController extends Controller
 {
-   function upload(Request $request)
+    function upload(Request $request)
     {
+        // Define valid certificate types
+        $validCertificateTypes = [
+            'Medical-Health Check',
+            'Medical-Vaccination',
+            'Medical-Medical Certificate / Fitness for Sea Service',
+            'Medical-Vaccinations',
+            'Medical-Health Insurance',
+            'Training-Workshop',
+            'Training-Certification',
+            'Training-Seaman Training I',
+            'Training-Leadership Training I',
+            'Training-Seaman Training II',
+            'Training-Leadership Training II',
+            'Training-Leadership Training III',
+            'Training-Safety Certificates / Basic Safety Training & Crowd Management',
+            'Seminar-Conference',
+            'Seminar-Webinar',
+            'Seminar-PDOS',
+            'Employee Document-ID Card',
+            'Employee Document-Contract',
+            'Employee Document-Passport',
+            'Employee Document-Seaman’s Book',
+            'Employee Document-Uniform / Work Clothing / Appearance',
+            'Employee Document-Crew ID-Card',
+            'Employee Document-C1/D Visa',
+            'Employee Document-Criminal Record Certificate',
+        ];
+
         // Validate the request
         $validator = Validator::make($request->all(), [
             'file' => 'required|mimes:jpg,jpeg,png,pdf|max:30000', // 30MB max
             'certificate_name' => 'required|string|max:255',
-            'certificate_type' => 'required|string|in:Medical,Training,Contract,Employee ID',
+            'certificate_type' => 'required|string|in:' . implode(',', $validCertificateTypes),
             'expiration_date' => 'nullable|date|after:today',
         ]);
 
@@ -37,20 +66,6 @@ class UploadController extends Controller
         }
 
         try {
-            // Check for existing certificate of the same type
-            $existingCertificate = Certificate::where('user_id', $user->id)
-                ->where('certificate_type', $request->certificate_type)
-                ->first();
-
-            if ($existingCertificate) {
-                // Delete the existing certificate file from storage
-                if (Storage::disk('public')->exists($existingCertificate->file_path)) {
-                    Storage::disk('public')->delete($existingCertificate->file_path);
-                }
-                // Delete the existing certificate record from the database
-                $existingCertificate->delete();
-            }
-
             // Create directory for the new certificate
             $folderName = sprintf(
                 '%s-%s-%s-%s/certificates',
@@ -65,15 +80,23 @@ class UploadController extends Controller
             $fullFolderPath = storage_path('app/public/' . $relativeFolder);
             if (!Storage::disk('public')->exists($relativeFolder)) {
                 Storage::disk('public')->makeDirectory($relativeFolder);
-                // Set permissions (Windows may ignore chmod, but try for compatibility)
                 @chmod($fullFolderPath, 0755);
             }
 
             // Get the file and its original extension
             $file = $request->file('file');
             $extension = $file->getClientOriginalExtension();
-            // Sanitize certificate_name to avoid invalid characters
-            $baseFilename = str_replace([' ', '/', '\\'], '_', $request->certificate_name);
+
+            // Parse certificate type
+            [$primaryType, $subType] = explode('-', $request->certificate_type, 2);
+
+            // Sanitize inputs for filename
+            $sanitizedPrimaryType = str_replace([' ', '/', '\\'], '_', strtolower($primaryType));
+            $sanitizedSubType = str_replace([' ', '/', '\\'], '_', strtolower($subType));
+            $sanitizedCertName = str_replace([' ', '/', '\\'], '_', strtolower($request->certificate_name));
+
+            // Generate filename: primaryType-subType-certificateName
+            $baseFilename = sprintf('%s-%s-%s', $sanitizedPrimaryType, $sanitizedSubType, $sanitizedCertName);
             $filename = $baseFilename . '.' . $extension;
 
             // Check for existing files and increment if necessary
@@ -88,7 +111,7 @@ class UploadController extends Controller
             $relativePath = $relativeFolder . '/' . $newFilename;
             Storage::disk('public')->putFileAs($relativeFolder, $file, $newFilename);
 
-            // Set file permissions (Windows may ignore, but try)
+            // Set file permissions
             $fullFilePath = storage_path('app/public/' . $relativePath);
             @chmod($fullFilePath, 0644);
 
@@ -101,7 +124,6 @@ class UploadController extends Controller
                 'expiration_date' => $request->expiration_date ? Carbon::parse($request->expiration_date)->toDateString() : null,
             ]);
 
-            
             return response()->json([
                 'message' => 'File uploaded and saved successfully!',
                 'file_path' => Storage::url($relativePath),
@@ -125,14 +147,17 @@ class UploadController extends Controller
                 ], 401);
             }
 
-            // Check if the user is an admin
-            if ($user->role === 'admin') {
-                // Return all certificates for admin
-                $certificates = Certificate::all();
+            $query = Certificate::query();
+
+            if ($request->has('user_id')) {
+                $query->where('user_id', $request->input('user_id'));
             } else {
-                // Return only the user's certificates for non-admin
-                $certificates = Certificate::where('user_id', $user->id)->get();
+                if ($user->role !== 'admin') {
+                    $query->where('user_id', $user->id);
+                }
             }
+
+            $certificates = $query->get();
 
             return response()->json([
                 'message' => 'Certificates retrieved successfully',
@@ -144,69 +169,62 @@ class UploadController extends Controller
                 'message' => 'Failed to retrieve certificates: ' . $e->getMessage(),
             ], 500);
         }
- 
- 
     }
 
-public function deleteCertificate(Request $request)
-{
-    // Validate the request
-    $validator = Validator::make($request->all(), [
-        'id' => 'required|integer|exists:certificates,id',
-    ]);
+    public function deleteCertificate(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer|exists:certificates,id',
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json([
-            'message' => 'Validation failed',
-            'errors' => $validator->errors()
-        ], 422);
-    }
-
-    // Get the authenticated user
-    $user = JWTAuth::user();
-    if (!$user) {
-        return response()->json([
-            'message' => 'Unauthorized',
-        ], 401);
-    }
-
-    try {
-        // Find the certificate, allowing admins to bypass user_id check
-        $certificate = Certificate::where('id', $request->id)
-            ->when($user->role !== 'admin', function ($query) use ($user) {
-                return $query->where('user_id', $user->id);
-            })
-            ->first();
-
-        if (!$certificate) {
+        if ($validator->fails()) {
             return response()->json([
-                'message' => 'Certificate not found or you do not have permission to delete it',
-            ], 404);
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        // Delete the file from storage
-        if (Storage::disk('public')->exists($certificate->file_path)) {
-            if (!Storage::disk('public')->delete($certificate->file_path)) {
-                \Log::warning('Failed to delete file from storage: ' . $certificate->file_path);
+        $user = JWTAuth::user();
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        try {
+            $certificate = Certificate::where('id', $request->id)
+                ->when($user->role !== 'admin', function ($query) use ($user) {
+                    return $query->where('user_id', $user->id);
+                })
+                ->first();
+
+            if (!$certificate) {
+                return response()->json([
+                    'message' => 'Certificate not found or you do not have permission to delete it',
+                ], 404);
             }
+
+            if (Storage::disk('public')->exists($certificate->file_path)) {
+                if (!Storage::disk('public')->delete($certificate->file_path)) {
+                    \Log::warning('Failed to delete file from storage: ' . $certificate->file_path);
+                }
+            }
+
+            $certificate->delete();
+
+            return response()->json([
+                'message' => 'Certificate deleted successfully',
+                'certificate_id' => $certificate->id,
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Delete Certificate Exception:', ['message' => $e->getMessage()]);
+            return response()->json([
+                'message' => 'Failed to delete certificate: ' . $e->getMessage(),
+            ], 500);
         }
-
-        // Delete the certificate from the database
-        $certificate->delete();
-
-        return response()->json([
-            'message' => 'Certificate deleted successfully',
-            'certificate_id' => $certificate->id,
-        ], 200);
-    } catch (\Exception $e) {
-        \Log::error('Delete Certificate Exception:', ['message' => $e->getMessage()]);
-        return response()->json([
-            'message' => 'Failed to delete certificate: ' . $e->getMessage(),
-        ], 500);
     }
-}
 
-public function approve(Request $request, $id)
+    public function approve(Request $request, $id)
     {
         $user = JWTAuth::user();
         if (!$user) {
@@ -225,15 +243,14 @@ public function approve(Request $request, $id)
         try {
             $certificate->update(['status' => 'approved']);
 
-            // Send email notification using Mail::raw
             Mail::raw(
-                "Good news! Your certificate has been approved.\n\n" .
+                "Your certificate has been approved.\n\n" .
                 "Certificate Name: {$certificate->certificate_name}\n" .
                 "Certificate Type: {$certificate->certificate_type}\n" .
                 "Status: Approved\n" .
                 "Please log in to your account to view details.\n\n" .
                 "View Certificates: " . url('/certificates') . "\n\n" .
-                "Thank you for using our platform!",
+       
                 function ($message) use ($certificate) {
                     $message->to($certificate->user->email)
                             ->subject("Certificate {$certificate->certificate_name} Approved");
@@ -260,7 +277,7 @@ public function approve(Request $request, $id)
         }
     }
 
-    public function decline(Request $request, $id)
+    public function decline($id)
     {
         $user = JWTAuth::user();
         if (!$user) {
@@ -277,39 +294,35 @@ public function approve(Request $request, $id)
         }
 
         try {
-            $certificate->update(['status' => 'declined']);
+            if (Storage::disk('public')->exists($certificate->file_path)) {
+                Storage::disk('public')->delete($certificate->file_path);
+            }
 
-            // Send email notification using Mail::raw
             Mail::raw(
-                "We regret to inform you that your certificate has been declined.\n\n" .
+                "Your Certificate has been declined\n\n" .
                 "Certificate Name: {$certificate->certificate_name}\n" .
                 "Certificate Type: {$certificate->certificate_type}\n" .
                 "Status: Declined\n" .
                 "Please log in to your account to view details.\n\n" .
                 "View Certificates: " . url('/certificates') . "\n\n" .
-                "Thank you for using our platform!",
+                "Please reupload\n\n" .
+                
                 function ($message) use ($certificate) {
                     $message->to($certificate->user->email)
                             ->subject("Certificate {$certificate->certificate_name} Declined");
                 }
             );
 
+            $certificate->delete();
+
             return response()->json([
-                'message' => "Certificate {$certificate->certificate_name} has been declined",
-                'certificate' => [
-                    'id' => $certificate->id,
-                    'certificate_name' => $certificate->certificate_name,
-                    'certificate_type' => $certificate->certificate_type,
-                    'file_path' => $certificate->file_path,
-                    'user_id' => $certificate->user_id,
-                    'expiration_date' => $certificate->expiration_date,
-                    'status' => $certificate->status,
-                ],
+                'message' => "Certificate {$certificate->certificate_name} has been declined and deleted",
+                'certificate_id' => $certificate->id,
             ], 200);
         } catch (\Exception $e) {
             \Log::error('Decline Certificate Exception:', ['message' => $e->getMessage()]);
             return response()->json([
-                'message' => 'Failed to decline certificate: ' . $e->getMessage(),
+                'message' => 'Failed to decline and delete certificate: ' . $e->getMessage(),
             ], 500);
         }
     }

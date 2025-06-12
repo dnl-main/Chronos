@@ -17,14 +17,13 @@ const apiUrl = import.meta.env.VITE_API_BASE_URL;
 const Certificate = () => {
   const [user, setUser] = useState(null);
   const [certificateData, setCertificateData] = useState([]);
-  const [filteredCertificateData, setFilteredCertificateData] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCertificate, setSelectedCertificate] = useState(null);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
   const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUserEmail, setSelectedUserEmail] = useState(null);
   const navigate = useNavigate();
 
   const handleClosePopup = () => {
@@ -35,18 +34,26 @@ const Certificate = () => {
     setSelectedCertificate(certificate);
   };
 
-  const handleOpenNotificationModal = () => {
-    console.log('Opening Notification Modal');
+  const handleOpenNotificationModal = (userId, email) => {
+    console.log('Opening Notification Modal for user_id:', userId, 'email:', email);
+    setSelectedUserId(userId);
+    if (!email || email === 'N/A') {
+      setError('User email is not available.');
+      return;
+    }
+    setSelectedUserEmail(email);
     setIsNotificationModalOpen(true);
   };
 
   const handleCloseNotificationModal = () => {
     console.log('Closing Notification Modal');
     setIsNotificationModalOpen(false);
+    setSelectedUserId(null);
+    setSelectedUserEmail(null);
   };
 
   const handleNotify = (data) => {
-    console.log('Notify Data:', data);
+    console.log('Notify Data:', { ...data, recipientEmail: selectedUserEmail });
     handleCloseNotificationModal();
   };
 
@@ -60,17 +67,6 @@ const Certificate = () => {
     console.log('Closing CertificateModal');
     setIsCertificateModalOpen(false);
     setSelectedUserId(null);
-  };
-
-  const handleSearch = (e) => {
-    const query = e.target.value.toLowerCase();
-    setSearchQuery(query);
-    const filteredData = certificateData.filter(
-      (data) =>
-        data.user_name.toLowerCase().includes(query) ||
-        data.position.toLowerCase().includes(query)
-    );
-    setFilteredCertificateData(filteredData);
   };
 
   useEffect(() => {
@@ -142,23 +138,20 @@ const Certificate = () => {
       console.log('Crew Certs API Response:', response.data);
 
       const crewMembers = Array.isArray(response.data.crew_members)
-        ? response.data.crew_members.map(item => {
-            console.log('Mapping crew member:', item);
-            return {
-              user_id: item.user_id,
-              user_name: item.user_name || 'Unknown',
-              position: item.position || 'N/A',
-              total_uploaded: item.total_uploaded || 0,
-              approved: item.approved || 0,
-              pending: item.pending || 0,
-              certificates: Array.isArray(item.certificates) ? item.certificates : [],
-            };
-          })
+        ? response.data.crew_members.map(item => ({
+            user_id: item.user_id,
+            user_name: item.user_name || 'Unknown',
+            email: item.email || 'N/A', // Include email
+            position: item.position || 'N/A',
+            total_uploaded: item.total_uploaded || 0,
+            approved: item.approved || 0,
+            pending: item.pending || 0,
+            certificates: Array.isArray(item.certificates) ? item.certificates : [],
+          }))
         : [];
 
       console.log('Processed certificateData:', crewMembers);
       setCertificateData(crewMembers);
-      setFilteredCertificateData(crewMembers);
       setLoading(false);
     } catch (error) {
       console.error('Fetch Crew Certs Error:', error.response?.data || error.message);
@@ -186,39 +179,24 @@ const Certificate = () => {
             <p>Certificate tracking</p>
           </header>
 
-          <section className="certificate-categories" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <section className="certificate-categories">
             <p>Name and position</p>
-            <input
-              type="text"
-              placeholder="Search by name or position"
-              value={searchQuery}
-              onChange={handleSearch}
-              style={{
-                padding: '8px',
-                borderRadius: '4px',
-                border: '1px solid #ccc',
-                width: '200px',
-              }}
-            />
           </section>
 
           <section className="certificate-cards">
-            {filteredCertificateData.length === 0 ? (
+            {certificateData.length === 0 ? (
               <p>No crew members found.</p>
             ) : (
-              filteredCertificateData.map((data, index) => {
-                console.log('Rendering card for:', data);
-                return (
-                  <CertificateCard
-                    key={data.user_id || `card-${index}`}
-                    data={data}
-                    certificates={data.certificates}
-                    onCertificateClick={handleCertificateClick}
-                    onNotifyUpload={handleOpenNotificationModal}
-                    onOpenCertificateModal={() => handleOpenCertificateModal(data.user_id)}
-                  />
-                );
-              })
+              certificateData.map((data, index) => (
+                <CertificateCard
+                  key={data.user_id || `card-${index}`}
+                  data={data}
+                  certificates={data.certificates}
+                  onCertificateClick={handleCertificateClick}
+                  onNotifyUpload={() => handleOpenNotificationModal(data.user_id, data.email)}
+                  onOpenCertificateModal={() => handleOpenCertificateModal(data.user_id)}
+                />
+              ))
             )}
           </section>
         </main>
@@ -228,6 +206,7 @@ const Certificate = () => {
         <CertificateNotificationModal
           onClose={handleCloseNotificationModal}
           onNotify={handleNotify}
+          recipientEmail={selectedUserEmail}
         />
       )}
       {isCertificateModalOpen && (

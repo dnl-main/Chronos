@@ -89,7 +89,7 @@ const CertificateCard = ({ data, certificates = [], onCertificateClick, onNotify
           </div>
           <button
             className="certificate-cards-card-certificates-notify-btn"
-            onClick={() => onNotifyUpload && onNotifyUpload()}
+            onClick={() => onNotifyUpload && onNotifyUpload(data.user_id)}
             aria-label="Notify crew for certificate upload"
           >
             <p>Notify Crew</p>

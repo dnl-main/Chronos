@@ -14,49 +14,54 @@ const CertificateModal = ({ userId, onClose }) => {
   const [error, setError] = useState(null);
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
-  useEffect(() => {
-    const fetchCertificates = async () => {
-      if (!userId || isNaN(userId)) {
-        console.error('Invalid userId:', userId);
-        setError('Invalid user ID provided');
-        setCertificates([]);
+  const fetchCertificates = async () => {
+    if (!userId || isNaN(userId)) {
+      console.error('Invalid userId:', userId);
+      setError('Invalid user ID provided');
+      setCertificates([]);
+      return;
+    }
+
+    try {
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        console.error('No authentication token found');
+        setError('Authentication token missing');
         return;
       }
 
-      try {
-        const token = sessionStorage.getItem('token');
-        if (!token) {
-          console.error('No authentication token found');
-          setError('Authentication token missing');
-          return;
-        }
+      const response = await axios.get(`${apiUrl}/certificates?user_id=${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
+        withCredentials: true,
+      });
 
-        const response = await axios.get(`${apiUrl}/certificates?user_id=${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'ngrok-skip-browser-warning': 'true',
-          },
-          withCredentials: true,
-        });
+      setCertificates(response.data.certificates || []);
+      setError(null);
+    } catch (error) {
+      console.error('Failed to fetch certificates:', error.response?.data || error.message);
+      setError('Failed to load certificates');
+      setCertificates([]);
+    }
+  };
 
-        setCertificates(response.data.certificates || []);
-        setError(null);
-      } catch (error) {
-        console.error('Failed to fetch certificates:', error.response?.data || error.message);
-        setError('Failed to load certificates');
-        setCertificates([]);
-      }
-    };
+  useEffect(() => {
     fetchCertificates();
-  }, [apiUrl, userId]);
+  }, [userId]);
 
   const handleCertificateClick = (certificate) => {
     setSelectedCertificate(certificate);
   };
 
-  const handleDeleteCertificate = (certificateId) => {
-    setCertificates(certificates.filter(cert => cert.id !== certificateId));
-    setSelectedCertificate(null);
+  const handleDeleteCertificate = async (certificateId) => {
+    setSelectedCertificate(null); // Close popup immediately
+    await fetchCertificates(); // Refresh certificates from backend
+  };
+
+  const handleStatusChange = async () => {
+    await fetchCertificates(); // Refresh certificates from backend
   };
 
   const filteredCertificates = certificates.filter(cert => {
@@ -118,6 +123,7 @@ const CertificateModal = ({ userId, onClose }) => {
                         key={cert.id}
                         certificate={cert}
                         onCertificateClick={handleCertificateClick}
+                        onStatusChange={handleStatusChange}
                         onDeleteCertificate={handleDeleteCertificate}
                       />
                     ))

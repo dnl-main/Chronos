@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import './certificateNotify.css';
 import Note_Search from '../../../assets/icons/Note_Search.svg?react';
+
+const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 const trainingOptionsMap = {
   "Seaman's Passport": [
     "Able Seaman — Unlimited",
     "Able Seaman — Limited",
-    "Able Seaman — Special",
+    "Able Seaman",
     "STCW Basic Safety (PST, FPFF, EFA, PSSR)",
     "Watchkeeping Certificate",
     "Crowd Management & Crisis Control",
@@ -36,7 +39,7 @@ const trainingOptionsMap = {
     "Others"
   ],
   Training: [
-    "Deck Cadet Training",
+    "Deck Cadet",
     "Engine Cadet Training",
     "Steward Training",
     "BRM (Bridge Resource Management)",
@@ -50,15 +53,16 @@ const trainingOptionsMap = {
   Others: ["Others"]
 };
 
-const CertificateNotificationModal = ({ onClose, onNotify }) => {
+const CertificateNotificationModal = ({ onClose, onNotify, recipientEmail }) => {
   const [certificateType, setCertificateType] = useState('');
   const [trainingType, setTrainingType] = useState('');
   const [purpose, setPurpose] = useState('');
-
   const [certificateOtherInput, setCertificateOtherInput] = useState('');
   const [trainingOtherInput, setTrainingOtherInput] = useState('');
   const [purposeOtherInput, setPurposeOtherInput] = useState('');
   const [note, setNote] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleCertificateTypeChange = (e) => {
     const selectedType = e.target.value;
@@ -71,6 +75,41 @@ const CertificateNotificationModal = ({ onClose, onNotify }) => {
   const trainingOptions = certificateType
     ? trainingOptionsMap[certificateType] || []
     : [];
+
+  const handleNotifyClick = async () => {
+    if (!recipientEmail) {
+      setError('Recipient email is missing.');
+      return;
+    }
+
+    try {
+      const token = sessionStorage.getItem('token');
+      const response = await axios.post(`${apiUrl}/ping`, {
+        certificateType,
+        certificateOtherInput,
+        trainingType,
+        trainingOtherInput,
+        purpose,
+        purposeOtherInput,
+        note,
+        recipientEmail
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
+        withCredentials: true,
+      });
+
+      setSuccess(response.data.message);
+      setError('');
+      onNotify({ certificateType, certificateOtherInput, trainingType, trainingOtherInput, purpose, purposeOtherInput, note, recipientEmail });
+      setTimeout(onClose, 2000); // Close modal after 2 seconds
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to send notification');
+      setSuccess('');
+    }
+  };
 
   return (
     <div className="modal-backdrop">
@@ -162,25 +201,16 @@ const CertificateNotificationModal = ({ onClose, onNotify }) => {
             )}
           </div>
 
+          {/* Feedback Messages */}
+          {success && <div className="success-message">{success}</div>}
+          {error && <div className="error-message">{error}</div>}
+
           {/* Buttons */}
           <div className="button-group">
             <button className="btn cancel" onClick={onClose}>
               Cancel
             </button>
-            <button
-              className="btn notify"
-              onClick={() =>
-                onNotify({
-                  certificateType,
-                  certificateOtherInput,
-                  trainingType,
-                  trainingOtherInput,
-                  purpose,
-                  purposeOtherInput,
-                  note
-                })
-              }
-            >
+            <button className="btn notify" onClick={handleNotifyClick}>
               Notify
             </button>
           </div>

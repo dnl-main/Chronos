@@ -62,7 +62,7 @@ class CrewController extends Controller
         return response()->json($admins);
     }
     
-public function getCrewCerts()
+    public function getCrewCerts()
     {
         if (Auth::user()->role !== 'admin') {
             return response()->json(['error' => 'Unauthorized'], 403);
@@ -80,6 +80,7 @@ public function getCrewCerts()
                 'user_name' => trim($user->first_name . ' ' . 
                              ($user->middle_name ? $user->middle_name . ' ' : '') .
                              $user->last_name),
+                'email' => $user->email, // Add email field
                 'position' => $user->position ?? 'N/A',
                 'total_uploaded' => $certificates->count(),
                 'approved' => $certificates->where('status', 'approved')->count(),
@@ -101,5 +102,6 @@ public function getCrewCerts()
 
         return response()->json(['crew_members' => $crewMembers], 200);
     }
+
 
 }

@@ -40,10 +40,13 @@ const AvailabilityCard = ({ data, onOpenAppointment }) => {
     text: data.availability || 'Unknown',
     color: 'var(--yellow-indicator)',
     bgColor: 'var(--yellow-indicator-opacity-15)',
+    indicatorColor: 'var(--yellow-indicator-opacity-60)',
   };
 
-  const certificate = data.completionStatus || 'Incomplete';
-  const certificateColor = data.completionColor || 'var(--red-indicator)';
+  // Use approvedCertificates from data, default to 0 if undefined
+  const approvedCertificates = data.approvedCertificates || 0;
+  const certificateText = `${approvedCertificates} Approved`;
+  const certificateColor = approvedCertificates === 0 ? 'var(--red-indicator)' : 'var(--green-indicator)';
 
   // Format mobile number to remove leading '0' if present
   const formattedMobile = data.mobile
@@ -54,7 +57,7 @@ const AvailabilityCard = ({ data, onOpenAppointment }) => {
     <main className="availability-box-in-cards-card">
       <div
         className="availability-box-in-cards-card-indicator"
-        style={{ backgroundColor: certificateColor === 'var(--green-indicator)' ? 'rgba(152, 251, 152, 0.6)' : 'var(--red-indicator-opacity-60)' }}
+        style={{ backgroundColor: availability.indicatorColor }}
       ></div>
 
       <div className="availability-box-in-cards-card-profile">
@@ -91,7 +94,7 @@ const AvailabilityCard = ({ data, onOpenAppointment }) => {
 
       <div className="availability-box-in-cards-card-certificate">
         <button>
-          <p style={{ color: certificateColor }}>{certificate}</p>
+          <p style={{ color: certificateColor }}>{certificateText}</p>
           <Caret_Circle_Down
             className="availability-box-in-cards-card-certificate-svg"
             style={{ strokeWidth: '40px', color: certificateColor }}

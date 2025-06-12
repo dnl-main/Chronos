@@ -131,18 +131,20 @@ const Availability = () => {
 
   const tabs = ['all', 'available', 'vacation', 'on board'];
 
-  // Process crew data with certificate status
+  // Process crew data with certificate status and approved count
   const processedCrewData = crewData.map((member) => {
     const memberCertificates = certificates.filter((cert) => cert.user_id === member.id);
     const certificateTypes = new Set(memberCertificates.map((cert) => cert.certificate_type));
     const requiredTypes = ['Medical', 'Training', 'Contract', 'Employee ID'];
     const hasAllCertificates = requiredTypes.every((type) => certificateTypes.has(type));
     const allValid = memberCertificates.every((cert) => cert.expiration_date && new Date(cert.expiration_date) >= new Date());
+    const approvedCertificates = memberCertificates.filter((cert) => cert.status?.toLowerCase() === 'approved').length;
 
     return {
       ...member,
       completionStatus: hasAllCertificates && allValid ? 'Complete' : 'Incomplete',
       completionColor: hasAllCertificates && allValid ? 'var(--green-indicator)' : 'var(--red-indicator)',
+      approvedCertificates, // Add approved certificates count
     };
   });
 
