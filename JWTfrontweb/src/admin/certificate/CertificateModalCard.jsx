@@ -136,7 +136,6 @@ const CertificateModalCard = ({ certificate, onCertificateClick, onStatusChange 
           <Check style={{ color: "var(--white-color)", width: "1.8rem", height: "1.8rem" }} />
         </button>
       </div>
-      {error && <p className="error-message">{error}</p>}
     </main>
   );
 };
