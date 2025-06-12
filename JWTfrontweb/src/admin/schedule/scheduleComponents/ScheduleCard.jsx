@@ -3,7 +3,7 @@ import axios from 'axios';
 import './scheduleCard.css';
 import Edit_Pencil_01 from '../../../assets/icons/Edit_Pencil_01.svg?react';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
-import Check from '../../../assets/icons/Check.svg?react'; // Assuming a check icon for the book button
+import Check from '../../../assets/icons/Check.svg?react';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -60,10 +60,9 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
         }
       );
 
-      // Optionally, trigger a refresh or update the UI
+      alert('Appointment approved successfully'); // Success alert
       window.location.reload(); // Simple refresh; consider state management for better UX
     } catch (error) {
-      
       alert(error.response?.data?.message || 'Failed to book appointment.');
     }
   };

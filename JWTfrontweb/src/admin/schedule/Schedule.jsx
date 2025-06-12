@@ -182,69 +182,15 @@ const Schedule = () => {
             </button> */}
           </section>
 
-{(selectedTab === 'today' || selectedTab === 'all') && (
-  <>
-    <header className="schedule-header-today">
-      <p>Today</p>
-    </header>
-    <section className="schedule-today">
-      <div className="schedule-today-cards">
-        {appointments
-          .filter((app) => normalizeDate(app.date) === today && app.status !== 'completed' && app.status !== 'pending')
-          .sort(sortAppointmentsByDate)
-          .map((app) => (
-            <ScheduleCard
-              key={app.id}
-              appointment={app}
-              user={app.user}
-              allAppointments={appointments}
-              onEditClick={handleEditClick}
-            />
-          ))}
-        {appointments.filter((app) => normalizeDate(app.date) === today && app.status !== 'completed' && app.status !== 'pending').length === 0 && (
-          <p style={{ color: '#888', padding: '1rem' }}>No appointments today.</p>
-        )}
-      </div>
-    </section>
-  </>
-)}
-
-{(selectedTab === 'upcoming' || selectedTab === 'all') && (
-  <>
-    <header className="schedule-header-today">
-      <p>Upcoming</p>
-    </header>
-    <section className="schedule-today">
-      <div className="schedule-today-cards">
-        {appointments
-          .filter((app) => normalizeDate(app.date) > today && app.status !== 'completed' && app.status !== 'pending')
-          .sort(sortAppointmentsByDate)
-          .map((app) => (
-            <ScheduleCard
-              key={app.id}
-              appointment={app}
-              user={app.user}
-              allAppointments={appointments}
-              onEditClick={handleEditClick}
-            />
-          ))}
-        {appointments.filter((app) => normalizeDate(app.date) > today && app.status !== 'completed' && app.status !== 'pending').length === 0 && (
-          <p style={{ color: '#888', padding: '1rem' }}>No upcoming appointments.</p>
-        )}
-      </div>
-    </section>
-  </>
-)}
-
-          {(selectedTab === 'pending' || selectedTab === 'all') && (
+          {(selectedTab === 'today' || selectedTab === 'all') && (
             <>
               <header className="schedule-header-today">
-            <p>Pending</p>
+                <p>Today</p>
               </header>
               <section className="schedule-today">
                 <div className="schedule-today-cards">
                   {appointments
-                    .filter((app) => app.status === 'pending')
+                    .filter((app) => normalizeDate(app.date) === today && app.status !== 'completed' && app.status !== 'pending')
                     .sort(sortAppointmentsByDate)
                     .map((app) => (
                       <ScheduleCard
@@ -255,7 +201,61 @@ const Schedule = () => {
                         onEditClick={handleEditClick}
                       />
                     ))}
-                  {appointments.filter((app) => app.status === 'pending').length === 0 && (
+                  {appointments.filter((app) => normalizeDate(app.date) === today && app.status !== 'completed' && app.status !== 'pending').length === 0 && (
+                    <p style={{ color: '#888', padding: '1rem' }}>No appointments today.</p>
+                  )}
+                </div>
+              </section>
+            </>
+          )}
+
+          {(selectedTab === 'upcoming' || selectedTab === 'all') && (
+            <>
+              <header className="schedule-header-today">
+                <p>Upcoming</p>
+              </header>
+              <section className="schedule-today">
+                <div className="schedule-today-cards">
+                  {appointments
+                    .filter((app) => normalizeDate(app.date) > today && app.status !== 'completed' && app.status !== 'pending')
+                    .sort(sortAppointmentsByDate)
+                    .map((app) => (
+                      <ScheduleCard
+                        key={app.id}
+                        appointment={app}
+                        user={app.user}
+                        allAppointments={appointments}
+                        onEditClick={handleEditClick}
+                      />
+                    ))}
+                  {appointments.filter((app) => normalizeDate(app.date) > today && app.status !== 'completed' && app.status !== 'pending').length === 0 && (
+                    <p style={{ color: '#888', padding: '1rem' }}>No upcoming appointments.</p>
+                  )}
+                </div>
+              </section>
+            </>
+          )}
+
+          {(selectedTab === 'pending' || selectedTab === 'all') && (
+            <>
+              <header className="schedule-header-today">
+                <p>Pending</p>
+              </header>
+              <section className="schedule-today">
+                <div className="schedule-today-cards">
+                  {appointments
+                    .filter((app) => app.status === 'pending' && normalizeDate(app.date) >= today)
+                    .sort(sortAppointmentsByDate)
+                    .map((app) => (
+                      <ScheduleCard
+                        key={app.id}
+                        appointment={app}
+                        user={app.user}
+                        allAppointments={appointments}
+                        onEditClick={handleEditClick}
+                      />
+                    ))}
+                  {appointments.filter((app) => app.status === 'pending' && normalizeDate(app.date) >= today).length === 0 && (
                     <p style={{ color: '#888', padding: '1rem' }}>No pending appointments.</p>
                   )}
                 </div>
