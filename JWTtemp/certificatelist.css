@@ -1,0 +1,260 @@
+.appointmentModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.appointmentModal-box {
+  background-color: white;
+  border-radius: 1rem;
+  width: 72vw;
+  height: 92vh;
+}
+.appointmentModal-box-in {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  column-gap: 1rem;
+  border-radius: 1rem;
+}
+.appointmentModal-box-in-left {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.appointmentModal-box-in-left-header {
+  display: flex;
+  align-items: center;
+  column-gap: 75%;
+  height: 10%;
+  flex-shrink: 0;
+}
+.appointmentModal-box-in-left-header-button {
+  all: unset;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.4rem;
+  border-radius: 500px;
+  background-color: #f3f4f6;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.appointmentModal-box-in-left-header-button:hover {
+  background-color: #e5e7eb;
+}
+.appointmentModal-box-in-left-header-heading {
+  display: flex;
+  align-items: center;
+  column-gap: 1rem;
+  color: #374151;
+  font-weight: 500;
+  font-size: 1.25rem;
+}
+.appointmentModal-box-in-left-core {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  row-gap: 1rem;
+  padding: 1rem;
+  background-color: #f3f4f6;
+  border-radius: 0.6rem;
+  overflow: hidden;
+}
+.appointmentModal-box-in-left-core-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.appointmentModal-box-in-left-core-top-tabs {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  column-gap: 0.5rem;
+}
+.appointmentModal-box-in-left-core-top-tabs-all,
+.appointmentModal-box-in-left-core-top-tabs-approved,
+.appointmentModal-box-in-left-core-top-tabs-pending,
+.appointmentModal-box-in-left-core-top-tabs-cancelled {
+  all: unset;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  color: #374151;
+  font-weight: 400;
+  font-size: 0.875rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 500px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.appointmentModal-box-in-left-core-top-tabs-all.active,
+.appointmentModal-box-in-left-core-top-tabs-approved.active,
+.appointmentModal-box-in-left-core-top-tabs-pending.active,
+.appointmentModal-box-in-left-core-top-tabs-cancelled.active {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+.appointmentModal-box-in-left-core-top-tabs-approved { border-color: #10b981; }
+.appointmentModal-box-in-left-core-top-tabs-approved.active { background-color: #10b981; border-color: #10b981; }
+.appointmentModal-box-in-left-core-top-tabs-pending { border-color: #f59e0b; }
+.appointmentModal-box-in-left-core-top-tabs-pending.active { background-color: #f59e0b; border-color: #f59e0b; }
+.appointmentModal-box-in-left-core-top-tabs-cancelled { border-color: #ef4444; }
+.appointmentModal-box-in-left-core-top-tabs-cancelled.active { background-color: #ef4444; border-color: #ef4444; }
+.appointmentModal-box-in-left-core-bot {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+.appointmentModal-box-in-left-core-bot-cards {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  row-gap: 1rem;
+  padding-right: 0.5rem;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: white;
+  height: 4rem;
+  width: 100%;
+  border-radius: 0.5rem;
+  box-shadow: 0px 0px 10px rgba(0, 136, 154, 0.10);
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-profile-indicator{
+  padding: 8px;
+  border-right: 3px solid var(--primary-color-opacity-15);
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-file{
+  padding: 8px;
+  border-right: 3px solid var(--primary-color-opacity-15);
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-indicator {
+  height: 100%;
+  width: 0.5rem;
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-indicator.approved {
+  background-color: #d1fae5;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-indicator.pending {
+  background-color: #fefcbf;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-indicator.cancelled {
+  background-color: #fee2e2;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-indicator.declined {
+  background-color: #fee2e2;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-profile {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  height: 100%;
+  width: 30%;
+  padding-left: 0.5rem;
+  column-gap: 0.5rem;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-profile-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-profile-info-text {
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: #374151;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-profile-info-subtext {
+  font-weight: 300;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  height: 100%;
+  width: 40%;
+  padding-left: 0.5rem;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-details-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-availability {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40%;
+  height: 100%;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-availability-bg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #d1fae5;
+  padding: 0.25rem 0.75rem;
+  border-radius: 500px;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-availability-bg.pending {
+  background-color: #fefcbf;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-availability-bg.cancelled {
+  background-color: #fee2e2;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-availability-bg.declined {
+  background-color: #fee2e2;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-availability-bg p {
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: #374151;
+}
+.manageAppointment-box-in-left-core-bot-cards-card-container-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 10%;
+  height: 100%;
+  gap: 0.5rem;
+}
+.action-edit, .action-decline, .action-approve {
+  all: unset;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: 1px solid #00a3af;
+}
+
+.action-approve {
+  background-color: #00a3af;
+}

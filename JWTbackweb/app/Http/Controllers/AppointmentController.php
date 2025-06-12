@@ -305,7 +305,7 @@ class AppointmentController extends Controller
             'accounting_task' => $validated['accounting_task'] ?? null,
             'employee' => $validated['employee_name'],
             'purpose' => $validated['purpose'],
-            'status' => 'booked',
+            'status' => 'pending',
         ]);
 
         return response()->json([
@@ -620,7 +620,7 @@ class AppointmentController extends Controller
         $recipient = User::find($appointment->user_id);
         if ($recipient && $recipient->email) {
             Mail::raw(
-                "Your appointment has been confirmed\n\n" .
+                "Your appointment has been approved\n\n" .
                 "Details of your appointment:\n" .
                 "Date: {$appointment->date}\n" .
                 "Start Time: {$appointment->start_time}\n" .
@@ -632,7 +632,7 @@ class AppointmentController extends Controller
                 "If you have any questions or concerns, please contact us at: Concorde@fmssupport.com.ph\n\n",
                 function ($message) use ($recipient) {
                     $message->to($recipient->email)
-                            ->subject('Your Appointment Has Been Confirmed');
+                            ->subject('Your Appointment Has Been Approved');
                 }
             );
         }

@@ -34,6 +34,7 @@ const HomeUser = () => {
     accounting_task: '',
     employee: '',
     purpose: '',
+    status: '',
   });
   const [appointmentLoading, setAppointmentLoading] = useState(true);
   const [certificateName, setCertificateName] = useState('');
@@ -43,7 +44,7 @@ const HomeUser = () => {
   const [progress, setProgress] = useState({ percentage: 0, uploaded: 0, total: 4 });
   const [certificateLoading, setCertificateLoading] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [dateError, setDateError] = useState(''); // New state for date error
+  const [dateError, setDateError] = useState('');
 
   const statusOptions = ['On Board', 'Available', 'Vacation'];
   const certificateTypes = ['Medical', 'Training', 'Contract', 'Employee ID'];
@@ -92,6 +93,7 @@ const HomeUser = () => {
           accounting_task: '',
           employee: '',
           purpose: '',
+          status: '',
         });
         setAppointmentLoading(false);
         return;
@@ -115,7 +117,9 @@ const HomeUser = () => {
             accounting_task: appointmentData.accounting_task || '',
             employee: appointmentData.employee || '',
             purpose: appointmentData.purpose || '',
+            status: appointmentData.status || '',
           });
+          console.log('Appointment status:', appointmentData.status); // Debug log
         } else {
           setAppointment({
             id: null,
@@ -128,6 +132,7 @@ const HomeUser = () => {
             accounting_task: '',
             employee: '',
             purpose: '',
+            status: '',
           });
         }
       } catch (error) {
@@ -142,6 +147,7 @@ const HomeUser = () => {
           accounting_task: '',
           employee: '',
           purpose: '',
+          status: '',
         });
       } finally {
         setAppointmentLoading(false);
@@ -262,7 +268,9 @@ const HomeUser = () => {
       accounting_task: appointment.accounting_task || '',
       employee: appointment.employee || '',
       purpose: appointment.purpose || '',
+      status: appointment.status || '',
     });
+    console.log('Booked appointment status:', appointment.status); // Debug log
   };
 
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
@@ -284,6 +292,7 @@ const HomeUser = () => {
         accounting_task: '',
         employee: '',
         purpose: '',
+        status: '',
       });
       alert('Appointment deleted successfully');
     } catch (error) {
@@ -344,7 +353,7 @@ const HomeUser = () => {
       setCertificateType('');
       setExpirationDate('');
       setFile(null);
-      setDateError(''); // Clear error on successful submission
+      setDateError('');
 
       const updatedCertResponse = await axios.get(`${apiUrl}/certificates`, {
         headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
@@ -452,7 +461,13 @@ const HomeUser = () => {
                   <>
                     <div className="homeUser-top-core-left-heading">
                       <p style={{ color: appointment.date ? '#000' : '#888' }}>
-                        {appointment.date ? 'You have an appointment' : 'No appointment scheduled'}
+                        {appointment.date
+                          ? appointment.status.toLowerCase() === 'booked'
+                            ? 'You have an appointment'
+                            : appointment.status.toLowerCase() === 'pending'
+                            ? 'You have a pending appointment please wait for the approval email'
+                            : 'No appointment scheduled'
+                          : 'No appointment scheduled'}
                       </p>
                     </div>
 
