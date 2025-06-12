@@ -1,4 +1,3 @@
-// src/components/CertificateModalCard.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import './certificateModalCard.css';
@@ -8,7 +7,7 @@ import Close_MD from '../../assets/icons/Close_MD.svg?react';
 import Note_Search from '../../assets/icons/Note_Search.svg?react';
 
 const CertificateModalCard = ({ certificate, onCertificateClick, onStatusChange }) => {
-  const { certificate_name, certificate_type, expiration_date, status } = certificate;
+  const { certificate_name, certificate_type, expiration_date, status, id } = certificate;
   const [error, setError] = useState(null);
 
   const formattedDate = expiration_date
@@ -30,7 +29,7 @@ const CertificateModalCard = ({ certificate, onCertificateClick, onStatusChange 
   const handleApprove = async () => {
     try {
       const response = await axios.post(`${apiBaseUrl}/certificates/${certificate.id}/approve`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, 'ngrok-skip-browser-warning': 'true' },
       });
       onStatusChange(response.data.certificate);
       alert(response.data.message);
@@ -42,7 +41,7 @@ const CertificateModalCard = ({ certificate, onCertificateClick, onStatusChange 
   const handleDecline = async () => {
     try {
       const response = await axios.post(`${apiBaseUrl}/certificates/${certificate.id}/decline`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, 'ngrok-skip-browser-warning': 'true' },
       });
       onStatusChange(response.data.certificate);
       alert(response.data.message);
@@ -50,6 +49,20 @@ const CertificateModalCard = ({ certificate, onCertificateClick, onStatusChange 
       setError(err.response?.data?.message || 'Failed to decline certificate');
     }
   };
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.post(`${apiBaseUrl}/certificates/delete`, { id }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, 'ngrok-skip-browser-warning': 'true' },
+      });
+      onStatusChange({ id, deleted: true }); // Signal deletion to parent
+      alert('Certificate deleted successfully');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete certificate');
+    }
+  };
+
+  const isApproved = status?.toLowerCase() === 'approved';
 
   return (
     <main className="certificateModal-box-in-core-cards-card">
@@ -102,8 +115,8 @@ const CertificateModalCard = ({ certificate, onCertificateClick, onStatusChange 
       <div className="certificateModal-box-in-core-cards-card-buttons">
         <button 
           className="certificateModal-box-in-core-cards-card-buttons-decline"
-          onClick={handleDecline}
-          disabled={status === 'approved' || status === 'declined'}
+          onClick={isApproved ? handleDelete : handleDecline}
+          disabled={!isApproved && (status === 'approved' || status === 'declined')}
         >
           <Close_MD
             style={{
