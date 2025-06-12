@@ -1,15 +1,13 @@
 import React from 'react';
 import axios from 'axios';
-import './Certificatepopup.css';
+import './CertificatePopup.css';
 
 const CertificatePopup = ({ certificate, onClose, onDelete }) => {
   if (!certificate) return null;
 
   const { file_path, certificate_name, id } = certificate;
-  // Use VITE_STORAGE_BASE_URL for storage files
   const storageBaseUrl = import.meta.env.VITE_STORAGE_BASE_URL;
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  // Append ngrok-skip-browser-warning as a query parameter
   const fileUrl = `${storageBaseUrl}/${encodeURI(file_path)}?ngrok-skip-browser-warning=true`;
 
   const isPdf = file_path.toLowerCase().endsWith('.pdf');
@@ -26,19 +24,19 @@ const CertificatePopup = ({ certificate, onClose, onDelete }) => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            'ngrok-skip-browser-warning': 'true', // Keep for API request
+            'ngrok-skip-browser-warning': 'true',
           },
           withCredentials: true,
         }
       );
-      alert('Certificate deleted successfully'); // Replace with toast in production
+      alert('Certificate deleted successfully');
       if (typeof onDelete === 'function') {
-        onDelete(id); // Notify parent to update state
+        onDelete(id);
       }
-      onClose(); // Close the popup
-      window.location.reload(); // Refresh the page
+      onClose();
     } catch (error) {
       alert('Failed to delete certificate');
+      console.error('Delete error:', error);
     }
   };
 

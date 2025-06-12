@@ -17,7 +17,7 @@ const NavbarUser = () => {
         
       <main className="navbarUser-main">
       
-        
+{/*         
         <div className="navbarUser-main-notification">
           <Link to="/user/notificationUser">
             <Bell 
@@ -29,7 +29,7 @@ const NavbarUser = () => {
               }} 
             />
           </Link>
-        </div> {/* navbarUser-main-notification */}
+        </div>  */}
         
         <div className="navbarUser-main-account">
           <Link to="/user/accountUser"> 

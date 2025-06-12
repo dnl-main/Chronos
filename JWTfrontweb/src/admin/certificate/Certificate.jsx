@@ -7,7 +7,7 @@ import Sidebar from '../sidebar/Sidebar';
 import CertificateCard from './cards/CertificateCard';
 import CertificatePopup from './CertificatePopup';
 import CertificateNotificationModal from './modals/CertificateNotificationModal';
-import Appointment from '../appointment/bookAppointment/Appointment';
+import CertificateModal from './CertificateModal';
 import Spinner from '../../components/Spinner';
 import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 import Notebook from '../../assets/icons/Notebook.svg?react';
@@ -15,47 +15,62 @@ import Notebook from '../../assets/icons/Notebook.svg?react';
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 const Certificate = () => {
-  const [overlayContent, setOverlayContent] = useState(null);
   const [user, setUser] = useState(null);
-  const [crewData, setCrewData] = useState([]);
-  const [certificates, setCertificates] = useState([]);
+  const [certificateData, setCertificateData] = useState([]);
+  const [filteredCertificateData, setFilteredCertificateData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedTab, setSelectedTab] = useState('all');
   const [selectedCertificate, setSelectedCertificate] = useState(null);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
-  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false); // New state for Appointment modal
-  const [selectedUserId, setSelectedUserId] = useState(null); // New state for selected user ID
+  const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const navigate = useNavigate();
 
-  // Close popup handler
   const handleClosePopup = () => {
     setSelectedCertificate(null);
   };
 
-  // Certificate selection handler
   const handleCertificateClick = (certificate) => {
     setSelectedCertificate(certificate);
   };
 
-  // Notification modal handlers
   const handleOpenNotificationModal = () => {
+    console.log('Opening Notification Modal');
     setIsNotificationModalOpen(true);
   };
 
   const handleCloseNotificationModal = () => {
+    console.log('Closing Notification Modal');
     setIsNotificationModalOpen(false);
   };
 
-  // Appointment modal handlers
-  const handleOpenAppointmentModal = (userId) => {
-    setSelectedUserId(userId); // Store the selected user ID
-    setIsAppointmentModalOpen(true); // Open the Appointment modal
+  const handleNotify = (data) => {
+    console.log('Notify Data:', data);
+    handleCloseNotificationModal();
   };
 
-  const handleCloseAppointmentModal = () => {
-    setIsAppointmentModalOpen(false); // Close the Appointment modal
-    setSelectedUserId(null); // Clear the selected user ID
+  const handleOpenCertificateModal = (userId) => {
+    console.log('Opening CertificateModal for user_id:', userId);
+    setSelectedUserId(userId);
+    setIsCertificateModalOpen(true);
+  };
+
+  const handleCloseCertificateModal = () => {
+    console.log('Closing CertificateModal');
+    setIsCertificateModalOpen(false);
+    setSelectedUserId(null);
+  };
+
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    const filteredData = certificateData.filter(
+      (data) =>
+        data.user_name.toLowerCase().includes(query) ||
+        data.position.toLowerCase().includes(query)
+    );
+    setFilteredCertificateData(filteredData);
   };
 
   useEffect(() => {
@@ -75,16 +90,9 @@ const Certificate = () => {
           return;
         }
         setUser(parsedUser);
-
-        Promise.all([fetchCrewData(token), fetchCertificates(token)])
-          .then(() => {
-            setLoading(false);
-          })
-          .catch((error) => {
-            setError('Failed to load data.');
-            setLoading(false);
-          });
+        fetchCrewCerts(token);
       } catch (error) {
+        console.error('Parse User Error:', error);
         navigate('/login');
         setLoading(false);
       }
@@ -110,8 +118,9 @@ const Certificate = () => {
       }
       sessionStorage.setItem('user', JSON.stringify(userData));
       setUser(userData);
-      await Promise.all([fetchCrewData(token), fetchCertificates(token)]);
+      fetchCrewCerts(token);
     } catch (error) {
+      console.error('Fetch User Error:', error.response?.data || error.message);
       setError('Failed to load user data. Please log in again.');
       navigate('/login');
     } finally {
@@ -119,10 +128,10 @@ const Certificate = () => {
     }
   };
 
-  const fetchCrewData = async (token) => {
+  const fetchCrewCerts = async (token) => {
     try {
       setError(null);
-      const response = await axios.get(`${apiUrl}/crew-members`, {
+      const response = await axios.get(`${apiUrl}/crew-certs`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'ngrok-skip-browser-warning': 'true',
@@ -130,62 +139,36 @@ const Certificate = () => {
         withCredentials: true,
       });
 
-      setCrewData(Array.isArray(response.data) ? response.data : [response.data].filter(Boolean));
-    } catch (error) {
-      if (error.response?.status === 401) {
-        setError('Unauthorized. Please log in again.');
-        navigate('/login');
-      } else {
-        setError('Failed to load crew data.');
-      }
-    }
-  };
+      console.log('Crew Certs API Response:', response.data);
 
-  const fetchCertificates = async (token) => {
-    try {
-      const response = await axios.get(`${apiUrl}/certificates`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true',
-        },
-        withCredentials: true,
-      });
+      const crewMembers = Array.isArray(response.data.crew_members)
+        ? response.data.crew_members.map(item => {
+            console.log('Mapping crew member:', item);
+            return {
+              user_id: item.user_id,
+              user_name: item.user_name || 'Unknown',
+              position: item.position || 'N/A',
+              total_uploaded: item.total_uploaded || 0,
+              approved: item.approved || 0,
+              pending: item.pending || 0,
+              certificates: Array.isArray(item.certificates) ? item.certificates : [],
+            };
+          })
+        : [];
 
-      setCertificates(
-        Array.isArray(response.data.certificates)
-          ? response.data.certificates
-          : [response.data.certificates].filter(Boolean)
-      );
+      console.log('Processed certificateData:', crewMembers);
+      setCertificateData(crewMembers);
+      setFilteredCertificateData(crewMembers);
+      setLoading(false);
     } catch (error) {
-      setError('Failed to load certificates.');
+      console.error('Fetch Crew Certs Error:', error.response?.data || error.message);
+      setError('Failed to load crew certificates.');
+      setLoading(false);
     }
   };
 
   if (loading) return <Spinner />;
   if (error) return <div className="certificate-error">{error}</div>;
-
-  const tabs = ['all', 'complete', 'incomplete'];
-
-  const filteredCrew = crewData.filter((crew) => {
-    const memberCertificates = certificates.filter((cert) => cert.user_id === crew.id);
-    const certificateTypes = new Set(memberCertificates.map((cert) => cert.certificate_type));
-    const hasAllTypes = ['Medical', 'Training', 'Contract', 'Employee ID'].every((type) =>
-      certificateTypes.has(type)
-    );
-
-    if (selectedTab === 'all') return true;
-    if (selectedTab === 'complete') {
-      return (
-        memberCertificates.length === 4 &&
-        hasAllTypes &&
-        memberCertificates.every((cert) => cert.expiration_date)
-      );
-    }
-    if (selectedTab === 'incomplete') {
-      return memberCertificates.length < 4 || !hasAllTypes || memberCertificates.some((cert) => !cert.expiration_date);
-    }
-    return true;
-  });
 
   return (
     <div className="certificate">
@@ -203,55 +186,54 @@ const Certificate = () => {
             <p>Certificate tracking</p>
           </header>
 
-          <section className="certificate-tabs">
-            {tabs.map((tab) => (
-              <button
-                key={tab}
-                className={`certificate-tabs-${tab} ${selectedTab === tab ? 'active-tab' : ''}`}
-                onClick={() => setSelectedTab(tab)}
-              >
-                <Circle_Primary
-                  style={{
-                    color: selectedTab === tab ? 'var(--white-color)' : 'var(--primary-color)',
-                    width: '20px',
-                    height: '20px',
-                  }}
-                />
-                <p>{tab.charAt(0).toUpperCase() + tab.slice(1)}</p>
-              </button>
-            ))}
-          </section>
-
-          <section className="certificate-categories">
+          <section className="certificate-categories" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <p>Name and position</p>
-            <p>Medical</p>
-            <p>Training</p>
-            <p>Contract</p>
-            <p>Employee ID</p>
+            <input
+              type="text"
+              placeholder="Search by name or position"
+              value={searchQuery}
+              onChange={handleSearch}
+              style={{
+                padding: '8px',
+                borderRadius: '4px',
+                border: '1px solid #ccc',
+                width: '200px',
+              }}
+            />
           </section>
 
           <section className="certificate-cards">
-            {filteredCrew
-              .filter((crew) => crew.position !== 'Unregistered')
-              .map((crew) => (
-                <CertificateCard
-                  key={crew.id}
-                  data={crew}
-                  certificates={certificates.filter((cert) => cert.user_id === crew.id)}
-                  onCertificateClick={handleCertificateClick}
-                  onNotifyUpload={handleOpenNotificationModal}
-                  onOpenAppointmentModal={handleOpenAppointmentModal} // Pass the new handler
-                />
-              ))}
+            {filteredCertificateData.length === 0 ? (
+              <p>No crew members found.</p>
+            ) : (
+              filteredCertificateData.map((data, index) => {
+                console.log('Rendering card for:', data);
+                return (
+                  <CertificateCard
+                    key={data.user_id || `card-${index}`}
+                    data={data}
+                    certificates={data.certificates}
+                    onCertificateClick={handleCertificateClick}
+                    onNotifyUpload={handleOpenNotificationModal}
+                    onOpenCertificateModal={() => handleOpenCertificateModal(data.user_id)}
+                  />
+                );
+              })
+            )}
           </section>
         </main>
       </div>
       <CertificatePopup certificate={selectedCertificate} onClose={handleClosePopup} />
-      {isNotificationModalOpen && <CertificateNotificationModal onClose={handleCloseNotificationModal} />}
-      {isAppointmentModalOpen && (
-        <Appointment
-          onClose={handleCloseAppointmentModal}
-          userId={selectedUserId} // Pass the selected user ID
+      {isNotificationModalOpen && (
+        <CertificateNotificationModal
+          onClose={handleCloseNotificationModal}
+          onNotify={handleNotify}
+        />
+      )}
+      {isCertificateModalOpen && (
+        <CertificateModal
+          userId={selectedUserId}
+          onClose={handleCloseCertificateModal}
         />
       )}
     </div>

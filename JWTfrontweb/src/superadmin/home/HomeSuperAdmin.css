@@ -203,7 +203,6 @@ html, body {
 }
 
 .table-section {
-  margin-top: 40px;
   overflow-x: hidden; /* Hide horizontal scrollbar */
   width: 100%;
   margin-left: auto;
@@ -222,7 +221,8 @@ html, body {
   border-collapse: collapse;
   background-color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
   overflow: hidden;
 }
 
@@ -285,4 +285,71 @@ html, body {
 .delete-button:disabled {
   background-color: #6c757d;
   cursor: not-allowed;
+}
+
+/* Style for the filter tabs and search bar */
+.user-filter-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e0f7f9;
+  padding: 16px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab-button {
+  padding: 8px 16px;
+  background-color: #fff;
+  border: 1px solid #00889a;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: #00889a;
+  transition: background-color 0.3s ease;
+}
+
+.tab-button.active {
+  background-color: #00889a;
+  color: #fff;
+}
+
+.search-container {
+  position: relative;
+}
+
+.search-input {
+  padding: 8px 32px 8px 40px;
+  border: 1px solid #00889a;
+  color: #00889a;
+  border-radius: 20px;
+  font-size: 14px;
+  background-color: #fff;
+  width: 400px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #b3e5fc;
+}
+
+.search-container::before {
+  content: '';
+  position: absolute;
+  left: -0.4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="%23666" d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>');
+  background-repeat: no-repeat;
+  background-size: contain;
 }

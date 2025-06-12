@@ -200,7 +200,7 @@ const AccountUser = () => {
 
       // Adjust age if birthday hasn't occurred this year
       if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-        age--;
+        age;
       }
 
       if (age < 18) {

@@ -61,4 +61,45 @@ class CrewController extends Controller
 
         return response()->json($admins);
     }
+    
+public function getCrewCerts()
+    {
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Fetch users with 'user' role, including certificates
+        $users = User::where('role', 'user')
+            ->with('certificates')
+            ->get();
+
+        $crewMembers = $users->map(function ($user) {
+            $certificates = $user->certificates ?? collect([]);
+            return [
+                'user_id' => $user->id,
+                'user_name' => trim($user->first_name . ' ' . 
+                             ($user->middle_name ? $user->middle_name . ' ' : '') .
+                             $user->last_name),
+                'position' => $user->position ?? 'N/A',
+                'total_uploaded' => $certificates->count(),
+                'approved' => $certificates->where('status', 'approved')->count(),
+                'pending' => $certificates->where('status', 'pending')->count(),
+                'certificates' => $certificates->map(function ($cert) {
+                    return [
+                        'id' => $cert->id,
+                        'certificate_name' => $cert->certificate_name,
+                        'certificate_type' => $cert->certificate_type,
+                        'file_path' => $cert->file_path,
+                        'expiration_date' => $cert->expiration_date,
+                        'status' => $cert->status ?? 'pending',
+                    ];
+                })->toArray(),
+            ];
+        })->filter(function ($member) {
+            return $member['position'] !== 'Unregistered';
+        })->values();
+
+        return response()->json(['crew_members' => $crewMembers], 200);
+    }
+
 }

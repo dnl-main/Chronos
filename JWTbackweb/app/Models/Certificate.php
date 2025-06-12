@@ -12,8 +12,8 @@ class Certificate extends Model
         'file_path',
         'user_id',
         'expiration_date',
+        'status', // Added status field
     ];
-
 
     public function user()
     {

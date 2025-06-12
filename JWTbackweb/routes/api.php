@@ -84,6 +84,9 @@ Route::middleware('jwt.auth')->group(function () {
     // Certificates
     Route::get('/certificates', [UploadController::class, 'getCertificates']);
     Route::post('/certificates/delete', [UploadController::class, 'deleteCertificate']);
+    Route::get('/crew-certs', [CrewController::class, 'getCrewCerts']);
+    Route::post('/certificates/{id}/approve', [UploadController::class, 'approve']);
+    Route::post('/certificates/{id}/decline', [UploadController::class, 'decline']);
 
     // Notifications
     Route::post('/notifications/upload', [NotificationController::class, 'sendCertificateNotification']);

@@ -44,6 +44,8 @@ const HomeSuperAdmin = () => {
   const [editingUserId, setEditingUserId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isCustomPosition, setIsCustomPosition] = useState(false);
+  const [activeTab, setActiveTab] = useState('all'); // New state for tab filtering
+  const [searchTerm, setSearchTerm] = useState(''); // New state for search
 
   // Drag-to-scroll state
   const tableRef = useRef(null);
@@ -143,6 +145,17 @@ const HomeSuperAdmin = () => {
   const selectedCityName = cities.find((c) => c.code === selectedCity)?.name || '';
   const selectedBarangayName = barangays.find((b) => b.code === selectedBarangay)?.name || '';
 
+  // Filter users based on activeTab and searchTerm
+  const filteredUsers = users.filter((user) => {
+    const matchesRole = activeTab === 'all' || user.role === activeTab;
+    const matchesSearch = searchTerm
+      ? user.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      : true;
+    return matchesRole && matchesSearch;
+  });
+
   // Drag-to-scroll event handlers
   const handleMouseDown = (e) => {
     setIsDragging(true);
@@ -204,6 +217,11 @@ const HomeSuperAdmin = () => {
         setFormData((prev) => ({ ...prev, custom_position: '' }));
       }
     }
+  };
+
+  // Handle search input
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
   // Authentication and initial data fetching
@@ -720,615 +738,639 @@ const HomeSuperAdmin = () => {
       if (user.city) {
         const cityResponse = await axios.get(`${apiUrl}/cities-municipalities`, {
           headers: { 'ngrok-skip-browser-warning': 'true' },
-          });
-          const city = cityResponse.data.find((c) => c.name === user.city);
-          if (city) setSelectedCity(city.code);
-        }
-
-        if (user.barangay) {
-          const barangayResponse = await axios.get(`${apiUrl}/barangays`, {
-            headers: { 'ngrok-skip-browser-warning': 'true' },
-          });
-          const barangay = barangayResponse.data.find((b) => b.name === user.barangay);
-          if (barangay) setSelectedBarangay(barangay.code);
-        }
-      } catch (error) {
-        alert('Error fetching location data for editing');
-        console.error('Error fetching location data:', error);
-      }
-    };
-
-    // Handle delete user
-    const handleDelete = async (id) => {
-      setLoading(true);
-      const token = sessionStorage.getItem('token');
-      try {
-        await axios.delete(`${apiUrl}/superadmin/deleteusers/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'ngrok-skip-browser-warning': 'true',
-          },
         });
-        setUsers(users.filter((user) => user.id !== id));
-      } catch (error) {
-        const errorMessage = error.response?.data?.message || 'Error deleting user';
-        alert(errorMessage);
-        console.error('Error deleting user:', error);
-      } finally {
-        setLoading(false);
+        const city = cityResponse.data.find((c) => c.name === user.city);
+        if (city) setSelectedCity(city.code);
       }
-    };
 
-    if (loading && !users.length) {
-      return <div>Loading...</div>;
+      if (user.barangay) {
+        const barangayResponse = await axios.get(`${apiUrl}/barangays`, {
+          headers: { 'ngrok-skip-browser-warning': 'true' },
+        });
+        const barangay = barangayResponse.data.find((b) => b.name === user.barangay);
+        if (barangay) setSelectedBarangay(barangay.code);
+      }
+    } catch (error) {
+      alert('Error fetching location data for editing');
+      console.error('Error fetching location data:', error);
     }
+  };
 
-    return (
-      <div className="registration-wrapper">
-        <div className="registration">
-          <div className="registration-header">
-            <div className="registration-header-padding">
-              <p className="registration-header-heading">Superadmin Dashboard</p>
-              <p className="registration-header-sub">Manage users and data</p>
+  // Handle delete user
+  const handleDelete = async (id) => {
+    setLoading(true);
+    const token = sessionStorage.getItem('token');
+    try {
+      await axios.delete(`${apiUrl}/superadmin/deleteusers/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
+      });
+      setUsers(users.filter((user) => user.id !== id));
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Error deleting user';
+      alert(errorMessage);
+      console.error('Error deleting user:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading && !users.length) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="registration-wrapper">
+      <div className="registration">
+        <div className="registration-header">
+          <div className="registration-header-padding">
+            <p className="registration-header-heading">Superadmin Dashboard</p>
+            <p className="registration-header-sub">Manage users and data</p>
+          </div>
+        </div>
+
+        <div className="registration-container">
+          <div className="registration-container-padding">
+            <div className="registration-container-header">
+              <p className="registration-container-header-sub">User administration</p>
+              <p className="registration-container-header-heading">Create or update user profiles</p>
+            </div>
+
+            <div className="registration-container-column">
+              <form className="registration-container-column-form">
+                <div className="registration-container-column-form-address">
+                  <div className="registration-container-column-form-address-header">
+                    <img src={calendar_week} alt="Calendar icon" />
+                    <p className="registration-container-column-form-address-header-text">Home address</p>
+                  </div>
+
+                  <div className="registration-container-column-form-address-content">
+                    <div className="registration-container-column-form-address-content-left">
+                      <div className="registration-container-column-form-address-content-left-alike">
+                        <label htmlFor="region">Region</label>
+                        <select
+                          id="region"
+                          name="region"
+                          value={selectedRegion}
+                          onChange={(e) => setSelectedRegion(e.target.value)}
+                          required
+                          aria-label="Select your region"
+                        >
+                          <option value="">Select your region</option>
+                          {regions.map((region) => (
+                            <option key={region.code} value={region.code}>
+                              {region.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="registration-container-column-form-address-content-left-alike">
+                        <label htmlFor="province">Province</label>
+                        <select
+                          id="province"
+                          name="province"
+                          value={selectedProvince}
+                          onChange={(e) => setSelectedProvince(e.target.value)}
+                          required
+                          disabled={selectedRegion === '130000000' || !selectedRegion}
+                          aria-label="Select your province"
+                        >
+                          <option value="">Select your province</option>
+                          {provinces.map((province) => (
+                            <option key={province.code} value={province.code}>
+                              {province.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="registration-container-column-form-address-content-left-alike">
+                        <label htmlFor="barangay">Barangay</label>
+                        <select
+                          id="barangay"
+                          name="barangay"
+                          value={selectedBarangay}
+                          onChange={(e) => setSelectedBarangay(e.target.value)}
+                          required
+                          disabled={!selectedCity}
+                          aria-label="Select your barangay"
+                        >
+                          <option value="">Select your barangay</option>
+                          {barangays.map((barangay) => (
+                            <option key={barangay.code} value={barangay.code}>
+                              {barangay.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="registration-container-column-form-address-content-left-alike">
+                        <label htmlFor="street">Street</label>
+                        <input
+                          type="text"
+                          id="street"
+                          name="street"
+                          placeholder="Enter your street"
+                          value={formData.street}
+                          onChange={handleInputChange}
+                          required
+                          aria-label="Enter your street"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="registration-container-column-form-address-content-right">
+                      <div className="registration-container-column-form-address-content-right-alike">
+                        <label htmlFor="city">City/Municipality</label>
+                        <select
+                          id="city"
+                          name="city"
+                          value={selectedCity}
+                          onChange={(e) => setSelectedCity(e.target.value)}
+                          required
+                          disabled={!selectedProvince}
+                          aria-label="Select your city or municipality"
+                        >
+                          <option value="">Select your city/municipality</option>
+                          {cities.map((city) => (
+                            <option key={city.code} value={city.code}>
+                              {city.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="registration-container-column-form-address-content-right-alike">
+                        <label htmlFor="zip_code">Zip code</label>
+                        <input
+                          type="text"
+                          id="zip_code"
+                          name="zip_code"
+                          placeholder="Enter your zip code"
+                          value={formData.zip_code}
+                          onChange={handleInputChange}
+                          required
+                          aria-label="Enter your zip code"
+                        />
+                      </div>
+
+                      <div className="registration-container-column-form-address-content-right-alike">
+                        <label htmlFor="building_number">Building number</label>
+                        <input
+                          type="text"
+                          id="building_number"
+                          name="building_number"
+                          placeholder="Enter your building number"
+                          value={formData.building_number}
+                          onChange={handleInputChange}
+                          required
+                          aria-label="Enter your building number"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="registration-container-column-form-personal">
+                  <div className="registration-container-column-form-personal-header">
+                    <img src={user_square} alt="User icon" />
+                    <p className="registration-container-column-form-personal-header-text">
+                      Personal & Employment Details
+                    </p>
+                  </div>
+
+                  <div className="registration-container-column-form-personal-content">
+                    <div className="registration-container-column-form-personal-content-left">
+                      <div className="registration-container-column-form-personal-content-left-alike">
+                        <label htmlFor="first_name">First Name</label>
+                        <input
+                          type="text"
+                          id="first_name"
+                          name="first_name"
+                          placeholder="Enter your first name"
+                          value={formData.first_name}
+                          onChange={handleInputChange}
+                          required
+                          aria-label="Enter your first name"
+                        />
+                      </div>
+
+                      <div className="registration-container-column-form-personal-content-left-alike">
+                        <label htmlFor="middle_name">Middle Name</label>
+                        <input
+                          type="text"
+                          id="middle_name"
+                          name="middle_name"
+                          placeholder="Enter your middle name"
+                          value={formData.middle_name}
+                          onChange={handleInputChange}
+                          aria-label="Enter your middle name"
+                        />
+                      </div>
+
+                      <div className="registration-container-column-form-personal-content-left-alike">
+                        <label htmlFor="last_name">Last Name</label>
+                        <input
+                          type="text"
+                          id="last_name"
+                          name="last_name"
+                          placeholder="Enter your last name"
+                          value={formData.last_name}
+                          onChange={handleInputChange}
+                          required
+                          aria-label="Enter your last name"
+                        />
+                      </div>
+
+                      <div className="registration-container-column-form-personal-content-left-alike">
+                        <label htmlFor="mobile">Mobile</label>
+                        <input
+                          type="text"
+                          id="mobile"
+                          name="mobile"
+                          placeholder="Enter your mobile number"
+                          value={formData.mobile}
+                          onChange={handleInputChange}
+                          required
+                          aria-label="Enter your mobile number"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="registration-container-column-form-personal-content-right">
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="email">Email</label>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          placeholder="Enter your email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          required
+                          aria-label="Enter your email"
+                        />
+                      </div>
+
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="password">Password</label>
+                        <div style={{ position: 'relative' }}>
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            id="password"
+                            name="password"
+                            placeholder={editingUserId ? 'New Password (optional)' : 'Enter your password'}
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            required={!editingUserId}
+                            style={{ paddingRight: '40px' }}
+                            aria-label={editingUserId ? 'New password (optional)' : 'Enter your password'}
+                          />
+                          <div
+                            onClick={() => setShowPassword(!showPassword)}
+                            style={{
+                              position: 'absolute',
+                              right: '15px',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              cursor: 'pointer',
+                              height: '20px',
+                              width: '20px',
+                              borderRadius: '50%',
+                              backgroundColor: showPassword ? '#00889A' : '#ccc',
+                              zIndex: 1,
+                            }}
+                            title={showPassword ? 'Hide password' : 'Show password'}
+                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="retype_password">Retype Password</label>
+                        <div style={{ position: 'relative' }}>
+                          <input
+                            type={showRetypePassword ? 'text' : 'password'}
+                            id="retype_password"
+                            name="retype_password"
+                            placeholder="Retype your password"
+                            value={formData.retype_password}
+                            onChange={handleInputChange}
+                            required={!editingUserId}
+                            style={{ paddingRight: '40px' }}
+                            aria-label="Retype your password"
+                          />
+                          <div
+                            onClick={() => setShowRetypePassword(!showRetypePassword)}
+                            style={{
+                              position: 'absolute',
+                              right: '15px',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              cursor: 'pointer',
+                              height: '20px',
+                              width: '20px',
+                              borderRadius: '50%',
+                              backgroundColor: showRetypePassword ? '#00889A' : '#ccc',
+                              zIndex: 1,
+                            }}
+                            title={showRetypePassword ? 'Hide password' : 'Show password'}
+                            aria-label={showRetypePassword ? 'Hide password' : 'Show password'}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="birthday">Birthday</label>
+                        <input
+                          type="date"
+                          id="birthday"
+                          name="birthday"
+                          value={formData.birthday}
+                          onChange={handleInputChange}
+                          max={getMaxDate()}
+                          required
+                          aria-label="Select your birthday"
+                        />
+                      </div>
+
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="role">Role</label>
+                        <select
+                          id="role"
+                          name="role"
+                          value={formData.role}
+                          onChange={handleInputChange}
+                          required
+                          aria-label="Select user role"
+                        >
+                          {roleOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="registration-container-column-form-personal-content">
+                    <div className="registration-container-column-form-personal-content-left">
+                      <div className="registration-container-column-form-personal-content-left-alike">
+                        <label htmlFor="position">Primary Position</label>
+                        <select
+                          id="position"
+                          name="position"
+                          value={formData.position}
+                          onChange={handleInputChange}
+                          aria-label="Select primary position"
+                        >
+                          {positionOperations.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {isCustomPosition && (
+                        <div className="registration-container-column-form-personal-content-left-alike">
+                          <label htmlFor="custom_position">Specify Position</label>
+                          <input
+                            type="text"
+                            id="custom_position"
+                            name="custom_position"
+                            placeholder="Enter custom position"
+                            value={formData.custom_position}
+                            onChange={handleInputChange}
+                            required
+                            aria-label="Enter custom position"
+                          />
+                        </div>
+                      )}
+
+                      <div className="registration-container-column-form-personal-content-left-alike">
+                        <label htmlFor="gender">Gender</label>
+                        <select
+                          id="gender"
+                          name="gender"
+                          value={formData.gender}
+                          onChange={handleInputChange}
+                          required
+                          aria-label="Select your gender"
+                        >
+                          {genderOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="registration-container-column-form-personal-content-right">
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="department">Department</label>
+                        <input
+                          type="text"
+                          id="department"
+                          name="department"
+                          placeholder="Enter your department"
+                          value={formData.department}
+                          onChange={handleInputChange}
+                          aria-label="Enter your department"
+                        />
+                      </div>
+
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="civil_status">Civil Status</label>
+                        <select
+                          id="civil_status"
+                          name="civil_status"
+                          value={formData.civil_status}
+                          onChange={handleInputChange}
+                          required
+                          aria-label="Select your civil status"
+                        >
+                          {civilStatusOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="registration-container-column-form-personal-content-right-alike">
+                        <label htmlFor="availability">Availability</label>
+                        <select
+                          id="availability"
+                          name="availability"
+                          value={formData.availability}
+                          onChange={handleInputChange}
+                          aria-label="Select availability"
+                        >
+                          {availabilityOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="registration-container-submit">
+                  {editingUserId ? (
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <button
+                        type="button"
+                        onClick={handleUpdateAddress}
+                        disabled={loading}
+                        style={{ flex: 1 }}
+                        aria-label="Update user address"
+                      >
+                        {loading ? 'Processing...' : 'Update Address'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleUpdatePersonalDetails}
+                        disabled={loading}
+                        style={{ flex: 1 }}
+                        aria-label="Update personal details"
+                      >
+                        {loading ? 'Processing...' : 'Update Personal Details'}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="submit"
+                      onClick={handleCreateUser}
+                      disabled={loading}
+                      aria-label="Create new user"
+                    >
+                      {loading ? 'Processing...' : 'Create User'}
+                    </button>
+                  )}
+                </div>
+              </form>
             </div>
           </div>
 
           <div className="registration-container">
             <div className="registration-container-padding">
               <div className="registration-container-header">
-                <p className="registration-container-header-sub">User administration</p>
-                <p className="registration-container-header-heading">Create or update user profiles</p>
+                <p className="registration-container-header-sub">User list</p>
+                <p className="registration-container-header-heading">Manage existing users</p>
               </div>
-
-              <div className="registration-container-column">
-                <form className="registration-container-column-form">
-                  <div className="registration-container-column-form-address">
-                    <div className="registration-container-column-form-address-header">
-                      <img src={calendar_week} alt="Calendar icon" />
-                      <p className="registration-container-column-form-address-header-text">Home address</p>
-                    </div>
-
-                    <div className="registration-container-column-form-address-content">
-                      <div className="registration-container-column-form-address-content-left">
-                        <div className="registration-container-column-form-address-content-left-alike">
-                          <label htmlFor="region">Region</label>
-                          <select
-                            id="region"
-                            name="region"
-                            value={selectedRegion}
-                            onChange={(e) => setSelectedRegion(e.target.value)}
-                            required
-                            aria-label="Select your region"
+              <div className="user-filter-section">
+                <div className="tabs">
+                  {['all', 'user', 'admin', 'superadmin'].map((tab) => (
+                    <button
+                      key={tab}
+                      className={`tab-button ${activeTab === tab ? 'active' : ''}`}
+                      onClick={() => setActiveTab(tab)}
+                      aria-label={`Filter by ${tab} role`}
+                    >
+                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    </button>
+                  ))}
+                </div>
+                <div className="search-container">
+                  <input
+                    type="text"
+                    placeholder="Search by name or email"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    className="search-input"
+                    aria-label="Search users by name or email"
+                  />
+                </div>
+              </div>
+              <div
+                className="table-section"
+                ref={tableRef}
+                onMouseDown={handleMouseDown}
+                onMouseLeave={handleMouseLeave}
+                onMouseUp={handleMouseUp}
+                onMouseMove={handleMouseMove}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Actions</th>
+                      <th>ID</th>
+                      <th>First Name</th>
+                      <th>Middle Name</th>
+                      <th>Last Name</th>
+                      <th>Email</th>
+                      <th>Mobile</th>
+                      <th>Role</th>
+                      <th>Position</th>
+                      <th>Department</th>
+                      <th>Region</th>
+                      <th>Province</th>
+                      <th>City</th>
+                      <th>Barangay</th>
+                      <th>Street</th>
+                      <th>Zip Code</th>
+                      <th>Gender</th>
+                      <th>Civil Status</th>
+                      <th>Birthday</th>
+                      <th>Availability</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredUsers.map((user) => (
+                      <tr key={user.id}>
+                        <td>
+                          <button
+                            onClick={() => handleEdit(user)}
+                            className="edit-button"
+                            aria-label={`Edit user ${user.first_name}`}
                           >
-                            <option value="">Select your region</option>
-                            {regions.map((region) => (
-                              <option key={region.code} value={region.code}>
-                                {region.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <div className="registration-container-column-form-address-content-left-alike">
-                          <label htmlFor="province">Province</label>
-                          <select
-                            id="province"
-                            name="province"
-                            value={selectedProvince}
-                            onChange={(e) => setSelectedProvince(e.target.value)}
-                            required
-                            disabled={selectedRegion === '130000000' || !selectedRegion}
-                            aria-label="Select your province"
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user.id)}
+                            disabled={user.role === 'superadmin' || loading}
+                            className="delete-button"
+                            aria-label={`Delete user ${user.first_name}`}
                           >
-                            <option value="">Select your province</option>
-                            {provinces.map((province) => (
-                              <option key={province.code} value={province.code}>
-                                {province.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <div className="registration-container-column-form-address-content-left-alike">
-                          <label htmlFor="barangay">Barangay</label>
-                          <select
-                            id="barangay"
-                            name="barangay"
-                            value={selectedBarangay}
-                            onChange={(e) => setSelectedBarangay(e.target.value)}
-                            required
-                            disabled={!selectedCity}
-                            aria-label="Select your barangay"
-                          >
-                            <option value="">Select your barangay</option>
-                            {barangays.map((barangay) => (
-                              <option key={barangay.code} value={barangay.code}>
-                                {barangay.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <div className="registration-container-column-form-address-content-left-alike">
-                          <label htmlFor="street">Street</label>
-                          <input
-                            type="text"
-                            id="street"
-                            name="street"
-                            placeholder="Enter your street"
-                            value={formData.street}
-                            onChange={handleInputChange}
-                            required
-                            aria-label="Enter your street"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="registration-container-column-form-address-content-right">
-                        <div className="registration-container-column-form-address-content-right-alike">
-                          <label htmlFor="city">City/Municipality</label>
-                          <select
-                            id="city"
-                            name="city"
-                            value={selectedCity}
-                            onChange={(e) => setSelectedCity(e.target.value)}
-                            required
-                            disabled={!selectedProvince}
-                            aria-label="Select your city or municipality"
-                          >
-                            <option value="">Select your city/municipality</option>
-                            {cities.map((city) => (
-                              <option key={city.code} value={city.code}>
-                                {city.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <div className="registration-container-column-form-address-content-right-alike">
-                          <label htmlFor="zip_code">Zip code</label>
-                          <input
-                            type="text"
-                            id="zip_code"
-                            name="zip_code"
-                            placeholder="Enter your zip code"
-                            value={formData.zip_code}
-                            onChange={handleInputChange}
-                            required
-                            aria-label="Enter your zip code"
-                          />
-                        </div>
-
-                        <div className="registration-container-column-form-address-content-right-alike">
-                          <label htmlFor="building_number">Building number</label>
-                          <input
-                            type="text"
-                            id="building_number"
-                            name="building_number"
-                            placeholder="Enter your building number"
-                            value={formData.building_number}
-                            onChange={handleInputChange}
-                            required
-                            aria-label="Enter your building number"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="registration-container-column-form-personal">
-                    <div className="registration-container-column-form-personal-header">
-                      <img src={user_square} alt="User icon" />
-                      <p className="registration-container-column-form-personal-header-text">
-                        Personal & Employment Details
-                      </p>
-                    </div>
-
-                    <div className="registration-container-column-form-personal-content">
-                      <div className="registration-container-column-form-personal-content-left">
-                        <div className="registration-container-column-form-personal-content-left-alike">
-                          <label htmlFor="first_name">First Name</label>
-                          <input
-                            type="text"
-                            id="first_name"
-                            name="first_name"
-                            placeholder="Enter your first name"
-                            value={formData.first_name}
-                            onChange={handleInputChange}
-                            required
-                            aria-label="Enter your first name"
-                          />
-                        </div>
-
-                        <div className="registration-container-column-form-personal-content-left-alike">
-                          <label htmlFor="middle_name">Middle Name</label>
-                          <input
-                            type="text"
-                            id="middle_name"
-                            name="middle_name"
-                            placeholder="Enter your middle name"
-                            value={formData.middle_name}
-                            onChange={handleInputChange}
-                            aria-label="Enter your middle name"
-                          />
-                        </div>
-
-                        <div className="registration-container-column-form-personal-content-left-alike">
-                          <label htmlFor="last_name">Last Name</label>
-                          <input
-                            type="text"
-                            id="last_name"
-                            name="last_name"
-                            placeholder="Enter your last name"
-                            value={formData.last_name}
-                            onChange={handleInputChange}
-                            required
-                            aria-label="Enter your last name"
-                          />
-                        </div>
-
-                        <div className="registration-container-column-form-personal-content-left-alike">
-                          <label htmlFor="mobile">Mobile</label>
-                          <input
-                            type="text"
-                            id="mobile"
-                            name="mobile"
-                            placeholder="Enter your mobile number"
-                            value={formData.mobile}
-                            onChange={handleInputChange}
-                            required
-                            aria-label="Enter your mobile number"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="registration-container-column-form-personal-content-right">
-                        <div className="registration-container-column-form-personal-content-right-alike">
-                          <label htmlFor="email">Email</label>
-                          <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="Enter your email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            required
-                            aria-label="Enter your email"
-                          />
-                        </div>
-
-                        <div className="registration-container-column-form-personal-content-right-alike">
-                          <label htmlFor="password">Password</label>
-                          <div style={{ position: 'relative' }}>
-                            <input
-                              type={showPassword ? 'text' : 'password'}
-                              id="password"
-                              name="password"
-                              placeholder={editingUserId ? 'New Password (optional)' : 'Enter your password'}
-                              value={formData.password}
-                              onChange={handleInputChange}
-                              required={!editingUserId}
-                              style={{ paddingRight: '40px' }}
-                              aria-label={editingUserId ? 'New password (optional)' : 'Enter your password'}
-                            />
-                            <div
-                              onClick={() => setShowPassword(!showPassword)}
-                              style={{
-                                position: 'absolute',
-                                right: '15px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                cursor: 'pointer',
-                                height: '20px',
-                                width: '20px',
-                                borderRadius: '50%',
-                                backgroundColor: showPassword ? '#00889A' : '#ccc',
-                                zIndex: 1,
-                              }}
-                              title={showPassword ? 'Hide password' : 'Show password'}
-                              aria-label={showPassword ? 'Hide password' : 'Show password'}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="registration-container-column-form-personal-content-right-alike">
-                          <label htmlFor="retype_password">Retype Password</label>
-                          <div style={{ position: 'relative' }}>
-                            <input
-                              type={showRetypePassword ? 'text' : 'password'}
-                              id="retype_password"
-                              name="retype_password"
-                              placeholder="Retype your password"
-                              value={formData.retype_password}
-                              onChange={handleInputChange}
-                              required={!editingUserId}
-                              style={{ paddingRight: '40px' }}
-                              aria-label="Retype your password"
-                            />
-                            <div
-                              onClick={() => setShowRetypePassword(!showRetypePassword)}
-                              style={{
-                                position: 'absolute',
-                                right: '15px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                cursor: 'pointer',
-                                height: '20px',
-                                width: '20px',
-                                borderRadius: '50%',
-                                backgroundColor: showRetypePassword ? '#00889A' : '#ccc',
-                                zIndex: 1,
-                              }}
-                              title={showRetypePassword ? 'Hide password' : 'Show password'}
-                              aria-label={showRetypePassword ? 'Hide password' : 'Show password'}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="registration-container-column-form-personal-content-right-alike">
-                          <label htmlFor="birthday">Birthday</label>
-                          <input
-                            type="date"
-                            id="birthday"
-                            name="birthday"
-                            value={formData.birthday}
-                            onChange={handleInputChange}
-                            max={getMaxDate()}
-                            required
-                            aria-label="Select your birthday"
-                          />
-                        </div>
-
-                        <div className="registration-container-column-form-personal-content-right-alike">
-                          <label htmlFor="role">Role</label>
-                          <select
-                            id="role"
-                            name="role"
-                            value={formData.role}
-                            onChange={handleInputChange}
-                            required
-                            aria-label="Select user role"
-                          >
-                            {roleOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="registration-container-column-form-personal-content">
-                      <div className="registration-container-column-form-personal-content-left">
-                        <div className="registration-container-column-form-personal-content-left-alike">
-                          <label htmlFor="position">Primary Position</label>
-                          <select
-                            id="position"
-                            name="position"
-                            value={formData.position}
-                            onChange={handleInputChange}
-                            aria-label="Select primary position"
-                          >
-                            {positionOperations.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-
-                        {isCustomPosition && (
-                          <div className="registration-container-column-form-personal-content-left-alike">
-                            <label htmlFor="custom_position">Specify Position</label>
-                            <input
-                              type="text"
-                              id="custom_position"
-                              name="custom_position"
-                              placeholder="Enter custom position"
-                              value={formData.custom_position}
-                              onChange={handleInputChange}
-                              required
-                              aria-label="Enter custom position"
-                            />
-                          </div>
-                        )}
-
-                        <div className="registration-container-column-form-personal-content-left-alike">
-                          <label htmlFor="gender">Gender</label>
-                          <select
-                            id="gender"
-                            name="gender"
-                            value={formData.gender}
-                            onChange={handleInputChange}
-                            required
-                            aria-label="Select your gender"
-                          >
-                            {genderOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="registration-container-column-form-personal-content-right">
-                        <div className="registration-container-column-form-personal-content-right-alike">
-                          <label htmlFor="department">Department</label>
-                          <input
-                            type="text"
-                            id="department"
-                            name="department"
-                            placeholder="Enter your department"
-                            value={formData.department}
-                            onChange={handleInputChange}
-                            aria-label="Enter your department"
-                          />
-                        </div>
-
-                        <div className="registration-container-column-form-personal-content-right-alike">
-                          <label htmlFor="civil_status">Civil Status</label>
-                          <select
-                            id="civil_status"
-                            name="civil_status"
-                            value={formData.civil_status}
-                            onChange={handleInputChange}
-                            required
-                            aria-label="Select your civil status"
-                          >
-                            {civilStatusOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-
-                        <div className="registration-container-column-form-personal-content-right-alike">
-                          <label htmlFor="availability">Availability</label>
-                          <select
-                            id="availability"
-                            name="availability"
-                            value={formData.availability}
-                            onChange={handleInputChange}
-                            aria-label="Select availability"
-                          >
-                            {availabilityOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="registration-container-submit">
-                    {editingUserId ? (
-                      <div style={{ display: 'flex', gap: '10px' }}>
-                        <button
-                          type="button"
-                          onClick={handleUpdateAddress}
-                          disabled={loading}
-                          style={{ flex: 1 }}
-                          aria-label="Update user address"
-                        >
-                          {loading ? 'Processing...' : 'Update Address'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleUpdatePersonalDetails}
-                          disabled={loading}
-                          style={{ flex: 1 }}
-                          aria-label="Update personal details"
-                        >
-                          {loading ? 'Processing...' : 'Update Personal Details'}
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        type="submit"
-                        onClick={handleCreateUser}
-                        disabled={loading}
-                        aria-label="Create new user"
-                      >
-                        {loading ? 'Processing...' : 'Create User'}
-                      </button>
-                    )}
-                  </div>
-                </form>
+                            Delete
+                          </button>
+                        </td>
+                        <td>{user.id}</td>
+                        <td>{user.first_name || '-'}</td>
+                        <td>{user.middle_name || '-'}</td>
+                        <td>{user.last_name || '-'}</td>
+                        <td>{user.email || '-'}</td>
+                        <td>{user.mobile || '-'}</td>
+                        <td>{user.role || '-'}</td>
+                        <td>{user.position || '-'}</td>
+                        <td>{user.department || '-'}</td>
+                        <td>{user.region || '-'}</td>
+                        <td>{user.province || '-'}</td>
+                        <td>{user.city || '-'}</td>
+                        <td>{user.barangay || '-'}</td>
+                        <td>{user.street || '-'}</td>
+                        <td>{user.zip_code || '-'}</td>
+                        <td>{user.gender || '-'}</td>
+                        <td>{user.civil_status || '-'}</td>
+                        <td>{user.birthday || '-'}</td>
+                        <td>{user.availability || '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
-
-            <div className="registration-container">
-              <div className="registration-container-padding">
-                <div className="registration-container-header">
-                  <p className="registration-container-header-sub">User list</p>
-                  <p className="registration-container-header-heading">Manage existing users</p>
-                </div>
-                <div
-                  className="table-section"
-                  ref={tableRef}
-                  onMouseDown={handleMouseDown}
-                  onMouseLeave={handleMouseLeave}
-                  onMouseUp={handleMouseUp}
-                  onMouseMove={handleMouseMove}
-                  onTouchStart={handleTouchStart}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
-                >
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th>Actions</th>
-                        <th>ID</th>
-                        <th>First Name</th>
-                        <th>Middle Name</th>
-                        <th>Last Name</th>
-                        <th>Email</th>
-                        <th>Mobile</th>
-                        <th>Role</th>
-                        <th>Position</th>
-                        <th>Department</th>
-                        <th>Region</th>
-                        <th>Province</th>
-                        <th>City</th>
-                        <th>Barangay</th>
-                        <th>Street</th>
-                        <th>Zip Code</th>
-                        <th>Gender</th>
-                        <th>Civil Status</th>
-                        <th>Birthday</th>
-                        <th>Availability</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {users.map((user) => (
-                        <tr key={user.id}>
-                          <td>
-                            <button
-                              onClick={() => handleEdit(user)}
-                              className="edit-button"
-                              aria-label={`Edit user ${user.first_name}`}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDelete(user.id)}
-                              disabled={user.role === 'superadmin' || loading}
-                              className="delete-button"
-                              aria-label={`Delete user ${user.first_name}`}
-                            >
-                              Delete
-                            </button>
-                          </td>
-                          <td>{user.id}</td>
-                          <td>{user.first_name || '-'}</td>
-                          <td>{user.middle_name || '-'}</td>
-                          <td>{user.last_name || '-'}</td>
-                          <td>{user.email || '-'}</td>
-                          <td>{user.mobile || '-'}</td>
-                          <td>{user.role || '-'}</td>
-                          <td>{user.position || '-'}</td>
-                          <td>{user.department || '-'}</td>
-                          <td>{user.region || '-'}</td>
-                          <td>{user.province || '-'}</td>
-                          <td>{user.city || '-'}</td>
-                          <td>{user.barangay || '-'}</td>
-                          <td>{user.street || '-'}</td>
-                          <td>{user.zip_code || '-'}</td>
-                          <td>{user.gender || '-'}</td>
-                          <td>{user.civil_status || '-'}</td>
-                          <td>{user.birthday || '-'}</td>
-                          <td>{user.availability || '-'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
             </div>
           </div>
         </div>

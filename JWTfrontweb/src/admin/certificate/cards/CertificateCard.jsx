@@ -1,144 +1,131 @@
 import React from 'react';
-import axios from 'axios';
 import './certificateCard.css';
+
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
 import Calendar_Add from '../../../assets/icons/Calendar_Add.svg?react';
+import Notebook from '../../../assets/icons/Notebook.svg?react';
 import Bell from '../../../assets/icons/Bell.svg?react';
+import More_Horizontal from '../../../assets/icons/More_Horizontal.svg?react';
 import Note_Search from '../../../assets/icons/Note_Search.svg?react';
 
-const apiUrl = import.meta.env.VITE_API_BASE_URL;
+const CertificateCard = ({ data, certificates = [], onCertificateClick, onNotifyUpload, onOpenCertificateModal }) => {
+  const handleOpenModal = () => {
+    if (!data?.user_id) {
+      console.error('No user_id provided in data:', data);
+      return;
+    }
+    if (onOpenCertificateModal) {
+      onOpenCertificateModal(data.user_id);
+    }
+  };
 
-const CertificateCard = ({ data, certificates, onCertificateClick, onNotifyUpload,onOpenAppointmentModal }) => {
-    const fullName = [data.first_name, data.middle_name, data.last_name].filter(Boolean).join(' ');
+  return (
+    <main className="certificate-cards-card">
+      <section className="certificate-cards-card-indicator">
+        {/* Placeholder for indicator */}
+      </section>
 
-    const formatDate = (dateString) => {
-        if (!dateString) return 'No date';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: '2-digit',
-            year: 'numeric',
-        }).toUpperCase();
-    };
+      <section className="certificate-cards-card-profile">
+        <Circle_Primary style={{ color: "var(--primary-color)", width: "72px", height: "72px" }} />
+        <div className="certificate-cards-card-profile-info">
+          <p className="certificate-cards-card-profile-info-text">{data?.user_name || 'N/A'}</p>
+          <div className="certificate-cards-card-profile-info-job">
+            <Circle_Primary style={{ color: "var(--primary-color)", width: "32px", height: "32px" }} />
+            <p>{data?.position || 'N/A'}</p>
+          </div>
+        </div>
+      </section>
 
-    const certificateTypes = ['Medical', 'Training', 'Contract', 'Employee ID'];
+      <section className="certificate-cards-card-certificates">
+        <div className="certificate-cards-card-certificates-total">
+          <div className="certificate-cards-card-certificates-total-sub">
+            <div className="certificate-cards-card-certificates-total-sub-separator"></div>
+            <div className="certificate-cards-card-certificates-total-sub-text">
+              <p className="certificate-cards-card-certificates-total-sub-text-light">Total</p>
+              <p className="certificate-cards-card-certificates-total-sub-text-medium">Upload</p>
+            </div>
+          </div>
+          <div className="certificate-cards-card-certificates-total-count">
+            <div className="certificate-cards-card-certificates-total-count-bg">
+              <p>{data?.total_uploaded || 0}</p>
+            </div>
+          </div>
+        </div>
 
-    const getCertificateByType = (type) => {
-        const cert = certificates.find((cert) => cert.certificate_type === type);
-        if (!cert) return null;
+        <div className="certificate-cards-card-certificates-approved">
+          <div className="certificate-cards-card-certificates-approved-sub">
+            <div className="certificate-cards-card-certificates-approved-sub-separator"></div>
+            <div className="certificate-cards-card-certificates-approved-sub-text">
+              <p className="certificate-cards-card-certificates-approved-sub-text-light">Total</p>
+              <p className="certificate-cards-card-certificates-approved-sub-text-medium">Approved</p>
+            </div>
+          </div>
+          <div className="certificate-cards-card-certificates-approved-count">
+            <div className="certificate-cards-card-certificates-approved-count-bg">
+              <p>{data?.approved || 0}</p>
+            </div>
+          </div>
+        </div>
 
-        // Check if certificate is expired
-        const currentDate = new Date();
-        const expirationDate = new Date(cert.expiration_date);
-        if (expirationDate < currentDate) {
-            return null; // Treat expired certificate as non-existent
-        }
-        return cert;
-    };
+        <div className="certificate-cards-card-certificates-pending">
+          <div className="certificate-cards-card-certificates-pending-sub">
+            <div className="certificate-cards-card-certificates-pending-sub-separator"></div>
+            <div className="certificate-cards-card-certificates-pending-sub-text">
+              <p className="certificate-cards-card-certificates-total-sub-text-light">Total</p>
+              <p className="certificate-cards-card-certificates-total-sub-text-medium">Pending</p>
+            </div>
+          </div>
+          <div className="certificate-cards-card-certificates-pending-count">
+            <div className="certificate-cards-card-certificates-pending-count-bg">
+              <p>{data?.pending || 0}</p>
+            </div>
+          </div>
+        </div>
 
-    // Check if all certificate types are present and valid
-    const hasAllCertificates = certificateTypes.every((type) => {
-        const cert = getCertificateByType(type);
-        return cert !== null;
-    });
+        <div className="certificate-cards-card-certificates-notify">
+          <div className="certificate-cards-card-certificates-notify-text">
+            <p className="certificate-cards-card-certificates-notify-text-light">Send a</p>
+            <p className="certificate-cards-card-certificates-notify-text-medium">Notification</p>
+          </div>
+          <button
+            className="certificate-cards-card-certificates-notify-btn"
+            onClick={() => onNotifyUpload && onNotifyUpload()}
+            aria-label="Notify crew for certificate upload"
+          >
+            <p>Notify Crew</p>
+            <div className="certificate-cards-card-certificates-notify-btn-icon">
+              <Bell
+                style={{
+                  width: '1.4rem',
+                  height: '1.4rem',
+                  '--stroke-color': 'var(--primary-color)',
+                  '--stroke-width': '4',
+                  '--fill-color': 'none',
+                }}
+              />
+            </div>
+          </button>
+        </div>
+      </section>
 
-    const handleNotifyUpload = async (type) => {
-        try {
-            const token = sessionStorage.getItem('token');
-            await axios.post(
-                `${apiUrl}/notifications/upload`,
-                {
-                    user_id: data.id,
-                    certificate_type: type,
-                },
-                {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning
-      },
-                    withCredentials: true,
-                }
-            );
-            onNotifyUpload(type); // Notify parent if needed
-            alert('Notification sent successfully'); // Replace with toast in production
-        } catch (err) {
-            // console.error('Failed to send notification:', err);
-            alert('Failed to send notification');
-        }
-    };
-
-    return (
-        <main className="certificate-cards-card">
-            <section
-                className="certificate-cards-card-indicator"
-                style={hasAllCertificates ? { backgroundColor: 'rgba(152, 251, 152, 0.6)' } : {}}
-            ></section>
-            <section className="certificate-cards-card-profile">
-                <Circle_Primary className="certificate-cards-card-profile-svg" />
-                <div className="certificate-cards-card-profile-info">
-                    <p className="certificate-cards-card-profile-info-text">{fullName || 'Unknown'}</p>
-                    <div className="certificate-cards-card-profile-info-job">
-                        <Circle_Primary style={{ color: 'var(--primary-color)', width: '32px', height: '32px' }} />
-                        <p>{data.position || 'No position'}</p>
-                    </div>
-                </div>
-            </section>
-            <section className="certificate-cards-card-certificates">
-                {certificateTypes.map((type, index) => {
-                    const cert = getCertificateByType(type);
-                    const columnIndex = index + 1;
-
-                    return (
-                        <div key={type} className={`certificate-cards-card-certificates-${columnIndex}`}>
-                            <div className={`certificate-cards-card-certificates-${columnIndex}-text`}>
-                                <p className={`certificate-cards-card-certificates-${columnIndex}-text-sub`}>
-                                    {cert ? 'Expires at' : 'As of now'}
-                                </p>
-                                <p className={`certificate-cards-card-certificates-${columnIndex}-text-heading`}>
-                                    {cert ? formatDate(cert.expiration_date) : 'No upload'}
-                                </p>
-                            </div>
-                            <button
-                                className={`certificate-cards-card-certificates-${cert ? '2' : '1'}-button`}
-                                onClick={() => (cert ? onCertificateClick(cert) : handleNotifyUpload(type))}
-                                disabled={false}
-                            >
-                                <p>{cert ? cert.certificate_name || 'Unknown Certificate' : 'Notify upload'}</p>
-                                <div
-                                    className={`certificate-cards-card-certificates-${cert ? '2' : '1'}-button-icon`}
-                                >
-                                    {cert ? (
-                                        <Note_Search
-                                            style={{
-                                                color: 'var(--black-color)',
-                                                width: '1.8vw',
-                                                height: '3.6vh',
-                                                '--stroke-width': '4px',
-                                            }}
-                                        />
-                                    ) : (
-                                        <Bell
-                                            style={{
-                                                color: 'var(--primary-color)',
-                                                width: '1.8vw',
-                                                height: '3.6vh',
-                                                '--stroke-width': '4px',
-                                            }}
-                                        />
-                                    )}
-                                </div>
-                            </button>
-                        </div>
-                    );
-                })}
-            </section>
-            <section className="certificate-cards-card-button">
-              <button onClick={() => onOpenAppointmentModal(data.id)}>
-                    <Calendar_Add className="certificate-cards-card-button-svg" />
-                </button>
-            </section>
-        </main>
-    );
+      <section className="certificate-cards-card-button">
+        <button
+          onClick={handleOpenModal}
+          aria-label="View certificate list"
+        >
+          <More_Horizontal
+            style={{
+              width: '32px',
+              height: '32px',
+              '--stroke-color': 'var(--white-color)',
+              '--stroke-width': '4px',
+              '--fill-color': 'var(--white-color)',
+            }}
+          />
+        </button>
+      </section>
+    </main>
+  );
 };
 
 export default CertificateCard;

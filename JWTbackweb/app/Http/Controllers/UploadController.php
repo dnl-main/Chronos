@@ -205,4 +205,112 @@ public function deleteCertificate(Request $request)
         ], 500);
     }
 }
+
+public function approve(Request $request, $id)
+    {
+        $user = JWTAuth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $certificate = Certificate::find($id);
+        if (!$certificate) {
+            return response()->json(['message' => 'Certificate not found'], 404);
+        }
+
+        try {
+            $certificate->update(['status' => 'approved']);
+
+            // Send email notification using Mail::raw
+            Mail::raw(
+                "Good news! Your certificate has been approved.\n\n" .
+                "Certificate Name: {$certificate->certificate_name}\n" .
+                "Certificate Type: {$certificate->certificate_type}\n" .
+                "Status: Approved\n" .
+                "Please log in to your account to view details.\n\n" .
+                "View Certificates: " . url('/certificates') . "\n\n" .
+                "Thank you for using our platform!",
+                function ($message) use ($certificate) {
+                    $message->to($certificate->user->email)
+                            ->subject("Certificate {$certificate->certificate_name} Approved");
+                }
+            );
+
+            return response()->json([
+                'message' => "Certificate {$certificate->certificate_name} has been approved",
+                'certificate' => [
+                    'id' => $certificate->id,
+                    'certificate_name' => $certificate->certificate_name,
+                    'certificate_type' => $certificate->certificate_type,
+                    'file_path' => $certificate->file_path,
+                    'user_id' => $certificate->user_id,
+                    'expiration_date' => $certificate->expiration_date,
+                    'status' => $certificate->status,
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Approve Certificate Exception:', ['message' => $e->getMessage()]);
+            return response()->json([
+                'message' => 'Failed to approve certificate: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function decline(Request $request, $id)
+    {
+        $user = JWTAuth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $certificate = Certificate::find($id);
+        if (!$certificate) {
+            return response()->json(['message' => 'Certificate not found'], 404);
+        }
+
+        try {
+            $certificate->update(['status' => 'declined']);
+
+            // Send email notification using Mail::raw
+            Mail::raw(
+                "We regret to inform you that your certificate has been declined.\n\n" .
+                "Certificate Name: {$certificate->certificate_name}\n" .
+                "Certificate Type: {$certificate->certificate_type}\n" .
+                "Status: Declined\n" .
+                "Please log in to your account to view details.\n\n" .
+                "View Certificates: " . url('/certificates') . "\n\n" .
+                "Thank you for using our platform!",
+                function ($message) use ($certificate) {
+                    $message->to($certificate->user->email)
+                            ->subject("Certificate {$certificate->certificate_name} Declined");
+                }
+            );
+
+            return response()->json([
+                'message' => "Certificate {$certificate->certificate_name} has been declined",
+                'certificate' => [
+                    'id' => $certificate->id,
+                    'certificate_name' => $certificate->certificate_name,
+                    'certificate_type' => $certificate->certificate_type,
+                    'file_path' => $certificate->file_path,
+                    'user_id' => $certificate->user_id,
+                    'expiration_date' => $certificate->expiration_date,
+                    'status' => $certificate->status,
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Decline Certificate Exception:', ['message' => $e->getMessage()]);
+            return response()->json([
+                'message' => 'Failed to decline certificate: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }
