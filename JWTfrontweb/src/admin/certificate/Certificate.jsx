@@ -24,7 +24,14 @@ const Certificate = () => {
   const [isCertificateModalOpen, setIsCertificateModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedUserEmail, setSelectedUserEmail] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(''); // Added for search
   const navigate = useNavigate();
+
+  // Filter certificate data based on search query
+  const filteredCertificateData = certificateData.filter((data) =>
+    data.user_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    data.position.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleClosePopup = () => {
     setSelectedCertificate(null);
@@ -179,15 +186,28 @@ const Certificate = () => {
             <p>Certificate tracking</p>
           </header>
 
-          <section className="certificate-categories">
+          <section className="certificate-categories" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <p>Name and position</p>
+            <input
+              type="text"
+              placeholder="Search by name or position"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                padding: '8px',
+                borderRadius: '4px',
+                border: '1px solid var(--black-color-opacity-30)',
+                fontSize: '14px',
+                width: '200px',
+              }}
+            />
           </section>
 
           <section className="certificate-cards">
-            {certificateData.length === 0 ? (
+            {filteredCertificateData.length === 0 ? (
               <p>No crew members found.</p>
             ) : (
-              certificateData.map((data, index) => (
+              filteredCertificateData.map((data, index) => (
                 <CertificateCard
                   key={data.user_id || `card-${index}`}
                   data={data}

@@ -22,7 +22,51 @@ const Availability = () => {
   const [selectedTab, setSelectedTab] = useState('all');
   const [showAppointmentModal, setShowAppointmentModal] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [searchQueryAll, setSearchQueryAll] = useState('');
   const navigate = useNavigate();
+
+  // Helper function to check if a member matches a search query
+  const matchesSearchQuery = (member, query) => {
+    if (!query) return true;
+    const fullName = ((member.first_name || '') + ' ' + (member.last_name || '')).toLowerCase();
+    const position = (member.position || '').toLowerCase();
+    return fullName.includes(query.toLowerCase()) || position.includes(query.toLowerCase());
+  };
+
+  // Process crew data with certificate status and approved count
+  const processedCrewData = crewData.map((member) => {
+    const memberCertificates = certificates.filter((cert) => cert.user_id === member.id);
+    const certificateTypes = new Set(memberCertificates.map((cert) => cert.certificate_type));
+    const requiredTypes = ['Medical', 'Training', 'Contract', 'Employee ID'];
+    const hasAllCertificates = requiredTypes.every((type) => certificateTypes.has(type));
+    const allValid = memberCertificates.every((cert) => cert.expiration_date && new Date(cert.expiration_date) >= new Date());
+    const approvedCertificates = memberCertificates.filter((cert) => cert.status?.toLowerCase() === 'approved').length;
+
+    return {
+      ...member,
+      completionStatus: hasAllCertificates && allValid ? 'Complete' : 'Incomplete',
+      completionColor: hasAllCertificates && allValid ? 'var(--green-indicator)' : 'var(--red-indicator)',
+      approvedCertificates,
+    };
+  });
+
+  // Filter crew data for Available section based on global search query
+  const filteredCrewDataAvailable = processedCrewData.filter((member) =>
+    member.availability?.toLowerCase() === 'available' &&
+    matchesSearchQuery(member, searchQueryAll)
+  );
+
+  // Filter crew data for Vacation section based on global search query
+  const filteredCrewDataVacation = processedCrewData.filter((member) =>
+    member.availability?.toLowerCase() === 'vacation' &&
+    matchesSearchQuery(member, searchQueryAll)
+  );
+
+  // Filter crew data for On Board section based on global search query
+  const filteredCrewDataOnBoard = processedCrewData.filter((member) =>
+    member.availability?.toLowerCase() === 'on board' &&
+    matchesSearchQuery(member, searchQueryAll)
+  );
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
@@ -131,30 +175,28 @@ const Availability = () => {
 
   const tabs = ['all', 'available', 'vacation', 'on board'];
 
-  // Process crew data with certificate status and approved count
-  const processedCrewData = crewData.map((member) => {
-    const memberCertificates = certificates.filter((cert) => cert.user_id === member.id);
-    const certificateTypes = new Set(memberCertificates.map((cert) => cert.certificate_type));
-    const requiredTypes = ['Medical', 'Training', 'Contract', 'Employee ID'];
-    const hasAllCertificates = requiredTypes.every((type) => certificateTypes.has(type));
-    const allValid = memberCertificates.every((cert) => cert.expiration_date && new Date(cert.expiration_date) >= new Date());
-    const approvedCertificates = memberCertificates.filter((cert) => cert.status?.toLowerCase() === 'approved').length;
-
-    return {
-      ...member,
-      completionStatus: hasAllCertificates && allValid ? 'Complete' : 'Incomplete',
-      completionColor: hasAllCertificates && allValid ? 'var(--green-indicator)' : 'var(--red-indicator)',
-      approvedCertificates, // Add approved certificates count
-    };
-  });
-
   return (
     <div className="availability">
       <div className="availability-box">
         <main className="availability-box-in">
-          <header className="availability-box-in-header">
-            <Users style={{ width: '32px', height: '32px', color: '#14181f', strokeWidth: 2 }} />
-            <p>Crew availability</p>
+          <header className="availability-box-in-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Users style={{ width: '32px', height: '32px', color: '#14181f', strokeWidth: 2 }} />
+              <p style={{ marginLeft: '8px' }}>Crew availability</p>
+            </div>
+            <input
+              type="text"
+              placeholder="Search all crew by name or position"
+              value={searchQueryAll}
+              onChange={(e) => setSearchQueryAll(e.target.value)}
+              style={{
+                padding: '8px',
+                borderRadius: '4px',
+                border: '1px solid var(--black-color-opacity-30)',
+                fontSize: '14px',
+                width: '200px',
+              }}
+            />
           </header>
 
           <section className="availability-box-in-tabs">
@@ -182,17 +224,21 @@ const Availability = () => {
           {/* Available Section */}
           {(selectedTab === 'all' || selectedTab === 'available') && (
             <>
-              <header className="availability-box-in-header"><p>Available</p></header>
+              <header className="availability-box-in-header">
+                <p>Available</p>
+              </header>
               <section className="availability-box-in-cards">
-                {processedCrewData
-                  .filter((member) => member.availability?.toLowerCase() === 'available')
-                  .map((member) => (
+                {filteredCrewDataAvailable.length === 0 ? (
+                  <p>No available crew members found.</p>
+                ) : (
+                  filteredCrewDataAvailable.map((member) => (
                     <AvailabilityCard
                       key={member.id}
                       data={member}
                       onOpenAppointment={handleOpenAppointment}
                     />
-                  ))}
+                  ))
+                )}
               </section>
             </>
           )}
@@ -200,17 +246,21 @@ const Availability = () => {
           {/* Vacation Section */}
           {(selectedTab === 'all' || selectedTab === 'vacation') && (
             <>
-              <header className="availability-box-in-header"><p>Vacation</p></header>
+              <header className="availability-box-in-header">
+                <p>Vacation</p>
+              </header>
               <section className="availability-box-in-cards">
-                {processedCrewData
-                  .filter((member) => member.availability?.toLowerCase() === 'vacation')
-                  .map((member) => (
+                {filteredCrewDataVacation.length === 0 ? (
+                  <p>No vacation crew members found.</p>
+                ) : (
+                  filteredCrewDataVacation.map((member) => (
                     <AvailabilityCard
                       key={member.id}
                       data={member}
                       onOpenAppointment={handleOpenAppointment}
                     />
-                  ))}
+                  ))
+                )}
               </section>
             </>
           )}
@@ -218,17 +268,21 @@ const Availability = () => {
           {/* On Board Section */}
           {(selectedTab === 'all' || selectedTab === 'on board') && (
             <>
-              <header className="availability-box-in-header"><p>On Board</p></header>
+              <header className="availability-box-in-header">
+                <p>On Board</p>
+              </header>
               <section className="availability-box-in-cards">
-                {processedCrewData
-                  .filter((member) => member.availability?.toLowerCase() === 'on board')
-                  .map((member) => (
+                {filteredCrewDataOnBoard.length === 0 ? (
+                  <p>No on board crew members found.</p>
+                ) : (
+                  filteredCrewDataOnBoard.map((member) => (
                     <AvailabilityCard
                       key={member.id}
                       data={member}
                       onOpenAppointment={handleOpenAppointment}
                     />
-                  ))}
+                  ))
+                )}
               </section>
             </>
           )}
