@@ -21,6 +21,7 @@ class UploadController extends Controller
             'Medical-Medical Certificate / Fitness for Sea Service',
             'Medical-Vaccinations',
             'Medical-Health Insurance',
+            'Medical-Medical Certificate',  // Added
             'Training-Workshop',
             'Training-Certification',
             'Training-Seaman Training I',
@@ -29,6 +30,7 @@ class UploadController extends Controller
             'Training-Leadership Training II',
             'Training-Leadership Training III',
             'Training-Safety Certificates / Basic Safety Training & Crowd Management',
+            'Training-STCW Certifications',  // Added
             'Seminar-Conference',
             'Seminar-Webinar',
             'Seminar-PDOS',
@@ -40,6 +42,31 @@ class UploadController extends Controller
             'Employee Document-Crew ID-Card',
             'Employee Document-C1/D Visa',
             'Employee Document-Criminal Record Certificate',
+            'Employee Document-Sea Service Record', 
+            'SOLAS-International Ship Safety Equipment Certificate',
+    'SOLAS-Minimum Safe Manning Certificate',
+    'SOLAS-International Ship Construction Certificate',
+    'SOLAS-Passenger Ship Safety Certificate',
+    'SOLAS-Cargo Ship Safety Certificate',
+    'SOLAS-Cargo Ship Safety Construction Certificate',
+    'SOLAS-Cargo Ship Safety Equipment Certificate',
+    'SOLAS-Cargo Ship Safety Radio Certificate',
+    'SOLAS-International Tonnage Certificate',
+    'SOLAS-International Load Line Certificate',
+    'SOLAS-Safety Management Certificate',
+    'SOLAS-Ship Security Certificate',
+    'SOLAS-International Oil Pollution Prevention Certificate',
+    'SOLAS-International Sewage Pollution Prevention Certificate',
+    'SOLAS-International Air Pollution Prevention Certificate',
+    'STCW Certifications-STCW Basic Safety Training',
+    'STCW Certifications-STCW Proficiency in Survival Craft and Rescue Boats',
+    'STCW Certifications-STCW Proficiency in Fast Rescue Boats',
+    'STCW Certifications-STCW Proficiency in Designated Security Duties',
+    'STCW Certifications-STCW Proficiency in Security Awareness',
+    'STCW Certifications-STCW Proficiency in Crisis Management and Human Behavior',
+    'STCW Certifications-STCW Proficiency in Advanced Fire Fighting',
+    'STCW Certifications-STCW Proficiency in Medical First Aid',
+    'STCW Certifications-Sea Service Record',
         ];
 
         // Validate the request
@@ -224,58 +251,60 @@ class UploadController extends Controller
         }
     }
 
-  public function approve(Request $request, $id)
-{
-    $user = JWTAuth::user();
-    if (!$user) {
-        return response()->json(['message' => 'Unauthorized'], 401);
+    public function approve(Request $request, $id)
+    {
+        $user = JWTAuth::user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $certificate = Certificate::find($id);
+        if (!$certificate) {
+            return response()->json(['message' => 'Certificate not found'], 404);
+        }
+
+        try {
+            $certificate->update(['status' => 'approved']);
+
+            Mail::raw(
+                "Your certificate has been approved.\n\n" .
+                "Certificate Name: {$certificate->certificate_name}\n" .
+                "Certificate Type: {$certificate->certificate_type}\n" .
+                "Status: Approved\n" .
+                "Please log in to your account to view details.\n\n" .
+                "View Certificates: " . url('/certificates') . "\n\n" .
+                "Thank you for using our platform!",
+                function ($message) use ($certificate) {
+                    $message->to($certificate->user->email)
+                            ->subject("Certificate {$certificate->certificate_name} Approved");
+                }
+            );
+
+            return response()->json([
+                'message' => "Certificate {$certificate->certificate_name} has been approved",
+                'certificate' => [
+                    'id' => $certificate->id,
+                    'certificate_name' => $certificate->certificate_name,
+                    'certificate_type' => $certificate->certificate_type,
+                    'file_path' => $certificate->file_path,
+                    'user_id' => $certificate->user_id,
+                    'expiration_date' => $certificate->expiration_date,
+                    'status' => $certificate->status,
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Approve Certificate Exception:', ['message' => $e->getMessage()]);
+            return response()->json([
+                'message' => 'Failed to approve certificate: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
-    if ($user->role !== 'admin') {
-        return response()->json(['message' => 'Unauthorized'], 403);
-    }
-
-    $certificate = Certificate::find($id);
-    if (!$certificate) {
-        return response()->json(['message' => 'Certificate not found'], 404);
-    }
-
-    try {
-        $certificate->update(['status' => 'approved']);
-
-        Mail::raw(
-            "Your certificate has been approved.\n\n" .
-            "Certificate Name: {$certificate->certificate_name}\n" .
-            "Certificate Type: {$certificate->certificate_type}\n" .
-            "Status: Approved\n" .
-            "Please log in to your account to view details.\n\n" .
-            "View Certificates: " . url('/certificates') . "\n\n" .
-            "Thank you for using our platform!",
-            function ($message) use ($certificate) {
-                $message->to($certificate->user->email)
-                        ->subject("Certificate {$certificate->certificate_name} Approved");
-            }
-        );
-
-        return response()->json([
-            'message' => "Certificate {$certificate->certificate_name} has been approved",
-            'certificate' => [
-                'id' => $certificate->id,
-                'certificate_name' => $certificate->certificate_name,
-                'certificate_type' => $certificate->certificate_type,
-                'file_path' => $certificate->file_path,
-                'user_id' => $certificate->user_id,
-                'expiration_date' => $certificate->expiration_date,
-                'status' => $certificate->status,
-            ],
-        ], 200);
-    } catch (\Exception $e) {
-        \Log::error('Approve Certificate Exception:', ['message' => $e->getMessage()]);
-        return response()->json([
-            'message' => 'Failed to approve certificate: ' . $e->getMessage(),
-        ], 500);
-    }
-}    public function decline($id)
+    public function decline($id)
     {
         $user = JWTAuth::user();
         if (!$user) {
@@ -303,8 +332,7 @@ class UploadController extends Controller
                 "Status: Declined\n" .
                 "Please log in to your account to view details.\n\n" .
                 "View Certificates: " . url('/certificates') . "\n\n" .
-                "Please reupload\n\n" .
-                
+                "Please reupload\n\n",
                 function ($message) use ($certificate) {
                     $message->to($certificate->user->email)
                             ->subject("Certificate {$certificate->certificate_name} Declined");

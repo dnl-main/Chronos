@@ -47,36 +47,64 @@ const HomeUser = () => {
   const [dateError, setDateError] = useState('');
 
   const statusOptions = ['On Board', 'Available', 'Vacation'];
-  const certificateCategories = {
-    Medical: [
-      'Health Check',
-      'Vaccination',
-      'Medical Certificate / Fitness for Sea Service',
-      'Vaccinations',
-      'Health Insurance',
-    ],
-    Training: [
-      'Workshop',
-      'Certification',
-      'Seaman Training I',
-      'Leadership Training I',
-      'Seaman Training II',
-      'Leadership Training II',
-      'Leadership Training III',
-      'Safety Certificates / Basic Safety Training & Crowd Management',
-    ],
-    Seminar: ['Conference', 'Webinar', 'PDOS'],
-    'Employee Document': [
-      'ID Card',
-      'Contract',
-      'Passport',
-      'Seaman’s Book',
-      'Uniform / Work Clothing / Appearance',
-      'Crew ID-Card',
-      'C1/D Visa',
-      'Criminal Record Certificate',
-    ],
-  };
+const certificateCategories = {
+  Medical: [
+    'Health Check',
+    'Vaccination',
+    'Medical Certificate / Fitness for Sea Service',
+    'Vaccinations',
+    'Health Insurance',
+  ],
+  Training: [
+    'Workshop',
+    'Certification',
+    'Seaman Training I',
+    'Leadership Training I',
+    'Seaman Training II',
+    'Leadership Training II',
+    'Leadership Training III',
+    'Safety Certificates / Basic Safety Training & Crowd Management',
+  ],
+  Seminar: ['Conference', 'Webinar', 'PDOS'],
+  'Employee Document': [
+    'Passport',
+    'ID Card',
+    'Contract',
+    'Seaman’s Book',
+    'Uniform / Work Clothing / Appearance',
+    'Crew ID-Card',
+    'C1/D Visa',
+    'Criminal Record Certificate',
+  ],
+  SOLAS: [
+    'International Ship Safety Equipment Certificate',
+    'Minimum Safe Manning Certificate',
+    'International Ship Construction Certificate',
+    'Passenger Ship Safety Certificate',
+    'Cargo Ship Safety Certificate',
+    'Cargo Ship Safety Construction Certificate',
+    'Cargo Ship Safety Equipment Certificate',
+    'Cargo Ship Safety Radio Certificate',
+    'International Tonnage Certificate',
+    'International Load Line Certificate',
+    'Safety Management Certificate',
+    'Ship Security Certificate',
+    'International Oil Pollution Prevention Certificate',
+    'International Sewage Pollution Prevention Certificate',
+    'International Air Pollution Prevention Certificate',
+  ],
+  'STCW Certifications': [
+    'STCW Basic Safety Training',
+    'STCW Proficiency in Survival Craft and Rescue Boats',
+    'STCW Proficiency in Fast Rescue Boats',
+    'STCW Proficiency in Designated Security Duties',
+    'STCW Proficiency in Security Awareness',
+    'STCW Proficiency in Crisis Management and Human Behavior',
+    'STCW Proficiency in Advanced Fire Fighting',
+    'STCW Proficiency in Medical First Aid',
+    'Sea Service Record',
+  ],
+};
   const primaryTypes = Object.keys(certificateCategories);
 
   // Fetch user certificates
@@ -149,7 +177,7 @@ const HomeUser = () => {
             purpose: appointmentData.purpose || '',
             status: appointmentData.status || '',
           });
-          console.log('Appointment status:', appointmentData.status); // Debug log
+ 
         } else {
           setAppointment({
             id: null,
