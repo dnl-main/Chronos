@@ -71,10 +71,11 @@ const certificateCategories = {
     'ID Card',
     'Contract',
     'Seaman’s Book',
-    'Uniform / Work Clothing / Appearance',
+    'Contract of Employment',
     'Crew ID-Card',
     'C1/D Visa',
     'Criminal Record Certificate',
+    'Sea Service Record',
   ],
   SOLAS: [
     'International Ship Safety Equipment Certificate',
@@ -102,7 +103,7 @@ const certificateCategories = {
     'STCW Proficiency in Crisis Management and Human Behavior',
     'STCW Proficiency in Advanced Fire Fighting',
     'STCW Proficiency in Medical First Aid',
-    'Sea Service Record',
+    
   ],
 };
   const primaryTypes = Object.keys(certificateCategories);
