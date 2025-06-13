@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import './CertificatePopup.css';
+import './Certificatepopup.css';
 
 const CertificatePopup = ({ certificate, onClose, onDelete }) => {
   if (!certificate) return null;
