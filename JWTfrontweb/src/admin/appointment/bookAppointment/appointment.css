@@ -19,9 +19,9 @@
 }
 .appointmentModal-box {
   /* background-color: firebrick; */
-	background-color: white;
+	background-color: var(--white-color);
   border-radius: 1rem;
-  width: 72vw;
+  width: 84vw;
   height: 92vh;
    
 }
@@ -109,6 +109,8 @@
       .appointmentModal-box-in-left-core-top {
         /* background-color: cornflowerblue; */
 				display: flex;
+        /* flex-direction: column;
+        row-gap: 2vh; */
 				justify-content: space-between;
 				align-items: center;
       }
@@ -227,14 +229,56 @@
               .appointmentModal-box-in-left-core-top-tabs-booked:focus svg {
                 color: var(--white-color);
               }
+
+
+          .appointmentModal-box-in-left-core-top-tabs-pending {
+            /* background-color: dodgerblue; */
+						all: unset;
+						display: flex;
+						flex-direction: row;
+						justify-content: start;
+						align-items: center;
+						background-color: var(--white-color);
+						color: var(--yellow-indicator);
+						font-weight: var(--font-weight-regular);
+						font-size: var(--font-size-16);
+						border: 2px solid var(--yellow-indicator-opacity-15);
+						border-radius: 500px;
+						column-gap: 0.6vw;
+						padding: 1vh 2vh;
+						cursor: pointer;
+          }
+            .appointmentModal-box-in-left-core-top-tabs-pending.active {
+              background-color: var(--yellow-indicator);
+              border-color: var(--yellow-indicator-opacity-30);
+              color: var(--white-color);
+            }
+
+              .appointmentModal-box-in-left-core-top-tabs-pending.active svg {
+                color: var(--white-color);
+              }
+            .appointmentModal-box-in-left-core-top-tabs-pending:hover,
+            .appointmentModal-box-in-left-core-top-tabs-pending:focus {
+              background-color: var(--yellow-indicator);
+              border-color: var(--yellow-indicator-opacity-30);
+              color: var(--white-color);
+            }
+              .appointmentModal-box-in-left-core-top-tabs-pending:hover svg,
+              .appointmentModal-box-in-left-core-top-tabs-pending:focus svg {
+                color: var(--white-color);
+              }
+
+
           .appointmentModal-box-in-left-core-top-tabs-all,
           .appointmentModal-box-in-left-core-top-tabs-available,
-          .appointmentModal-box-in-left-core-top-tabs-booked {
+          .appointmentModal-box-in-left-core-top-tabs-booked,
+          .appointmentModal-box-in-left-core-top-tabs-pending  {
             transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
           }
 
           .appointmentModal-box-in-left-core-top-tabs-all svg,
           .appointmentModal-box-in-left-core-top-tabs-available svg,
+          .appointmentModal-box-in-left-core-top-tabs-booked svg,
           .appointmentModal-box-in-left-core-top-tabs-booked svg {
             transition: color 0.2s ease;
           }
@@ -247,6 +291,7 @@
 					flex-direction: row;
 					justify-content: space-between;
 					align-items: center;
+          align-self: end;
 					width: 28%;
 					height: 100%;
 					padding: 1vh 1vh;

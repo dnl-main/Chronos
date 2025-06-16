@@ -10,6 +10,32 @@ const CertificateModalCard = ({ certificate, onCertificateClick, onStatusChange 
   const { certificate_name, certificate_type, expiration_date, status, id } = certificate;
   const [error, setError] = useState(null);
 
+  
+
+  const statusIconColors = {
+    pending: 'var(--yellow-indicator)',      
+    approved: 'var(--green-indicator)',      
+    rejected: 'var(--red-indicator)',      
+    booked: 'var(--blue-indicator)',    
+    default: 'var(--black-color)'       
+  };
+
+  const statusBgColors = {
+    pending: 'var(--yellow-indicator-opacity-15)',      
+    approved: 'var(--green-indicator-opacity-15)',      
+    rejected: 'var(--red-indicator-opacity-15)',      
+    booked: 'var(--blue-indicator-opacity-15)',    
+    default: 'var(--black-color-opacity-15)'       
+  };
+
+  const statusIndicatorColors = {
+    pending: 'var(--yellow-indicator-opacity-60)',      
+    approved: 'var(--green-indicator-opacity-60)',      
+    rejected: 'var(--red-indicator-opacity-60)',      
+    booked: 'var(--blue-indicator-opacity-60)',    
+    default: 'var(--black-color-opacity-60)'       
+  };
+
   const formattedDate = expiration_date
     ? new Date(expiration_date).toLocaleDateString('en-US', {
         month: 'short',
@@ -66,8 +92,10 @@ const CertificateModalCard = ({ certificate, onCertificateClick, onStatusChange 
 
   return (
     <main className="certificateModal-box-in-core-cards-card">
-      <div className="certificateModal-box-in-core-cards-card-indicator">
-        <Circle_Primary style={{ color: statusColor, width: "20px", height: "20px" }} />
+      <div 
+        className="certificateModal-box-in-core-cards-card-indicator"
+        style={{ backgroundColor: statusIndicatorColors[status] }}
+      >
       </div>
       <div className="certificateModal-box-in-core-cards-card-file">
         <div className="certificateModal-box-in-core-cards-card-file-preview">
@@ -107,8 +135,17 @@ const CertificateModalCard = ({ certificate, onCertificateClick, onStatusChange 
         </div>
       </div>
       <div className="certificateModal-box-in-core-cards-card-status">
-        <div className="certificateModal-box-in-core-cards-card-status-container">
-          <Circle_Primary style={{ color: statusColor, width: "20px", height: "20px" }} />
+        <div 
+          className="certificateModal-box-in-core-cards-card-status-container"
+          style={{ backgroundColor: statusBgColors[status?.toLowerCase()] || statusBgColors.default }}
+        >
+          <Circle_Primary 
+            style={{ 
+              color: statusIconColors[status?.toLowerCase()] || statusIconColors.default,
+              width: "20px", 
+              height: "20px" 
+            }} 
+          />
           <p>{status || 'Pending'}</p>
         </div>
       </div>

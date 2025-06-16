@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 31, 2025 at 08:04 AM
+-- Generation Time: Jun 14, 2025 at 02:40 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,7 +41,7 @@ CREATE TABLE `appointments` (
   `purpose` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `status` enum('available','booked') NOT NULL DEFAULT 'booked'
+  `status` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -49,10 +49,20 @@ CREATE TABLE `appointments` (
 --
 
 INSERT INTO `appointments` (`id`, `user_id`, `date`, `start_time`, `end_time`, `department`, `crewing_dept`, `operator`, `accounting_task`, `employee`, `purpose`, `created_at`, `updated_at`, `status`) VALUES
-(42, 21, '2025-06-28', '12:00:00', '15:00:00', 'medical', NULL, NULL, NULL, 'Apollo Quiboloy', 'document submission', '2025-05-30 14:30:46', '2025-05-30 15:19:48', 'booked'),
-(44, 35, '2025-06-21', '17:00:00', '18:00:00', 'medical', NULL, NULL, NULL, 'Yuki wife', 'contract signing', '2025-05-31 04:16:51', '2025-05-31 04:23:09', 'booked'),
-(45, 31, '2025-05-31', '12:30:00', '13:00:00', 'crewing', 'maran tankers', 'senior fleet crew operator', NULL, 'Rikka Gabianes', 'training', '2025-05-31 04:22:23', '2025-05-31 04:22:23', 'booked'),
-(47, 1, '2025-05-31', '16:00:00', '16:30:00', 'medical', NULL, NULL, NULL, 'Apollo Quiboloy', 'allowance distribution', '2025-05-31 05:10:09', '2025-05-31 05:10:09', 'booked');
+(155, 79, '2025-06-24', '14:00:00', '17:30:00', 'crewing', 'maran gas', 'crew operator 1', NULL, 'alden', 'contract signing', '2025-06-02 07:48:58', '2025-06-03 02:07:56', 'booked'),
+(179, 61, '2025-06-13', '17:30:00', '18:00:00', 'medical', NULL, NULL, NULL, 'Angela Guilaran', 'training', '2025-06-03 09:37:19', '2025-06-03 09:37:19', 'booked'),
+(185, 22, '2025-06-04', '09:30:00', '10:30:00', 'crewing', 'maran dry', 'senior fleet crew operator', NULL, 'Angela Guilaran', 'contract signing', '2025-06-04 05:57:23', '2025-06-04 05:57:23', 'booked'),
+(186, 24, '2025-06-04', '10:00:00', '10:30:00', 'medical', NULL, NULL, NULL, 'Jessa Mirabete', 'document submission', '2025-06-04 05:58:18', '2025-06-04 05:58:18', 'booked'),
+(189, 28, '2025-06-04', '11:00:00', '15:00:00', 'medical', NULL, NULL, NULL, 'Dave Nielsen D. luz', 'document submission', '2025-06-04 06:04:11', '2025-06-04 06:04:11', 'booked'),
+(190, 47, '2025-06-04', '13:00:00', '16:30:00', 'crewing', 'maran tankers', 'senior fleet crew operator', NULL, 'Mariane Jamiaca Teñoso', 'document submission', '2025-06-04 06:04:53', '2025-06-04 06:04:53', 'booked'),
+(191, 51, '2025-06-04', '17:30:00', '18:00:00', 'medical', NULL, NULL, NULL, 'Ivan M. Mendoza', 'training', '2025-06-04 06:06:16', '2025-06-04 06:06:16', 'booked'),
+(192, 53, '2025-06-04', '16:30:00', '17:30:00', 'medical', NULL, NULL, NULL, 'Pat Lin', 'document submission', '2025-06-04 06:07:07', '2025-06-04 06:07:07', 'booked'),
+(193, 58, '2025-06-04', '16:00:00', '16:30:00', 'crewing', 'maran gas', 'crew operator 3', NULL, 'Karse Christian S. Morada', 'document submission', '2025-06-04 06:07:53', '2025-06-04 06:07:53', 'booked'),
+(194, 57, '2025-06-04', '17:30:00', '18:00:00', 'medical', NULL, NULL, NULL, 'ANTONE DOMINIC B. BERMAS', 'allowance distribution', '2025-06-04 06:08:23', '2025-06-04 06:08:23', 'booked'),
+(195, 59, '2025-06-04', '16:30:00', '17:30:00', 'medical', NULL, NULL, NULL, 'Danilo H. Arat', 'training', '2025-06-04 06:08:59', '2025-06-04 06:08:59', 'booked'),
+(198, 99, '2025-06-05', '15:30:00', '16:30:00', 'crewing', 'maran gas', 'fleet crew manager', NULL, 'Che Aguinaldo', 'document submission', '2025-06-04 08:23:06', '2025-06-04 08:23:19', 'booked'),
+(209, 98, '2025-06-19', '17:30:00', '18:00:00', 'crewing', 'maran gas', 'senior fleet crew operator', NULL, 'asdasdasdsda', 'contract signing', '2025-06-09 03:55:00', '2025-06-09 03:55:00', 'booked'),
+(215, 1, '2025-06-20', '17:00:00', '18:00:00', 'medical', NULL, NULL, NULL, 'LeBron James', 'contract signing', '2025-06-09 05:12:01', '2025-06-14 11:25:08', 'pending');
 
 -- --------------------------------------------------------
 
@@ -71,18 +81,14 @@ CREATE TABLE `cache` (
 --
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('laravel_cache_6a458035ace733cecfaede3af053a462', 'i:1;', 1748667794),
-('laravel_cache_6a458035ace733cecfaede3af053a462:timer', 'i:1748667794;', 1748667794),
-('laravel_cache_70976b907d62d6b38f51ae6c8f8a66d1', 'i:16;', 1748669168),
-('laravel_cache_70976b907d62d6b38f51ae6c8f8a66d1:timer', 'i:1748669168;', 1748669168),
-('laravel_cache_a75f3f172bfb296f2e10cbfc6dfc1883', 'i:2;', 1748669314),
-('laravel_cache_a75f3f172bfb296f2e10cbfc6dfc1883:timer', 'i:1748669314;', 1748669314),
-('laravel_cache_b31f2dc02dd4f08939d07640ffc5c8eb', 'i:1;', 1748668384),
-('laravel_cache_b31f2dc02dd4f08939d07640ffc5c8eb:timer', 'i:1748668384;', 1748668384),
-('laravel_cache_e9b6cc1432541b9ceebf113eee05eeba', 'i:10;', 1748668285),
-('laravel_cache_e9b6cc1432541b9ceebf113eee05eeba:timer', 'i:1748668285;', 1748668285),
-('laravel_cache_f1f70ec40aaa556905d4a030501c0ba4', 'i:3;', 1748668236),
-('laravel_cache_f1f70ec40aaa556905d4a030501c0ba4:timer', 'i:1748668236;', 1748668236);
+('laravel_cache_a75f3f172bfb296f2e10cbfc6dfc1883', 'i:14;', 1749902222),
+('laravel_cache_a75f3f172bfb296f2e10cbfc6dfc1883:timer', 'i:1749902222;', 1749902222),
+('laravel_cache_b31f2dc02dd4f08939d07640ffc5c8eb', 'i:3;', 1749900785),
+('laravel_cache_b31f2dc02dd4f08939d07640ffc5c8eb:timer', 'i:1749900785;', 1749900785),
+('laravel_cache_e9b6cc1432541b9ceebf113eee05eeba', 'i:10;', 1749902217),
+('laravel_cache_e9b6cc1432541b9ceebf113eee05eeba:timer', 'i:1749902217;', 1749902217),
+('laravel_cache_f1f70ec40aaa556905d4a030501c0ba4', 'i:2;', 1749900587),
+('laravel_cache_f1f70ec40aaa556905d4a030501c0ba4:timer', 'i:1749900587;', 1749900587);
 
 -- --------------------------------------------------------
 
@@ -109,6 +115,7 @@ CREATE TABLE `certificates` (
   `certificate_type` varchar(255) NOT NULL,
   `file_path` varchar(255) NOT NULL,
   `expiration_date` date DEFAULT NULL,
+  `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -117,13 +124,18 @@ CREATE TABLE `certificates` (
 -- Dumping data for table `certificates`
 --
 
-INSERT INTO `certificates` (`id`, `user_id`, `certificate_name`, `certificate_type`, `file_path`, `expiration_date`, `created_at`, `updated_at`) VALUES
-(43, 31, 'DAAT', 'Medical', '31-chapell-roan-user/certificates/DAAT.pdf', '2030-08-09', '2025-05-31 04:05:14', '2025-05-31 04:05:14'),
-(44, 31, 'Mental Health', 'Training', '31-chapell-roan-user/certificates/Mental_Health.pdf', '2040-10-07', '2025-05-31 04:06:01', '2025-05-31 04:06:01'),
-(45, 31, 'ONBOARD', 'Contract', '31-chapell-roan-user/certificates/ONBOARD.pdf', '2050-06-09', '2025-05-31 04:06:53', '2025-05-31 04:06:53'),
-(51, 1, 'mEDCERT(1)', 'Medical', '1-ian_kenneth-sianghio-user/certificates/mEDCERT(1).pdf', '2025-06-01', '2025-05-31 04:15:57', '2025-05-31 04:15:57'),
-(52, 35, 'yuki wife', 'Medical', '35-wife-yukimiya-user/certificates/yuki_wife.pdf', '2025-06-01', '2025-05-31 04:17:15', '2025-05-31 04:17:15'),
-(53, 31, '0999', 'Employee ID', '31-chapell-roan-user/certificates/0999.pdf', '2040-12-12', '2025-05-31 04:20:09', '2025-05-31 04:20:09');
+INSERT INTO `certificates` (`id`, `user_id`, `certificate_name`, `certificate_type`, `file_path`, `expiration_date`, `status`, `created_at`, `updated_at`) VALUES
+(43, 31, 'DAAT', 'Medical', '31-chapell-roan-user/certificates/DAAT.pdf', '2030-08-09', 'pending', '2025-05-31 04:05:14', '2025-05-31 04:05:14'),
+(44, 31, 'Mental Health', 'Training', '31-chapell-roan-user/certificates/Mental_Health.pdf', '2040-10-07', 'pending', '2025-05-31 04:06:01', '2025-05-31 04:06:01'),
+(53, 31, '0999', 'Employee ID', '31-chapell-roan-user/certificates/0999.pdf', '2040-12-12', 'pending', '2025-05-31 04:20:09', '2025-05-31 04:20:09'),
+(56, 34, 'comp', 'Training', '34-dave_nielsen-luz-user/certificates/comp.pdf', '2025-06-23', 'pending', '2025-06-01 07:23:42', '2025-06-01 07:23:42'),
+(83, 40, 'i', 'Training', '40-shiela_mae-paluga-user/certificates/i.pdf', '2029-01-01', 'pending', '2025-06-01 07:27:11', '2025-06-01 07:27:11'),
+(84, 40, 'l', 'Contract', '40-shiela_mae-paluga-user/certificates/l.pdf', '2029-01-01', 'pending', '2025-06-01 07:27:48', '2025-06-01 07:27:48'),
+(85, 40, 'k', 'Employee ID', '40-shiela_mae-paluga-user/certificates/k.pdf', '2029-01-01', 'pending', '2025-06-01 07:28:41', '2025-06-01 07:28:41'),
+(88, 43, 'GGGG', 'Employee ID', '43-dave_nielsen-luz-user/certificates/GGGG.pdf', '2025-06-18', 'pending', '2025-06-01 07:59:09', '2025-06-01 07:59:09'),
+(94, 47, 'ticket', 'Contract', '47-kaiser-michael-user/certificates/ticket.pdf', '2025-06-19', 'pending', '2025-06-01 23:38:11', '2025-06-01 23:38:11'),
+(105, 99, 'Terms & Con', 'Contract', '99-che-aguinaldo-user/certificates/Terms_&_Con.pdf', '2025-07-04', 'pending', '2025-06-04 08:38:58', '2025-06-04 08:38:58'),
+(114, 1, 'acfsassda', 'SOLAS-Cargo Ship Safety Construction Certificate', '1-ian_kenneth-sianghio-user/certificates/solas-cargo_ship_safety_construction_certificate-acfsassda.pdf', '2025-06-26', 'approved', '2025-06-14 11:27:33', '2025-06-14 11:28:00');
 
 -- --------------------------------------------------------
 
@@ -235,7 +247,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (21, '2025_05_28_222426_update_appointments_table', 10),
 (22, '2025_05_29_132646_add_status_to_appointments_table', 11),
 (23, '2025_05_30_212805_add_purpose_to_appointments_table', 12),
-(24, '2025_05_31_110403_rename_secondary_position_to_department_in_users_table_20250531', 13);
+(24, '2025_05_31_110403_rename_secondary_position_to_department_in_users_table_20250531', 13),
+(25, '2025_06_12_200007_add_status_to_certificates_table', 14);
 
 -- --------------------------------------------------------
 
@@ -260,26 +273,62 @@ CREATE TABLE `notifications` (
 
 INSERT INTO `notifications` (`id`, `type`, `notifiable_type`, `notifiable_id`, `data`, `read_at`, `created_at`, `updated_at`) VALUES
 ('0c22e4b7-de7a-4bb2-ab0e-83a25cce8b55', 'App\\Notifications\\SendCancelNotification', 'App\\Models\\User', 24, '{\"user_id\":24,\"appointment_id\":9,\"date\":\"2025-05-28\",\"start_time\":\"17:37:00\",\"end_time\":\"19:45:00\",\"message\":\"Your appointment has been cancelled.\",\"created_at\":\"2025-05-28T03:34:06.414943Z\"}', NULL, '2025-05-28 03:34:06', '2025-05-28 03:34:06'),
+('170ff54e-d540-4a94-a47d-c7bcae95a194', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-06-04T07:27:09.983569Z\"}', NULL, '2025-06-04 07:27:09', '2025-06-04 07:27:09'),
 ('1ac5e24c-6a6f-44ea-97c7-a8f3b23773f5', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-05-30T04:35:27.924070Z\"}', NULL, '2025-05-30 04:35:27', '2025-05-30 04:35:27'),
+('1ee7aa7f-08fb-4e59-b2cd-52ba8c640773', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 31, '{\"user_id\":31,\"certificate_type\":\"Contract\",\"message\":\"Please upload your Contract Certificate\",\"created_at\":\"2025-06-02T08:29:03.926775Z\"}', NULL, '2025-06-02 08:29:03', '2025-06-02 08:29:03'),
+('211a09f2-d5fb-483c-b9c3-622b5e2a0c4c', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 35, '{\"user_id\":35,\"certificate_type\":\"Employee ID\",\"message\":\"Please upload your Employee ID Certificate\",\"created_at\":\"2025-06-01T07:29:41.041664Z\"}', NULL, '2025-06-01 07:29:41', '2025-06-01 07:29:41'),
+('2bd0f5fa-dae3-4a49-815c-788a65b19ffa', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 99, '{\"user_id\":99,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-06-04T08:41:08.698465Z\"}', NULL, '2025-06-04 08:41:08', '2025-06-04 08:41:08'),
+('37b76b8d-0c2d-4cbe-bc2e-411610808202', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-06-04T07:27:09.603494Z\"}', NULL, '2025-06-04 07:27:09', '2025-06-04 07:27:09'),
 ('3d2f8a4d-1979-45d4-8581-c7d0b2d5cd58', 'App\\Notifications\\SendAppointmentNotification', 'App\\Models\\User', 24, '{\"user_id\":24,\"appointment_id\":8,\"date\":\"2025-05-28\",\"start_time\":\"19:00\",\"end_time\":\"21:00\",\"message\":\"You have a new appointment scheduled.\",\"created_at\":\"2025-05-28T03:23:20.578054Z\"}', NULL, '2025-05-28 03:23:20', '2025-05-28 03:23:20'),
+('3eca1483-12bf-4abf-b94f-3f0975046787', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-06-01T08:06:27.416561Z\"}', NULL, '2025-06-01 08:06:27', '2025-06-01 08:06:27'),
 ('45533c0b-936f-42ee-bab0-f1b045b14d10', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-05-31T04:08:40.900002Z\"}', NULL, '2025-05-31 04:08:40', '2025-05-31 04:08:40'),
+('45ad695f-0490-499c-8b5a-ec3e43a44b5a', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 22, '{\"user_id\":22,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-06-01T08:58:08.841521Z\"}', NULL, '2025-06-01 08:58:08', '2025-06-01 08:58:08'),
+('49ba78ce-1207-48f6-b942-8598d6e853c9', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-06-01T15:26:06.137388Z\"}', NULL, '2025-06-01 15:26:06', '2025-06-01 15:26:06'),
 ('4ce17c11-dfe1-4fbd-bbd7-78b25ded7a42', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 24, '{\"user_id\":24,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-05-28T03:37:05.162169Z\"}', NULL, '2025-05-28 03:37:05', '2025-05-28 03:37:05'),
 ('500b413a-c599-468f-bfd3-db791bd88e3c', 'App\\Notifications\\SendRescheduleNotification', 'App\\Models\\User', 1, '{\"appointment_id\":18,\"date\":\"2025-06-03\",\"start_time\":\"16:00\",\"end_time\":\"18:00\",\"message\":\"Your appointment has been rescheduled.\",\"created_at\":\"2025-05-29 01:13:57\",\"user\":{\"first_name\":\"Ian Kenneth\",\"middle_name\":\"Ramirez\",\"last_name\":\"Sianghio\",\"position\":\"CEO\"}}', NULL, '2025-05-28 17:13:57', '2025-05-28 17:13:57'),
+('592781b8-bf2d-436c-b57e-983af68cdefc', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 31, '{\"user_id\":31,\"certificate_type\":\"Contract\",\"message\":\"Please upload your Contract Certificate\",\"created_at\":\"2025-06-02T09:26:36.831365Z\"}', NULL, '2025-06-02 09:26:36', '2025-06-02 09:26:36'),
+('5b806955-d88b-4314-9612-8cc8cabbefe0', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Employee ID\",\"message\":\"Please upload your Employee ID Certificate\",\"created_at\":\"2025-06-04T01:00:49.976771Z\"}', NULL, '2025-06-04 01:00:49', '2025-06-04 01:00:49'),
 ('67253a41-4915-488f-bc5d-ce6d449958f4', 'App\\Notifications\\SendAppointmentNotification', 'App\\Models\\User', 24, '{\"user_id\":24,\"appointment_id\":9,\"date\":\"2025-05-28\",\"start_time\":\"17:37\",\"end_time\":\"19:45\",\"message\":\"You have a new appointment scheduled.\",\"created_at\":\"2025-05-28T03:32:09.592210Z\"}', NULL, '2025-05-28 03:32:09', '2025-05-28 03:32:09'),
+('6cf739dd-5322-42c2-819f-09edb50a0c78', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-06-02T07:40:45.070554Z\"}', NULL, '2025-06-02 07:40:45', '2025-06-02 07:40:45'),
 ('6f743b5a-f837-4bbd-9df3-f39530802463', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-05-31T04:15:34.881699Z\"}', NULL, '2025-05-31 04:15:34', '2025-05-31 04:15:34'),
 ('75718502-aa7d-4482-a534-16fefe4fb568', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-05-31T04:10:09.698499Z\"}', NULL, '2025-05-31 04:10:09', '2025-05-31 04:10:09'),
 ('77105373-d977-4d62-8ad8-de65f2e158bd', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 31, '{\"user_id\":31,\"certificate_type\":\"Employee ID\",\"message\":\"Please upload your Employee ID Certificate\",\"created_at\":\"2025-05-31T04:17:25.529869Z\"}', NULL, '2025-05-31 04:17:25', '2025-05-31 04:17:25'),
+('776dacd0-26ee-4d98-b279-17faea7c06eb', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-06-02T07:40:44.810588Z\"}', NULL, '2025-06-02 07:40:44', '2025-06-02 07:40:44'),
 ('7989d0f3-f28b-4d04-89f3-f77d93167e90', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-05-27T05:44:56.340789Z\"}', NULL, '2025-05-27 05:44:56', '2025-05-27 05:44:56'),
+('7c560561-37b5-4af7-bde9-375f4a60b8e6', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 79, '{\"user_id\":79,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-06-02T07:49:53.553260Z\"}', NULL, '2025-06-02 07:49:53', '2025-06-02 07:49:53'),
 ('82fb5276-1958-449d-86d0-2a4dcda90e9b', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-05-28T05:42:28.406728Z\"}', NULL, '2025-05-28 05:42:28', '2025-05-28 05:42:28'),
+('831e31f3-aea7-4b16-b76d-a348abb80ec2', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Contract\",\"message\":\"Please upload your Contract Certificate\",\"created_at\":\"2025-06-04T00:53:59.058173Z\"}', NULL, '2025-06-04 00:53:59', '2025-06-04 00:53:59'),
+('895fbeb7-cdf1-4dec-a519-b4b257385fa3', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-06-02T08:20:27.408876Z\"}', NULL, '2025-06-02 08:20:27', '2025-06-02 08:20:27'),
+('8c750f09-a4a5-4408-8446-5f184ffd013c', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 46, '{\"user_id\":46,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-06-01T15:30:59.935967Z\"}', NULL, '2025-06-01 15:30:59', '2025-06-01 15:30:59'),
+('8dadfcee-92d5-4f07-ad40-e2ea0f705de5', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 34, '{\"user_id\":34,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-06-01T07:29:37.685478Z\"}', NULL, '2025-06-01 07:29:37', '2025-06-01 07:29:37'),
 ('9315f1c4-f099-4f53-afe7-1f30577db1cc', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-05-27T05:46:31.503605Z\"}', NULL, '2025-05-27 05:46:31', '2025-05-27 05:46:31'),
+('93647ab0-da93-4470-80b0-662cd3fec42d', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 31, '{\"user_id\":31,\"certificate_type\":\"Contract\",\"message\":\"Please upload your Contract Certificate\",\"created_at\":\"2025-06-02T08:49:10.573373Z\"}', NULL, '2025-06-02 08:49:10', '2025-06-02 08:49:10'),
+('9f52d7b2-6143-4ffd-83ae-c352558cbf3e', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 40, '{\"user_id\":40,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-06-01T07:54:23.207392Z\"}', NULL, '2025-06-01 07:54:23', '2025-06-01 07:54:23'),
 ('a1de183d-4804-4556-bb06-85d44178668a', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-05-28T04:25:20.042457Z\"}', NULL, '2025-05-28 04:25:20', '2025-05-28 04:25:20'),
+('a4dbd1b1-8b2d-4a59-82ea-d1dc660ed8fe', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-06-01T08:58:12.059731Z\"}', NULL, '2025-06-01 08:58:12', '2025-06-01 08:58:12'),
 ('a5d44ecd-fe64-443e-953c-c25022e9b279', 'App\\Notifications\\SendAppointmentNotification', 'App\\Models\\User', 24, '{\"user_id\":24,\"appointment_id\":10,\"date\":\"2025-05-28\",\"start_time\":\"14:22\",\"end_time\":\"15:33\",\"message\":\"You have a new appointment scheduled.\",\"created_at\":\"2025-05-28T03:36:51.909889Z\"}', NULL, '2025-05-28 03:36:51', '2025-05-28 03:36:51'),
+('a6aa5366-4e73-4f32-adc5-4ad709bddf89', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-06-01T07:29:28.089163Z\"}', NULL, '2025-06-01 07:29:28', '2025-06-01 07:29:28'),
+('a9e231f7-b10b-4c08-8954-1839b1c10c3b', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 29, '{\"user_id\":29,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-06-02T15:00:40.425132Z\"}', NULL, '2025-06-02 15:00:40', '2025-06-02 15:00:40'),
+('ad540413-2df8-45a0-aaf9-49c4c4cd3679', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-06-02T07:40:43.659315Z\"}', NULL, '2025-06-02 07:40:43', '2025-06-02 07:40:43'),
+('ae4b356b-c9a9-475f-bda9-f9526743e22e', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-06-04T07:27:07.393845Z\"}', NULL, '2025-06-04 07:27:07', '2025-06-04 07:27:07'),
+('b99aab02-f991-4c23-aa9e-58d93acd2dd6', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 82, '{\"user_id\":82,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-06-02T08:24:19.317117Z\"}', NULL, '2025-06-02 08:24:19', '2025-06-02 08:24:19'),
+('ba59a789-6e65-4e85-a06d-b9bb1810a549', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 31, '{\"user_id\":31,\"certificate_type\":\"Contract\",\"message\":\"Please upload your Contract Certificate\",\"created_at\":\"2025-06-02T08:55:15.185474Z\"}', NULL, '2025-06-02 08:55:15', '2025-06-02 08:55:15'),
+('bb2c5a91-b0d1-422c-a897-f1c9f4afdc90', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 34, '{\"user_id\":34,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-06-02T08:19:33.508525Z\"}', NULL, '2025-06-02 08:19:33', '2025-06-02 08:19:33'),
+('c73e98be-97e4-4350-8b57-39c3ff42f1d3', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-06-02T10:30:57.772689Z\"}', NULL, '2025-06-02 10:30:57', '2025-06-02 10:30:57'),
 ('c9c601e7-481d-4c15-ae6f-374bdcc5b635', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-05-31T04:16:45.315702Z\"}', NULL, '2025-05-31 04:16:45', '2025-05-31 04:16:45'),
+('cb46e401-8587-40df-b3fe-e54b08f5e233', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 99, '{\"user_id\":99,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-06-04T08:41:05.256417Z\"}', NULL, '2025-06-04 08:41:05', '2025-06-04 08:41:05'),
 ('d0f27050-f830-4b4f-a313-558f389f585d', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-05-28T05:18:02.481774Z\"}', NULL, '2025-05-28 05:18:02', '2025-05-28 05:18:02'),
 ('d202235f-25e7-4b49-a98c-ee7c4acf5dfb', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-05-28T05:42:35.178700Z\"}', NULL, '2025-05-28 05:42:35', '2025-05-28 05:42:35'),
 ('d22cd2af-80d0-40d1-bbda-1cd8f98a2fb8', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-05-30T04:35:28.491136Z\"}', NULL, '2025-05-30 04:35:28', '2025-05-30 04:35:28'),
+('d3251964-3912-46c0-a7af-7748756604fe', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 99, '{\"user_id\":99,\"certificate_type\":\"Employee ID\",\"message\":\"Please upload your Employee ID Certificate\",\"created_at\":\"2025-06-04T08:41:12.487118Z\"}', NULL, '2025-06-04 08:41:12', '2025-06-04 08:41:12'),
 ('d593c3d2-98d1-47c9-bf5e-fdca34ff2dc5', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-05-28T05:40:58.732438Z\"}', NULL, '2025-05-28 05:40:58', '2025-05-28 05:40:58'),
+('d7e4610e-ca55-49c5-a53d-6a3c7d13e4ba', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-06-02T08:02:43.132388Z\"}', NULL, '2025-06-02 08:02:43', '2025-06-02 08:02:43'),
+('dbc6f8e2-8baa-477d-89fd-6bdce164ca0d', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Employee ID\",\"message\":\"Please upload your Employee ID Certificate\",\"created_at\":\"2025-06-01T15:26:06.695394Z\"}', NULL, '2025-06-01 15:26:06', '2025-06-01 15:26:06'),
+('e4d53201-bf22-4590-aa58-6a7f9dc12c10', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 82, '{\"user_id\":82,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-06-02T08:20:05.153057Z\"}', NULL, '2025-06-02 08:20:05', '2025-06-02 08:20:05'),
 ('e8bc94b7-2c26-4eeb-945c-ac66a05981d9', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 35, '{\"user_id\":35,\"certificate_type\":\"Employee ID\",\"message\":\"Please upload your Employee ID Certificate\",\"created_at\":\"2025-05-31T04:21:36.525397Z\"}', NULL, '2025-05-31 04:21:36', '2025-05-31 04:21:36'),
+('ec9b8f14-e6b0-490e-89d0-bb07b0e69af3', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 31, '{\"user_id\":31,\"certificate_type\":\"Contract\",\"message\":\"Please upload your Contract Certificate\",\"created_at\":\"2025-06-02T07:55:51.306552Z\"}', NULL, '2025-06-02 07:55:51', '2025-06-02 07:55:51'),
+('ed222bb2-ab5c-497e-a8e0-b2c67be625b1', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Employee ID\",\"message\":\"Please upload your Employee ID Certificate\",\"created_at\":\"2025-06-04T00:50:10.129113Z\"}', NULL, '2025-06-04 00:50:10', '2025-06-04 00:50:10'),
+('f1c2a207-e4e2-4fa7-8a91-534459334020', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 1, '{\"user_id\":1,\"certificate_type\":\"Training\",\"message\":\"Please upload your Training Certificate\",\"created_at\":\"2025-06-02T07:40:44.498695Z\"}', NULL, '2025-06-02 07:40:44', '2025-06-02 07:40:44'),
 ('f5c2c776-817f-4408-b98b-c028c697f7bb', 'App\\Notifications\\SendCertificateNotification', 'App\\Models\\User', 30, '{\"user_id\":30,\"certificate_type\":\"Medical\",\"message\":\"Please upload your Medical Certificate\",\"created_at\":\"2025-05-31T03:35:06.878849Z\"}', NULL, '2025-05-31 03:35:06', '2025-05-31 03:35:06');
 
 -- --------------------------------------------------------
@@ -299,8 +348,10 @@ CREATE TABLE `password_reset_tokens` (
 --
 
 INSERT INTO `password_reset_tokens` (`email`, `token`, `created_at`) VALUES
-('dnluz01@gmail.com', '$2y$12$dMwAZpgRmE0jwakAroZZoegCHqBAZ7QukC21P5RILRISAru5L3Nyq', '2025-05-31 04:38:01'),
-('kennethsianghio756@gmail.com', '$2y$12$yoDmJRwnsVUd2sh/1p0W7.R/Sm6LDpokJSuWQsNK1wfL3iYjDNCdG', '2025-05-31 04:46:20');
+('dnluz01@gmail.com', '$2y$12$7HwqHlqsUcnFq.5Vn42k1ekO1tKmK2786KNpYnd2Vnh7N2z4nUZ5C', '2025-06-01 07:32:33'),
+('irish.rosendo28@gmail.com', '$2y$12$wz69ZZ12U4TSjczRd1FKZ.F9nr97uhZpfPSJTz93.lMBEFrAdSZ.C', '2025-06-02 09:18:50'),
+('kennethsianghio756@gmail.com', '$2y$12$AliI5L9JxvdO5LR.VsBI8uwXBrYuwZspSBxg6qkcjriBRE18OFOLe', '2025-06-01 07:50:48'),
+('ralphfriendmaritime@gmail.com', '$2y$12$NBXl5.0AegK4gD5khTvY/.0HhpbhlrU1tDZ8WOyGlOox9Nw16clR.', '2025-06-02 08:54:02');
 
 -- --------------------------------------------------------
 
@@ -340,15 +391,17 @@ CREATE TABLE `profile_pictures` (
 --
 
 INSERT INTO `profile_pictures` (`id`, `user_id`, `path`, `created_at`, `updated_at`) VALUES
-(3, 1, '1-ian_kenneth-sianghio-user/1748321322.jpg', '2025-05-19 06:02:34', '2025-05-27 04:48:42'),
-(4, 2, '2-11-1-admin/1748620213.jpg', '2025-05-19 07:15:09', '2025-05-30 15:50:13'),
+(3, 1, '1-ian_kenneth-sianghio-user/1748911368.png', '2025-05-19 06:02:34', '2025-06-03 00:42:48'),
+(4, 2, '2-ian-sianghio-admin/1748911220.jpg', '2025-05-19 07:15:09', '2025-06-03 00:40:20'),
 (7, 24, '24-matthias-czernin-user/1748345314.jpg', '2025-05-27 11:28:34', '2025-05-27 11:28:34'),
 (9, 27, '27-lebron-james-admin/1748665148.png', '2025-05-30 07:38:55', '2025-05-31 04:19:08'),
 (10, 33, '33-ryuaiken-tubera-admin/1748664671.jpg', '2025-05-31 04:10:54', '2025-05-31 04:11:11'),
 (11, 31, '31-chapell-roan-user/1748664703.jpg', '2025-05-31 04:11:43', '2025-05-31 04:11:43'),
-(12, 35, '35-wife-yukimiya-user/1748664934.jpg', '2025-05-31 04:15:34', '2025-05-31 04:15:34'),
-(13, 36, '36-yukimiya-kenyu-admin/1748665735.jpg', '2025-05-31 04:28:55', '2025-05-31 04:28:55'),
-(14, 29, '29-mikha-lim-user/1748667841.jpg', '2025-05-31 05:04:02', '2025-05-31 05:04:02');
+(14, 29, '29-mikha-lim-user/1748764049.jfif', '2025-05-31 05:04:02', '2025-06-01 07:47:29'),
+(15, 40, '40-shiela_mae-paluga-user/1748762961.jpg', '2025-06-01 07:29:21', '2025-06-01 07:29:21'),
+(17, 44, '44-ryuaiken-tubera-admin/1748764441.jpg', '2025-06-01 07:54:01', '2025-06-01 07:54:01'),
+(20, 93, '93-charisse-cho-admin/1749015522.jfif', '2025-06-02 14:58:12', '2025-06-04 05:38:42'),
+(21, 99, '99-che-aguinaldo-user/1749025945.jfif', '2025-06-04 08:32:25', '2025-06-04 08:32:25');
 
 -- --------------------------------------------------------
 
@@ -374,11 +427,14 @@ INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, 
 ('0xm2uCR5MM5Q7w7vWJx7KtA3nmXBguINlPGT7Npw', NULL, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiNjhYakd6RzVpeTNsNnBtajZOdHFCRTBhUkowMzNoY1BVdXpKMFRIVSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1748585914),
 ('3EFs4miS2AmjslCVuzOJhNIcrb0FVXinHO4dA8LO', NULL, '127.0.0.1', 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoibG0wTGNxT2hJTG1RSHplMUhkTnBrOUhFZlhXekVGeTVtYlJCUDFZOCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1748584758),
 ('3VKOFWMRh5P1K0S9qTydOoeZTDJpUkreTxoPT78G', NULL, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiUDc4UkFjenJrZzJTU3p3SHpHVUZwMU9GUnFQTGNFVTVYSmVVN0FocSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747647296),
+('4MAGpzd8lQTx986ycLHXJoijueHfEO4iHNd3ycVK', NULL, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiMU0wdnRaa3duOXZUa3p0T3pPMU5VS1NvdWFseW04emFOdzlCdXdPMiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1748764651),
 ('5SmeE0J4w3kiFAwFBHsgSzxWiTBOngrFPKDC5gyF', NULL, '127.0.0.1', 'facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidHBRbjlteldKZDV6eUx6ckl5eDFsc2hxN2Z1YkVZTmhaSUFteU9RVyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747465566),
 ('7mK5KZAkpHaxMTdJO4i3zaVyVqSKSfzTrcTNGvHH', NULL, '127.0.0.1', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Mobile Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiYnBYd0wwb3pJRFdWa1F1dGkxM1o2eDZ6MVJRaWpYaXBMbTQzSUV6dSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1748584821),
 ('BrO5AT7ViBj9bqiEDYZTeMTsFl7TkHCnFP0HckKc', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiRldEcG1xdFVSUjZXVUlya2NISHZwcjRyN3FWQzdlOEg1cVJxQTlOcyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747798033),
+('dAHGUhMGBhTu8wrxzle9JrtJQUaEXVduXN8HhE0s', NULL, '127.0.0.1', 'WhatsApp/3.0.0.0 A', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoialluRE9TV2NmMDNEZjRWY1BjS0lLbUpLYXdDdG5FaHF2SE5zbHV3UiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1748763372),
 ('Dle6uRtyp3e3yNEqFFxQy9djAdzZ2iHAB8m1fbkm', NULL, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiWmo1OURWakFCaXpVT1o2SDN3WW95djJXaVdRM1ZVTzFHZnhZYWpmaiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747800500),
 ('FvBCNwRq5rOMhp717He1akaCfRZVMwZhLIXSqrEg', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoienJaMHZDUjM5QnBBejFFTEVITTlxSWN1ZVdCQ3JTcUZPYWZWVEF3ZiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1748584347),
+('gYQtZuwTfhzM5MghQYQS8tcTgpQbasmphS4nT2sK', NULL, '127.0.0.1', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoieFBqMmhKSG00elNKWU5ZYmIwMk10SUxDdURPRjZ6WHg4RmtBTkVaSCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1748860795),
 ('Hb9FPxGQBdI6uZ35XmuIWS8ERclYrJwnuXQlL3wd', NULL, '127.0.0.1', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Mobile Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiUElrM2g3YVloZVpEMUN6dnJhbENYYVZLU3diREhlMkJMVzdxVkZvZiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747465798),
 ('HiT5nCAHoKSuZMbed2ysuxUwIjqyb9gwcLH85qhk', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVkJOS3lQZW8xbjdjbW1PUWNIc0I0a055enRCMG9xVkZPZUxVQTdTbCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747802015),
 ('I8RyQ3VSmNqBbAQGSKfmZxxM8W8qQufxp24R7dvg', NULL, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidmRtSXFYVUgxYUlrZTExY1hIeHU5M3pxQlV4UTQ3S3hZZ3NNT05DUiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1748586039),
@@ -395,11 +451,13 @@ INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, 
 ('rsGVtzZYHfmw9vcd7exk3FoSjzikbFicZUuGdgq6', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidDJxU0pPRVE4dDRuUnFBMzNuaU5CUm5LNWp3SXVaQ0E1VG93Y0N3VCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjAxOiJodHRwOi8vaGVyb2ljLXNlbnNpYmxlLWJ1enphcmQubmdyb2stZnJlZS5hcHAvP2ZiY2xpZD1Jd1kyeGphd0tYMkQ1bGVIUnVBMkZsYlFJeE1BQmljbWxrRVRGdk9IZFdlbkJaTWxVd1NsbERURk5TQVI1b3pGUXFUdnAwTWN4Q29wdU1ZRlZsc1RmZDJaMnBHRWtoY0tjWF9VR0VycHFnUG1pY3JsZk1DeWZBQ0FfYWVtX0M0MVN0NlhRdFN4Rk1xcnA3MUVFN2ciO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1747646708),
 ('ULRrFvB4lCVoBlVYbLfM5zwjiFmgMBwnsaRQTVf0', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoic0pWT3d1N0dJQ05MRHlxZXBVMVJPU3lMenZJamVIN0E4OE16WmNVRyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747646433),
 ('vfU0UYB2T0ZeWgRq8WRoCmwR0WoCGxq2VKhjdspD', NULL, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiYVAyQjRzcnRMQ0llampycTlQQjhnTW9SQWtjR0pHT2VPczBkV1A2TCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747471132),
+('VgvAaxlbV43EIN9CV1aFLWN1chE4GdevgYpaSvdo', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiaGxrbFNMMzM2WU9JWThwSXRWNmZVeE5GcWRaMEtobzB4c1N6S1RqdCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1749901689),
 ('VYO7sgaxXfW3EG5ZFB0l739JrWa35OPfTUoCjR59', NULL, '127.0.0.1', 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 [FBAN/FBIOS;FBAV/507.0.0.50.107;FBBV/734202868;FBDV/iPhone9,4;FBMD/iPhone;FBSN/iOS;FBSV/15.8.4;FBSS/3;FBCR/;FBID/phone;FBLC/en_US;FBOP/80]', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiSmN6RGlEREM4YmpMWDNnQmdQZXRMN2hHR05JVFlCcGUyZWNMQ3JmbiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MTYxOiJodHRwOi8vaGVyb2ljLXNlbnNpYmxlLWJ1enphcmQubmdyb2stZnJlZS5hcHAvP2ZiY2xpZD1Jd1pYaDBiZ05oWlcwQ01URUFBUjZGMy1wUlhoVHB5blZ1Q3lYdkZZb1BKRWdwVEwwUmFfcGpKZ1Q4Y0ZDblViREhFSm5jRzdyWno2U3VXQV9hZW1fZGxTSzhuTWwwOUVsaVFpYzNIUTZnQSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747466268),
 ('xMdJdNKSCxDeuU6dRyHFsD3BPi1jMrumYNW6SBfw', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiT3E3bnVyWlMyY1BiWDh1U3pwUjVaTGtSQ1ZqeFN2dXR0aE5USm5qVyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747645297),
 ('y0Gvf2WrxePunlIezPuTiaVxtfuiwOhbV1cXDllt', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiMU9pZ29scW45emZidjBpVWVFb21EU1lRaXNlUGpkVHhvd3gyemFQZCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747474977),
 ('y5n7S4ywLKy6GvZayrSzzfa4NPShWsA6xgdUF6wU', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVnVkSlhJYXJGd3RmVTJsdko2RU5IQ29Ed3lsSGlQSGFJYzBFMDU0eSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1748591671),
 ('y95lUFSS0QRSDnlMcKiV0M1rk3rYc5CsgvqgRhMe', NULL, '127.0.0.1', 'python-requests/2.32.3', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiR0diVm83WlhTTkpKSUFmUUR4RDVFTEZQeFRSbWdxbWhUdmhKaWc5NiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9oZXJvaWMtc2Vuc2libGUtYnV6emFyZC5uZ3Jvay1mcmVlLmFwcCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747466278),
+('Yl97bFc7bUqA7Jtaek1thgVFEyyRdbwtTtQmF8d8', NULL, '127.0.0.1', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36', 'YToyOntzOjY6Il90b2tlbiI7czo0MDoieTAzM0VaUHNDRW1rSlExbFB5czM0ZktFZE9sMndUZkw4UlBmTElEbCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1748763364),
 ('yq0wT6djdyulxtrOjsfsgcnKCBYDEbDkDtIB4DWS', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoid1FsaUsxSHZuSk1DZ3h1NDg4QzVpc0ZYalpGUlBFNXo4UGdkcjZHciI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjAxOiJodHRwOi8vaGVyb2ljLXNlbnNpYmxlLWJ1enphcmQubmdyb2stZnJlZS5hcHAvP2ZiY2xpZD1Jd1kyeGphd0tWSWhObGVIUnVBMkZsYlFJeE1BQmljbWxrRVRFMFYzZHdWRzVWVlV4MFJsQm5VblEwQVI1aW9CcU9YRXRYcmx2R1NVbkh4bWd6MkVfeWVpdGttMzJQZEkzOVZIS21hVENoMVZlUUM3cDRWa1BCb0FfYWVtX3VudVY1eXpPUkN1TUo1LU1zYk8tTXciO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1747468995);
 
 -- --------------------------------------------------------
@@ -440,22 +498,68 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `first_name`, `middle_name`, `last_name`, `email`, `password`, `mobile`, `remember_token`, `availability`, `created_at`, `updated_at`, `region`, `province`, `city`, `barangay`, `street`, `zip_code`, `building_number`, `birthday`, `position`, `department`, `gender`, `civil_status`, `role`) VALUES
-(1, 'Ian Kenneth', 'Ramirez', 'Sianghio', 'kennethsianghio756@gmail.com', '$2y$12$/egBUHbJdA5vWQlbG9qt5uh2OCEZk6OmxCjhWDT/bi1HMBYXYQBrW', '09761465526', '02u1YMrzqPgaUeQBxghdwrG8YE0zKt7Y8riy1ENPjt9CEmQawJZOYJeTeh1O', 'Available', '2025-05-08 03:39:44', '2025-05-30 13:55:15', 'National Capital Region', 'Metro Manila', 'City of Malabon', 'Santulan', 'Mh Del Pilar St', '1473', '128', '2003-12-09', 'Galley Boy', 'Galley Boy', 'Male', 'Married', 'user'),
-(2, '11', '1', '1', 'ian@friendmar.com.ph', '$2y$12$OesYh7hMpvOIbAu1E.zpsOX/GWTphHHUKAIFNtZphSk/zaGWG6pA6', '45as4d5455454', NULL, NULL, '2025-05-13 03:12:10', '2025-05-31 03:34:13', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Accounting Consultant', 'Accounting', NULL, NULL, 'admin'),
-(21, 'Yagoda', 'Camba', 'Maratas', 'yags@gmail.com', '$2y$12$3o55PTRb/DizQlIOMo.EjeT30BxxnnWDUUXzzTFbzbQCap.ZRf16a', '1234567543', NULL, 'On Board', '2025-05-25 10:01:09', '2025-05-30 13:59:50', 'CALABARZON', 'Batangas', 'City of Lipa', 'Tanguay', '1232312', '123123213', '12323', '2006-12-12', 'Trainee', 'COO', 'Male', 'Single', 'user'),
-(22, 'Angela', 'Fajardo', 'Guilaran', 'meaboo@gmail.com', '$2y$12$Fpe0FQA7wJdMG3JXMS4ST.V2J0VJYs5fewANm/H1oLzlC/zf0vvqy', '09761465527', NULL, 'Available', '2025-05-25 10:25:00', '2025-05-25 10:26:42', 'National Capital Region', 'Metro Manila', 'City of Malabon', 'Santolan', 'sfsdfasasd', '1476', '213', '2003-10-24', 'Galley Boy', 'Galley Boy', 'Female', 'Single', 'user'),
-(24, 'Matthias', 'Idv', 'Czernin', 'matthias@gmail.com', '$2y$12$fWvpEmIDJZPXseT13gmotuTZJXPOoSeoA1vNyiNv7YArp/bwn4s2m', '1234563244', NULL, 'Vacation', '2025-05-27 11:04:48', '2025-05-28 03:36:55', 'Cagayan Valley', 'Isabela', 'Alicia', 'Aurora', 'asdasdasd', 'afdsd', 'adasdasd', '2005-11-25', 'Galley Boy', 'Bosun', 'Male', 'Married', 'user'),
-(27, 'LeBron', 'Raymone', 'James', 'lebron@friendmar.com.ph', '$2y$12$J.TEEPN6Y1ScYPQaRKKN5.De3mARHfu23ztN7jUcygVbb3oiS2Toi', '1231234', NULL, NULL, '2025-05-30 04:56:33', '2025-05-31 03:46:22', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '4x NBA Finals MVP', 'Accounting', NULL, NULL, 'admin'),
-(28, 'Dave Nielsen', 'De Ocampo', 'luz', 'dnluz01@gmail.com', '$2y$12$0WYxh2hckp0m5tiWWTg7eeSWeYmMTJ67aQHWjkC3v/Ui/Rn9VnVPS', '09216847777', NULL, NULL, '2025-05-30 05:39:31', '2025-05-30 05:39:31', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user'),
-(29, 'Mikha', 'J.', 'Lim', 'binimiks@gmail.com', '$2y$12$pCEvY5QXGpXgqJcuJpOU1uMhHKnuR1Au3sCFnEZJ/5yrpPzVEMnjy', '09876543210', NULL, 'Available', '2025-05-30 10:20:23', '2025-05-31 05:02:11', 'CALABARZON', 'Rizal', 'Angono', 'Mahabang Parang', 'Block 9 Lot 22', '1930', 'Block 9 Lot 22 Zen Residences', '2002-11-30', 'Trainee', 'Crew', 'Female', 'Single', 'user'),
-(30, 'Angelique', 'Dumadag', 'Tenoso', 'a@gmail.com', '$2y$12$QYUuBe9m0jdEE2bDPj42FOcJl5/t3Tb/eWtF9t7ePAs/StcqtNxmy', '456789', NULL, 'Available', '2025-05-31 03:23:02', '2025-05-31 03:24:01', 'Davao Region', 'Davao Del Sur', 'City of Davao', 'Los Amigos', 'asdasdsad', '1473', '123', '2025-05-31', 'Bosun', 'Crew', 'Male', 'Single', 'user'),
-(31, 'Chapell', NULL, 'Roan', 'chapellroan@gmail.hottogo.com', '$2y$12$hYiy5Vc67eoY3miAUAVqgui40AKD1jOKcdMEh0BqWAAFZpWUuXIAy', '09959832121', NULL, 'On Board', '2025-05-31 03:55:33', '2025-05-31 04:14:56', 'National Capital Region', 'Metro Manila', 'City of Parañaque', 'San Dionisio', 'ANDRES BONIFACIO STREET', '1700', '6977', '2003-08-06', 'Jr 4th Engineer', NULL, 'Male', 'Widowed', 'user'),
+(1, 'Ian Kenneth', 'Ramirez', 'Sianghio', 'kennethsianghio756@gmail.com', '$2y$12$TJYuhRgnedwhqmEK6abqGO.fIIkE9.4BNMUo391aDkIafPtE8wvHW', '09761465526', 'BAYNvNDbF3CkwRt9Ss5yYgkwUUbaPVv4sWaLzBnaBibzTEiv6FuzJuUULFzn', 'Available', '2025-05-08 03:39:44', '2025-06-04 06:50:06', 'National Capital Region', 'Metro Manila', 'City of Malabon', 'Santulan', 'Mh Del Pilar St', '1473', '128', '2003-12-09', '2nd Mate', NULL, 'Male', 'Single', 'user'),
+(2, 'Ian', NULL, 'Sianghio', 'ian@friendmar.com.ph', '$2y$12$OesYh7hMpvOIbAu1E.zpsOX/GWTphHHUKAIFNtZphSk/zaGWG6pA6', '9060790646', NULL, NULL, '2025-05-13 03:12:10', '2025-06-04 05:43:21', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Senior Programmer', 'Accounting', NULL, NULL, 'admin'),
+(22, 'Angela', 'Fajardo', 'Guilaran', 'meaboo@gmail.com', '$2y$12$Fpe0FQA7wJdMG3JXMS4ST.V2J0VJYs5fewANm/H1oLzlC/zf0vvqy', '09761465527', NULL, 'Available', '2025-05-25 10:25:00', '2025-06-03 09:45:28', 'National Capital Region', 'Metro Manila', 'City of Malabon', 'Santolan', 'sfsdfasasd', '1476', '213', '2003-10-24', 'Galley Boy', 'Galley Boy', 'Female', 'Single', 'user'),
+(24, 'Jessa Mae', NULL, 'Mirabete', 'jessamaemirabete644@gmail.com', '$2y$12$fWvpEmIDJZPXseT13gmotuTZJXPOoSeoA1vNyiNv7YArp/bwn4s2m', '96458999', NULL, 'Available', '2025-05-27 11:04:48', '2025-06-04 05:44:56', 'Cagayan Valley', 'Isabela', 'Alicia', 'Aurora', 'asdasdasd', 'afdsd', 'adasdasd', '2005-11-25', 'Cook', 'Bosun', 'Male', 'Single', 'user'),
+(27, 'LeBron', 'Raymone', 'James', 'lebron@friendmar.com.ph', '$2y$12$J.TEEPN6Y1ScYPQaRKKN5.De3mARHfu23ztN7jUcygVbb3oiS2Toi', '09060495646', NULL, NULL, '2025-05-30 04:56:33', '2025-06-09 00:33:09', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '1985-12-30', 'Crew Doctor', 'Medical', 'Male', 'Single', 'admin'),
+(28, 'Dave Nielsen', 'De Ocampo', 'luz', 'dnluz01@gmail.com', '$2y$12$0WYxh2hckp0m5tiWWTg7eeSWeYmMTJ67aQHWjkC3v/Ui/Rn9VnVPS', '09216847777', NULL, 'Available', '2025-05-30 05:39:31', '2025-06-03 08:52:13', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-06-04', 'Jr 4th Engineer', NULL, 'Male', 'Single', 'user'),
+(29, 'Mikha', 'J.', 'Lim', 'binimiks@gmail.com', '$2y$12$pCEvY5QXGpXgqJcuJpOU1uMhHKnuR1Au3sCFnEZJ/5yrpPzVEMnjy', '09876543210', NULL, 'Vacation', '2025-05-30 10:20:23', '2025-06-02 01:28:10', 'CALABARZON', 'Rizal', 'Angono', 'Mahabang Parang', 'Block 9 Lot 22', '1930', 'Block 9 Lot 22 Zen Residences', '2002-11-30', 'Trainee', 'Crew', 'Female', 'Single', 'user'),
+(31, 'Chapell', NULL, 'Roan', 'chapellroan@gmail.hottogo.com', '$2y$12$hYiy5Vc67eoY3miAUAVqgui40AKD1jOKcdMEh0BqWAAFZpWUuXIAy', '09959832121', NULL, 'Vacation', '2025-05-31 03:55:33', '2025-06-02 09:28:53', 'National Capital Region', 'Metro Manila', 'City of Parañaque', 'San Dionisio', 'ANDRES BONIFACIO STREET', '1700', 'SKYLAND', '2003-08-06', '2nd Engineer', NULL, 'Male', 'Widowed', 'user'),
 (32, 'RYUAIKEN', 'Manzano', 'TUBERA', 'tryuaiken@gmail.com', '$2y$12$B40wSpdzK5cX0uOUy6nVsuDk5X0yflvnLqiM5qzjhSpPLPKor4q.a', '09959830797', NULL, NULL, '2025-05-31 03:59:41', '2025-05-31 03:59:41', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user'),
 (33, 'Ryuaiken', 'Manzano', 'Tubera', 'tryuaiken@friendmar.com.ph', '$2y$12$6m4cUL0AVYxqQdAPrKhWpuzG3LyQfZky8Y4B0e9uMjvaT4iUFNa0a', '09959830790', NULL, NULL, '2025-05-31 04:01:04', '2025-05-31 04:13:17', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Crewing Operator', '', NULL, NULL, 'admin'),
-(34, 'Dave Nielsen', 'De Ocampo', 'Luz', 'dnluz@gmail.com', '$2y$12$kmisSIqJ9gEfsBF8ljnr0u1rI5H1dDFPc.zgbnX4b2Ur.MX0wIkrm', '0921684777', NULL, NULL, '2025-05-31 04:03:58', '2025-05-31 04:03:58', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user'),
-(35, 'wife', 'ni', 'Yukimiya', 'yukimiya@gmail.com', '$2y$12$CojfYZnFe9/J9dWj3MJvUeVZF97YSuhb7lW7X7x03QBREiGgwyNpG', '0312445', NULL, 'Available', '2025-05-31 04:10:52', '2025-05-31 04:13:02', 'National Capital Region', 'Metro Manila', 'City of Mandaluyong', 'Addition Hills', 'Cauliflower street', '1550', '12', '2003-12-26', 'Trainee', 'Crew', 'Female', 'Married', 'user'),
-(36, 'Yukimiya', 'Pogi', 'Kenyu', 'yukii@friendmar.com.ph', '$2y$12$lLYD3xSOqHXuuTGlkVaefe4JR9l3dl7QeyeOt4CvEmk1mn7sZiTVy', '777777', NULL, NULL, '2025-05-31 04:19:40', '2025-05-31 04:19:40', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin'),
-(37, 'DN1', '222', '222', 'DNL@FRIENDMAR.COM.PH', '$2y$12$bgwHJSZSUf6vzYKj.GjGSu0CRhGgIPOkZvgXorFZBgQhCc7i8al4i', '09211234567', NULL, NULL, '2025-05-31 05:23:36', '2025-05-31 05:23:36', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user');
+(34, 'Dave Nielsen', 'De Ocampo', 'Luz', 'dnluz@gmail.com', '$2y$12$kmisSIqJ9gEfsBF8ljnr0u1rI5H1dDFPc.zgbnX4b2Ur.MX0wIkrm', '0921684777', NULL, 'Vacation', '2025-05-31 04:03:58', '2025-06-02 03:01:42', 'Central Luzon', 'Bulacan', 'City of Meycauayan', 'Malhacan', 'Bulak', '3020', '11', '2004-04-18', 'Deck Cadet', 'Crew', 'Male', 'Single', 'user'),
+(38, 'superadmin', NULL, 'superadmin', 'superadmin@fms.com', '$2y$12$VYITUkt.q2GmQBeYC7BL/ulSk9izTm6W9DpuYKq8apwmcpzh5jvEe', '120903', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'superadmin'),
+(39, 'Ian Kenneth', 'Ramirez', 'Sianghio(Superadmin)', 'kennethsuperadmin@gmail.com', '$2y$12$kfLBdVOLqKEeY.N61r3q5Oz2djRCiFdG2He/2P/GMBshfFcc7bJTm', '45678910', NULL, NULL, '2025-05-31 12:11:57', '2025-05-31 12:11:57', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Crew', NULL, NULL, 'superadmin'),
+(40, 'Shiela Mae', 'Endico', 'Paluga', 'ellamaeendico@gmail.com', '$2y$12$VsmfgDUxdF7v6vYKmfcpF.zE4mmO7MMPk8xnxzRE9/arBw1vkIGPi', '09123456999', 'dXXmgl9DcUw9wmjUTJvIRd3CpDcBLccx3PJJnBRryFwaCt4fmGOdaY2ByqcH', 'Vacation', '2025-06-01 07:15:18', '2025-06-03 09:43:14', 'CALABARZON', 'Rizal', 'Cainta', 'San Juan', 'Snt. Magdalene Street', '1900', '3233', '2003-12-03', 'Trainee', 'Crew', 'Female', 'Single', 'user'),
+(43, 'Dave Nielsen', 'De Ocampo', 'Luz', 'dnlcolonel@gmail.com', '$2y$12$XPKI/n4ok.Y2TG7IVQzGU.II0JdF.isPYe/9tKuq4uOJGW7SzMd5O', '09216847001', 'nVZymsvrgwnfbeW4j3gl2Jvgs8RerZVJbd75WGnMTTEYGnoYyZCcNjISto5g', 'On Board', '2025-06-01 07:53:11', '2025-06-01 07:56:05', 'Central Luzon', 'Bulacan', 'San Ildefonso', 'Matimbubong', 'Bulak', '3020', '11', '2025-06-01', 'Pumpman', 'Crew', 'Male', 'Widowed', 'user'),
+(44, 'RYUAIKEN', 'MANZANO', 'TUBERA', 'ryuaiken@friendmar.com.ph', '$2y$12$vAwThH/GbbW/UEegcrgtpeCtF1lsObbTJhVroq8/N2Q6ULV.3RVca', '09959830000', NULL, NULL, '2025-06-01 07:53:36', '2025-06-01 07:54:23', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Crew Operator  1', 'Crewing', NULL, NULL, 'admin'),
+(47, 'Mariane Jamiaca', '', 'Teñoso ', 'michael@gmail.com', '$2y$12$Juu/NIvu6CIXUvm2U6dJ0eLsB6Ve5Qlm4h7AsZbKEeEowHzFsMzP6', '0385254628', NULL, 'Available', '2025-06-01 23:28:09', '2025-06-01 23:33:05', 'National Capital Region', 'Metro Manila', 'City of Mandaluyong', 'Barangka Ilaya', 'Mh deeaplasdasd', '45', '52', '2025-06-13', 'Fitter', 'Crew', 'Male', 'Married', 'user'),
+(48, 'Yukimiya', 'Pogi', 'Wife', 'yukimiya@fms.com', '$2y$12$Aknqx5UY6B4cvZOvAm7O5uDGxQim36Uk3HwVED12XhIXyF6khL42a', '11111111', NULL, 'Available', '2025-06-02 00:23:18', '2025-06-02 00:23:18', '140000000', '042100000', '012816000', '012802019', 'Mh deeaplasdasd', '45', '52', '2000-07-12', 'sec', 'Accounting', 'Female', NULL, 'superadmin'),
+(49, 'Wanindu', '', 'Hasaranga', 'aaa@gmail.com', '$2y$12$AL6hq1VP2r5oHgUFd6YvpeGkGwGnLNvzA7KfKTjiDHC8fz10QiI9O', '09216847002', NULL, NULL, '2025-06-02 00:40:04', '2025-06-02 00:40:04', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user'),
+(51, 'Ivan', 'Manimtim', 'Mendoza', 'mendozaivan0320@gmail.com', '$2y$12$lvF3RMZWl74uDUuu6wulVeCJWwBjoDvPjsIL1bCOcCru1tpIHCjiK', '09062867362', NULL, 'Available', '2025-06-02 02:53:36', '2025-06-02 02:56:37', 'Western Visayas', 'Aklan', 'Kalibo', 'Buswang New', 'St. 1234', '3009', '31', '1999-06-02', 'Electrician Trainee', 'Crew', 'Male', 'Single', 'user'),
+(52, 'Charisse', 'Aguinaldo', 'Cho', 'che113002@gmail.com', '$2y$12$OlBKoyqtTShBoiIE0JmiJubJxF4i5KsozLhvuJvdsu5POQULfMsy2', '09876567890', NULL, NULL, '2025-06-02 02:53:37', '2025-06-02 02:53:37', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user'),
+(53, 'Pat', NULL, 'Lin', 'linsanganfms@gmail.com', '$2y$12$fdGeg2jF2Pti4OY7ReJTV.UL8dqyr9CL6d68YtFMz1gQmQ5g5H7Am', '09171304421', NULL, 'Available', '2025-06-02 02:53:40', '2025-06-02 02:55:27', 'Ilocos Region', 'Ilocos Norte', 'Bacarra', 'Cabulalaan', '123', '1224', '1234', '2025-06-02', 'Bosun', 'Crew', 'Other', 'Married', 'user'),
+(54, 'Marshall', '', 'Holman', '12345678@gmail.com', '$2y$12$K7jAep3vxgwAAOZTAJyYTuE508Sr8LHo6muWKKYkCadh4K625VgEG', '0123456789', NULL, 'Available', '2025-06-02 02:53:41', '2025-06-02 03:07:01', 'MIMAROPA Region', 'Occidental Mindoro', 'Rizal', 'Rumbang', 'Ss', '12345', '123456789', '2025-06-03', 'Electrician Trainee', 'Crew', 'Male', 'Married', 'user'),
+(55, 'Jeremy', 'Aberte', 'Egana', 'engr.eganajeremy@gmail.com', '$2y$12$5KRPyQaZgjzwvaZa6h8Rc.DzDTUxe94k2MEHQVIsAECv3MYkH7kUK', '09121231234', NULL, NULL, '2025-06-02 02:53:57', '2025-06-02 02:53:57', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user'),
+(56, 'Vit Mcdowell', 'Palangan', 'Sarigumba', 'vitmcdowell@gmail.com', '$2y$12$KEs7TJ1l5yxQxhVWXm2o1.cS3ZjcPmP/ELpg35zQ1pXjBNOgjh74a', '09123456788', NULL, NULL, '2025-06-02 02:54:29', '2025-06-02 02:54:29', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user'),
+(57, 'ANTONE DOMINIC', 'BERCASIO', 'BERMAS', 'antonebermas123@gmail.com', '$2y$12$Fh.RFde2Ek5iXqLLsqAyrukcLswkGJ/fBZvxcFo0mTb3ywDLYXLoy', '09952160695', NULL, 'Available', '2025-06-02 02:54:40', '2025-06-02 02:58:58', 'Bicol Region', 'Albay', 'City of Tabaco', 'Baranghawon', 'Purok 4', '4511', '.', '1990-12-12', 'Electrician Trainee', 'Crew', 'Male', 'Single', 'user'),
+(58, 'Karse Christian', 'Santillan', 'Morada', 'k.christianmorada@gmail.com', '$2y$12$rhagA2Nmz2sKP3JyIxliVunuaLf7TkbAuXgy49sVfqSDe8FeY3IBe', '09666348281', NULL, 'Available', '2025-06-02 02:54:43', '2025-06-02 02:58:22', 'National Capital Region', 'Metro Manila', 'City of Caloocan', 'Barangay 64', '11', '1400', '7', '1996-12-13', 'Electrician Trainee', 'Crew', 'Male', 'Single', 'user'),
+(59, 'Danilo', 'Hapitana', 'Arat', 'daniloaratjr353@gmail.com', '$2y$12$jqLswSY6hX1kscbIlX491.QG9DY4bN9RBitrN.vs5xM.tDBEu5bZa', '09552566969', NULL, 'Available', '2025-06-02 02:54:52', '2025-06-02 02:58:58', 'Davao Region', 'Davao Del Norte', 'Kapalong', 'Florida', 'Purok 3', '8113', '01', '1950-06-02', 'Chief Cook', 'Crew', 'Male', 'Widowed', 'user'),
+(60, 'Julian Paul', 'Villaruel', 'Querubin', 'julianpaulquerubin@gmail.com', '$2y$12$S/uaxbE504zuHUbNS53CsObIEkzWei68.v/GdGOdKAmc9.ejZ0ifG', '09157516375', NULL, NULL, '2025-06-02 02:57:40', '2025-06-02 02:57:40', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user'),
+(61, 'Marielle Sam', 'Ortiz', 'Redoblado', 'marielle31@gmail.com', '$2y$12$KK09zoTyhtUgGC1kInHg0eLUWz705S/ySMS844Kl9u3Wd5hmICP1m', '09060790646', NULL, 'Available', '2025-06-02 03:04:33', '2025-06-03 08:21:27', 'National Capital Region', 'Metro Manila', 'City of Malabon', 'Panghulo', 'Mulawin', '8444564', '465', '2003-12-31', 'Bosun', 'Crew', 'Female', 'Single', 'user'),
+(63, 'Bill', NULL, 'O\'Neal', 'johnsmith@friendmar.com.ph', '$2y$12$hCKtbu17FQX5GS.QXEzNtekGOry3UVRzg797z7a8t2bfGLCeslrDG', '09060790647', NULL, NULL, '2025-06-02 07:06:19', '2025-06-03 09:53:57', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Crew', NULL, NULL, 'admin'),
+(64, 'Carmen', NULL, 'Salvino', 'petersmith@friendmar.com.ph', '$2y$12$xKMjHw20U2bOndpyzgalSeU3hF1S5ZXs7vlSX6CwLkI80l.RUzy5C', '09060790648', NULL, NULL, '2025-06-02 07:06:51', '2025-06-02 07:06:51', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Crew', NULL, NULL, 'admin'),
+(65, 'Jason', NULL, 'Couch', 'ld@friendmar.com.ph', '$2y$12$9F85Xrx3lyh0m.X5tVJrKuJBmlLDD6lykXrm6DodYeFv79C8HoZBC', '09060790650', NULL, NULL, '2025-06-02 07:08:11', '2025-06-02 07:10:52', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin'),
+(66, 'E.J', '', 'Tackett', 'lj@friendmar.com.ph', '$2y$12$duGxLKfF1tYxBO/OhNUqtec26IXSA3lARZLRZz4svYshsLdz4CW7y', '09060790645', NULL, NULL, '2025-06-02 07:09:42', '2025-06-02 08:40:07', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Operator', 'Crewing', NULL, NULL, 'admin'),
+(67, 'DeeRonn', NULL, 'Booker', 'ar@friendmar.com.ph', '$2y$12$uPcKKmFxiWtUlWSnVX3eVOsUWddptF2ixQ3fp8QizYjDKo3Uu4Kua', '09060790644', NULL, NULL, '2025-06-02 07:10:11', '2025-06-02 07:10:11', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Crew', NULL, NULL, 'admin'),
+(68, 'Josh ', '', 'Hazlewood', 'sga@gmail.com', '$2y$12$qtv3O0ErLvg1o77VqJco7OxK3Y.5QOEBREo3zCrU86iM4MmDJfdFy', '09060790643', NULL, 'Available', '2025-06-02 07:11:39', '2025-06-02 08:46:43', 'Ilocos Region', 'Ilocos Norte', 'Adams', 'Adams (Pob.)', 'UNIT SF-201, SKYLAND PLAZA CONDOMINIUM, 2302 Sen. Gil J. Puyat Ave, Makati, 1203 Metro Manila', '1203', '21321', '2000-05-11', 'Chief Cook', 'Crew', 'Male', 'Single', 'user'),
+(70, 'ARLENE', 'HILA', 'CASULLA', 'liaison@friendmar.com.ph', '$2y$12$RdBnMpYR2TWpIX4J8UqT/ecIN7s40qZxunTNwdfhWgwNSQf/Mei7S', '09178989841', NULL, NULL, '2025-06-02 07:12:55', '2025-06-02 07:13:58', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'LIAISON OFFICER', 'Crewing', NULL, NULL, 'admin'),
+(71, 'CRISTINA', 'TUMAOB', 'NETARIO', 'mnetario@friendmar.com.ph', '$2y$12$Eghbn0vYaH4ePKM1gk0i1.gL9cy0CPHajId71/Tv/7BdpB42p8TCi', '09171105216', NULL, NULL, '2025-06-02 07:15:31', '2025-06-02 07:20:31', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'LIAISON', 'Crewing', NULL, NULL, 'admin'),
+(72, 'Joel', 'Lasay', 'Orencia', 'jorencia@friendmar.com.ph', '$2y$12$uUsXM27tckPcYm6jz7kLp.7/aVFH38SSXknBv6SYW63z1a/ezu99u', '09171463426', NULL, NULL, '2025-06-02 07:18:37', '2025-06-02 07:24:14', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Senior Recruitment Officer', 'Crewing', NULL, NULL, 'admin'),
+(73, 'DEN', 'DEN', 'BALA', 'kdbala@friendmar.com.ph', '$2y$12$sHhxnm6m80QEXb8dyeEbUefqh94JZD0bMBI6VUsJccykv0G5vuHDW', '09175689800', NULL, NULL, '2025-06-02 07:29:39', '2025-06-02 07:31:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'OPERATIONS MANAGER', 'Crewing', NULL, NULL, 'admin'),
+(74, 'Beth', 'LINCONES', 'HAMBING', 'bhambing@friendmar.com.ph', '$2y$12$n2mgQcbtJynnsbN3vp6twOh0aGnwBUPo7G9uKvoRP4e2qwtFcb0LO', '09361700652', NULL, NULL, '2025-06-02 07:36:43', '2025-06-02 07:37:59', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Crew Operator-visa', 'Crewing', NULL, NULL, 'admin'),
+(75, 'JAN LLOYD', 'REA', 'LORENZO', 'jlorenzo@friendmar.com.ph', '$2y$12$G3bwtYwhicQTXTtSnTd4xekFq2xMblz9zMzDFY1rsw60o4DZash1W', '09614942301', NULL, NULL, '2025-06-02 07:38:56', '2025-06-02 07:39:33', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Crew Operator', 'Crewing', NULL, NULL, 'admin'),
+(76, 'LYMERC', 'BIEN', 'CAPISTRANO', 'lcapistrano@friendmar.com.ph', '$2y$12$BNP2nB72880Ed4mr1/GtC.A1/848lOOa0HQzwRG4MK1kNf7URS0eu', '09762864102', NULL, NULL, '2025-06-02 07:39:12', '2025-06-02 07:39:59', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Crew Operator', 'Crewing', NULL, NULL, 'admin'),
+(77, 'MARIEFE', 'BERNABE', 'VILLALUNA', 'mariefevillaluna@gmail.com', '$2y$12$yctv8roxpiTOdrYu3vgEEuyb2w6JkB0wKz/kC/0nWlHqeWJdoEq4G', '09565107575', NULL, NULL, '2025-06-02 07:41:34', '2025-06-02 07:41:34', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user'),
+(78, 'MARIEFE', 'BERNABE', 'VILLALUNA', 'visa@friendmar.com.ph', '$2y$12$RgLVbtzpztqGa2xeMsVYBOjmG1Il6dZAkP2ES/Qhnx6VMZGDY7tF.', '09177152018', NULL, NULL, '2025-06-02 07:44:39', '2025-06-02 07:46:02', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Crew Operator-Visa', 'Crewing', NULL, NULL, 'admin'),
+(79, 'JAN LLOYD', 'REA', 'LORENZO', 'jlorenzo@gmail.com', '$2y$12$RBdHofMAsd3TiNjT1DY5YOjG3sAUjTdRuWbDcMyiyhZTxageGwXCC', '09614942302', NULL, 'Vacation', '2025-06-02 07:46:07', '2025-06-02 07:51:50', 'National Capital Region', 'Metro Manila', 'City of Makati', 'Pio Del Pilar', '123', '1230', '123', '2025-06-02', 'Able Seaman', 'Crew', 'Male', 'Single', 'user'),
+(80, 'KHALIA', 'FRAN', 'CHEZKA', 'nganaden@friendmar.com.ph', '$2y$12$n2c.cFHvxE2R08Aax0OVjOFVBu5HnXmwO4TM2xrJp2uoT4l6Nbe82', '09271203231', NULL, NULL, '2025-06-02 07:55:39', '2025-06-02 07:56:28', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'CO', 'Crewing', NULL, NULL, 'admin'),
+(83, 'JVEE', 'BORJA', 'BAEL', 'jbael@friendmar.com.ph', '$2y$12$6gHzkELIesPnYLaeISPP6Oz5C8YuBeLHdj6ku6MTHSlUiF66tWd7C', '09445445566', NULL, NULL, '2025-06-02 08:17:39', '2025-06-02 08:18:18', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Accounts Payable Officer', 'Accounting', NULL, NULL, 'admin'),
+(84, 'HAYAH', NULL, 'CULATA', 'hc@friendmar.com.ph', '$2y$12$4ABwPOyLmbVOl42CFJtr2erU172Ixcj/ROsQ2DCQai4UtRu6X/aZS', '09691214429', NULL, NULL, '2025-06-02 08:18:58', '2025-06-02 08:19:36', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ALLOTMENT OFFICER', 'Accounting', NULL, NULL, 'admin'),
+(85, 'bryan', 'TENORIO', 'arenas', 'barenas@friendmar.com.ph', '$2y$12$uMkArLhv8B/b4wv9vDQ95.Qh/bymp6tpBvUy3I.l7EQjO/N31SNj6', '09084333516', NULL, NULL, '2025-06-02 08:31:44', '2025-06-02 08:32:13', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'GENERAL ACCOUNTING', 'Accounting', NULL, NULL, 'admin'),
+(86, 'HELEN', 'COTONER', 'BUNDALIAN', 'helen.bundalian@friendmar.com.ph', '$2y$12$dj9o1HtTk7f2/fuJhJ159O8xCKM2Ibu78nzt9tuR7V.TZ5eWlSStq', '09171177510', NULL, NULL, '2025-06-02 08:31:53', '2025-06-02 08:32:48', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Chief Accounting Officer', 'Accounting', NULL, NULL, 'admin'),
+(87, 'JHOANNA', 'DE ASIS', 'ROBLES', 'jdr@friendmar.com.ph', '$2y$12$hLc/mhfoBOIbWg0m8B.DD.86y0t2M/xaNNr0xFDjp4SMlxgUqC8be', '09603142087', NULL, NULL, '2025-06-02 08:40:51', '2025-06-02 08:41:37', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'crew operator', 'Crewing', NULL, NULL, 'admin'),
+(89, 'Ralph', 'Friend', 'Maritime', 'ralphfriendmaritime@gmail.com', '$2y$12$wnjXo3YNummm7tum2JgWYOs/lfWXZyTliRmYo89YcsXEek.C01ROK', '09177153133', NULL, NULL, '2025-06-02 08:52:36', '2025-06-02 08:52:36', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user'),
+(90, 'IRISH', 'CALDERON', 'ROSENDO', 'irish.rosendo28@gmail.com', '$2y$12$JQpv3w.dE3B/2yIR3BHBkeoGV8gHatO6wDuKo1IH0NubYdhA1WDIe', '09770181893', NULL, NULL, '2025-06-02 09:17:56', '2025-06-02 09:17:56', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user'),
+(91, 'RIKKA', 'ARANAS', 'GABIANE', 'rgabiane@friendmar.com.ph', '$2y$12$cn/9K5FrPn8nC5iu1I.7du6ByACs7c1u7jTRF8RaFBdC92NxI1KZq', '09171220525', NULL, NULL, '2025-06-02 09:19:17', '2025-06-02 09:20:01', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'SENIOR CREW OPERATOR', 'Crewing', NULL, NULL, 'admin'),
+(92, 'irish', 'calderon', 'rosendo', 'irish.rosendo@gmail.com', '$2y$12$RXoNElE0KeHiqIUB5T7zRO/kfPYQwxU.Ui3iKm0UYMlgzVNVP1lxe', '09123456783', NULL, NULL, '2025-06-02 09:20:58', '2025-06-02 09:20:58', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user'),
+(93, 'Charisse', 'Aguinaldo', 'Cho', 'chea@friendmar.com.ph', '$2y$12$npjHQTkTdkfouJL89zY0oeKF6I80Xp/Wh6qKCHNWoqM2ZV1/rIuY.', '09366991180', NULL, NULL, '2025-06-02 14:57:25', '2025-06-04 05:39:06', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Fleet Crew Operator', 'Crewing', NULL, NULL, 'admin'),
+(96, 'Jerricho', 'Natividad', 'Briones', 'jbriones@friendmar.com.ph', '$2y$12$Oa7dedOl40MOLI5vUiyhPO.5EjMIbWcs2HkGowBUB4kUQ7cDteLZm', '09171626736', NULL, NULL, '2025-06-03 01:58:28', '2025-06-03 02:00:05', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'General Manager', 'Crewing', NULL, NULL, 'admin'),
+(98, 'LeBron', 'Raymone', 'James', 'lbj@gmail.com', '$2y$12$3PKA.rmEhV2jbwlRBQjQ5.p.mSNvNHdjhc4QkARbD6Ma0hlcqoU9y', '0984688267', NULL, 'Available', '2025-06-04 04:02:39', '2025-06-04 05:14:12', 'National Capital Region', 'Metro Manila', 'City of Valenzuela', 'Malinta', 'asdasdsad', '1473', '123', '2006-12-30', 'Trainee Gas Engineer', 'Crew', 'Male', 'Single', 'user'),
+(99, 'Che', NULL, 'Aguinaldo', 'charisseacho@gmail.com', '$2y$12$sNb2LP7F1RGbB2a9q2ASmO3Addaq/m8z0HhddDvCnuK/ZXciIjtrS', '09543218910', NULL, 'Available', '2025-06-04 08:10:37', '2025-06-04 08:32:53', 'National Capital Region', 'Metro Manila', 'City of Manila', 'Barangay 370', 'Consuelo', '1930', 'Avida Towers Tower 4 15-B', '2002-03-11', 'Chief Cook', 'Crew', 'Female', 'Single', 'user'),
+(100, 'Lebron', 'Raymone', 'James', 'lebronjames#23@gmail.com', '$2y$12$nnNWs30GRHX5xL4nwW8Ke.z8aPRSOAeO2ptSlKkXFc5nXETk.DTdK', '099974658AAA', NULL, 'Available', '2025-06-05 04:33:54', '2025-06-05 04:33:54', 'National Capital Region', 'Metro Manila', 'City of Manila', 'Barangay 170', 'Lebron Street', '1473', '123', '2007-06-04', 'Ordinary Seaman', 'Accounting', 'Male', 'Married', 'user'),
+(101, 'JUAN', 'D', 'DELA CRUZ', 'johnmichaelvlegaspi@gmail.com', '$2y$12$vgOkMAW7eGESjH0V9U7uluo6ABbN3meYw7R7D895sPDdbqqvr/8MW', '12346789101', NULL, NULL, '2025-06-05 04:39:57', '2025-06-05 04:39:57', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Unregistered', NULL, NULL, NULL, 'user');
 
 --
 -- Indexes for dumped tables
@@ -565,13 +669,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=216;
 
 --
 -- AUTO_INCREMENT for table `certificates`
 --
 ALTER TABLE `certificates`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -589,7 +693,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -601,13 +705,13 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `profile_pictures`
 --
 ALTER TABLE `profile_pictures`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
 -- Constraints for dumped tables

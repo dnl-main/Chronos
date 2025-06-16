@@ -19,10 +19,36 @@ const CertificateCard = ({ data, certificates = [], onCertificateClick, onNotify
     }
   };
 
+
+  const getIndicatorColor = (data) => {
+  const total = data?.total_uploaded || 0;
+  const pending = data?.pending || 0;
+  const approved = data?.approved || 0;
+
+    if (total === 0) {
+      return 'var(--red-indicator)';
+    } else if (pending > 0) {
+      return 'var(--yellow-indicator)';
+    } else if (approved === total) {
+      return 'var(--green-indicator)';
+    } else {
+      return 'var(--black-color-opacity-15)'; // fallback or neutral
+    }
+  };
+
   return (
     <main className="certificate-cards-card">
-      <section className="certificate-cards-card-indicator">
-        {/* Placeholder for indicator */}
+      <section
+        className={`certificate-cards-card-indicator ${
+          data.total_uploaded === 0
+            ? 'indicator-red'
+            : data.pending > 0
+            ? 'indicator-yellow'
+            : data.approved === data.total_uploaded
+            ? 'indicator-green'
+            : ''
+          }`}
+        >
       </section>
 
       <section className="certificate-cards-card-profile">

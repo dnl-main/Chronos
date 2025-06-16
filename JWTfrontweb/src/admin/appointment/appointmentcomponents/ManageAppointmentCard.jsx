@@ -16,6 +16,23 @@ const ManageAppointmentCard = ({ appointment, user, onCertificateClick }) => {
   const [loadingCertificates, setLoadingCertificates] = useState(false);
   const [errorCertificates, setErrorCertificates] = useState(null);
 
+  const statusBgColors = {
+    pending: 'var(--yellow-indicator-opacity-15)',      
+    approved: 'var(--green-indicator-opacity-15)',      
+    rejected: 'var(--red-indicator-opacity-15)',      
+    booked: 'var(--blue-indicator-opacity-15)',    
+    default: 'var(--black-color-opacity-15)'       
+  };
+
+  const statusIconColors = {
+    pending: 'var(--yellow-indicator)',      
+    approved: 'var(--green-indicator)',      
+    rejected: 'var(--red-indicator)',      
+    booked: 'var(--blue-indicator)',    
+    default: 'var(--black-color)'       
+  };
+
+
   useEffect(() => {
     const fetchCertificates = async () => {
       const userId = user?.user_id || appointment?.user_id;
@@ -65,11 +82,19 @@ const ManageAppointmentCard = ({ appointment, user, onCertificateClick }) => {
           </div>
         </div>
         <div className="manageAppointment-card-availability">
-          <div className="manageAppointment-card-availability-bg">
-            <Circle_Primary style={{ color: 'var(--blue-indicator)', width: '1.4rem', height: '1.4rem' }} />
-   <p>{(appointment.status || 'N/A').charAt(0).toUpperCase() + (appointment.status || 'N/A').slice(1)}</p>
+          <div
+            className="manageAppointment-card-availability-bg"
+            style={{ backgroundColor: statusBgColors[appointment.status?.toLowerCase()] || statusBgColors.default }}
+          >
+            <Circle_Primary
+              style={{
+                color: statusIconColors[appointment.status?.toLowerCase()] || statusIconColors.default,
+                width: '1.4rem',
+                height: '1.4rem',
+              }}
+            />
 
-
+            <p>{(appointment.status || 'N/A').charAt(0).toUpperCase() + (appointment.status || 'N/A').slice(1)}</p>
           </div>
         </div>
       </div>

@@ -158,6 +158,9 @@
 				.manageAppointment-box-in-left-core-bot-cards-card-container-availability-bg.booked {
 					background-color: var(--blue-indicator-opacity-15); /* Or another color */
 				}
+        .manageAppointment-box-in-left-core-bot-cards-card-container-availability-bg.pending {
+					background-color: var(--yellow-indicator-opacity-15); /* Or another color */
+				}
 
 
 			/* .manageAppointment-box-in-left-core-bot-cards-card-container-availability-booked {} */

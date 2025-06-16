@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import './registration.css';
-import user_square from '../../assets/icons/user_square.png';
-import calendar_week from '../../assets/icons/calendar_week.png';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { handleAuthToken } from '../../utils/timeout';
+import axios from 'axios';
+import './registration.css';
+
+import Calendar_Week from '../../assets/icons/Calendar_Week.svg?react';
+import User_Square from '../../assets/icons/Calendar_Week.svg?react';
+
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -356,254 +358,265 @@ const Registration = () => {
   }
 
   return (
-    <div className="registration-wrapper">
-      <div className="registration">
-        <div className="registration-header">
-          <div className="registration-header-padding">
-            <p className="registration-header-heading">You're almost there!</p>
-            <p className="registration-header-sub">Just one more step</p>
-          </div>
-        </div>
+    // <div className="registration-1">
+    <div className="registration-box">
+    <div className="registration-box-in">
+      <header className="registration-box-in-header">
+        <p className="registration-box-in-header-bold">You're almost there!</p>
+        <p className="registration-box-in-header-medium">Just one more step</p>
+      </header> {/* registration-box-in-header */}
 
-        <div className="registration-container">
-          <div className="registration-container-padding">
-            <div className="registration-container-header">
-              <p className="registration-container-header-sub">Tell us more about yourself</p>
-              <p className="registration-container-header-heading">Complete your profile</p>
-            </div>
+      <div className="registration-box-in-core">
+        <header className="registration-box-in-core-header">
+          <p className="registration-box-in-core-header-regular">Tell us more about yourself</p>
+          <p className="registration-box-in-core-header-medium">Complete your profile</p>
+        </header> {/* registration-box-in-core-header */}
 
-            <div className="registration-container-column">
-              <form className="registration-container-column-form" onSubmit={handleSubmit}>
-                {error && <div className="error-message">{error}</div>}
-                <div className="registration-container-column-form-address">
-                  <div className="registration-container-column-form-address-header">
-                    <img src={calendar_week} className="" alt="calendar_week icon" />
-                    <p className="registration-container-column-form-address-header-text">Home address</p>
-                  </div>
+        <form className="registration-box-in-core-main" onSubmit={handleSubmit}>
+          <main className="registration-box-in-core-main-form">
+          {error && <div className="error-message">{error}</div>}
+                
+            <aside className="registration-box-in-core-main-form-address">
+              <div className="registration-box-in-core-main-form-address-header">
+                <Calendar_Week
+                  style={{
+                    width: "24px",
+                    height: "24px",
+                    '--stroke-width': '2px',
+                    '--stroke-color': 'var(--black-color-opacity-60)',
+                  }}
+                />
+                <p>Home address</p>
+              </div> {/* registration-box-in-core-main-form-address-header */}
 
-                  <div className="registration-container-column-form-address-content">
-                    <div className="registration-container-column-form-address-content-left">
-                      <div className="registration-container-column-form-address-content-left-alike">
-                        <label htmlFor="region">Region</label>
-                        <select
-                          id="region"
-                          name="region"
-                          value={selectedRegion}
-                          onChange={(e) => setSelectedRegion(e.target.value)}
-                          required
-                        >
-                          <option value="" selected>
-                            Select your region
-                          </option>
-                          {regions.map((region) => (
-                            <option key={region.code} value={region.code}>
-                              {region.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+              <main className="registration-box-in-core-main-form-address-details">
+                <section className="registration-box-in-core-main-form-address-details-left">
+                  <article className="registration-box-in-core-main-form-address-details-left-alike">
+                    <label htmlFor="region">Region</label>
+                    <select
+                      id="region" 
+                      name="region" 
+                      required
+                      value={selectedRegion} onChange={(e) => setSelectedRegion(e.target.value)}
+                    >
+                      <option value=""> Select your region</option>
+                      {regions.map((region) => (
+                        <option key={region.code} value={region.code}>
+                          {region.name}
+                        </option>
+                      ))}
+                    </select>
+                  </article> {/* registration-box-in-core-main-form-address-details-left-alike */}
 
-                      <div className="registration-container-column-form-address-content-left-alike">
-                        <label htmlFor="province">Province</label>
-                        <select
-                          id="province"
-                          name="province"
-                          value={selectedProvince}
-                          onChange={(e) => setSelectedProvince(e.target.value)}
-                          required
-                          disabled={!selectedRegion}
-                        >
-                          <option value="">Select your province</option>
-                          {provinces.map((province) => (
-                            <option key={province.code} value={province.code}>
-                              {province.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                  <article className="registration-box-in-core-main-form-address-details-left-alike">
+                    <label htmlFor="city">City/Municipality</label>
+                    <select
+                      id="city" 
+                      name="city" 
+                      required
+                      value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} disabled={!selectedProvince}
+                    >
+                      <option value="">Select your city/municipality</option>
+                      {cities.map((city) => (
+                        <option key={city.code} value={city.code}>
+                          {city.name}
+                        </option>
+                      ))}
+                    </select>
+                  </article> {/* registration-box-in-core-main-form-address-details-left-alike */}
 
-                      <div className="registration-container-column-form-address-content-left-alike">
-                        <label htmlFor="barangay">Barangay</label>
-                        <select
-                          id="barangay"
-                          name="barangay"
-                          value={selectedBarangay}
-                          onChange={(e) => {
-                            setSelectedBarangay(e.target.value);
-                            setFormData((prev) => ({
-                              ...prev,
-                              barangay: e.target.value,
-                            }));
-                          }}
-                          required
-                          disabled={!selectedCity}
-                        >
-                          <option value="">Select your barangay</option>
-                          {barangays.map((barangay) => (
-                            <option key={barangay.code} value={barangay.code}>
-                              {barangay.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                  <article className="registration-box-in-core-main-form-address-details-left-alike">
+                    <label htmlFor="zip_code">Zip code</label>
+                    <input
+                      type="text" 
+                      id="zip_code" 
+                      name="zip_code" 
+                      placeholder="Enter your zip code"
+                      value={formData.zip_code} 
+                      onChange={handleChange}
+                    />
+                  </article> {/* registration-box-in-core-main-form-address-details-left-alike */}
+                </section> {/* registration-box-in-core-main-form-address-details-left */}
 
-                      <div className="registration-container-column-form-address-content-left-alike">
-                        <label htmlFor="street">Street</label>
-                        <input
-                          type="text"
-                          id="street"
-                          name="street"
-                          placeholder="Enter your street"
-                          value={formData.street}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
-                    </div>
+                <section className="registration-box-in-core-main-form-address-details-right">
+                  <article className="registration-box-in-core-main-form-address-details-right-alike">
+                    <label htmlFor="province">Province</label>
+                    <select
+                      id="province" 
+                      name="province" 
+                      required
+                      value={selectedProvince} 
+                      onChange={(e) => setSelectedProvince(e.target.value)} 
+                      disabled={!selectedRegion}
+                    >
+                      <option value="">Select your province</option>
+                      {provinces.map((province) => (
+                        <option key={province.code} value={province.code}>
+                          {province.name}
+                        </option>
+                      ))}
+                    </select> 
+                  </article> {/* registration-box-in-core-main-form-address-details-right-alike */}
 
-                    <div className="registration-container-column-form-address-content-right">
-                      <div className="registration-container-column-form-address-content-left-alike">
-                        <label htmlFor="city">City/Municipality</label>
-                        <select
-                          id="city"
-                          name="city"
-                          value={selectedCity}
-                          onChange={(e) => setSelectedCity(e.target.value)}
-                          required
-                          disabled={!selectedProvince}
-                        >
-                          <option value="">Select your city/municipality</option>
-                          {cities.map((city) => (
-                            <option key={city.code} value={city.code}>
-                              {city.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                  <article className="registration-box-in-core-main-form-address-details-right-alike">
+                    <label htmlFor="barangay">Barangay</label>
+                    <select
+                      id="barangay" 
+                      name="barangay" 
+                      required disabled={!selectedCity}
+                      value={selectedBarangay}
+                      onChange={(e) => {
+                        setSelectedBarangay(e.target.value);
+                        setFormData((prev) => ({
+                          ...prev,
+                          barangay: e.target.value,
+                        }));
+                      }}
+                    >
+                      <option value="">Select your barangay</option>
+                      {barangays.map((barangay) => (
+                        <option key={barangay.code} value={barangay.code}>
+                          {barangay.name}
+                        </option>
+                      ))}
+                    </select>
+                  </article> {/* registration-box-in-core-main-form-address-details-right-alike */}
 
-                      <div className="registration-container-column-form-address-content-right-alike">
-                        <label htmlFor="zip_code">Zip code</label>
-                        <input
-                          type="text"
-                          id="zip_code"
-                          name="zip_code"
-                          placeholder="Enter your zip code"
-                          value={formData.zip_code}
-                          onChange={handleChange}
-                        />
-                      </div>
-
-                      <div className="registration-container-column-form-address-content-right-alike">
-                        <label htmlFor="building_number">Building number</label>
-                        <input
-                          type="text"
-                          id="building_number"
-                          name="building_number"
-                          placeholder="Enter your building number"
-                          value={formData.building_number}
-                          onChange={handleChange}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="registration-container-column-form-personal">
-                  <div className="registration-container-column-form-personal-header">
-                    <img src={user_square} alt="user_square icon" />
-                    <p className="registration-container-column-form-personal-header-text">
-                      Personal details
-                    </p>
-                  </div>
-                  <div className="registration-container-column-form-personal-content">
-                    <div className="registration-container-column-form-personal-content-top">
-                      <label htmlFor="birthday">Birthday</label>
+                  <div className="registration-box-in-core-main-form-address-details-right-split">
+                    <article className="registration-box-in-core-main-form-address-details-right-split-alike">
+                      <label htmlFor="street">Street</label>
                       <input
-                        type="date"
-                        id="birthday"
-                        name="birthday"
-                        placeholder=""
-                        value={formData.birthday}
-                        onChange={handleChange}
-                        max={getMaxDate()}
+                        type="text" 
+                        id="street" 
+                        name="street" 
+                        placeholder="Enter your street" 
                         required
+                        value={formData.street} 
+                        onChange={handleChange}
                       />
-                    </div>
+                    </article> {/* registration-box-in-core-main-form-address-details-right-split-alike */}
+                    
+                    <article className="registration-box-in-core-main-form-address-details-right-split-alike">
+                      <label htmlFor="building_number">Building number</label>
+                      <input
+                        type="text" 
+                        id="building_number" 
+                        name="building_number" 
+                        placeholder="Enter your building number"
+                        value={formData.building_number} 
+                        onChange={handleChange}
+                      />
+                    </article> {/* registration-box-in-core-main-form-address-details-right-alike */}
+                  </div> {/* registration-box-in-core-main-form-address-details-right-split */}
 
-                    <div className="registration-container-column-form-personal-content-bottom">
-                      <div className="registration-container-column-form-personal-content-bottom-left">
-                        <div className="registration-container-column-form-personal-content-bottom-left-alike">
-                          <label htmlFor="position">Primary Position</label>
-                          <select
-                            id="position"
-                            name="position"
-                            value={formData.position}
-                            onChange={handleChange}
-                            required
-                          >
-                            {positionOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
 
-                        <div className="registration-container-column-form-personal-content-bottom-left-alike">
-                          <label htmlFor="gender">Gender</label>
-                          <select
-                            id="gender"
-                            name="gender"
-                            value={formData.gender}
-                            onChange={handleChange}
-                            required
-                          >
-                            {genderOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
+                </section> {/* registration-box-in-core-main-form-address-details-right */}
+              </main> {/* registration-box-in-core-main-form-address-details */}
+            </aside> {/* registration-box-in-core-main-form-address */}
 
-                      <div className="registration-container-column-form-personal-content-bottom-right">
-                        <div className="registration-container-column-form-personal-content-bottom-right-alike">
-                          <label htmlFor="civil_status">Civil status</label>
-                          <select
-                            id="civil_status"
-                            name="civil_status"
-                            value={formData.civil_status}
-                            onChange={handleChange}
-                            required
-                          >
-                            {civilStatusOptions.map((option) => (
-                              <option key={option.value} value={option.value}>
-                                {option.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="registration-container-submit">
-                  <button
-                    type="submit"
-                    id="register-button"
-                    name="register"
-                    disabled={loading}
-                  >
-                    {loading ? 'Registering...' : 'Register'}
-                  </button>
-                </div>
-              </form>
-            </div>
+            <aside className="registration-box-in-core-main-form-personal">
+              <header className="registration-box-in-core-main-form-personal-header">
+                <User_Square
+                  style={{
+                    width: "24px",
+                    height: "24px",
+                    '--stroke-width': '2px',
+                    '--stroke-color': 'var(--black-color-opacity-60)',
+                  }}
+                />
+                <p> Personal details </p>
+              </header> {/* registration-box-in-core-main-form-personal-header */}
+                    
+                    
+              <div className="registration-box-in-core-main-form-personal-content">
+
+                <section className="registration-box-in-core-main-form-personal-content-left">
+                  <article className="registration-box-in-core-main-form-personal-content-left-alike">
+                    <label htmlFor="birthday">Birthday</label>
+                    <input
+                      type="date" 
+                      id="birthday" 
+                      name="birthday" 
+                      placeholder="" 
+                      required
+                      value={formData.birthday} 
+                      onChange={handleChange} 
+                      max={getMaxDate()}
+                    />
+                  </article> {/* registration-box-in-core-main-form-personal-content-left-alike */}
+
+                  <article className="registration-box-in-core-main-form-personal-content-left-alike">
+                    <label htmlFor="position">Primary Position</label>
+                    <select
+                      id="position" 
+                      name="position" 
+                      required
+                      value={formData.position} 
+                      onChange={handleChange}
+                    >
+                      {positionOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </article> {/* registration-box-in-core-main-form-personal-content-left-alike */}
+                </section> {/* registration-box-in-core-main-form-personal-content-left */}
+
+                <section className="registration-box-in-core-main-form-personal-content-right">
+                  <article className="registration-box-in-core-main-form-personal-content-right-alike">
+                    <label htmlFor="gender">Gender</label>
+                    <select
+                      id="gender" 
+                      name="gender" 
+                      required
+                      value={formData.gender} 
+                       onChange={handleChange}
+                    >
+                      {genderOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </article>  {/* registration-box-in-core-main-form-personal-content-right-alike */}
+
+                  <article className="registration-box-in-core-main-form-personal-content-right-alike">
+                    <label htmlFor="civil_status">Civil status</label>
+                    <select
+                      id="civil_status" 
+                      name="civil_status" 
+                      required
+                      value={formData.civil_status} 
+                      onChange={handleChange}
+                    >
+                      {civilStatusOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </article> {/* registration-box-in-core-main-form-personal-content-right-alike */}
+                </section> {/* registration-box-in-core-main-form-personal-content-right */}
+              </div> {/* registration-box-in-core-main-form-personal-content */}
+            </aside> {/* registration-box-in-core-main-form-personal */}
+          </main> {/* registration-box-in-core-main-form */}
+          
+          <div className="registration-box-in-core-submit">
+            <button
+              type="submit" 
+              id="register-button" 
+              name="register"
+              disabled={loading}
+            >
+              {loading ? 'Registering...' : 'Register'}
+            </button>
           </div>
-        </div>
-      </div>
-    </div>
+        </form> {/* registration-box-in-core-main */}
+      </div> {/* registration-box-in-core */}
+    </div> {/* registration-box-in */}
+    </div> // registration-box
+    // </div> // registration-1
   );
 };
 

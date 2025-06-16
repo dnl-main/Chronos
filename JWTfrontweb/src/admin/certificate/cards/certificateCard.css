@@ -22,6 +22,16 @@
 		/* !!! CHANGE ALL FROM 20PX TO 12PX */
 	}
 
+    .indicator-red {
+      background-color: var(--red-indicator-opacity-60);
+    }
+    .indicator-yellow {
+      background-color: var(--yellow-indicator-opacity-60);
+    }
+    .indicator-green {
+      background-color: var(--green-indicator-opacity-60);
+    }
+
 	.certificate-cards-card-profile { 
 		/* background-color: darkred;  */
 		display: flex;

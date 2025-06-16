@@ -217,5 +217,5 @@
 
 /* New style for pending appointments */
 .schedule-today-cards-card-indicator-pending {
-  background-color: #f1c40f; /* Yellow color for pending status */
+  background-color: var(--yellow-indicator-opacity-60); /* Yellow color for pending status */
 }
