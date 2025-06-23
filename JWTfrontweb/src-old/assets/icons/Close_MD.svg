@@ -1,0 +1,17 @@
+<svg 
+  class="customizable-close-md" 
+  width="80" 
+  height="80" 
+  viewBox="0 0 80 80" 
+  fill="var(--fill-color, none)" 
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path 
+    class="svg-path" 
+    d="M59.9999 59.9999L40.0001 40.0001M40.0001 40.0001L20 20M40.0001 40.0001L60.0001 20M40.0001 40.0001L20 60.0001" 
+    stroke="var(--stroke-color, black)" 
+    stroke-width="var(--stroke-width, 4)" 
+    stroke-linecap="round" 
+    stroke-linejoin="round"
+  />
+</svg>

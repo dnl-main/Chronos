@@ -1,0 +1,373 @@
+.certificate-cards-card { 
+	/* background-color: mediumseagreen;  */
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	background-color: var(--white-color);
+	height: 20vh;
+	width: 100%;
+	border-radius: 12px;
+	/* !!! CHANGE ALL FROM 20PX TO 12PX */
+	box-shadow: 0px 0px 20px rgba(0, 136, 154, 0.10); 
+}
+
+	.certificate-cards-card-indicator { 
+		/* background-color: palegreen;  */
+		height: 100%;
+		width: 1.4%;
+		/* !!! CHANGE ALL FROM 1.8% TO 1.4% */
+		background-color: var(--primary-color);
+		border-top-left-radius: 12px;
+		border-bottom-left-radius: 12px;
+		/* !!! CHANGE ALL FROM 20PX TO 12PX */
+	}
+
+    .indicator-red {
+      background-color: var(--red-indicator-opacity-60);
+    }
+    .indicator-yellow {
+      background-color: var(--yellow-indicator-opacity-60);
+    }
+    .indicator-green {
+      background-color: var(--green-indicator-opacity-60);
+    }
+
+	.certificate-cards-card-profile { 
+		/* background-color: darkred;  */
+		display: flex;
+		flex-direction: row;
+		justify-content: start;
+		align-items: center;
+		height: 100%;
+		width: 32.2%;
+		padding-left: 2vw;
+		column-gap: 1vw;
+	}
+
+
+		.certificate-cards-card-profile-info { 
+			/* background-color: firebrick;  */
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: start;
+			row-gap: 2vh;
+		}
+
+			.certificate-cards-card-profile-info-text { 
+				/* background-color: indianred; */
+				font-weight: var(--font-weight-regular);
+				font-size: var(--font-size-16);
+				color: var(--black-color); 
+			}
+
+			.certificate-cards-card-profile-info-job { 
+				/* background-color: lightcoral; */
+				display: flex;
+				flex-direction: row;
+				justify-content: center;
+				align-items: center;
+				background-color: var(--secondary-color-opacity-60);
+				column-gap: 0.6vw;
+				padding: 1vh 1vw;
+				border-radius: 8px;
+				border: 2px solid var(--primary-color-opacity-15); 
+			}
+
+				.certificate-cards-card-profile-info-job p {
+					font-weight: var(--font-weight-medium);
+					font-size: var(--font-size-16);
+					color: var(--black-color);
+				}
+
+	.certificate-cards-card-certificates { 
+		/* background-color: darkgoldenrod; */
+		display: flex;
+		flex-direction: row;
+    justify-content: start;
+		height: 100%;
+		width: 58%; 
+    column-gap: 2vh;
+	}
+		.certificate-cards-card-certificates-total { 
+			background-color: var(--secondary-color); 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 25%;
+      height: 64%;
+      border-radius: 0.4rem;
+      border: 2px solid var(--primary-color-opacity-15);
+		}
+
+      .certificate-cards-card-certificates-total-sub { 
+        /* background-color: aquamarine; */
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        column-gap: 1.4vh;
+        padding-left: 1.4vh;
+        height: 100%;
+      }
+
+        .certificate-cards-card-certificates-total-sub-separator {
+          background-color: var(--primary-color);
+          width: 0.4vh;
+          height: 68%; 
+          border-radius: 500px;
+        }
+
+        .certificate-cards-card-certificates-total-sub-text { 
+          display: flex;
+          flex-direction: column;
+          row-gap: 0.4vh;
+        }
+
+        .certificate-cards-card-certificates-total-sub-text-light {
+          font-weight: var(--font-weight-light);
+          font-size: var(--font-size-8);
+          color: var(--black-color-opacity-60);  
+        }
+
+        .certificate-cards-card-certificates-total-sub-text-medium { 
+          font-weight: var(--font-weight-medium);
+          font-size: var(--font-size-12);
+          color: var(--black-color); 
+        }
+
+      .certificate-cards-card-certificates-total-count { 
+        /* background-color: darkolivegreen; */
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        width: 32%;
+        height: 100%;
+        padding-right: 1.4vh;
+      }
+
+        .certificate-cards-card-certificates-total-count-bg { 
+          background-color: var(--white-color);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 6.4vh;
+          height: 6.4vh;
+          font-weight: var(--font-weight-semibold);
+          font-size: var(--font-size-24);
+          color: var(--black-color);
+          border-radius: 0.4rem;
+          border: 2px solid var(--primary-color-opacity-60);
+          box-shadow: 0px 0px 20px var(--primary-color-opacity-15); 
+        }
+
+    .certificate-cards-card-certificates-approved { 
+			background-color: var(--secondary-color); 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 25%;
+      height: 64%;
+      border-radius: 0.4rem;
+      border: 2px solid var(--primary-color-opacity-15);
+		}
+
+
+      .certificate-cards-card-certificates-approved-sub { 
+        /* background-color: aquamarine; */
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        column-gap: 1.4vh;
+        padding-left: 1.4vh;
+        height: 100%;
+      }
+
+        .certificate-cards-card-certificates-approved-sub-separator {
+          background-color: var(--green-indicator);
+          width: 0.4vh;
+          height: 68%; 
+          border-radius: 500px;
+        }
+
+        .certificate-cards-card-certificates-approved-sub-text { 
+          display: flex;
+          flex-direction: column;
+          row-gap: 0.4vh;
+        }
+
+        .certificate-cards-card-certificates-approved-sub-text-light {
+          font-weight: var(--font-weight-light);
+          font-size: var(--font-size-8);
+          color: var(--black-color-opacity-60);  
+        }
+
+        .certificate-cards-card-certificates-approved-sub-text-medium { 
+          font-weight: var(--font-weight-medium);
+          font-size: var(--font-size-12);
+          color: var(--black-color); 
+        }
+
+      .certificate-cards-card-certificates-approved-count { 
+        /* background-color: darkolivegreen; */
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        width: 32%;
+        height: 100%;
+        padding-right: 1.4vh;
+      }
+
+        .certificate-cards-card-certificates-approved-count-bg { 
+          background-color: var(--white-color);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 6.4vh;
+          height: 6.4vh;
+          font-weight: var(--font-weight-semibold);
+          font-size: var(--font-size-24);
+          color: var(--black-color);
+          border-radius: 0.4rem;
+          border: 2px solid var(--green-indicator-opacity-60);
+          box-shadow: 0px 0px 20px var(--green-indicator-opacity-15); 
+        }
+
+    .certificate-cards-card-certificates-pending { 
+			/* background-color: darkgreen;  */
+			background-color: var(--secondary-color); 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 25%;
+      height: 64%;
+      border-radius: 0.4rem;
+      border: 2px solid var(--primary-color-opacity-15);
+		}
+
+
+      .certificate-cards-card-certificates-pending-sub { 
+        /* background-color: aquamarine; */
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        column-gap: 1.4vh;
+        padding-left: 1.4vh;
+        height: 100%;
+      }
+
+        .certificate-cards-card-certificates-pending-sub-separator {
+          background-color: var(--yellow-indicator);
+          width: 0.4vh;
+          height: 68%; 
+          border-radius: 500px;
+        }
+
+        .certificate-cards-card-certificates-pending-sub-text { 
+          display: flex;
+          flex-direction: column;
+          row-gap: 0.4vh;
+        }
+
+        .certificate-cards-card-certificates-pending-sub-text-light {
+          font-weight: var(--font-weight-light);
+          font-size: var(--font-size-8);
+          color: var(--black-color-opacity-60);  
+        }
+
+        .certificate-cards-card-certificates-pending-sub-text-medium { 
+          font-weight: var(--font-weight-medium);
+          font-size: var(--font-size-12);
+          color: var(--black-color); 
+        }
+
+      .certificate-cards-card-certificates-pending-count { 
+        /* background-color: darkolivegreen; */
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        width: 32%;
+        height: 100%;
+        padding-right: 1.4vh;
+      }
+
+        .certificate-cards-card-certificates-pending-count-bg { 
+          background-color: var(--white-color);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 6.4vh;
+          height: 6.4vh;
+          font-weight: var(--font-weight-semibold);
+          font-size: var(--font-size-24);
+          color: var(--black-color);
+          border-radius: 0.4rem;
+          border: 2px solid var(--yellow-indicator-opacity-60);
+          box-shadow: 0px 0px 20px var(--yellow-indicator-opacity-15); 
+        }
+
+
+    .certificate-cards-card-certificates-notify { 
+			/* background-color: darkmagenta;  */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 25%;
+      height: 64%;
+      row-gap: 1.4vh;
+		}
+      .certificate-cards-card-certificates-notify-text {
+        display: flex;
+        flex-direction: column;
+        row-gap: 0.4vh;
+      }
+        .certificate-cards-card-certificates-notify-text-light {
+          font-weight: var(--font-weight-light);
+          font-size: var(--font-size-8);
+          color: var(--black-color-opacity-60);
+        }
+        .certificate-cards-card-certificates-notify-text-medium {
+          font-weight: var(--font-weight-medium);
+          font-size: var(--font-size-12);
+          color: var(--black-color);
+        }
+      .certificate-cards-card-certificates-notify-btn {
+        all: unset;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: var(--white-color);
+        padding: 1vh 2vh;
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-12);
+        color: var(--primary-color);
+        border-radius: 0.4rem;
+        border: 2px solid var(--primary-color);
+        box-shadow: 0px 0px 20px var(--primary-color-opacity-15);
+      }
+        .certificate-cards-card-certificates-notify-btn-icon {}
+		
+
+	.certificate-cards-card-button { 
+		/* background-color: darkmagenta;  */
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100%;
+		width: 8%;
+	}
+		.certificate-cards-card-button button { 
+			all: unset;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background-color: var(--primary-color);
+			min-height: 60px;
+			min-width: 60px;
+			border-radius: 500px;
+		}
+
+		.certificate-cards-card-button-svg { 
+			color: var(--white-color);
+			width: 40px;
+			height: 40px; 
+		}

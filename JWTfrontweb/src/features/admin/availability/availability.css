@@ -1,0 +1,231 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.availability {
+  /* background-color: darkred; */
+  max-height: 100vh;
+  max-width: 100vw;
+}
+
+.availability-box {
+  /* background-color: firebrick; */
+  height: 100%;
+  width: 100%;
+  padding-top: 72px;
+  padding-left: 72px;
+}
+
+.availability-box-in {
+  /* background-color: indianred; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--secondary-color);
+  padding: 40px;
+  row-gap: 6vh;
+}
+    .availability-box-in-header {
+      /* background-color: lightcoral; */
+      display: flex;
+      flex-direction: row;
+      justify-content: start;
+      align-items: center;
+      width: 100%;
+			column-gap: 1vw;
+    }
+
+      .availability-box-in-header img {
+        height: 32px;
+      	width: 32px;
+      }
+        .availability-box-in-header p {
+          font-weight: var(--font-weight-medium);
+          font-size: var(--font-size-28);
+          color: var(--black-color);
+        }
+
+    .availability-box-in-tabs {
+      /* background-color: darkblue; */
+      display: flex;
+      flex-direction: row;
+      justify-content: start;
+      align-items: center;
+      width: 100%;
+      column-gap: 1vw;
+			
+    }
+
+      .availability-box-in-tabs img {
+        height: 20px;
+        width: 20px;
+      }
+      
+        .availability-box-in-tabs-all {
+          /* background-color: mediumblue; */
+          all: unset;
+          display: flex;
+          flex-direction: row;
+          justify-content: start;
+          align-items: center;
+          background-color: white;
+          color: #00899A;
+          font-weight: var(--font-weight-regular);
+          font-size: var(--font-size-16);
+          border: 2px solid var(--primary-color-opacity-15);
+          border-radius: 500px;
+          column-gap: 0.6vw;
+					padding: 1vh 1.2vw;
+          cursor: pointer;
+        }
+        .availability-box-in-tabs-available {
+          /* background-color: royalblue; */
+          all: unset;
+          display: flex;
+          flex-direction: row;
+          justify-content: start;
+          align-items: center;
+          background-color: var(--white-color);
+          color: var(--primary-color);
+          font-weight: var(--font-weight-regular);
+          font-size: var(--font-size-16);
+          border: 2px solid var(--primary-color-opacity-15);
+          border-radius: 500px;
+          column-gap: 0.6vw;
+					padding: 1vh 1.2vw;
+          cursor: pointer;
+        }
+        .availability-box-in-tabs-vacation {
+          /* background-color: cornflowerblue; */
+          all: unset;
+          display: flex;
+          flex-direction: row;
+          justify-content: start;
+          align-items: center;
+          background-color: var(--white-color);
+          color: var(--primary-color);
+          font-weight: var(--font-weight-regular);
+          font-size: var(--font-size-16);
+          border: 2px solid var(--primary-color-opacity-15);
+          border-radius: 500px;
+          column-gap: 0.6vw;
+					padding: 1vh 1.2vw;
+          cursor: pointer;
+        }
+        .availability-box-in-tabs-on-board {
+          /* background-color: dodgerblue; */
+          all: unset;
+          display: flex;
+          flex-direction: row;
+          justify-content: start;
+          align-items: center;
+          background-color: var(--white-color);
+          color: var(--primary-color);
+          font-weight: var(--font-weight-regular);
+          font-size: var(--font-size-16);
+          border: 2px solid var(--primary-color-opacity-15);
+          border-radius: 500px;
+          column-gap: 0.6vw;
+					padding: 1vh 1.2vw;
+          cursor: pointer;
+        }
+        .availability-box-in-tabs-new {
+          /* background-color: lightskyblue; */
+          all: unset;
+          display: flex;
+          flex-direction: row;
+          justify-content: start;
+          align-items: center;
+          background-color: var(--white-color);
+          color: var(--primary-color);
+          font-weight: var(--font-weight-regular);
+          font-size: var(--font-size-16);
+          border: 2px solid var(--primary-color-opacity-15);
+          border-radius: 500px;
+          column-gap: 0.6vw;
+					padding: 1vh 1.2vw;
+          cursor: pointer;
+        }
+    .availability-box-in-categories {
+      /* background-color: darkgreen; */
+      display: flex;
+      flex-direction: row;
+      justify-content: start;
+      align-items: center;
+      width: 100%;
+      column-gap: 1vw;
+    }
+			.availability-box-in-categories p {
+				font-weight: var(--font-weight-medium);
+				font-size: var(--font-size-20);
+				color: var(--black-color);
+			}
+
+			.availability-box-in-categories p:nth-child(1) { margin-right: 14.8%; }
+			.availability-box-in-categories p:nth-child(2) { margin-right: 13.4%; }
+			.availability-box-in-categories p:nth-child(3) { margin-right: 8.4%; }
+
+    .availability-box-in-cards {
+      /* background-color: seagreen; */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      row-gap: 2.4vh;
+    }
+
+.availability-box-in-tabs .active-tab {
+  background-color: #00899A;
+  color: white;
+}
+
+.availability-box-in-cards-card-availability-bg {
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Background colors */
+.availability-box-in-cards-card-availability-bg.available {
+  background-color: #d4edda; /* light green */
+}
+
+.availability-box-in-cards-card-availability-bg.on-board {
+  background-color: #fff3cd; /* light yellow */
+}
+
+.availability-box-in-cards-card-availability-bg.vacation {
+  background-color: #f8d7da; /* light red */
+}
+
+.availability-box-in-cards-card-availability-bg.unknown {
+  background-color: #e2e3e5; /* light gray fallback */
+}
+
+/* Circle colors */
+.availability-circle {
+  width: 28px;
+  height: 28px;
+}
+
+.availability-circle.available {
+  color: green;
+}
+
+.availability-circle.on-board {
+  color: gold;
+}
+
+.availability-circle.vacation {
+  color: red;
+}
+
+.availability-circle.unknown {
+  color: gray;
+}
+

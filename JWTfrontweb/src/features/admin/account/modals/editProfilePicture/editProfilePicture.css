@@ -1,0 +1,296 @@
+.changePP {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 1000;
+	background-color: var(--black-color-opacity-60);
+}
+
+.changepassword-main {
+	background-color: var(--white-color);
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	width: 75vh;
+	max-height: 90vh;
+	height: auto;
+	padding: 3vh;
+	gap: 3vh;
+	border-radius: 1.8vh;
+	box-shadow: 0 0 20px rgba(0, 136, 154, 0.10);
+	box-sizing: border-box;
+}
+
+
+.changePP-main-header {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.changePP-main-header-core {
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	column-gap: 2vh;
+}
+
+.changePP-main-header-core-svg {
+	background-color: var(--white-color);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 2vh;
+	border-radius: 500px;
+	border: 2px solid var(--primary-color-opacity-15);
+	box-shadow: 0px 0px 20px rgba(0, 136, 154, 0.10);
+}
+
+.changePP-main-header-core-text {
+	display: flex;
+	flex-direction: column;
+	row-gap: 1vh;
+}
+
+.changePP-main-header-core-text-semibold {
+	font-weight: var(--font-weight-semibold);
+	font-size: var(--font-size-16);
+	color: var(--black-color);
+}
+
+.changePP-main-header-core-text-light {
+	font-weight: var(--font-weight-light);
+	font-size: var(--font-size-12);
+	color: var(--black-color-opacity-60);
+}
+
+.changePP-main-header-line {
+	background-color: var(--primary-color-opacity-15);
+	height: 0.4vh;
+	width: 100%;
+	border-radius: 500px;
+	margin-top: 1.5vh;
+}
+
+.changePP-main-fields {
+	display: flex;
+	flex-direction: column;
+	row-gap: 1.2vh;
+	width: 100%;
+}
+
+.changePP-main-fields + .changePP-main-fields {
+	margin-top: 2vh;
+}
+
+.changePP-main-fields label {
+	font-size: var(--font-size-12);
+	font-weight: var(--font-weight-semibold);
+	color: var(--black-color);
+}
+
+.changePP-main-fields input,
+.changePP-main-fields select {
+	padding: 1.2vh;
+	border-radius: 0.8vh;
+	border: 1px solid var(--black-color-opacity-15);
+	background-color: var(--white-color);
+	font-size: var(--font-size-12);
+	color: var(--black-color);
+	outline: none;
+	box-shadow: 0px 0px 8px rgba(0, 136, 154, 0.05);
+	width: 100%;
+}
+
+.changePP-main-fields select {
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+.changePP-main-fields input[type="file"] {
+	margin-bottom: 1.2vh;
+}
+
+.changePP-main-buttons {
+	display: flex;
+	justify-content: center;
+	column-gap: 4%;
+	width: 100%;
+	margin-top: 3vh; /* Adjusted for bottom spacing */
+}
+
+.changePP-main-buttons-cancel,
+.changePP-main-buttons-confirm {
+	all: unset;
+	width: 48%;
+	text-align: center;
+	padding: 1vh;
+	font-weight: var(--font-weight-semibold);
+	font-size: var(--font-size-12);
+	cursor: pointer;
+	border-radius: 0.8vh;
+}
+
+.changePP-main-buttons-cancel {
+	background-color: var(--white-color);
+	color: var(--black-color);
+	border: 2px solid var(--primary-color-opacity-15);
+}
+
+.changePP-main-buttons-confirm {
+	background-color: var(--primary-color);
+	color: var(--white-color);
+	border: 2px solid var(--primary-color);
+}
+
+.changePP-main-role-buttons {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 1vh;
+	width: 100%;
+}
+
+.changePP-role-button {
+	all: unset;
+	flex: 1;
+	text-align: center;
+	padding: 1vh;
+	margin: 0 0.5vh;
+	font-size: var(--font-size-12);
+	font-weight: var(--font-weight-semibold);
+	border-radius: 0.6vh;
+	cursor: pointer;
+	box-shadow: 0px 0px 8px rgba(0, 136, 154, 0.05);
+}
+
+.changePP-role-button-edit {
+	border: 2px solid var(--primary-color);
+	color: var(--primary-color);
+	background-color: var(--white-color);
+}
+
+.changePP-role-button-save {
+	background-color: var(--primary-color);
+	color: var(--white-color);
+	border: 2px solid var(--primary-color);
+}
+
+.changePP-role-button-discard {
+	background-color: var(--black-color-opacity-05);
+	color: var(--black-color);
+	border: 2px solid var(--black-color-opacity-15);
+}
+
+.error-message {
+	font-size: var(--font-size-12);
+	font-weight: var(--font-weight-regular);
+	color: red;
+	margin-top: 1vh;
+}
+
+.loading-bar-container {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	row-gap: 1.2vh;
+}
+
+.loading-bar {
+	width: 100%;
+	height: 0.8vh;
+	background-color: var(--primary-color-opacity-15);
+	border-radius: 0.8vh;
+	overflow: hidden;
+}
+
+.loading-bar::before {
+	content: '';
+	display: block;
+	width: 50%;
+	height: 100%;
+	background-color: #00889a;
+	border-radius: 0.8vh;
+	animation: loading 1.5s ease-in-out infinite;
+}
+
+.loading-text {
+	font-size: var(--font-size-12);
+	font-weight: var(--font-weight-light);
+	color: var(--black-color-opacity-60);
+	text-align: center;
+}
+
+.changePP-upload-buttons {
+	display: flex;
+	gap: 1.5vh;
+	margin-top: 1.2vh;
+}
+
+.changePP-upload-button {
+	all: unset;
+	padding: 1vh 2vh;
+	font-size: var(--font-size-12);
+	font-weight: var(--font-weight-semibold);
+	border-radius: 0.6vh;
+	cursor: pointer;
+	box-shadow: 0px 0px 8px rgba(0, 136, 154, 0.05);
+	text-align: center;
+	transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.changePP-upload-button-choose {
+	background-color: var(--white-color);
+	color: var(--primary-color);
+	border: 2px solid var(--primary-color);
+}
+
+.changePP-upload-button-choose:hover:not(:disabled) {
+	background-color: var(--primary-color-opacity-05);
+}
+
+.changePP-upload-button-confirm {
+	background-color: var(--primary-color);
+	color: var(--white-color);
+	border: 2px solid var(--primary-color);
+}
+
+.changePP-upload-button-confirm:hover:not(:disabled) {
+	background-color: var(--primary-color-dark);
+}
+
+
+@keyframes loading {
+	0% {
+		transform: translateX(-100%);
+	}
+	50% {
+		transform: translateX(200%);
+	}
+	100% {
+		transform: translateX(200%);
+	}
+}
+
+button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.changePP-main-buttons-confirm:hover:not(:disabled),
+.changePP-role-button-save:hover:not(:disabled) {
+	background-color: var(--primary-color-dark);
+}
+
+.changePP-role-button-edit:hover {
+	background-color: var(--primary-color-opacity-05);
+}
+
+.changePP-role-button-discard:hover {
+	background-color: var(--black-color-opacity-10);
+}

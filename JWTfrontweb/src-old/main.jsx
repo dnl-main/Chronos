@@ -1,21 +1,18 @@
 // src/main.jsx
-import React from 'react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-
-import App from './App.jsx';
 import './index.css';
+import AppRoutes from './router/router';
 import setupAxios from './services/axiosConfig';
 
-// Configure Axios with baseURL and token
+// Setup Axios defaults and interceptors
 setupAxios();
 
-const rootElement = document.getElementById('root');
-createRoot(rootElement).render(
+createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <AppRoutes />
     </BrowserRouter>
   </StrictMode>
 );

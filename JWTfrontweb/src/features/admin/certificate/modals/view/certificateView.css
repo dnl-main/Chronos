@@ -1,0 +1,240 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.certificateModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* semi-transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* ensure it's on top of other content */
+}
+
+.certificateModal-box {
+  background-color: var(--white-color);
+  border-radius: 1rem;
+  width: 72vw;
+  height: 92vh;
+}
+
+.certificateModal-box-in {
+  background-color: var(--white-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  row-gap: 1rem;
+  border-radius: 1rem;
+}
+
+.certificateModal-box-in-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 12%;
+}
+
+.certificateModal-box-in-header-heading {
+  display: flex;
+  align-items: center;
+  column-gap: 1vh;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-20);
+  color: var(--black-color);
+}
+
+.certificateModal-box-in-header-close-button {
+  all: unset;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.4rem;
+  border-radius: 500px;
+  border: 2px solid var(--primary-color-opacity-15);
+  background-color: var(--secondary-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.certificateModal-box-in-core {
+  background-color: var(--secondary-color);
+  display: flex;
+  flex-direction: column;
+  row-gap: 2rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  width: 100%;
+  height: 88%;
+}
+
+.certificateModal-box-in-core-tabs {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  column-gap: 0.5rem;
+}
+
+.certificateModal-box-in-core-tabs-all,
+.certificateModal-box-in-core-tabs-approved,
+.certificateModal-box-in-core-tabs-pending,
+.certificateModal-box-in-core-tabs-required {
+  all: unset;
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  background-color: var(--white-color);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-16);
+  border: 2px solid var(--primary-color-opacity-15);
+  border-radius: 500px;
+  column-gap: 0.6vw;
+  padding: 1vh 3vh 1vh 1vh;
+  cursor: pointer;
+}
+
+.certificateModal-box-in-core-tabs-all {
+  color: var(--primary-color);
+}
+
+.certificateModal-box-in-core-tabs-approved,
+.certificateModal-box-in-core-tabs-pending,
+.certificateModal-box-in-core-tabs-required {
+  color: var(--black-color);
+}
+
+.certificateModal-box-in-core-cards {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  row-gap: 2vh;
+  flex-grow: 1;
+  max-height: 70vh; /* Limit height to enable scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding: 0.5rem;
+  width: 100%;
+}
+
+/* Custom scrollbar */
+.certificateModal-box-in-core-cards::-webkit-scrollbar {
+  width: 8px;
+}
+
+.certificateModal-box-in-core-cards::-webkit-scrollbar-track {
+  background: var(--secondary-color);
+  border-radius: 4px;
+}
+
+.certificateModal-box-in-core-cards::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+.certificateModal-box-in-core-cards::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color-dark);
+}
+
+/* Placeholder for certificate card styling (adjust based on actual card component) */
+.certificateModal-card {
+  background-color: var(--white-color);
+  border: 1px solid var(--black-color-opacity-20);
+  border-radius: 8px;
+  padding: 1rem;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.certificateModal-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.certificateModal-card-title {
+  font-size: var(--font-size-16);
+  font-weight: var(--font-weight-medium);
+  color: var(--black-color);
+}
+
+.certificateModal-card-type {
+  font-size: var(--font-size-14);
+  color: var(--black-color-opacity-60);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .certificateModal-box {
+    width: 90vw;
+    height: 95vh;
+  }
+
+  .certificateModal-box-in {
+    padding: 0.5rem;
+    row-gap: 0.5rem;
+  }
+
+  .certificateModal-box-in-header-heading {
+    font-size: var(--font-size-16);
+    column-gap: 0.5vh;
+  }
+
+  .certificateModal-box-in-core {
+    padding: 0.5rem;
+    row-gap: 1rem;
+  }
+
+  .certificateModal-box-in-core-tabs {
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .certificateModal-box-in-core-tabs-all,
+  .certificateModal-box-in-core-tabs-approved,
+  .certificateModal-box-in-core-tabs-pending,
+  .certificateModal-box-in-core-tabs-required {
+    font-size: var(--font-size-14);
+    padding: 0.8vh 2vh 0.8vh 0.8vh;
+  }
+
+  .certificateModal-box-in-core-cards {
+    max-height: 65vh;
+    row-gap: 1vh;
+  }
+
+  .certificateModal-card {
+    padding: 0.8rem;
+  }
+
+  .certificateModal-card-title {
+    font-size: var(--font-size-14);
+  }
+
+  .certificateModal-card-type {
+    font-size: var(--font-size-12);
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+  .certificateModal-box {
+    width: 80vw;
+    height: 90vh;
+  }
+
+  .certificateModal-box-in-core-cards {
+    max-height: 68vh;
+  }
+}

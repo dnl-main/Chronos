@@ -1,0 +1,17 @@
+<svg
+  className="customizable-icon"
+  width="80"
+  height="80"
+  viewBox="0 0 80 80"
+  fill="var(--fill-color, none)"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    className="svg-path"
+    d="M50 36.6667L40 46.6667L30 36.6667"
+    stroke="var(--stroke-color, black)"
+    strokeWidth="var(--stroke-width, 4)"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  />
+</svg>
