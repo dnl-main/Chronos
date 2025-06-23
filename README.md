@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 git clone --single-branch --branch 07/05/2025 https://github.com/Ian-nwb/Concorde-Web.git
 cd Concorde-Web
 cd JWTfrontweb 
@@ -59,3 +60,6 @@ Change cors.php to ngrok url/apI
 
 #BEFORE RUNNING PHP ARTISAN SERVE (NEW CLONE)
 php artisan storage:link
+=======
+# Chronos
+>>>>>>> 0aa0dfef11a2177cebc67219e5da7c752c76c89a
