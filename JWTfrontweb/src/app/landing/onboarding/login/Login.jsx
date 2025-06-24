@@ -3,8 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './login.css';
 
-import concorde from '../../assets/logo/concorde.png';
-import login_sailor from '../../assets/overlay/login_sailor.png';
+// import concorde from '../../assets/logo/concorde.png';
+// import login_sailor from '../../assets/overlay/login_sailor.png';
+
+import Circle_Primary from '../../../../assets/icons/Circle_Primary.svg?react';
+
 axios.defaults.withCredentials = true;
 
 const Login = () => {
@@ -150,10 +153,12 @@ const Login = () => {
     <div className="login">
       <div className="login-left">
         <div className="login-left-top">
-          <img src={concorde} alt="Concorde logo" />
+          {/* <img src={concorde} alt="Concorde logo" /> */}
+          <Circle_Primary style={{ width: '20px', height: '20px' }} />
         </div>
         <div className="login-left-bottom">
-          <img src={login_sailor} alt="Big picture" />
+          {/* <img src={login_sailor} alt="Big picture" /> */}
+          <Circle_Primary style={{ width: '20px', height: '20px' }} />
         </div>
       </div>
 

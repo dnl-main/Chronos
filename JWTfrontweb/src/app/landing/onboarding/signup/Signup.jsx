@@ -2,8 +2,11 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './signup.css';
-import concorde from '../../assets/logo/concorde.png';
-import signup_auth from '../../assets/overlay/signup_auth.png';
+
+// import concorde from '../../assets/logo/concorde.png';
+// import signup_auth from '../../assets/overlay/signup_auth.png';
+
+import Circle_Primary from '../../../../assets/icons/Circle_Primary.svg?react';
 
 
 const Signup = () => {
@@ -208,10 +211,12 @@ const handleLoginClick = () => {
       <div className="signup-left">
         <div className="signup-left-padding">
           <div className="signup-left-top">
-            <img src={concorde} alt="Concorde logo" />
+            {/* <img src={concorde} alt="Concorde logo" /> */}
+            <Circle_Primary style={{ width: '20px', height: '20px' }} />
           </div>
           <div className="signup-left-bottom">
-            <img src={signup_auth} alt="Big picture" />
+            {/* <img src={signup_auth} alt="Big picture" /> */}
+            <Circle_Primary style={{ width: '20px', height: '20px' }} />
           </div>
         </div>
       </div>

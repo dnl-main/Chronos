@@ -2,11 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './navbarUser.css';
 
-import Search from '../../assets/icons/Search.svg';
-import Filter from '../../assets/icons/Filter.svg';
+// import Search from '../../assets/icons/Search.svg';
+// import Filter from '../../assets/icons/Filter.svg';
 
-import Bell from '../../assets/icons/Bell.svg?react';
-import User_Circle from '../../assets/icons/User_Circle.svg?react';
+// import Bell from '../../assets/icons/Bell.svg?react';
+// import User_Circle from '../../assets/icons/User_Circle.svg?react';
+
+import Circle_Primary from '../../../../../assets/icons/Circle_Primary.svg?react';
 
 const NavbarUser = () => {
   return (
@@ -33,14 +35,15 @@ const NavbarUser = () => {
         
         <div className="navbarUser-main-account">
           <Link to="/user/accountUser"> 
-            <User_Circle 
+            {/* <User_Circle 
               style={{ 
                 color: "var(--primary-color)", 
                 width: "32px", 
                 height: "32px", 
                 "--stroke-width": "5px"  
               }} 
-            />
+            /> */}
+            <Circle_Primary style={{ width: '20px', height: '20px' }} />
           </Link>
         </div> {/* navbarUser-main-account */}
       </main> {/* navbarUser-main */}

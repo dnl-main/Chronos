@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Navbar } from '../admin/navbar/Navbar';
-import Sidebar from '../admin/sidebar/Sidebar';
 import { jwtDecode } from 'jwt-decode';
 
-const Admin = () => {
+import NavbarUser from './nav/navbar/NavbarUser';
+import SidebarUser from './nav/sidebar/SidebarUser';
+
+const User = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,16 +18,16 @@ const Admin = () => {
 
     try {
       const decoded = jwtDecode(token);
-      const now = Date.now() / 1000;
+      const currentTime = Date.now() / 1000; // in seconds
 
-      if (decoded.exp < now) {
-        // Token has expired
+      if (decoded.exp < currentTime) {
+        // Token is expired
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
         navigate('/login');
       }
-    } catch (error) {
-      // console.error('Invalid token:', error);
+    } catch (err) {
+      // console.error('Invalid token:', err);
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
       navigate('/login');
@@ -34,14 +35,14 @@ const Admin = () => {
   }, [navigate]);
 
   return (
-    <div className="admin-layout">
-      <Navbar />
-      <Sidebar />
-      <main>
+    <div className="user-layout">
+      <NavbarUser />
+      <SidebarUser />
+      <div className="content">
         <Outlet />
-      </main>
+      </div>
     </div>
   );
 };
 
-export default Admin;
+export default User;

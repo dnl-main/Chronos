@@ -11,7 +11,7 @@ import { ROUTES } from '../router/routes';
 // import landing_dp_2 from '../../assets/profiles/landing_dp_2.png';
 // import landing_dp_3 from '../../assets/profiles/landing_dp_3.png';
 
-import Circle_Primary from '../../assets/icons/ircle_Primary.svg?react';
+import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
 
 const Landing = () => {
 

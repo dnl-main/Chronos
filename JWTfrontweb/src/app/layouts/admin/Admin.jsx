@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Navbar } from '../admin/navbar/Navbar';
-import Sidebar from '../admin/sidebar/Sidebar';
 import { jwtDecode } from 'jwt-decode';
+
+import { Navbar } from './nav/navbar/Navbar';
+import Sidebar from './nav/sidebar/Sidebar';
 
 const Admin = () => {
   const navigate = useNavigate();

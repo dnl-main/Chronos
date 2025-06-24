@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import App from './App.jsx';
 import './index.css';
-import setupAxios from './services/axiosConfig';
+import setupAxios from './app/services/axiosConfig.js';
 
 // Configure Axios with baseURL and token
 setupAxios();

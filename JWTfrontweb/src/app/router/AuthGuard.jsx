@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import Spinner from '../components/Spinner';
+import Spinner from '../../components/ui/Spinner';
 import { ROUTES } from './routes';
 
 const AuthGuard = ({ children }) => {

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { handleAuthToken } from '../../utils/timeout';
+import { setupTokenTimeout } from '../../../utils/authTimeout';
 import axios from 'axios';
 import './registration.css';
 
-import Calendar_Week from '../../assets/icons/Calendar_Week.svg?react';
-import User_Square from '../../assets/icons/Calendar_Week.svg?react';
+// import Calendar_Week from '../../assets/icons/Calendar_Week.svg?react';
+// import User_Square from '../../assets/icons/User_Square.svg?react';
+
+import Circle_Primary from '../../../../assets/icons/Circle_Primary.svg?react';
 
 
 const Registration = () => {
@@ -107,7 +109,7 @@ const Registration = () => {
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     const storedUser = sessionStorage.getItem('user');
-    handleAuthToken(token, storedUser ? JSON.parse(storedUser) : null, navigate);
+    setupTokenTimeout(token, storedUser ? JSON.parse(storedUser) : null, navigate);
     if (!token) {
       setLoading(false);
       navigate('/login');
@@ -323,7 +325,7 @@ const Registration = () => {
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     const storedUser = sessionStorage.getItem('user');
-    handleAuthToken(token, storedUser ? JSON.parse(storedUser) : null, navigate);
+    setupTokenTimeout(token, storedUser ? JSON.parse(storedUser) : null, navigate);
 
     if (!token) {
       setLoading(false);
@@ -378,14 +380,15 @@ const Registration = () => {
                 
             <aside className="registration-box-in-core-main-form-address">
               <div className="registration-box-in-core-main-form-address-header">
-                <Calendar_Week
+                {/* <Calendar_Week
                   style={{
                     width: "24px",
                     height: "24px",
                     '--stroke-width': '2px',
                     '--stroke-color': 'var(--black-color-opacity-60)',
                   }}
-                />
+                /> */}
+                <Circle_Primary style={{ width: '20px', height: '20px' }} />
                 <p>Home address</p>
               </div> {/* registration-box-in-core-main-form-address-header */}
 
@@ -516,14 +519,15 @@ const Registration = () => {
 
             <aside className="registration-box-in-core-main-form-personal">
               <header className="registration-box-in-core-main-form-personal-header">
-                <User_Square
+                {/* <User_Square
                   style={{
                     width: "24px",
                     height: "24px",
                     '--stroke-width': '2px',
                     '--stroke-color': 'var(--black-color-opacity-60)',
                   }}
-                />
+                /> */}
+                <Circle_Primary style={{ width: '20px', height: '20px' }} />
                 <p> Personal details </p>
               </header> {/* registration-box-in-core-main-form-personal-header */}
                     
