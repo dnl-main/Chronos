@@ -82,17 +82,17 @@ const Login = () => {
         }
 
         // Navigate based on role, region, and needs_position
-        if (response.data.user.role === 'admin') {
+        if (response.data.user.role === 'superadmin') {
+          navigate('/superadmin/homesuperadmin');
+        } else if (response.data.user.role === 'admin') {
           if (response.data.needs_position) {
             alert("You need to set your position before proceeding.");
-            navigate('/admin/home'); // Redirect to admin dashboard
-          } else {
-            navigate('/admin/home'); // Redirect to admin dashboard
           }
+          navigate('/admin/home');
         } else if (response.data.user.region) {
-          navigate('/user/homeUser'); // Navigate to home user if region exists
+          navigate('/user/homeUser');
         } else {
-          navigate('/Registration'); // Redirect to registration if region is null
+          navigate('/Registration');
         }
       } else {
         setError('Invalid credentials or incomplete response. Please try again.');
