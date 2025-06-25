@@ -1,0 +1,12 @@
+<svg 
+  width="80" 
+  height="80" 
+  viewBox="0 0 80 80" 
+  fill="var(--fill-color, #FFCB45)" 
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path 
+    d="M53.5967 24.5459L80 30.5576L62 51.7393L64.7217 80L40 68.5459L15.2783 80L18 51.7393L0 30.5576L26.4033 24.5459L40 0L53.5967 24.5459Z" 
+    fill="var(--fill-color, #FFCB45)" 
+  />
+</svg>
