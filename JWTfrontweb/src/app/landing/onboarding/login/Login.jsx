@@ -1,92 +1,115 @@
-import React, { useState, useEffect } from 'react';
+import React, { useReducer, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './login.css';
-
-// import concorde from '../../assets/logo/concorde.png';
-// import login_sailor from '../../assets/overlay/login_sailor.png';
-
 import Circle_Primary from '../../../../assets/icons/Circle_Primary.svg?react';
+import Hide from '../../../../assets/icons/Hide.svg?react';
+import Show from '../../../../assets/icons/Show.svg?react';
+
+import login_sailor from '../../../../assets/photo/login_sailor.png';
 
 axios.defaults.withCredentials = true;
 
+const initialState = {
+  email: '',
+  password: '',
+  showPassword: false,
+  rememberMe: false,
+  hasPreFilled: false,
+  error: '',
+  loginLoading: false,
+  forgotLoading: false,
+  showForgotPasswordModal: false,
+  forgotEmail: '',
+  forgotError: '',
+  forgotSuccess: '',
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'SET_FIELD':
+      return { ...state, [action.field]: action.value };
+    case 'TOGGLE':
+      return { ...state, [action.field]: !state[action.field] };
+    case 'SET_ERROR':
+      return { ...state, error: action.payload };
+    case 'SET_FORGOT_ERROR':
+      return { ...state, forgotError: action.payload };
+    case 'SET_FORGOT_SUCCESS':
+      return { ...state, forgotSuccess: action.payload };
+    case 'SET_LOADING':
+      return { ...state, loginLoading: action.payload };
+    case 'SET_FORGOT_LOADING':
+      return { ...state, forgotLoading: action.payload };
+    case 'SET_REMEMBER_ME':
+      return { ...state, rememberMe: action.payload };
+    case 'SET_HAS_PREFILLED':
+      return { ...state, hasPreFilled: action.payload };
+    default:
+      return state;
+  }
+}
+
 const Login = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [forgotLoading, setForgotLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const [hasPreFilled, setHasPreFilled] = useState(false);
-  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState('');
-  const [forgotError, setForgotError] = useState('');
-  const [forgotSuccess, setForgotSuccess] = useState('');
   const navigate = useNavigate();
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const {
+    email,
+    password,
+    showPassword,
+    rememberMe,
+    hasPreFilled,
+    error,
+    loginLoading,
+    forgotLoading,
+    showForgotPasswordModal,
+    forgotEmail,
+    forgotError,
+    forgotSuccess,
+  } = state;
 
   useEffect(() => {
     const savedEmail = localStorage.getItem('rememberedEmail');
     if (savedEmail && !hasPreFilled) {
-      setEmail(savedEmail);
-      setRememberMe(true);
-      setHasPreFilled(true);
+      dispatch({ type: 'SET_FIELD', field: 'email', value: savedEmail });
+      dispatch({ type: 'SET_REMEMBER_ME', payload: true });
+      dispatch({ type: 'SET_HAS_PREFILLED', payload: true });
     }
-  }, []);
-
-  const handleRememberMeChange = (e) => {
-    const isChecked = e.target.checked;
-    setRememberMe(isChecked);
-    if (!isChecked) {
-      localStorage.removeItem('rememberedEmail');
-    }
-  };
+  }, [hasPreFilled]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('user');
-    sessionStorage.removeItem('needs_position'); // Clear needs_position
-
-    setError('');
-    setLoginLoading(true);
+    sessionStorage.clear();
+    dispatch({ type: 'SET_ERROR', payload: '' });
+    dispatch({ type: 'SET_LOADING', payload: true });
 
     try {
-      // console.log('Sending login request:', { email, password });
       const response = await axios.post(
         `${apiUrl}/login`,
-         { email, password },
-              {
-    headers: {
-      'ngrok-skip-browser-warning': 'true',
-    },
-  }
-        );
+        { email, password },
+        { headers: { 'ngrok-skip-browser-warning': 'true' } }
+      );
 
       if (response.data.status && response.data.token) {
         if (email.endsWith('@friendmar.com.ph')) {
           response.data.user.role = 'admin';
         }
 
-        // Store token, user, and needs_position in sessionStorage
         sessionStorage.setItem('token', response.data.token);
         sessionStorage.setItem('user', JSON.stringify(response.data.user));
         sessionStorage.setItem('needs_position', JSON.stringify(response.data.needs_position));
-
-        // console.log('Login successful:', response.data.message);
 
         if (rememberMe) {
           localStorage.setItem('rememberedEmail', email);
         }
 
-        // Navigate based on role, region, and needs_position
         if (response.data.user.role === 'superadmin') {
           navigate('/superadmin/homesuperadmin');
         } else if (response.data.user.role === 'admin') {
           if (response.data.needs_position) {
-            alert("You need to set your position before proceeding.");
+            alert('You need to set your position before proceeding.');
           }
           navigate('/admin/home');
         } else if (response.data.user.region) {
@@ -95,22 +118,15 @@ const Login = () => {
           navigate('/Registration');
         }
       } else {
-        setError('Invalid credentials or incomplete response. Please try again.');
+        dispatch({ type: 'SET_ERROR', payload: 'Invalid credentials or incomplete response.' });
         alert('Invalid credentials. Please check your email and password and try again.');
       }
     } catch (error) {
-      if (error.response) {
-        setError(error.response.data.message || 'Login failed. Please check your credentials.');
-        alert(error.response.data.message || 'Login failed. Please check your credentials.');
-      } else if (error.request) {
-        setError('No response from server. Please check your network or server status.');
-        alert('No response from server. Please check your network or server status.');
-      } else {
-        setError('Something went wrong. Please try again.');
-        alert('Something went wrong. Please try again.');
-      }
+      const msg = error?.response?.data?.message || error?.message || 'Something went wrong.';
+      dispatch({ type: 'SET_ERROR', payload: msg });
+      alert(msg);
     } finally {
-      setLoginLoading(false);
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
@@ -122,42 +138,54 @@ const Login = () => {
     e.preventDefault();
     e.stopPropagation();
 
-    setForgotError('');
-    setForgotSuccess('');
-    setForgotLoading(true);
+    dispatch({ type: 'SET_FORGOT_ERROR', payload: '' });
+    dispatch({ type: 'SET_FORGOT_SUCCESS', payload: '' });
+    dispatch({ type: 'SET_FORGOT_LOADING', payload: true });
 
     try {
-      const response = await axios.post(`${apiUrl}/forgot-password`, 
+      const response = await axios.post(
+        `${apiUrl}/forgot-password`,
         { email: forgotEmail },
-        {
-    headers: {
-      'ngrok-skip-browser-warning': 'true',
-    },
-  }
+        { headers: { 'ngrok-skip-browser-warning': 'true' } }
       );
 
-      setForgotSuccess(response.data.message || 'Password reset link sent to your email.');
-      setShowForgotPasswordModal(false);
+      dispatch({ type: 'SET_FORGOT_SUCCESS', payload: response.data.message });
+      dispatch({ type: 'SET_FIELD', field: 'showForgotPasswordModal', value: false });
     } catch (error) {
-      if (error.response) {
-        setForgotError(error.response.data.message || 'Failed to send reset link. Please try again.');
-      } else {
-        setForgotError('No response from server. Please check your network or server status.');
-      }
+      const msg = error?.response?.data?.message || 'Failed to send reset link.';
+      dispatch({ type: 'SET_FORGOT_ERROR', payload: msg });
     } finally {
-      setForgotLoading(false);
+      dispatch({ type: 'SET_FORGOT_LOADING', payload: false });
     }
   };
 
   return (
     <div className="login">
+      {/* <Hide
+        style={{
+          width: '32px',
+          height: '32px',
+          '--stroke-color': '#555',
+          '--stroke-width': '3',
+          '--fill-color': 'none',
+        }}
+      />
+      <Show
+        style={{
+          width: '32px',
+          height: '32px',
+          '--stroke-color': '#555',
+          '--stroke-width': '3',
+          '--fill-color': 'none',
+        }}
+      /> 
+      <img src={login_sailor} className="landing-box-right-bg" alt="background" />
+      */}
       <div className="login-left">
         <div className="login-left-top">
-          {/* <img src={concorde} alt="Concorde logo" /> */}
           <Circle_Primary style={{ width: '20px', height: '20px' }} />
         </div>
         <div className="login-left-bottom">
-          {/* <img src={login_sailor} alt="Big picture" /> */}
           <Circle_Primary style={{ width: '20px', height: '20px' }} />
         </div>
       </div>
@@ -169,92 +197,85 @@ const Login = () => {
             <p className="login-right-header-heading">Welcome back</p>
           </div>
 
-          <div className="login-right-form">
-            <form
-              id="login-form"
-              className="login-right-form-form"
-              onSubmit={handleLogin}
-              style={{ marginTop: '20px' }}
-            >
-              <div className="login-right-form-email">
-                <label htmlFor="login-email-id">Email</label>
+          <form className="login-right-form-form" onSubmit={handleLogin} style={{ marginTop: '20px' }}>
+            <div className="login-right-form-email">
+              <label htmlFor="login-email-id">Email</label>
+              <input
+                type="email"
+                id="login-email-id"
+                placeholder="E.g. juandelacruz@example.com"
+                required
+                value={email}
+                onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'email', value: e.target.value })}
+              />
+            </div>
+
+            <div className="login-right-form-password" style={{ position: 'relative', width: '100%' }}>
+              <label htmlFor="login-password-id">Password</label>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="login-password-id"
+                placeholder="Enter your password"
+                required
+                value={password}
+                onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'password', value: e.target.value })}
+                style={{ width: '100%', paddingRight: '40px' }}
+              />
+              <div
+                onClick={() => dispatch({ type: 'TOGGLE', field: 'showPassword' })}
+                style={{
+                  position: 'absolute',
+                  right: '15px',
+                  top: '57px',
+                  transform: 'translateY(-50%)',
+                  cursor: 'pointer',
+                  height: '20px',
+                  width: '20px',
+                  borderRadius: '50%',
+                  backgroundColor: showPassword ? '#00889A' : '#ccc',
+                  zIndex: 1,
+                }}
+                title={showPassword ? 'Hide password' : 'Show password'}
+              />
+            </div>
+
+            <div className="login-right-options">
+              <div className="login-right-options-remember">
                 <input
-                  type="email"
-                  id="login-email-id"
-                  name="login-email"
-                  placeholder="E.g. juandelacruz@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-           
-                />
-              </div>
-              <div className="login-right-form-password" style={{ position: 'relative', width: '100%' }}>
-                <label htmlFor="login-password-id">Password</label>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  id="login-password-id"
-                  name="login-password"
-                  placeholder="Enter your password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  style={{ width: '100%', paddingRight: '40px' }}
-                />
-                <div
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: 'absolute',
-                    right: '15px',
-                    top: '57px',
-                    transform: 'translateY(-50%)',
-                    cursor: 'pointer',
-                    height: '20px',
-                    width: '20px',
-                    borderRadius: '50%',
-                    backgroundColor: showPassword ? '#00889A' : '#ccc',
-                    zIndex: 1,
+                  type="checkbox"
+                  id="remember-checkbox-id"
+                  checked={rememberMe}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    dispatch({ type: 'SET_REMEMBER_ME', payload: checked });
+                    if (!checked) localStorage.removeItem('rememberedEmail');
                   }}
-                  title={showPassword ? 'Hide password' : 'Show password'}
                 />
+                <label htmlFor="remember-checkbox-id">Remember me</label>
               </div>
-              <div className="login-right-options">
-                <div className="login-right-options-remember">
-                  <input
-                    type="checkbox"
-                    id="remember-checkbox-id"
-                    name="remember-checkbox"
-                    checked={rememberMe}
-                    onChange={handleRememberMeChange}
-                  />
-                  <label htmlFor="remember-checkbox-id">Remember me</label>
-                </div>
-                <div className="login-right-options-forgot">
-                  <button
-                    type="button"
-                    id="forgot_password-id"
-                    name="forgot_password"
-                    onClick={() => setShowForgotPasswordModal(true)}
-                  >
-                    Forgot Password?
-                  </button>
-                </div>
-              </div>
-              <div className="login-right-button" style={{ marginTop: '20px' }}>
-                <button type="submit" id="login-submit-button-id" name="login-button" disabled={loginLoading}>
-                  {loginLoading ? 'Logging in...' : 'Login'}
+
+              <div className="login-right-options-forgot">
+                <button
+                  type="button"
+                  onClick={() => dispatch({ type: 'SET_FIELD', field: 'showForgotPasswordModal', value: true })}
+                >
+                  Forgot Password?
                 </button>
               </div>
-            </form>
-          </div>
+            </div>
 
-          <div className="login-right-spacer">
-            <div className="login-right-signup">
-              <p className="login-right-signup-text">Don't have an account yet? </p>
-              <button id="signup-button" onClick={handleSignup}>
-                Sign up
+            <div className="login-right-button" style={{ marginTop: '20px' }}>
+              <button type="submit" disabled={loginLoading}>
+                {loginLoading ? 'Logging in...' : 'Login'}
               </button>
             </div>
+          </form>
+
+          <div className="login-right-signup">
+            <p className="login-right-signup-text">Don't have an account yet?</p>
+            <button id="signup-button" onClick={handleSignup}>
+              Sign up
+            </button>
           </div>
         </div>
       </div>
@@ -269,9 +290,8 @@ const Login = () => {
                 <input
                   type="email"
                   id="forgot-email-id"
-                  placeholder="Enter your email"
                   value={forgotEmail}
-                  onChange={(e) => setForgotEmail(e.target.value)}
+                  onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'forgotEmail', value: e.target.value })}
                   required
                 />
               </div>
@@ -280,16 +300,11 @@ const Login = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
                 <button
                   type="button"
-                  onClick={() => setShowForgotPasswordModal(false)}
-                  className="forgot-password-cancel"
+                  onClick={() => dispatch({ type: 'SET_FIELD', field: 'showForgotPasswordModal', value: false })}
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={forgotLoading}
-                  className="forgot-password-submit"
-                >
+                <button type="submit" disabled={forgotLoading}>
                   {forgotLoading ? 'Sending...' : 'Send Reset Link'}
                 </button>
               </div>
