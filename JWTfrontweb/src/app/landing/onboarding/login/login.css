@@ -1,3 +1,5 @@
+
+
 /* For Desktop/PC */
 .login {
 	display: flex;
@@ -182,97 +184,7 @@
 	font-size: var(--font-size-14); /* Scaled from 16px */
 	color: var(--primary-color);
   }
-  
-  /* Large screens */
-  @media (min-width: 1600px) {
-	.login-left {
-	  padding: 40px; /* Increased from 30px to maintain proportions */
-	}
-  
-	.login-right-padding {
-	  padding: 60px; /* Increased from 50px */
-	  row-gap: 40px; /* Increased from 30px */
-	}
-  
-	.login-right-form-form input {
-	  height: 58px; /* Increased from 50px */
-	  padding: 20px; /* Increased from 16px */
-	}
-  
-	.login-right-button button {
-	  height: 58px; /* Increased from 50px */
-	  font-size: var(--font-size-20); /* Increased from 18 */
-	}
-  }
-  
-  /* Tablets and smaller */
-  @media (max-width: 1024px) {
-	.login {
-	  flex-direction: column;
-	  height: auto;
-	}
-  
-	.login-left {
-	  width: 100%;
-	  height: auto;
-	  padding: 20px;
-	}
-  
-	.login-left-bottom {
-	  height: auto;
-	  padding: 20px;
-	}
-  
-	.login-right {
-	  width: 100%;
-	  height: auto;
-	  padding: 20px;
-	}
-  
-	.login-right-padding {
-	  padding: 30px;
-	}
-  }
-  
-  /* Small tablets and large phones */
-  @media (max-width: 768px) {
-	.login-left-bottom img {
-	  max-height: 300px;
-	}
-  
-	.login-right-padding {
-	  padding: 20px;
-	  row-gap: 30px;
-	}
-  
-	.login-right-header-heading {
-	  font-size: var(--font-size-24);
-	}
-  }
-  
-  /* Phones */
-  @media (max-width: 480px) {
-	.login-right-padding {
-	  padding: 15px;
-	}
-  
-	.login-left-top img {
-	  height: 18px;
-	}
-  
-	.login-right-button button {
-	  font-size: var(--font-size-16);
-	}
-  
-	.login-right-header-heading {
-	  font-size: var(--font-size-20);
-	}
-  
-	.login-right-options {
-	  flex-direction: column;
-	  gap: 10px;
-	}
-  }
+
 
 .forgot-password-modal {
   position: fixed;
