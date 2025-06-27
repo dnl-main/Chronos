@@ -23,6 +23,7 @@
 			/* background-color: skyblue; */
 			display: flex;
 			align-items: center;
+			overflow: hidden;
 			column-gap: 1vh;
 			font-weight: var(--font-weight-medium);
 			font-size: var(--font-size-12);
