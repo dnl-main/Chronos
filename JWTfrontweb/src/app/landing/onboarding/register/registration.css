@@ -28,6 +28,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    row-gap: 1.2vh;
     height: 16vh;
     width: 100%;
     padding: 4vh;
@@ -53,7 +54,7 @@
     justify-content: center;
     align-items: center;
     row-gap: 4vh;
-    height: 76vh;
+    height: 80vh;
     width: 100%;
     /* flex-grow: 1; */
     padding: 6vh 8vh;
@@ -69,7 +70,7 @@
     }
       .registration-box-in-core-header-regular {
         /* background-color: mediumturquoise; */
-        font-weight: var(--font-weight-regular);
+        font-weight: var(--font-weight-light);
         font-size: var(--font-size-12);
         color: var(--black-color-opacity-60);
       }
@@ -109,7 +110,7 @@
           flex-direction: column;
           /* justify-content: center;
           align-items: center; */
-          row-gap: 2vh;
+          row-gap: 4vh;
           width: 50%;
           height: 100%;
         }
@@ -119,115 +120,120 @@
             align-items: center;
             column-gap: 1vh;
             width: 100%;
-            font-weight: var(--font-weight-medium);
-            font-size: var(--font-size-12);
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-16);
             color: var(--black-color-opacity-60);
           }
 
           .registration-box-in-core-main-form-address-details {
             /* background-color: darkkhaki; */
             display: flex;
-            column-gap: 2vh;
+            flex-direction: column;
+            row-gap: 3.2vh;
             width: 100%;
+            height: 100%;
           }
-              .registration-box-in-core-main-form-address-details-left-alike label,
-              .registration-box-in-core-main-form-address-details-right-alike label {
-                color: var(--black-color);
-                font-size: var(--font-size-12);
-                font-weight: var(--font-weight-medium);
-              }
-              .registration-box-in-core-main-form-address-details-left-alike select,
-              .registration-box-in-core-main-form-address-details-right-alike select {
-                width: 100%;
-                max-width: 100%;
-                padding: 0.6rem 1rem;
-                border-radius: 0.3rem;
-                border: 2px solid var(--primary-color-opacity-30);
-                background-color: var(--white-color) !important;
-                color: var(--black-color-opacity-60);
-                font-size: var(--font-size-12);
-                font-weight: var(--font-weight-medium);
 
-                cursor: pointer;
-                appearance: none !important;
-                -webkit-appearance: none !important;
-                -moz-appearance: none !important;
 
-                background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-                background-repeat: no-repeat;
-                background-position: right 0.7rem center;
-                background-size: 1rem;
-                box-sizing: border-box;
-              }
-              .registration-box-in-core-main-form-address-details-left-alike input,
-              .registration-box-in-core-main-form-address-details-right-alike input {
-                width: 100%;
-                padding: 0.6rem 1rem;
-                border-radius: 0.3rem;
-                border: 2px solid var(--primary-color-opacity-30);
-                background-color: var(--white-color);
-                color: var(--black-color);
-                font-size: var(--font-size-12);
-                font-weight: var(--font-weight-medium);
-                cursor: text;
-                box-sizing: border-box;
-              }
-
-            .registration-box-in-core-main-form-address-details-left {
-              /* background-color: goldenrod; */
+            .registration-box-in-core-main-form-address-details-top {
+              /* background-color: darkblue; */
               display: flex;
-              flex-direction: column;
-              row-gap: 3.2vh;
-              width: 50%;
+              column-gap: 2vh;
             }
-              .registration-box-in-core-main-form-address-details-left-alike {
-                /* background-color: khaki; */
-                display: flex;
-                flex-direction: column;
-                row-gap: 1.6vh;
+              .registration-box-in-core-main-form-address-details-top-alike {
+                /* background-color: steelblue; */
+                width: 100%;
               }
-            .registration-box-in-core-main-form-address-details-right {
-              /* background-color: peru; */
+
+            .registration-box-in-core-main-form-address-details-mid {
+              /* background-color: darkgreen; */
               display: flex;
-              flex-direction: column;
-              row-gap: 3.2vh;
-              width: 50%;
+              column-gap: 2vh;
             }
-              .registration-box-in-core-main-form-address-details-right-alike {
-                /* background-color: wheat; */
-                display: flex;
-                flex-direction: column;
-                row-gap: 1.6vh;
+              .registration-box-in-core-main-form-address-details-mid-alike {
+                /* background-color: mediumseagreen; */
+                width: 100%;
               }
-              .registration-box-in-core-main-form-address-details-right-split {
+
+            .registration-box-in-core-main-form-address-details-bot {
+              /* background-color: darkred; */
+              display: flex;
+              column-gap: 2vh;
+            }
+              .registration-box-in-core-main-form-address-details-bot-left {
+                /* background-color: firebrick; */
+                width: 100%;
+              }
+                .registration-box-in-core-main-form-address-details-bot-left-alike {
+                  /* background-color: indianred; */
+                }
+              .registration-box-in-core-main-form-address-details-bot-right {
+                /* background-color: brown; */
                 display: flex;
                 column-gap: 2vh;
+                width: 100%;
               }
-                .registration-box-in-core-main-form-address-details-right-split-alike {
+                .registration-box-in-core-main-form-address-details-bot-right-alike {
+                  /* background-color: lightcoral; */
+                  width: 100%;
+                }
+                .registration-box-in-core-main-form-address-details-bot-right-alike {
+                  /* background-color: salmon; */
+                  width: 100%;
+                }
+
+
+                .registration-box-in-core-main-form-address-details label {
+                  color: var(--black-color);
+                  font-size: var(--font-size-12);
+                  font-weight: var(--font-weight-medium);
+                }
+
+                .registration-box-in-core-main-form-address-details select {
+                  width: 100%;
+                  max-width: 100%;
+                  height: 6.4vh;
+                  max-height: 6.4vh;
+                  padding: 0.6rem 1rem;
+                  border-radius: 0.3rem;
+                  border: 2px solid var(--primary-color-opacity-30);
+                  background-color: var(--white-color) !important;
+                  color: var(--black-color-opacity-60);
+                  font-size: var(--font-size-12);
+                  font-weight: var(--font-weight-medium);
+
+                  cursor: pointer;
+                  appearance: none !important;
+                  -webkit-appearance: none !important;
+                  -moz-appearance: none !important;
+
+                  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+                  background-repeat: no-repeat;
+                  background-position: right 0.7rem center;
+                  background-size: 1rem;
+                  box-sizing: border-box;
+                }
+
+                .registration-box-in-core-main-form-address-details input {
+                  width: 100%;
+                  height: 6.4vh;
+                  max-height: 6.4vh;
+                  padding: 0.6rem 1rem;
+                  border-radius: 0.3rem;
+                  border: 2px solid var(--primary-color-opacity-30);
+                  background-color: var(--white-color);
+                  color: var(--black-color);
+                  font-size: var(--font-size-12);
+                  font-weight: var(--font-weight-medium);
+                  cursor: text;
+                  box-sizing: border-box;
+                }
+
+                .registration-box-in-core-main-form-address-details article {
                   display: flex;
                   flex-direction: column;
                   row-gap: 1.6vh;
                 }
-                  .registration-box-in-core-main-form-address-details-right-split-alike label {
-                    color: var(--black-color);
-                    font-size: var(--font-size-12);
-                    font-weight: var(--font-weight-medium);
-                  }
-                  .registration-box-in-core-main-form-address-details-right-split-alike input {
-                    width: 100%;
-                    padding: 0.6rem 1rem;
-                    border-radius: 0.3rem;
-                    border: 2px solid var(--primary-color-opacity-30);
-                    background-color: var(--white-color);
-                    color: var(--black-color);
-                    font-size: var(--font-size-12);
-                    font-weight: var(--font-weight-medium);
-                    cursor: text;
-                    box-sizing: border-box;
-                  }
-
-
-                                
 
         .registration-box-in-core-main-form-personal {
           /* background-color: darkblue; */
@@ -235,7 +241,7 @@
           flex-direction: column;
           /* justify-content: center;
           align-items: center; */
-          row-gap: 2vh;
+          row-gap: 4vh;
           width: 50%;
           height: 100%;
         }
@@ -245,8 +251,8 @@
             align-items: center;
             column-gap: 1vh;
             width: 100%;
-            font-weight: var(--font-weight-medium);
-            font-size: var(--font-size-12);
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-16);
             color: var(--black-color-opacity-60);
           }
 
@@ -295,6 +301,8 @@
                 .registration-box-in-core-main-form-personal-content-right-alike select {
                   width: 100%;
                   max-width: 100%;
+                  height: 6.4vh;
+                  max-height: 6.4vh;
                   padding: 0.6rem 1rem;
                   border-radius: 0.3rem;
                   border: 2px solid var(--primary-color-opacity-30);
@@ -317,6 +325,8 @@
                 .registration-box-in-core-main-form-personal-content-left-alike input,
                 .registration-box-in-core-main-form-personal-content-right-alike input {
                   width: 100%;
+                  height: 6.4vh;
+                  max-height: 6.4vh;
                   padding: 0.6rem 1rem;
                   border-radius: 0.3rem;
                   border: 2px solid var(--primary-color-opacity-30);
