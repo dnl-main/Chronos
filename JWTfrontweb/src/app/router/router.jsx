@@ -18,32 +18,30 @@ const ProtectedRoutes = lazy(() => import('./ProtectedRoutes'));
 const AppRoutes = () => {
   const location = useLocation();
 
-  const isPublicPath = [
-    ROUTES.LANDING,
-    ROUTES.LOGIN,
-    ROUTES.SIGNUP,
-    ROUTES.REGISTRATION,
-  ].includes(location.pathname);
+  // const isPublicPath = [
+  //   ROUTES.LANDING,
+  //   ROUTES.LOGIN,
+  //   ROUTES.SIGNUP,
+  //   ROUTES.REGISTRATION,
+  // ].includes(location.pathname);
 
   return (
     <Routes>
-      {isPublicPath ? (
-        <>
-          <Route path={ROUTES.LANDING} element={<Landing />} />
-          <Route path={ROUTES.LOGIN} element={<Suspense fallback={<Spinner />}><Login /></Suspense>} />
-          <Route path={ROUTES.SIGNUP} element={<Suspense fallback={<Spinner />}><Signup /></Suspense>} />
-          <Route path={ROUTES.REGISTRATION} element={<Suspense fallback={<Spinner />}><Registration /></Suspense>} />
-        </>
-      ) : (
-        <Route
-          path="/*"
-          element={
-            <Suspense fallback={<Spinner />}>
-              <ProtectedRoutes />
-            </Suspense>
-          }
-        />
-      )}
+      {/* Public Routes */}
+      <Route path={ROUTES.LANDING} element={<Suspense fallback={<Spinner />}><Landing /></Suspense>} />
+      <Route path={ROUTES.LOGIN} element={<Suspense fallback={<Spinner />}><Login /></Suspense>} />
+      <Route path={ROUTES.SIGNUP} element={<Suspense fallback={<Spinner />}><Signup /></Suspense>} />
+      <Route path={ROUTES.REGISTRATION} element={<Suspense fallback={<Spinner />}><Registration /></Suspense>} />
+
+      {/* Protected Routes */}
+      <Route
+        path="/*"
+        element={
+          <Suspense fallback={<Spinner />}>
+            <ProtectedRoutes />
+          </Suspense>
+        }
+      />
     </Routes>
   );
 };
