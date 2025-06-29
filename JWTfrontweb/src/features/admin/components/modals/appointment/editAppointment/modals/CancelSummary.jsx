@@ -1,5 +1,5 @@
 import React from 'react';
-import './cancelSummaryModal.css';
+import '../modals/cancelSummary.css';
 
 const CancelSummaryModal = ({ onClose, onConfirm, appointment, user }) => {
   const formatDate = (dateString) => {

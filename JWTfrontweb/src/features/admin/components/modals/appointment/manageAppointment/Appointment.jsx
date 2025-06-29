@@ -3,18 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './appointment.css';
 
-import AppointmentCard from './components/cards/AppointmentCard';
-import BookModal from './components/bookModal/BookModal';
-import CancelModal from './components/cancelModal/CancelModal';
-import RescheduleModal from './components/rescheduleModal/RescheduleModal';
+import AppointmentCard from '../manageAppointment/cards/AppointmentCard';
+import BookModal from './modals/BookModal';
+import CancelModal from './modals/CancelModal';
+import RescheduleModal from './modals/RescheduleModal';
 
-import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
-import Calendar_Week from '../../../assets/icons/Calendar_Week.svg?react';
-import Caret_Down_SM from '../../../assets/icons/Caret_Down_SM.svg?react';
-import Calendar_Check from '../../../assets/icons/Calendar_Check.svg?react';
-import Book from '../../../assets/icons/Book.svg?react';
-import Close_MD from '../../../assets/icons/Close_MD.svg?react';
-import Search from '../../../assets/icons/Search.svg?react';
+import Circle_Primary from '../../../../../../assets/icons/Circle_Primary.svg?react';
+// import Calendar_Week from '../../../assets/icons/Calendar_Week.svg?react';
+// import Caret_Down_SM from '../../../assets/icons/Caret_Down_SM.svg?react';
+import Calendar_Check from '../../../../../../assets/icons/Calendar_Check.svg?react';
+import Book from '../../../../../../assets/icons/Book.svg?react';
+import Close_MD from '../../../../../../assets/icons/Close_MD.svg?react';
+import Search from '../../../../../../assets/icons/Search.svg?react';
 
 const departmentOptions = ['Crewing', 'Medical', 'Accounting'];
 const crewingDepts = ['maran gas', 'maran dry', 'maran tankers'];

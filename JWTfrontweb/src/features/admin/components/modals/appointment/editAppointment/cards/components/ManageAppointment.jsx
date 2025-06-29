@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './editAppointment.css';
+import '../components/manageAppointment.css';
 
-import Book from '../../../../../../assets/icons/Book.svg?react';
-import Close_MD from '../../../../../../assets/icons/Close_MD.svg?react';
+import Book from '../../../../../../../../assets/icons/Book.svg?react';
+import Close_MD from '../../../../../../../../assets/icons/Close_MD.svg?react';
 
-import ManageAppointmentCard from './cards/components/ManageAppointment';
-import AppointmentSummaryModal from './modals/AppointmentSummaryModal';
-import CancelSummaryModal from './modals/CancelSummary';
+import ManageAppointmentCard from '../EditAppointmentCard';
+import AppointmentSummaryModal from '../../modals/AppointmentSummaryModal';
+import CancelSummaryModal from '../../modals/CancelSummary';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 

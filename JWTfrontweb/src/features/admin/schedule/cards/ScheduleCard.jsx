@@ -1,9 +1,9 @@
 import React from 'react';
 import axios from 'axios';
 import './scheduleCard.css';
-import Edit_Pencil_01 from '../../../assets/icons/Edit_Pencil_01.svg?react';
-import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
-import Check from '../../../assets/icons/Check.svg?react';
+import Edit_Pencil_01 from '../../../../assets/icons/Edit_Pencil_01.svg?react';
+import Circle_Primary from '../../../../assets/icons/Circle_Primary.svg?react';
+import Check from '../../../../assets/icons/Check.svg?react';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
