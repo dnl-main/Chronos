@@ -23,6 +23,7 @@
 			/* background-color: skyblue; */
 			display: flex;
 			align-items: center;
+			overflow: hidden;
 			column-gap: 1vh;
 			font-weight: var(--font-weight-medium);
 			font-size: var(--font-size-12);
@@ -165,4 +166,3 @@
 .certificateUser-top-core-cards-card-down-delete-btn:hover {
   opacity: 0.7; /* Matches hover effect of other elements */
 }
-

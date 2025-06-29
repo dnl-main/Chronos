@@ -56,11 +56,11 @@
   --shadow-primary-soft: 0px 0px 20px rgba(0, 136, 154, 0.10);
 
   /* Shadows: Primary */
-  --shadow-primary-xs: 0px 1px 2px rgba(0, 136, 154, 0.05);
-  --shadow-primary-sm: 0px 2px 4px rgba(0, 136, 154, 0.08);
-  --shadow-primary-md: 0px 4px 8px rgba(0, 136, 154, 0.12);
-  --shadow-primary-lg: 0px 6px 16px rgba(0, 136, 154, 0.16);
-  --shadow-primary-xl: 0px 12px 24px rgba(0, 136, 154, 0.2);
+  --shadow-primary-xs: 0px 0px 2px rgba(0, 136, 154, 0.05);
+  --shadow-primary-sm: 0px 0px 4px rgba(0, 136, 154, 0.04);
+  --shadow-primary-md: 0px 0px 8px rgba(0, 136, 154, 0.08);
+  --shadow-primary-lg: 0px 0px 16px rgba(0, 136, 154, 0.12);
+  --shadow-primary-xl: 0px 0px 24px rgba(0, 136, 154, 0.16);
 
   /* Shadows: Secondary */
   --shadow-secondary-sm: 0px 2px 4px rgba(245, 246, 250, 0.08);
@@ -150,7 +150,11 @@
   --font-size-80: 6.667rem;   /* 80px */
 
   /* Border */
-  --border-width-2: 2px;
+  --border-rem-02: 0.2rem;
+  --border-rem-04: 0.4rem;
+  --border-rem-06: 0.6rem;
+  --border-rem-08: 0.8rem;
+
   --border-style-solid: solid;
   --border-color-20: rgba(0, 136, 154, 0.3);
   --border-radius-500: 500px;

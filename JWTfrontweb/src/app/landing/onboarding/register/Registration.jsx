@@ -393,6 +393,21 @@ const Registration = () => {
               </div> {/* registration-box-in-core-main-form-address-header */}
 
               <main className="registration-box-in-core-main-form-address-details">
+               
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 <section className="registration-box-in-core-main-form-address-details-left">
                   <article className="registration-box-in-core-main-form-address-details-left-alike">
                     <label htmlFor="region">Region</label>

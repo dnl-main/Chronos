@@ -1,10 +1,10 @@
 import React from 'react';
 import './certificateUserCard.css';
 import './certificateUserCardMQ.css';
-import House_Add from '../../../assets/icons/House_Add.svg?react';
-import Calendar_Week from '../../../assets/icons/Calendar_Week.svg?react';
-import File_Add from '../../../assets/icons/File_Add.svg?react';
-import Trash from '../../../assets/icons/Trash.svg?react';
+import House_Add from '../../../../assets/icons/House_Add.svg?react';
+import Calendar_Week from '../../../../assets/icons/Calendar_Week.svg?react';
+import File_Add from '../../../../assets/icons/File_Add.svg?react';
+import Trash from '../../../../assets/icons/Trash.svg?react';
 
 const CertificateUserCard = ({ certificate, onFileClick, onDelete }) => {
   const formatDate = (dateString) => {

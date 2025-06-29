@@ -4,9 +4,10 @@ import { ROUTES } from './routes';
 import Spinner from '../../components/ui/Spinner';
 
 // Eager load Landing (fast access)
-import Landing from '../landing/Landing';
+// import Landing from '../landing/Landing';
 
 // Lazy public pages
+const Landing = lazy(() => import('../landing/Landing'));
 const Signup = lazy(() => import('../landing/onboarding/signup/Signup'));
 const Registration = lazy(() => import('../landing/onboarding/register/Registration'));
 const Login = lazy(() => import('../landing/onboarding/login/Login'));

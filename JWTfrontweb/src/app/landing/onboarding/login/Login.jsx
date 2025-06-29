@@ -1,8 +1,9 @@
 import React, { useReducer, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './login.css';
-import Circle_Primary from '../../../../assets/icons/Circle_Primary.svg?react';
+
+import { ROUTES } from '../../../router/routes';
 import Hide from '../../../../assets/icons/Hide.svg?react';
 import Show from '../../../../assets/icons/Show.svg?react';
 
@@ -115,7 +116,7 @@ const Login = () => {
         } else if (response.data.user.region) {
           navigate('/user/homeUser');
         } else {
-          navigate('/Registration');
+          navigate('/registration');
         }
       } else {
         dispatch({ type: 'SET_ERROR', payload: 'Invalid credentials or incomplete response.' });
@@ -161,83 +162,66 @@ const Login = () => {
 
   return (
     <div className="login">
-      {/* <Hide
-        style={{
-          width: '32px',
-          height: '32px',
-          '--stroke-color': '#555',
-          '--stroke-width': '3',
-          '--fill-color': 'none',
-        }}
-      />
-      <Show
-        style={{
-          width: '32px',
-          height: '32px',
-          '--stroke-color': '#555',
-          '--stroke-width': '3',
-          '--fill-color': 'none',
-        }}
-      /> 
-      <img src={login_sailor} className="landing-box-right-bg" alt="background" />
-      */}
+    <div className="login-box">
       <div className="login-left">
-        <div className="login-left-top">
-          <Circle_Primary style={{ width: '20px', height: '20px' }} />
-        </div>
+        <Link to={ROUTES.LANDING} className="login-left-top">
+          <p>Concorde</p>
+        </Link>
         <div className="login-left-bottom">
-          <Circle_Primary style={{ width: '20px', height: '20px' }} />
+          <img src={login_sailor} alt="sailor picture" />
         </div>
       </div>
 
       <div className="login-right">
-        <div className="login-right-padding">
+        {/* <div className="login-right-padding"> */}
           <div className="login-right-header">
-            <p className="login-right-header-sub">Jump back in</p>
-            <p className="login-right-header-heading">Welcome back</p>
+            <p className="login-right-header-medium">Jump back in</p>
+            <p className="login-right-header-bold">Welcome back</p>
           </div>
 
-          <form className="login-right-form-form" onSubmit={handleLogin} style={{ marginTop: '20px' }}>
-            <div className="login-right-form-email">
-              <label htmlFor="login-email-id">Email</label>
-              <input
-                type="email"
-                id="login-email-id"
-                placeholder="E.g. juandelacruz@example.com"
-                required
-                value={email}
-                onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'email', value: e.target.value })}
-              />
-            </div>
+          <form className="login-right-form" onSubmit={handleLogin}>
+            <div className="login-right-form-input">
+              <article className="login-right-form-input-email">
+                <label htmlFor="login-email-id">Email</label>
+                <input
+                  type="email"
+                  id="login-email-id"
+                  placeholder="E.g. juandelacruz@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'email', value: e.target.value })}
+                />
+              </article>
 
-            <div className="login-right-form-password" style={{ position: 'relative', width: '100%' }}>
-              <label htmlFor="login-password-id">Password</label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                id="login-password-id"
-                placeholder="Enter your password"
-                required
-                value={password}
-                onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'password', value: e.target.value })}
-                style={{ width: '100%', paddingRight: '40px' }}
-              />
-              <div
-                onClick={() => dispatch({ type: 'TOGGLE', field: 'showPassword' })}
-                style={{
-                  position: 'absolute',
-                  right: '15px',
-                  top: '57px',
-                  transform: 'translateY(-50%)',
-                  cursor: 'pointer',
-                  height: '20px',
-                  width: '20px',
-                  borderRadius: '50%',
-                  backgroundColor: showPassword ? '#00889A' : '#ccc',
-                  zIndex: 1,
-                }}
-                title={showPassword ? 'Hide password' : 'Show password'}
-              />
+              <article className="login-right-form-input-password">
+                <label htmlFor="login-password-id">Password</label>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="login-password-id"
+                  placeholder="Enter your password"
+                  required
+                  value={password}
+                  onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'password', value: e.target.value })}
+                  style={{ width: '100%', paddingRight: '40px' }}
+                />
+                <div
+                  onClick={() => dispatch({ type: 'TOGGLE', field: 'showPassword' })}
+                  onMouseDown={(e) => e.preventDefault()} 
+                  className="password-toggle-icon"
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? (
+                    <Show style={{ width: '24px', height: '24px' }} />
+                    
+                  ) : (
+                    
+                    <Hide style={{ width: '24px', height: '24px' }} />
+                  )}
+                </div>
+              </article>
+
             </div>
+            
 
             <div className="login-right-options">
               <div className="login-right-options-remember">
@@ -264,7 +248,7 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="login-right-button" style={{ marginTop: '20px' }}>
+            <div className="login-right-button">
               <button type="submit" disabled={loginLoading}>
                 {loginLoading ? 'Logging in...' : 'Login'}
               </button>
@@ -277,7 +261,8 @@ const Login = () => {
               Sign up
             </button>
           </div>
-        </div>
+        {/* </div> */}
+      </div>
       </div>
 
       {showForgotPasswordModal && (
