@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import './changeProfilePicture.css';
-import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
+import './editProfilePicture.css';
+import Circle_Primary from '../../../../../assets/icons/Circle_Primary.svg?react';
 import axios from 'axios';
 
 const departments = {
