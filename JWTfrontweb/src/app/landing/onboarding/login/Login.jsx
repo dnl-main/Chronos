@@ -211,11 +211,11 @@ const Login = () => {
                   title={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
-                    <Show style={{ width: '24px', height: '24px' }} />
+                    <Show style={{ width: '24px', height: '24px', color: 'var(--primary-color)' }} />
                     
                   ) : (
                     
-                    <Hide style={{ width: '24px', height: '24px' }} />
+                    <Hide style={{ width: '24px', height: '24px', color: 'var(--primary-color)' }} />
                   )}
                 </div>
               </article>

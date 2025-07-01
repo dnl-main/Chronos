@@ -7,9 +7,14 @@ import { setupTokenTimeout } from '../../../utils/authTimeout';
 
 import './registration.css';
 
+const SuccessModal = lazy(() => import('./modals/SuccessModal'));
+
 import Circle_Primary  from '../../../../assets/icons/Circle_Primary.svg?react';
 import Calendar_Week   from '../../../../assets/icons/Calendar_Week.svg?react';
 import User_Square   from '../../../../assets/icons/User_Square.svg?react';
+
+
+
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -18,6 +23,15 @@ const Registration = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+
+
+    // ✅ Preload modal and SVG on component mount
+    useEffect(() => {
+      import('./modals/SuccessModal');
+      import('../../../../assets/icons/Party_Popper.svg?react');
+    }, []);
 
     useEffect(() => {
     const token = sessionStorage.getItem('token');
@@ -53,6 +67,8 @@ const Registration = () => {
       fetchUserData(token);
     }
   }, [navigate]);
+
+  
 
   
   const [location, setLocation] = useState({
@@ -285,8 +301,9 @@ const Registration = () => {
           sessionStorage.setItem('user', JSON.stringify(response.data.user));
           setUser(response.data.user);
         }
-        alert('Registered successfully!');
-        navigate('/user/HomeUser');
+        // alert('Registered successfully!');
+        // navigate('/user/HomeUser');
+        setShowSuccessModal(true);
       } else {
         alert('Register update failed. Please try again.');
       }
@@ -576,6 +593,17 @@ const Registration = () => {
             </button>
           </div>
         </form> {/* registration-box-in-core-main */}
+        {showSuccessModal && (
+          <Suspense fallback={null}>
+            <SuccessModal
+              type="signup"
+              userFirstName={user.first_name}
+              message="You're all set! Your account has been created."
+              onConfirm={handleConfirm}
+            />
+          </Suspense>
+        )}
+
       </div> {/* registration-box-in-core */}
     </div> {/* registration-box-in */}
     </div> // registration-box
