@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './certificateModalCard.css';
-import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
-import Check from '../../assets/icons/Check.svg?react';
-import Close_MD from '../../assets/icons/Close_MD.svg?react';
-import Note_Search from '../../assets/icons/Note_Search.svg?react';
+import './certificateViewCard.css';
+import Circle_Primary from '../../../../../../assets/icons/Circle_Primary.svg?react';
+import Check from '../../../../../../assets/icons/Check.svg?react';
+import Close_MD from '../../../../../../assets/icons/Close_MD.svg?react';
+import Note_Search from '../../../../../../assets/icons/Note_Search.svg?react';
 
 const CertificateModalCard = ({ certificate, onCertificateClick, onStatusChange }) => {
   const { certificate_name, certificate_type, expiration_date, status, id } = certificate;
