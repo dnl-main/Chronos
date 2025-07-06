@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './manageAppointmentCard.css';
+import './editAppointmentCard.css';
 
-import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
-import Phone from '../../../assets/icons/Phone.svg?react';
-import Mail from '../../../assets/icons/Mail.svg?react';
-import Note_Search from '../../../assets/icons/Note_Search.svg?react';
-import Map_Pin from '../../../assets/icons/Map_Pin.svg?react';
+import Circle_Primary from '../../../../../../../assets/icons/Circle_Primary.svg?react';
+import Phone from '../../../../../../../assets/icons/Phone.svg?react';
+import Mail from '../../../../../../../assets/icons/Mail.svg?react';
+import Note_Search from '../../../../../../../assets/icons/Note_Search.svg?react';
+import Map_Pin from '../../../../../../../assets/icons/Map_Pin.svg?react';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
-const ManageAppointmentCard = ({ appointment, user, onCertificateClick }) => {
+const EditAppointmentCard = ({ appointment, user, onCertificateClick }) => {
   const [checked, setChecked] = useState(false);
   const [certificates, setCertificates] = useState([]);
   const [loadingCertificates, setLoadingCertificates] = useState(false);
@@ -186,4 +186,4 @@ const ManageAppointmentCard = ({ appointment, user, onCertificateClick }) => {
   );
 };
 
-export default ManageAppointmentCard;
+export default EditAppointmentCard;

@@ -1,11 +1,11 @@
 import React from 'react';
 import axios from 'axios';
-import './certificatePreview.css';
+import './Certificatepopup.css';
 
 const CertificatePopup = ({ certificate, onClose, onDelete }) => {
   if (!certificate) return null;
 
-  const { file_path, certificate_name, id } = certificate;
+  const { file_path, certificate_type, id } = certificate;
   const storageBaseUrl = import.meta.env.VITE_STORAGE_BASE_URL;
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const fileUrl = `${storageBaseUrl}/${encodeURI(file_path)}?ngrok-skip-browser-warning=true`;
@@ -44,7 +44,7 @@ const CertificatePopup = ({ certificate, onClose, onDelete }) => {
     <div className="certificate-popup-overlay">
       <div className="certificate-popup">
         <header className="certificate-popup-header">
-          <h2>{certificate_name || 'Certificate'}</h2>
+          <h2>{certificate_type || 'Certificate'}</h2>
           <button className="certificate-popup-close" onClick={onClose}>
             ×
           </button>
@@ -53,13 +53,13 @@ const CertificatePopup = ({ certificate, onClose, onDelete }) => {
           {isPdf ? (
             <iframe
               src={fileUrl}
-              title={certificate_name}
+              title={certificate_type}
               className="certificate-popup-file"
             />
           ) : isImage ? (
             <img
               src={fileUrl}
-              alt={certificate_name}
+              alt={certificate_type}
               className="certificate-popup-file"
             />
           ) : (

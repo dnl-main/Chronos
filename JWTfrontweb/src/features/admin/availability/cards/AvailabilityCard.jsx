@@ -1,10 +1,10 @@
 import React from 'react';
 import './availabilityCard.css';
-import Calendar_Add from '../../../assets/icons/Calendar_Add.svg?react';
-import Caret_Circle_Down from '../../../assets/icons/Caret_Circle_Down.svg?react';
-import Phone from '../../../assets/icons/Phone.svg?react';
-import Mail from '../../../assets/icons/Mail.svg?react';
-import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
+import Calendar_Add from '../../../../assets/icons/Calendar_Add.svg?react';
+import Caret_Circle_Down from '../../../../assets/icons/Caret_Circle_Down.svg?react';
+import Phone from '../../../../assets/icons/Phone.svg?react';
+import Mail from '../../../../assets/icons/Mail.svg?react';
+import Circle_Primary from '../../../../assets/icons/Circle_Primary.svg?react';
 
 const AvailabilityCard = ({ data, onOpenAppointment }) => {
   const fullName = data

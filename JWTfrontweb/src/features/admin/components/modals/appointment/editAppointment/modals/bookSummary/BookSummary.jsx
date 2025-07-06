@@ -1,7 +1,7 @@
 import React from 'react';
-import './appointmentSummaryModal.css';
+import './bookSummary.css';
 
-const AppointmentSummaryModal = ({ appointment, user, onClose, onConfirm }) => {
+const BookSummary = ({ appointment, user, onClose, onConfirm }) => {
   if (!appointment || !user) return null;
 
   const formatDate = (dateString) => {
@@ -59,4 +59,4 @@ const AppointmentSummaryModal = ({ appointment, user, onClose, onConfirm }) => {
   );
 };
 
-export default AppointmentSummaryModal;
+export default BookSummary;

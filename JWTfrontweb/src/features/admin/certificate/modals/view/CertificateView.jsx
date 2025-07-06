@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './certificateModal.css';
-import CertificateModalCard from './CertificateModalCard';
-import CertificatePopup from './CertificatePopup';
-import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
-import Close_MD from '../../assets/icons/Close_MD.svg?react';
-import Book from '../../assets/icons/Book.svg?react';
+import './certificateView.css';
+import CertificateModalCard from '../view/cards/CertificateViewCard';
+import CertificatePopup from '../Popup/CertificatePopup';
+import Circle_Primary from '../../../../../assets/icons/Circle_Primary.svg?react';
+import Close_MD from '../../../../../assets/icons/Close_MD.svg?react';
+import Book from '../../../../../assets/icons/Book.svg?react';
 
 const CertificateModal = ({ userId, onClose }) => {
   const [certificates, setCertificates] = useState([]);

@@ -1,12 +1,12 @@
 import React from 'react';
 import './certificateCard.css';
 
-import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
-import Calendar_Add from '../../../assets/icons/Calendar_Add.svg?react';
-import Notebook from '../../../assets/icons/Notebook.svg?react';
-import Bell from '../../../assets/icons/Bell.svg?react';
-import More_Horizontal from '../../../assets/icons/More_Horizontal.svg?react';
-import Note_Search from '../../../assets/icons/Note_Search.svg?react';
+import Circle_Primary from '../../../../assets/icons/Circle_Primary.svg?react';
+import Calendar_Add from '../../../../assets/icons/Calendar_Add.svg?react';
+import Notebook from '../../../../assets/icons/Notebook.svg?react';
+import Bell from '../../../../assets/icons/Bell.svg?react';
+import More_Horizontal from '../../../../assets/icons/More_Horizontal.svg?react';
+import Note_Search from '../../../../assets/icons/Note_Search.svg?react';
 
 const CertificateCard = ({ data, certificates = [], onCertificateClick, onNotifyUpload, onOpenCertificateModal }) => {
   const handleOpenModal = () => {

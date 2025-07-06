@@ -1,7 +1,7 @@
 import React from 'react';
-import './cancelSummaryModal.css';
+import './cancelSummary.css';
 
-const CancelSummaryModal = ({ onClose, onConfirm, appointment, user }) => {
+const CancelSummary = ({ onClose, onConfirm, appointment, user }) => {
   const formatDate = (dateString) => {
     if (!dateString) return '--';
     const date = new Date(dateString);
@@ -67,4 +67,4 @@ const CancelSummaryModal = ({ onClose, onConfirm, appointment, user }) => {
   );
 };
 
-export default CancelSummaryModal;
+export default CancelSummary;

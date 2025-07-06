@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './appointmentCardMain.css';
 
-import Circle_Primary from '../../../../../../assets/icons/Circle_Primary.svg?react';
+import Circle_Primary from '../../../../../../../../assets/icons/Circle_Primary.svg?react';
 
 const AppointmentCardMain = ({ status, date, user }) => {
   const isBooked = status === "booked";

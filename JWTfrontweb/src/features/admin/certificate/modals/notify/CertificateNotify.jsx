@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './CertificateNotify.css';
-import Note_Search from '../../../assets/icons/Note_Search.svg?react';
+import Note_Search from '../../../../../assets/icons/Note_Search.svg?react';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 

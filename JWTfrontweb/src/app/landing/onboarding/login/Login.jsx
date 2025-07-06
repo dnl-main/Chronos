@@ -4,6 +4,7 @@ import axios from 'axios';
 import './login.css';
 
 import { ROUTES } from '../../../router/routes';
+import ForgotPassword from './modals/forgotPassword/ForgotPassword';
 import Hide from '../../../../assets/icons/Hide.svg?react';
 import Show from '../../../../assets/icons/Show.svg?react';
 
@@ -80,56 +81,61 @@ const Login = () => {
     }
   }, [hasPreFilled]);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    sessionStorage.clear();
-    dispatch({ type: 'SET_ERROR', payload: '' });
-    dispatch({ type: 'SET_LOADING', payload: true });
+const handleLogin = async (e) => {
+  e.preventDefault();
+  sessionStorage.clear();
+  dispatch({ type: 'SET_ERROR', payload: '' });
+  dispatch({ type: 'SET_LOADING', payload: true });
 
-    try {
-      const response = await axios.post(
-        `${apiUrl}/login`,
-        { email, password },
-        { headers: { 'ngrok-skip-browser-warning': 'true' } }
-      );
+  try {
+    const response = await axios.post(
+      `${apiUrl}/login`,
+      { email, password },
+      { headers: { 'ngrok-skip-browser-warning': 'true' } }
+    );
 
-      if (response.data.status && response.data.token) {
-        if (email.endsWith('@friendmar.com.ph')) {
-          response.data.user.role = 'admin';
-        }
-
-        sessionStorage.setItem('token', response.data.token);
-        sessionStorage.setItem('user', JSON.stringify(response.data.user));
-        sessionStorage.setItem('needs_position', JSON.stringify(response.data.needs_position));
-
-        if (rememberMe) {
-          localStorage.setItem('rememberedEmail', email);
-        }
-
-        if (response.data.user.role === 'superadmin') {
-          navigate('/superadmin/homesuperadmin');
-        } else if (response.data.user.role === 'admin') {
-          if (response.data.needs_position) {
-            alert('You need to set your position before proceeding.');
-          }
-          navigate('/admin/home');
-        } else if (response.data.user.region) {
-          navigate('/user/homeUser');
-        } else {
-          navigate('/registration');
-        }
-      } else {
-        dispatch({ type: 'SET_ERROR', payload: 'Invalid credentials or incomplete response.' });
-        alert('Invalid credentials. Please check your email and password and try again.');
+    if (response.data.status && response.data.token) {
+      if (email.endsWith('@friendmar.com.ph')) {
+        response.data.user.role = 'admin';
       }
-    } catch (error) {
-      const msg = error?.response?.data?.message || error?.message || 'Something went wrong.';
-      dispatch({ type: 'SET_ERROR', payload: msg });
-      alert(msg);
-    } finally {
-      dispatch({ type: 'SET_LOADING', payload: false });
+
+      const user = response.data.user;
+
+      sessionStorage.setItem('token', response.data.token);
+      sessionStorage.setItem('user', JSON.stringify(user));
+      sessionStorage.setItem('needs_position', JSON.stringify(response.data.needs_position));
+
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', email);
+      }
+
+      if (user.role === 'superadmin') {
+        navigate('/superadmin/homesuperadmin');
+      } else if (user.role === 'admin') {
+        if (!user.position || !user.department) {
+          alert('Please add your Job title and Department to continue');
+          navigate('/admin/account');
+          return;
+        }
+        navigate('/admin/home');
+      } else if (user.region) {
+        navigate('/user/homeUser');
+      } else {
+        navigate('/registration');
+      }
+    } else {
+      dispatch({ type: 'SET_ERROR', payload: 'Invalid credentials or incomplete response.' });
+      alert('Invalid credentials. Please check your email and password and try again.');
     }
-  };
+  } catch (error) {
+    const msg = error?.response?.data?.message || error?.message || 'Something went wrong.';
+    dispatch({ type: 'SET_ERROR', payload: msg });
+    alert(msg);
+  } finally {
+    dispatch({ type: 'SET_LOADING', payload: false });
+  }
+};
+
 
   const handleSignup = () => {
     navigate('/signup');
@@ -151,7 +157,10 @@ const Login = () => {
       );
 
       dispatch({ type: 'SET_FORGOT_SUCCESS', payload: response.data.message });
-      dispatch({ type: 'SET_FIELD', field: 'showForgotPasswordModal', value: false });
+
+      setTimeout(() => {
+        dispatch({ type: 'SET_FIELD', field: 'showForgotPasswordModal', value: false });
+      }, 5000);
     } catch (error) {
       const msg = error?.response?.data?.message || 'Failed to send reset link.';
       dispatch({ type: 'SET_FORGOT_ERROR', payload: msg });
@@ -266,37 +275,65 @@ const Login = () => {
       </div>
 
       {showForgotPasswordModal && (
-        <div className="forgot-password-modal">
-          <div className="forgot-password-modal-content">
-            <h2>Forgot Password</h2>
-            <form onSubmit={handleForgotPassword} style={{ marginTop: '20px' }}>
-              <div>
-                <label htmlFor="forgot-email-id">Email</label>
-                <input
-                  type="email"
-                  id="forgot-email-id"
-                  value={forgotEmail}
-                  onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'forgotEmail', value: e.target.value })}
-                  required
-                />
+        <ForgotPassword
+          forgotEmail={forgotEmail}
+          forgotError={forgotError}
+          forgotSuccess={forgotSuccess}
+          forgotLoading={forgotLoading}
+          onClose={() => dispatch({ type: 'SET_FIELD', field: 'showForgotPasswordModal', value: false })}
+          onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'forgotEmail', value: e.target.value })}
+          onSubmit={handleForgotPassword}
+        />
+      )}
+
+
+      {/* {showForgotPasswordModal && (
+        <div className="login-forgot-password-modal">
+          <div className="login-forgot-password-modal-box">
+            <div className="login-forgot-password-modal-box-in">
+              <div className="login-forgot-password-modal-box-in-top">
+                <p className="login-forgot-password-modal-box-in-top-bold">Forgot Password?</p>
+                <p className="login-forgot-password-modal-box-in-top-medium">Don't worry! We'll send an email to update your password</p>
               </div>
-              {forgotError && <p style={{ color: 'red' }}>{forgotError}</p>}
-              {forgotSuccess && <p style={{ color: 'green' }}>{forgotSuccess}</p>}
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-                <button
-                  type="button"
-                  onClick={() => dispatch({ type: 'SET_FIELD', field: 'showForgotPasswordModal', value: false })}
-                >
-                  Cancel
-                </button>
-                <button type="submit" disabled={forgotLoading}>
-                  {forgotLoading ? 'Sending...' : 'Send Reset Link'}
-                </button>
+              <div className="login-forgot-password-modal-box-in-bot">
+
+                <form className="login-forgot-password-modal-box-in-bot-form" onSubmit={handleForgotPassword}>
+                  <article>
+                    <label htmlFor="forgot-email-id">Email</label>
+                    <input
+                      type="email"
+                      id="forgot-email-id"
+                      value={forgotEmail}
+                      onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'forgotEmail', value: e.target.value })}
+                      required
+                    />
+                  </article>
+                  {forgotError && <p style={{ color: 'red' }}>{forgotError}</p>}
+                  {forgotSuccess && <p style={{ color: 'green' }}>{forgotSuccess}</p>}
+
+                  <div className="login-forgot-password-modal-box-in-bot-form-buttons">
+                    <button
+                      type="button"
+                      onClick={() => dispatch({ type: 'SET_FIELD', field: 'showForgotPasswordModal', value: false })}
+                      className="login-forgot-password-modal-box-in-bot-form-buttons-cancel"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      type="submit" 
+                      disabled={forgotLoading} 
+                      className="login-forgot-password-modal-box-in-bot-form-buttons"
+                    >
+                      {forgotLoading ? 'Sending...' : 'Send Reset Link'}
+                    </button>
+                  </div>
+                </form>
               </div>
-            </form>
+            </div>
           </div>
         </div>
-      )}
+      )} */}
+
     </div>
   );
 };

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../appointment/manageAppointment.css';
+import './editAppointment.css';
 
-import Book from '../../assets/icons/Book.svg?react';
-import Close_MD from '../../assets/icons/Close_MD.svg?react';
+import Book from '../../../../../../assets/icons/Book.svg?react';
+import Close_MD from '../../../../../../assets/icons/Close_MD.svg?react';
 
-import ManageAppointmentCard from './appointmentcomponents/ManageAppointmentCard';
-import AppointmentSummaryModal from './appointmentcomponents/appointmentmodal/AppointmentSummaryModal';
-import CancelSummaryModal from './appointmentcomponents/appointmentmodal/CancelSummaryModal';
+import EditAppointmentCard from './cards/EditAppointmentCard';
+import BookSummary from './modals/bookSummary/BookSummary';
+import CancelSummary from './modals/cancelSummary/CancelSummary';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -328,7 +328,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
               <div className="editAppointment-box-in-left-core">
                 <div className="editAppointment-box-in-left-core-cards">
                   {appointment && user && (
-                    <ManageAppointmentCard
+                    <EditAppointmentCard
                       appointment={appointment}
                       user={user}
                       onSelect={() => {
@@ -607,7 +607,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
       </div>
 
       {isModalOpen && (
-        <AppointmentSummaryModal
+        <BookSummary
           appointment={{
             ...selectedAppointment,
             purpose: purpose === 'Others' ? customPurpose : purpose,
@@ -626,7 +626,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
       )}
 
       {isCancelModalOpen && (
-        <CancelSummaryModal
+        <CancelSummary
           appointment={{
             ...selectedAppointment,
             purpose: purpose === 'Others' ? customPurpose : purpose,

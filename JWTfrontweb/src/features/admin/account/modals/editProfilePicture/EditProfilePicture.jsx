@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import './changeProfilePicture.css';
-import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
+import './editProfilePicture.css';
+import Circle_Primary from '../../../../../assets/icons/Circle_Primary.svg?react';
 import axios from 'axios';
 
 const departments = {
@@ -75,6 +75,15 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
     }
   };
 
+
+  const isPositionInfoSaved = () => {
+  const user = JSON.parse(sessionStorage.getItem('user'));
+  return user?.position && user?.department &&
+         user.position === selectedJob &&
+         user.department === selectedDept;
+};
+
+
   const handleDeptChange = (e) => {
     const dept = e.target.value;
     setSelectedDept(dept);
@@ -131,11 +140,18 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
   };
 
   const handleDiscard = () => {
-    setSelectedDept('');
-    setSelectedJob('');
-    setIsEditing(false);
-    onClose();
-  };
+  if (!isPositionInfoSaved()) {
+    setError('Please set and save your department and job title before discarding.');
+    return;
+  }
+
+  setSelectedDept('');
+  setSelectedJob('');
+  setIsEditing(false);
+  onClose();
+};
+
+
 
   return (
     <div className="changePP">
@@ -244,8 +260,14 @@ const ChangeProfilePicture = ({ onClose, onSave }) => {
         <div className="changePP-main-buttons" style={{ marginTop: '30px' }}>
           <button
             className="changePP-main-buttons-cancel"
-            onClick={() => onClose(false)}
-            disabled={loadingPosition || loadingProfilePicture}
+            onClick={() => {
+  if (!isPositionInfoSaved()) {
+    setError('Please set and save your department and job title before cancelling.');
+    return;
+  }
+  onClose(false);
+}}
+
           >
             Cancel
           </button>

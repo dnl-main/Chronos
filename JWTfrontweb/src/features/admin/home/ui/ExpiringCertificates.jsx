@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import axios from 'axios';
-import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
-import Bell from '../../assets/icons/Bell.svg?react';
-import './home.css';
+import Circle_Primary from '../../../../assets/icons/Circle_Primary.svg?react';
+import Bell from '../../../../assets/icons/Bell.svg?react';
+import '../home.css';
 
 const HomeCertAdmin = () => {
   const [expiringCertificates, setExpiringCertificates] = useState([]);
