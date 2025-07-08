@@ -7,9 +7,11 @@ import Mail from '../../../../assets/icons/Mail.svg?react';
 import Circle_Primary from '../../../../assets/icons/Circle_Primary.svg?react';
 
 const AvailabilityCard = ({ data, onOpenAppointment }) => {
-  const fullName = data
-    ? `${data.first_name}${data.middle_name ? ` ${data.middle_name.charAt(0)}.` : ''} ${data.last_name}`
-    : 'Loading...';
+  if (!data) {
+    return <p>Loading...</p>;
+  }
+
+  const fullName = `${data.first_name}${data.middle_name ? ` ${data.middle_name.charAt(0)}.` : ''} ${data.last_name}`;
 
   const availabilityMap = {
     available: {
@@ -61,11 +63,23 @@ const AvailabilityCard = ({ data, onOpenAppointment }) => {
       ></div>
 
       <div className="availability-box-in-cards-card-profile">
-        <Circle_Primary className="availability-box-in-cards-card-profile-svg" />
+{data.profilePicture ? (
+  <img
+    src={data.profilePicture}
+    alt={`${fullName}'s profile`}
+    className="availability-box-in-cards-card-profile-img"
+  />
+) : (
+  <img
+    src="/src/assets/photo/defaultdp.png"
+    alt="Default profile"
+    className="availability-box-in-cards-card-profile-img"
+  />
+)}
         <div className="availability-box-in-cards-card-profile-info">
           <p className="availability-box-in-cards-card-profile-info-text">{fullName}</p>
           <div className="availability-box-in-cards-card-profile-info-job">
-            <Circle_Primary style={{ color: 'var(--primary-color)', width: '32px', height: '32px' }} />
+              <Circle_Primary style={{ color: 'var(--primary-color)', width: '32px', height: '32px' }} />
             <p>{data.position || 'N/A'}</p>
           </div>
         </div>
@@ -78,7 +92,7 @@ const AvailabilityCard = ({ data, onOpenAppointment }) => {
         </div>
         <div className="availability-box-in-cards-card-contact-email">
           <Mail className="availability-box-in-cards-card-contact-email-svg" />
-          <p>{data.email || 'Loading...'}</p>
+          <p>{data.email || 'N/A'}</p>
         </div>
       </div>
 
