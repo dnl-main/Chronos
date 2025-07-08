@@ -86,7 +86,7 @@ const Schedule = () => {
   const fetchAppointments = async (token) => {
     try {
       setError(null);
-      const response = await axios.get(`${apiUrl}/appointment`, {
+      const response = await axios.get(`${apiUrl}/appointment/specific`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'ngrok-skip-browser-warning': 'true',

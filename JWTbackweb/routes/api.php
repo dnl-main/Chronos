@@ -66,6 +66,9 @@ Route::middleware('jwt.auth')->group(function () {
     Route::delete('/appointment/{id}/cancel', [AppointmentController::class, 'cancel']);//admin only
     Route::post('/appointment/book', [AppointmentController::class, 'book']);// admin only
     Route::put('/appointment/{id}/book-status', [AppointmentController::class, 'bookStatus']);
+    Route::get('/appointment/specific', [AppointmentController::class, 'getSpecific']);// get specific appointment by employee name
+    Route::get('/appointment/upcoming/specific', [AppointmentController::class, 'getUpcomingSpecific']);// get specific upcoming appointment by employee name
+    Route::get('/appointment/crew-counts', [AppointmentController::class, 'getCrewCounts']);
 
     // Profile Picture Upload
     Route::post('/user/upload-profile-picture', [ProfilePicController::class, 'upload']);
@@ -78,11 +81,13 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('/crew-members', [CrewController::class, 'getCrewMembers']);
     Route::get('/crew-members/available/count', [CrewController::class, 'getAvailableCrewCount']);
     Route::get('/crew-members/admin', [CrewController::class, 'getAdmin']);
+    Route::get('/crewcount', [CrewController::class, 'getCrewCount']);
 
     // File Upload
     Route::post('/upload-certificate', [UploadController::class, 'upload']);
 
     // Certificates
+    Route::get('/certificates/expiring', [UploadController::class, 'getExpiringCertificates']);
     Route::get('/certificates', [UploadController::class, 'getCertificates']);
     Route::post('/certificates/delete', [UploadController::class, 'deleteCertificate']);
     Route::get('/crew-certs', [CrewController::class, 'getCrewCerts']);
