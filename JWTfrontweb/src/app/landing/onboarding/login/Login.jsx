@@ -7,6 +7,7 @@ import { ROUTES } from '../../../router/routes';
 import ForgotPassword from './modals/forgotPassword/ForgotPassword';
 import Hide from '../../../../assets/icons/Hide.svg?react';
 import Show from '../../../../assets/icons/Show.svg?react';
+import Spinner from '../../../../components/ui/Spinner';
 
 import login_sailor from '../../../../assets/photo/login_sailor.png';
 
@@ -113,7 +114,6 @@ const handleLogin = async (e) => {
         navigate('/superadmin/homesuperadmin');
       } else if (user.role === 'admin') {
         if (!user.position || !user.department) {
-          alert('Please add your Job title and Department to continue');
           navigate('/admin/account');
           return;
         }

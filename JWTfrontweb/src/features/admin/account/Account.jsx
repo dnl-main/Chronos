@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 //Components import
-import ChangeProfilePicture from './modals/editProfilePicture/EditProfilePicture';
+import EditRole from './modals/editRole/EditRole';
 import ResetPassword from './modals/resetPassword/ResetPassword';
 import Spinner from '../../../components/ui/Spinner';
 
@@ -15,10 +15,11 @@ import './account.css';
 import Phone from '../../../assets/icons/Phone.svg';
 import Mail from '../../../assets/icons/Mail.svg';
 import Suitcase from '../../../assets/icons/Suitcase.svg';
-import Edit_Pencil_Line_01 from '../../../assets/icons/Edit_Pencil_Line_01.svg';
+import Edit_Pencil_Line_01 from '../../../assets/icons/Edit_Pencil_Line_01.svg?react';
 import Edit_Pencil_01 from '../../../assets/icons/Edit_Pencil_01.svg?react';
 import LabelIcon from '../../../assets/icons/Label.svg?react';
 import More_Grid_Big from '../../../assets/icons/More_Grid_Big.svg?react';
+import Check from '../../../assets/icons/Check.svg?react';
 import defaultdp from '../../../assets/photo/defaultdp.png';
 
 
@@ -30,7 +31,8 @@ const Account = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showResetPassword, setShowResetPassword] = useState(false);
-  const [showChangeProfilePicture, setShowChangeProfilePicture] = useState(false);
+  const [showEditRole, setShowEditRole] = useState(false);
+  const [showProfileIncompletePopup, setShowProfileIncompletePopup] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -101,15 +103,16 @@ const Account = () => {
         });
 
         if (!userData.position || !userData.department) {
-          alert('Please complete your profile by adding your position and department.');
-          setShowChangeProfilePicture(true);
+          // alert('Please complete your profile by adding your position and department.');
+          setShowEditRole(true);
+          setShowProfileIncompletePopup(true);
         }
 
 
-        // Show alert and open ChangeProfilePicture if position is needed
+        // Show alert and open EditRole if position is needed
         // if (loginResponse.data.needs_position) {
         //   alert('Please input your position in the Account Page.');
-        //   setShowChangeProfilePicture(true);
+        //   setShowEditRole(true);
         // }
       } catch (error) {
         //console.log('Fetch User Error:', error.response?.data, error.message);
@@ -146,7 +149,7 @@ const Account = () => {
       ...prevUser,
       profile_picture: profilePictureUrl,
     }));
-    setShowChangeProfilePicture(false);
+    setShowEditRole(false);
     window.location.reload(); // Removed to prevent unnecessary reload
   };
 
@@ -233,16 +236,34 @@ const Account = () => {
                       onClick={() => setShowResetPassword(true)}
                       disabled={loading}
                     >
-                      <img src={Edit_Pencil_Line_01} alt="password icon" />
+                      {/* <img src={Edit_Pencil_Line_01} alt="password icon" /> */}
+                      <Edit_Pencil_01
+                        style={{
+                          width: '4vh',
+                          height: '4vh',
+                          '--stroke-color': 'var(--primary-color)',
+                          '--stroke-width': '2',
+                          '--fill-color': 'none',
+                        }}
+                      />
                       <p>Change password</p>
                     </button>
 
                     <button
                       className="account-box-in-card-main-info-right-buttons-profile"
-                      onClick={() => setShowChangeProfilePicture(true)}
+                      onClick={() => setShowEditRole(true)}
                       disabled={loading}
                     >
-                      <img src={Edit_Pencil_01} alt="edit icon" />
+                      {/* <img src={Edit_Pencil_01} alt="edit icon" /> */}
+                      <Edit_Pencil_Line_01
+                        style={{
+                          width: '4vh',
+                          height: '4vh',
+                          '--stroke-color': 'var(--white-color)',
+                          '--stroke-width': '2',
+                          '--fill-color': 'none',
+                        }}
+                      />
                       <p>Edit profile</p>
                     </button>
                   </div>
@@ -256,12 +277,41 @@ const Account = () => {
       {showResetPassword && (
         <ResetPassword closeResetPassword={() => setShowResetPassword(false)} />
       )}
-      {showChangeProfilePicture && (
-        <ChangeProfilePicture
-          onClose={() => setShowChangeProfilePicture(false)}
+      {showEditRole && (
+        <EditRole
+          onClose={() => setShowEditRole(false)}
           onSave={handleProfilePictureSave}
         />
       )}
+      
+      
+      {showProfileIncompletePopup && (
+        <div className="account-modal-incomplete">
+          <div className="account-modal-incomplete-box">
+            <div className="account-modal-incomplete-box-svg">
+              <Check
+                  style={{ color: 'var(--primary-color)', width: '10vh', height: '10vh', '--stroke-width': '4px' }}
+                />
+            </div>
+
+            <div className="account-modal-incomplete-box-text">
+              <p className="account-modal-incomplete-box-text-semibold">Incomplete Profile</p>
+              <p className="account-modal-incomplete-box-text-regular">
+                Please complete your profile by adding your position and department.
+              </p>
+            </div>
+            
+            <div className="account-modal-incomplete-box-button">
+              <button onClick={() => setShowProfileIncompletePopup(false)}>
+                Okay
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
     </div>
   );
 };
