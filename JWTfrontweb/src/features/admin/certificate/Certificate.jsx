@@ -15,6 +15,7 @@ import './certificate.css';
 
 // Icon import
 import Notebook from '../../../assets/icons/Notebook.svg?react';
+import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -311,7 +312,7 @@ const Certificate = () => {
                   color: 'white',
                 }}
               >
-                <i className="fa-solid fa-angle-left"></i>
+                <Circle_Primary/>
               </button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                 <button
@@ -343,7 +344,7 @@ const Certificate = () => {
                   color: 'white',
                 }}
               >
-                <i className="fa-solid fa-angle-right"></i>
+                <Circle_Primary/>
               </button>
             </div>
           )}
