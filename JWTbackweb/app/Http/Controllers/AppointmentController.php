@@ -106,35 +106,57 @@ class AppointmentController extends Controller
         return !empty($addressParts) ? implode(', ', $addressParts) : null;
     }
 
-    public function getTodayCount()
-    {
-        $today = Carbon::today()->toDateString();
-        $count = Appointment::where('date', $today)->count();
-        return response()->json(['count' => $count], 200);
+public function getTodayCount(Request $request)
+{
+    $user = JWTAuth::user();
+
+    if ($user->role !== 'admin') {
+        return response()->json(['message' => 'Unauthorized'], 403);
     }
 
-    public function getUpcomingCount()
-    {
-        $today = Carbon::today()->startOfDay();
-        $count = Appointment::where('date', '>=', $today)
-                            ->where('status', 'booked')
-                            ->count();
-        return response()->json(['count' => $count], 200);
+    $employeeName = $user->first_name . ' ' . $user->last_name;
+    $today = Carbon::today()->toDateString();
+
+    $count = Appointment::where('employee', $employeeName)
+        ->where('date', $today)
+        ->where('status', 'booked')
+        ->count();
+
+    return response()->json(['count' => $count], 200);
+}
+
+   public function getUpcomingCount(Request $request)
+{
+    $user = JWTAuth::user();
+
+    if ($user->role !== 'admin') {
+        return response()->json(['message' => 'Unauthorized'], 403);
     }
 
-    private function getAppointmentStatus($appointment)
-    {
-        $today = now()->startOfDay();
-        $appointmentDate = Carbon::parse($appointment->date)->startOfDay();
+    $employeeName = $user->first_name . ' ' . $user->last_name;
+    $today = Carbon::today()->startOfDay();
 
-        if ($appointmentDate->isToday()) {
-            return 'today';
-        } elseif ($appointmentDate->isPast()) {
-            return 'completed';
-        } else {
-            return 'upcoming';
-        }
+    $count = Appointment::where('employee', $employeeName)
+        ->where('date', '>=', $today)
+        ->where('status', 'booked')
+        ->count();
+
+    return response()->json(['count' => $count], 200);
+}
+
+private function getAppointmentStatus($appointment)
+{
+    $today = now()->startOfDay();
+    $appointmentDate = Carbon::parse($appointment->date)->startOfDay();
+
+    if ($appointmentDate->isToday()) {
+        return 'today';
+    } elseif ($appointmentDate->isPast()) {
+        return 'completed';
+    } else {
+        return 'upcoming';
     }
+}
 
     public function store(Request $request)
     {
@@ -656,4 +678,165 @@ class AppointmentController extends Controller
             ],
         ], 200);
     }
+
+public function getSpecific(Request $request)
+{
+    $user = JWTAuth::user();
+    $employeeName = $user->first_name . ' ' . $user->last_name;
+
+    if ($user->role === 'admin') {
+        $appointments = Appointment::with('user')
+            ->where('employee', $employeeName)
+            ->get()
+            ->map(function ($appointment) {
+                return [
+                    'id' => $appointment->id,
+                    'user_id' => $appointment->user_id,
+                    'date' => $appointment->date,
+                    'start_time' => $appointment->start_time,
+                    'end_time' => $appointment->end_time,
+                    'department' => $appointment->department,
+                    'crewing_dept' => $appointment->crewing_dept,
+                    'operator' => $appointment->operator,
+                    'accounting_task' => $appointment->accounting_task,
+                    'employee' => $appointment->employee,
+                    'purpose' => $appointment->purpose,
+                    'status' => $appointment->status,
+                    'computed_status' => $this->getAppointmentStatus($appointment),
+                    'user' => $appointment->user ? [
+                        'first_name' => $appointment->user->first_name,
+                        'middle_name' => $appointment->user->middle_name,
+                        'last_name' => $appointment->user->last_name,
+                        'email' => $appointment->user->email,
+                        'mobile' => $appointment->user->mobile,
+                        'position' => $appointment->user->position,
+                        'department' => $appointment->user->department,
+                        'availability' => $appointment->user->availability,
+                        'gender' => $appointment->user->gender,
+                        'civil_status' => $appointment->user->civil_status,
+                        'birthday' => $appointment->user->birthday,
+                        'address' => $this->formatAddress($appointment->user),
+                    ] : null,
+                ];
+            });
+        return response()->json($appointments, 200);
+    }
+
+    $appointment = Appointment::where('user_id', $user->id)
+        ->where('employee', $employeeName)
+        ->first();
+    if ($appointment) {
+        return response()->json([
+            'id' => $appointment->id,
+            'user_id' => $appointment->user_id,
+            'date' => $appointment->date,
+            'start_time' => $appointment->start_time,
+            'end_time' => $appointment->end_time,
+            'department' => $appointment->department,
+            'crewing_dept' => $appointment->crewing_dept,
+            'operator' => $appointment->operator,
+            'accounting_task' => $appointment->accounting_task,
+            'employee' => $appointment->employee,
+            'purpose' => $appointment->purpose,
+            'status' => $appointment->status,
+            'computed_status' => $this->getAppointmentStatus($appointment),
+            'user' => [
+                'first_name' => $user->first_name,
+                'middle_name' => $user->middle_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'mobile' => $user->mobile,
+                'position' => $user->position,
+                'department' => $user->department,
+                'availability' => $user->availability,
+                'gender' => $user->gender,
+                'civil_status' => $user->civil_status,
+                'birthday' => $user->birthday,
+                'address' => $this->formatAddress($user),
+            ],
+        ], 200);
+    }
+
+    return response()->json([], 200);
+}
+public function getUpcomingSpecific(Request $request)
+{
+    $user = JWTAuth::user();
+
+    if ($user->role !== 'admin') {
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
+
+    $employeeName = $user->first_name . ' ' . $user->last_name;
+
+    $today = Carbon::today()->startOfDay();
+    $appointments = Appointment::with('user')
+        ->where('employee', $employeeName)
+        ->where('date', '>=', $today)
+        ->orderBy('date', 'asc')
+        ->get()
+        ->map(function ($appointment) {
+            return [
+                'id' => $appointment->id,
+                'user_id' => $appointment->user_id,
+                'date' => $appointment->date,
+                'start_time' => $appointment->start_time,
+                'end_time' => $appointment->end_time,
+                'department' => $appointment->department,
+                'crewing_dept' => $appointment->crewing_dept,
+                'operator' => $appointment->operator,
+                'accounting_task' => $appointment->accounting_task,
+                'employee' => $appointment->employee,
+                'purpose' => $appointment->purpose,
+                'status' => $appointment->status,
+                'computed_status' => $this->getAppointmentStatus($appointment),
+                'user' => $appointment->user ? [
+                    'first_name' => $appointment->user->first_name,
+                    'middle_name' => $appointment->user->middle_name,
+                    'last_name' => $appointment->user->last_name,
+                    'email' => $appointment->user->email,
+                    'mobile' => $appointment->user->mobile,
+                    'position' => $appointment->user->position,
+                    'department' => $appointment->user->department,
+                    'availability' => $appointment->user->availability,
+                    'gender' => $appointment->user->gender,
+                    'civil_status' => $appointment->user->civil_status,
+                    'birthday' => $appointment->user->birthday,
+                    'address' => $this->formatAddress($appointment->user),
+                ] : null,
+            ];
+        });
+
+    return response()->json($appointments, 200);
+}
+public function getCrewCounts()
+{
+    $user = JWTAuth::user();
+
+    if ($user->role !== 'admin') {
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
+
+    // Get all users with role 'user', non-null and non-empty region
+    $totalCrewCount = User::where('role', 'user')
+        ->whereNotNull('region')
+        ->where('region', '!=', '')
+        ->count();
+
+    // Get counts of available crew members by job title (position) for users with role 'user'
+    $jobTitleCounts = User::where('role', 'user')
+        ->where('availability', 'available')
+        ->whereNotNull('position')
+        ->groupBy('position')
+        ->select('position', \DB::raw('count(*) as count'))
+        ->get()
+        ->pluck('count', 'position')
+        ->toArray();
+
+    return response()->json([
+        'available_crew_count' => User::where('role', 'user')->where('availability', 'available')->count(),
+        'total_crew_count' => $totalCrewCount,
+        'job_title_counts' => $jobTitleCounts,
+    ], 200);
+}
 }

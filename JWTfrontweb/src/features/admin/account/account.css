@@ -603,3 +603,121 @@
 				}
 
 
+
+
+        
+.account-modal-incomplete {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--black-color-opacity-45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.account-modal-incomplete-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 30vw;
+  height: 52vh;
+  background: var(--white-color);
+  border-radius: var(--border-rem-08);
+  padding: 2rem;
+  text-align: center;
+  box-shadow: var(--shadow-black-lg);
+  animation: slideUp 0.2s ease-out;
+}
+
+.account-modal-incomplete-box-svg {
+  background-color: var(--primary-color-opacity-15);
+  width: 12vh;
+  height: 12vh;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.account-modal-incomplete-box-text {
+  display: flex;
+  flex-direction: column;
+  row-gap: 2vh;
+
+
+}
+.account-modal-incomplete-box-text-semibold {
+  font-size: var(--font-size-20);
+  font-weight: var(--font-weight-semibold);
+  color: var(--black-color);
+}
+
+.account-modal-incomplete-box-text-regular {
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-regular);
+  color: var(--black-color-opacity-60);
+}
+
+.account-modal-incomplete-box-button {
+  width: 100%;
+}
+
+.account-modal-incomplete-box-button button {
+  all: unset;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0.6rem 0rem;
+  text-align: center;
+  background-color: var(--primary-color);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-16);
+  color: var(--white-color);
+  border-radius: var(--border-radius-500);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-primary-soft);
+}
+
+.account-modal-incomplete-box-button button:hover {
+  transform: scale(1.03);
+  background-color: var(--primary-color-opacity-75);
+  box-shadow: var(--shadow-primary-lg);
+  transition: var(--btn-transition-hover);
+}
+
+.account-modal-incomplete-box-button button:active {
+  transform: scale(0.96);
+  transition: var(--btn-transition-pressed);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    background-color: transparent;
+  }
+  to {
+    background-color: var(--black-color-opacity-45);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+

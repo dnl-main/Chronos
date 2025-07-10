@@ -395,4 +395,43 @@ class UploadController extends Controller
             ], 500);
         }
     }
+
+    public function getExpiringCertificates(Request $request)
+{
+    try {
+        $user = JWTAuth::user();
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        $query = Certificate::query();
+
+        if ($request->has('user_id')) {
+            $query->where('user_id', $request->input('user_id'));
+        } else {
+            if ($user->role !== 'admin') {
+                $query->where('user_id', $user->id);
+            }
+        }
+
+        // Filter certificates expiring in the current month
+        $currentMonthStart = Carbon::now()->startOfMonth();
+        $currentMonthEnd = Carbon::now()->endOfMonth();
+        $query->whereBetween('expiration_date', [$currentMonthStart, $currentMonthEnd]);
+
+        $certificates = $query->get();
+
+        return response()->json([
+            'message' => 'Expiring certificates retrieved successfully',
+            'certificates' => $certificates,
+        ], 200);
+    } catch (\Exception $e) {
+        \Log::error('Get Expiring Certificates Exception:', ['message' => $e->getMessage()]);
+        return response()->json([
+            'message' => 'Failed to retrieve expiring certificates: ' . $e->getMessage(),
+        ], 500);
+    }
+}
 }

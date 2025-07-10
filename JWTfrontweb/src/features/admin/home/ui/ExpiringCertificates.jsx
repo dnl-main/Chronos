@@ -15,7 +15,7 @@ const HomeCertAdmin = () => {
     if (!token) return;
 
     try {
-      const response = await axios.get(`${apiUrl}/certificates`, {
+      const response = await axios.get(`${apiUrl}/certificates/expiring`, {
 headers: {
         Authorization: `Bearer ${token}`,
         'ngrok-skip-browser-warning': 'true' // Add this to bypass ngrok warning

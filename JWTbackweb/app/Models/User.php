@@ -73,6 +73,10 @@ public function sendPasswordResetNotification($token)
     {
         return $this->hasMany(Certificate::class, 'user_id');
     }
+        public function profilePicture()
+    {
+        return $this->hasOne(ProfilePicture::class, 'user_id', 'id');
+    }
 
 }
 

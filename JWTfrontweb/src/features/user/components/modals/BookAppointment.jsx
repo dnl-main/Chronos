@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import './BookAppointmentModal.css';
-import './BookAppointmentModalMQ.css';
+import './bookAppointment.css';
+import './BookAppointmentMQ.css';
 import axios from 'axios';
 import Calendar from 'react-calendar';
 
-import Circle_Primary from '../../assets/icons/Circle_Primary.svg?react';
-import Book from '../../assets/icons/Book.svg?react';
-import Close_MD from '../../assets/icons/Close_MD.svg?react';
-import Calendar_Check from '../../assets/icons/Calendar_Check.svg?react';
+import Circle_Primary from '../../../../assets/icons/Circle_Primary.svg?react';
+import Book from '../../../../assets/icons/Book.svg?react';
+import Close_MD from '../../../../assets/icons/Close_MD.svg?react';
+import Calendar_Check from '../../../../assets/icons/Calendar_Check.svg?react';
 
 const departmentOptions = ['Crewing', 'Medical', 'Accounting'];
 const crewingDepts = ['Maran Gas', 'Maran Dry', 'Maran Tankers'];

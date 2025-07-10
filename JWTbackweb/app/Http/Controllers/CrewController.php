@@ -13,17 +13,47 @@ class CrewController extends Controller
         $this->middleware('auth:api');
     }
 
-    public function getCrewMembers()
+ public function getCrewMembers()
     {
         if (Auth::user()->role !== 'admin') {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        // Fetch users with 'user' role, including all columns
-        $crewMembers = User::where('role', 'user')->get();
+
+        $crewMembers = User::where('role', 'user')
+            ->with('profilePicture')
+            ->get()
+            ->map(function ($user) {
+                // Determine the profile picture URL
+                $profilePicture = $user->profilePicture && $user->profilePicture->path
+                    ? ($this->isUrl($user->profilePicture->path)
+                        ? $user->profilePicture->path
+                        : env('APP_URL') . '/storage/' . ltrim($user->profilePicture->path, '/'))
+                    : null;
+
+                return [
+                    'id' => $user->id,
+                    'first_name' => $user->first_name,
+                    'middle_name' => $user->middle_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'position' => $user->position,
+                    'availability' => $user->availability,
+                    'department' => $user->department,
+                    'mobile' => $user->mobile,
+                    'profilePicture' => $profilePicture,
+                    // Add other fields as needed
+                ];
+            });
 
         return response()->json($crewMembers);
     }
+        private function isUrl($string)
+    {
+        return filter_var($string, FILTER_VALIDATE_URL) !== false;
+    }
+
 
     public function getAvailableCrewCount()
     {

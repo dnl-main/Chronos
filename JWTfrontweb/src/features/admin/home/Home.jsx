@@ -26,22 +26,20 @@ import More_Grid_Big from '../../../assets/icons/More_Grid_Big.svg?react';
 import Calendar_Check from '../../../assets/icons/Calendar_Check.svg?react';
 
 const Home = () => {
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedAppointmentData, setSelectedAppointmentData] = useState(null);
   const [overlayContent, setOverlayContent] = useState(null);
-  const [user,setUser] = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [todayCount, setTodayCount] = useState(0);
   const [upcomingCount, setUpcomingCount] = useState(0);
-  const [todayAppointments, setTodayAppointments] = useState ([]);
+  const [todayAppointments, setTodayAppointments] = useState([]);
   const [pendingAppointments, setPendingAppointments] = useState([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [availableCrewCount, setAvailableCrewCount] = useState(0);
   const [totalCrewCount, setTotalCrewCount] = useState(0);
   const [error, setError] = useState(null);
-  const [allUsers, setAllUsers] = useState([]);
   const [jobTitleCounts, setJobTitleCounts] = useState({});
 
   const navigate = useNavigate();
@@ -137,7 +135,7 @@ const Home = () => {
       });
       setUpcomingCount(upcomingCountResponse.data.count);
 
-      const appointmentsResponse = await axios.get(`${apiUrl}/appointment`, {
+      const appointmentsResponse = await axios.get(`${apiUrl}/appointment/specific`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'ngrok-skip-browser-warning': 'true',
@@ -148,9 +146,9 @@ const Home = () => {
       setTodayAppointments(
         appointments.filter((app) => app.computed_status === 'today' && app.status !== 'pending')
       );
-      setPendingAppointments(appointments.filter((app) => app.status === 'pending')); // Set pending appointments
+      setPendingAppointments(appointments.filter((app) => app.status === 'pending'));
 
-      const upcomingAppointmentsResponse = await axios.get(`${apiUrl}/appointment/upcoming`, {
+      const upcomingAppointmentsResponse = await axios.get(`${apiUrl}/appointment/upcoming/specific`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'ngrok-skip-browser-warning': 'true',
@@ -170,34 +168,21 @@ const Home = () => {
 
   const fetchAllUsers = async (token) => {
     try {
-      const response = await axios.get(`${apiUrl}/crew-members`, {
+      const response = await axios.get(`${apiUrl}/appointment/crew-counts`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'ngrok-skip-browser-warning': 'true',
         },
         withCredentials: true,
       });
-      setAllUsers(response.data);
-      calculateJobTitleCounts(response.data);
-      const availableCount = response.data.filter(
-        (user) => user.availability && user.availability.toLowerCase() === 'available'
-      ).length;
-      setAvailableCrewCount(availableCount);
-      const userCount = response.data.filter((user) => user.region != null && user.region !== '').length;
-      setTotalCrewCount(userCount);
+      setAvailableCrewCount(response.data.available_crew_count);
+      setTotalCrewCount(response.data.total_crew_count);
+      setJobTitleCounts(response.data.job_title_counts);
     } catch (error) {
-      console.error('Failed to fetch all users:', error);
+      // CHANGE: Improved error handling to update error state
+      console.error('Failed to fetch crew counts:', error);
+      setError('Failed to load crew counts.');
     }
-  };
-
-  const calculateJobTitleCounts = (users) => {
-    const counts = {};
-    users.forEach((user) => {
-      if (user.availability && user.availability.toLowerCase() === 'available' && user.position) {
-        counts[user.position] = (counts[user.position] || 0) + 1;
-      }
-    });
-    setJobTitleCounts(counts);
   };
 
   const handleRedirectToday = () => {
@@ -239,9 +224,7 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    calculateJobTitleCounts(allUsers);
-  }, [allUsers]);
+
 
   if (loading) {
     return <Spinner />;
