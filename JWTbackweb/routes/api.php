@@ -69,7 +69,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('/appointment/specific', [AppointmentController::class, 'getSpecific']);// get specific appointment by employee name
     Route::get('/appointment/upcoming/specific', [AppointmentController::class, 'getUpcomingSpecific']);// get specific upcoming appointment by employee name
     Route::get('/appointment/crew-counts', [AppointmentController::class, 'getCrewCounts']);
-
+    Route::put('appointment/{id}/complete', [AppointmentController::class, 'complete']);
+    
     // Profile Picture Upload
     Route::post('/user/upload-profile-picture', [ProfilePicController::class, 'upload']);
     Route::get('/user/profile-picture', [ProfilePicController::class, 'getProfilePicture']);

@@ -178,13 +178,13 @@ const Schedule = () => {
               <Circle_Primary style={{ width: "20px", height: "20px" }} />
               <p>Pending</p>
             </button>
-            {/* <button
+            <button
               className={`schedule-tabs-completed ${selectedTab === 'completed' ? 'schedule-tab-active' : ''}`}
               onClick={() => setSelectedTab('completed')}
             >
               <Circle_Primary style={{ width: "20px", height: "20px" }} />
               <p>Completed</p>
-            </button> */}
+            </button>
           </section>
 
           {(selectedTab === 'today' || selectedTab === 'all') && (
@@ -268,7 +268,7 @@ const Schedule = () => {
             </>
           )}
 
-          {/* {(selectedTab === 'all' || selectedTab === 'completed') && (
+          {(selectedTab === 'all' || selectedTab === 'completed') && (
             <>
               <header className="schedule-header-completed">
                 <p>Completed</p>
@@ -293,7 +293,7 @@ const Schedule = () => {
                 </div>
               </section>
             </>
-          )} */}
+          )}
         </main>
       </div>
 

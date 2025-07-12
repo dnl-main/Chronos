@@ -823,9 +823,18 @@ public function getCrewCounts()
         ->where('region', '!=', '')
         ->count();
 
-    // Get counts of available crew members by job title (position) for users with role 'user'
+    // Get available crew count with role 'user', non-null and non-empty region
+    $availableCrewCount = User::where('role', 'user')
+        ->where('availability', 'available')
+        ->whereNotNull('region')
+        ->where('region', '!=', '')
+        ->count();
+
+    // Get counts of available crew members by job title (position) for users with role 'user', non-null and non-empty region
     $jobTitleCounts = User::where('role', 'user')
         ->where('availability', 'available')
+        ->whereNotNull('region')
+        ->where('region', '!=', '')
         ->whereNotNull('position')
         ->groupBy('position')
         ->select('position', \DB::raw('count(*) as count'))
@@ -834,9 +843,49 @@ public function getCrewCounts()
         ->toArray();
 
     return response()->json([
-        'available_crew_count' => User::where('role', 'user')->where('availability', 'available')->count(),
+        'available_crew_count' => $availableCrewCount,
         'total_crew_count' => $totalCrewCount,
         'job_title_counts' => $jobTitleCounts,
     ], 200);
 }
+public function complete($id)
+{
+    $user = JWTAuth::user();
+    if ($user->role !== 'admin') {
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
+
+    $appointment = Appointment::find($id);
+    if (!$appointment) {
+        return response()->json(['message' => 'Appointment not found'], 404);
+    }
+
+    if ($appointment->status !== 'booked') {
+        return response()->json(['message' => 'Only booked appointments can be marked as completed'], 400);
+    }
+
+    $appointment->update([
+        'status' => 'completed',
+    ]);
+
+    return response()->json([
+        'message' => 'Appointment status updated to completed',
+        'appointment' => [
+            'id' => $appointment->id,
+            'user_id' => $appointment->user_id,
+            'date' => $appointment->date,
+            'start_time' => $appointment->start_time,
+            'end_time' => $appointment->end_time,
+            'department' => $appointment->department,
+            'crewing_dept' => $appointment->crewing_dept,
+            'operator' => $appointment->operator,
+            'accounting_task' => $appointment->accounting_task,
+            'employee' => $appointment->employee,
+            'purpose' => $appointment->purpose,
+            'status' => $appointment->status,
+            'computed_status' => $this->getAppointmentStatus($appointment),
+        ],
+    ], 200);
+}
+
 }

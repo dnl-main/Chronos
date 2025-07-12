@@ -18,6 +18,16 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
     return appointmentDate > today;
   };
 
+  const isToday = (dateString) => {
+    const today = new Date();
+    const appointmentDate = new Date(dateString);
+    return (
+      appointmentDate.getDate() === today.getDate() &&
+      appointmentDate.getMonth() === today.getMonth() &&
+      appointmentDate.getFullYear() === today.getFullYear()
+    );
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const isUpcomingAppointment = isUpcoming(dateString);
@@ -60,10 +70,36 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
         }
       );
 
-      alert('Appointment approved successfully'); // Success alert
-      window.location.reload(); // Simple refresh; consider state management for better UX
+      alert('Appointment approved successfully');
+      window.location.reload();
     } catch (error) {
       alert(error.response?.data?.message || 'Failed to book appointment.');
+    }
+  };
+
+  const handleCompleteAppointment = async () => {
+    try {
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found.');
+      }
+
+      const response = await axios.put(
+        `${apiUrl}/appointment/${appointment.id}/complete`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
+          withCredentials: true,
+        }
+      );
+
+    
+      window.location.reload();
+    } catch (error) {
+      alert(error.response?.data?.message || 'Failed to mark appointment as completed.');
     }
   };
 
@@ -73,6 +109,8 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
 
   const indicatorClass = appointment.status === 'pending' 
     ? 'schedule-today-cards-card-indicator schedule-today-cards-card-indicator-pending'
+    : appointment.status === 'completed'
+    ? 'schedule-today-cards-card-indicator schedule-today-cards-card-indicator-completed'
     : 'schedule-today-cards-card-indicator';
 
   return (
@@ -125,6 +163,7 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
           <button
             onClick={handleBookAppointment}
             style={{ marginRight: '10px' }}
+            title="Approve Appointment"
           >
             <Check
               style={{
@@ -136,26 +175,45 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
             />
           </button>
         )}
-        <button
-          onClick={() =>
-            onEditClick({
-              appointment,
-              user,
-              bookedAppointments: allAppointments.filter(
-                (a) => a.status === 'booked' && a.id !== appointment.id && a.user
-              ),
-            })
-          }
-        >
-          <Edit_Pencil_01
-            style={{
-              color: "var(--white-color)",
-              width: "32px",
-              height: "32px",
-              "--stroke-width": "2px",
-            }}
-          />
-        </button>
+        {appointment.status === 'booked' && isToday(appointment.date) && (
+          <button
+            onClick={handleCompleteAppointment}
+            style={{ marginRight: '10px' }}
+            title="Mark as Completed"
+          >
+            <Check
+              style={{
+                color: "var(--white-color)",
+                width: "32px",
+                height: "32px",
+                "--stroke-width": "2px",
+              }}
+            />
+          </button>
+        )}
+        {appointment.status !== 'completed' && (
+          <button
+            onClick={() =>
+              onEditClick({
+                appointment,
+                user,
+                bookedAppointments: allAppointments.filter(
+                  (a) => a.status === 'booked' && a.id !== appointment.id && a.user
+                ),
+              })
+            }
+            title="Edit Appointment"
+          >
+            <Edit_Pencil_01
+              style={{
+                color: "var(--white-color)",
+                width: "32px",
+                height: "32px",
+                "--stroke-width": "2px",
+              }}
+            />
+          </button>
+        )}
       </section>
     </main>
   );

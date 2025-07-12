@@ -60,6 +60,12 @@ Change cors.php to ngrok url/apI
 
 #BEFORE RUNNING PHP ARTISAN SERVE (NEW CLONE)
 php artisan storage:link
+
+
+#For MySQL
+net start mysql93
+netstat -an | find "3306"
+net stop mysql93
 =======
 # Chronos
 >>>>>>> 0aa0dfef11a2177cebc67219e5da7c752c76c89a
