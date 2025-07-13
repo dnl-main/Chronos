@@ -239,7 +239,7 @@ const Schedule = () => {
           </header>
 
           <section className="schedule-tabs">
-            {['all', 'today', 'upcoming', 'pending'].map((tab) => (
+            {['all', 'today', 'upcoming', 'pending','completed'].map((tab) => (
               <button
                 key={tab}
                 className={`schedule-tabs-${tab} ${selectedTab === tab ? 'schedule-tab-active' : ''}`}
@@ -249,41 +249,8 @@ const Schedule = () => {
                 <p>{tab.charAt(0).toUpperCase() + tab.slice(1)}</p>
               </button>
             ))}
-            <button
-              className={`schedule-tabs-all ${selectedTab === 'all' ? 'schedule-tab-active' : ''}`}
-              onClick={() => setSelectedTab('all')}
-            >
-              <Circle_Primary style={{ width: "20px", height: "20px" }} />
-              <p>All</p>
-            </button>
-            <button
-              className={`schedule-tabs-today ${selectedTab === 'today' ? 'schedule-tab-active' : ''}`}
-              onClick={() => setSelectedTab('today')}
-            >
-              <Circle_Primary style={{ width: "20px", height: "20px" }} />
-              <p>Today</p>
-            </button>
-            <button
-              className={`schedule-tabs-upcoming ${selectedTab === 'upcoming' ? 'schedule-tab-active' : ''}`}
-              onClick={() => setSelectedTab('upcoming')}
-            >
-              <Circle_Primary style={{ width: "20px", height: "20px" }} />
-              <p>Upcoming</p>
-            </button>
-            <button
-              className={`schedule-tabs-pending ${selectedTab === 'pending' ? 'schedule-tab-active' : ''}`}
-              onClick={() => setSelectedTab('pending')}
-            >
-              <Circle_Primary style={{ width: "20px", height: "20px" }} />
-              <p>Pending</p>
-            </button>
-            <button
-              className={`schedule-tabs-completed ${selectedTab === 'completed' ? 'schedule-tab-active' : ''}`}
-              onClick={() => setSelectedTab('completed')}
-            >
-              <Circle_Primary style={{ width: "20px", height: "20px" }} />
-              <p>Completed</p>
-            </button>
+           
+            
           </section>
 
           {(selectedTab === 'today' || selectedTab === 'all') && (

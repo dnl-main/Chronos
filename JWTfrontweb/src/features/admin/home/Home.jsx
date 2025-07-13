@@ -1,4 +1,3 @@
-//Dependencies import
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -7,7 +6,7 @@ import axios from 'axios';
 import ScheduleCard from '../schedule/cards/ScheduleCard';
 import Spinner from '../../../components/ui/Spinner';
 import Appointment from '../components/modals/appointment/manageAppointment/Appointment';
-import EditAppointment from '../components/modals/appointment/editAppointment/EditAppointment'
+import EditAppointment from '../components/modals/appointment/editAppointment/EditAppointment';
 import HomeCertAdmin from './ui/ExpiringCertificates';
 
 //CSS import
@@ -114,59 +113,59 @@ const Home = () => {
     }
   };
 
- const fetchDashboardData = async (token) => {
-  try {
-    setError(null);
-    const todayCountResponse = await axios.get(`${apiUrl}/appointment/today/count`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true',
-      },
-      withCredentials: true,
-    });
-    setTodayCount(todayCountResponse.data.count);
+  const fetchDashboardData = async (token) => {
+    try {
+      setError(null);
+      const todayCountResponse = await axios.get(`${apiUrl}/appointment/today/count`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
+        withCredentials: true,
+      });
+      setTodayCount(todayCountResponse.data.count);
 
-    const upcomingCountResponse = await axios.get(`${apiUrl}/appointment/upcoming/count`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true',
-      },
-      withCredentials: true,
-    });
-    setUpcomingCount(upcomingCountResponse.data.count);
+      const upcomingCountResponse = await axios.get(`${apiUrl}/appointment/upcoming/count`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
+        withCredentials: true,
+      });
 
-    const appointmentsResponse = await axios.get(`${apiUrl}/appointment/specific`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true',
-      },
-      withCredentials: true,
-    });
-    const appointments = Array.isArray(appointmentsResponse.data) ? appointmentsResponse.data : [];
-    setTodayAppointments(
-      appointments.filter(
-        (app) => app.computed_status === 'today' && app.status !== 'pending' && app.status !== 'completed'
-      )
-    );
-    setPendingAppointments(appointments.filter((app) => app.status === 'pending'));
+      const appointmentsResponse = await axios.get(`${apiUrl}/appointment/specific`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
+        withCredentials: true,
+      });
+      const appointments = Array.isArray(appointmentsResponse.data) ? appointmentsResponse.data : [];
+      setTodayAppointments(
+        appointments.filter(
+          (app) => app.computed_status === 'today' && app.status !== 'pending' && app.status !== 'completed'
+        )
+      );
+      setPendingAppointments(appointments.filter((app) => app.status === 'pending'));
 
-    const upcomingAppointmentsResponse = await axios.get(`${apiUrl}/appointment/upcoming/specific`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true',
-      },
-      withCredentials: true,
-    });
-    const upcoming = Array.isArray(upcomingAppointmentsResponse.data)
-      ? upcomingAppointmentsResponse.data
-      : [];
-    setUpcomingAppointments(upcoming);
-  } catch (error) {
-    setError('Failed to load dashboard data.');
-  } finally {
-    setLoading(false);
-  }
-};
+      const upcomingAppointmentsResponse = await axios.get(`${apiUrl}/appointment/upcoming/specific`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
+        withCredentials: true,
+      });
+      const upcoming = Array.isArray(upcomingAppointmentsResponse.data)
+        ? upcomingAppointmentsResponse.data.filter((app) => app.status !== 'completed')
+        : [];
+      setUpcomingAppointments(upcoming);
+      setUpcomingCount(upcoming.length); // Update count to reflect filtered appointments
+    } catch (error) {
+      setError('Failed to load dashboard data.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchAllUsers = async (token) => {
     try {
@@ -181,7 +180,6 @@ const Home = () => {
       setTotalCrewCount(response.data.total_crew_count);
       setJobTitleCounts(response.data.job_title_counts);
     } catch (error) {
-      // CHANGE: Improved error handling to update error state
       console.error('Failed to fetch crew counts:', error);
       setError('Failed to load crew counts.');
     }
@@ -225,8 +223,6 @@ const Home = () => {
       fetchDashboardData(token);
     }
   };
-
-
 
   if (loading) {
     return <Spinner />;
