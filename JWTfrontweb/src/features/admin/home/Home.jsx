@@ -114,57 +114,59 @@ const Home = () => {
     }
   };
 
-  const fetchDashboardData = async (token) => {
-    try {
-      setError(null);
-      const todayCountResponse = await axios.get(`${apiUrl}/appointment/today/count`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true',
-        },
-        withCredentials: true,
-      });
-      setTodayCount(todayCountResponse.data.count);
+ const fetchDashboardData = async (token) => {
+  try {
+    setError(null);
+    const todayCountResponse = await axios.get(`${apiUrl}/appointment/today/count`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true',
+      },
+      withCredentials: true,
+    });
+    setTodayCount(todayCountResponse.data.count);
 
-      const upcomingCountResponse = await axios.get(`${apiUrl}/appointment/upcoming/count`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true',
-        },
-        withCredentials: true,
-      });
-      setUpcomingCount(upcomingCountResponse.data.count);
+    const upcomingCountResponse = await axios.get(`${apiUrl}/appointment/upcoming/count`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true',
+      },
+      withCredentials: true,
+    });
+    setUpcomingCount(upcomingCountResponse.data.count);
 
-      const appointmentsResponse = await axios.get(`${apiUrl}/appointment/specific`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true',
-        },
-        withCredentials: true,
-      });
-      const appointments = Array.isArray(appointmentsResponse.data) ? appointmentsResponse.data : [];
-      setTodayAppointments(
-        appointments.filter((app) => app.computed_status === 'today' && app.status !== 'pending')
-      );
-      setPendingAppointments(appointments.filter((app) => app.status === 'pending'));
+    const appointmentsResponse = await axios.get(`${apiUrl}/appointment/specific`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true',
+      },
+      withCredentials: true,
+    });
+    const appointments = Array.isArray(appointmentsResponse.data) ? appointmentsResponse.data : [];
+    setTodayAppointments(
+      appointments.filter(
+        (app) => app.computed_status === 'today' && app.status !== 'pending' && app.status !== 'completed'
+      )
+    );
+    setPendingAppointments(appointments.filter((app) => app.status === 'pending'));
 
-      const upcomingAppointmentsResponse = await axios.get(`${apiUrl}/appointment/upcoming/specific`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true',
-        },
-        withCredentials: true,
-      });
-      const upcoming = Array.isArray(upcomingAppointmentsResponse.data)
-        ? upcomingAppointmentsResponse.data
-        : [];
-      setUpcomingAppointments(upcoming);
-    } catch (error) {
-      setError('Failed to load dashboard data.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    const upcomingAppointmentsResponse = await axios.get(`${apiUrl}/appointment/upcoming/specific`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true',
+      },
+      withCredentials: true,
+    });
+    const upcoming = Array.isArray(upcomingAppointmentsResponse.data)
+      ? upcomingAppointmentsResponse.data
+      : [];
+    setUpcomingAppointments(upcoming);
+  } catch (error) {
+    setError('Failed to load dashboard data.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const fetchAllUsers = async (token) => {
     try {

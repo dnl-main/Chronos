@@ -19,43 +19,52 @@ class AppointmentController extends Controller
     public function index()
     {
         $user = JWTAuth::user();
+        $today = Carbon::today()->startOfDay();
 
         if ($user->role === 'admin') {
-            $appointments = Appointment::with('user')->get()->map(function ($appointment) {
-                return [
-                    'id' => $appointment->id,
-                    'user_id' => $appointment->user_id,
-                    'date' => $appointment->date,
-                    'start_time' => $appointment->start_time,
-                    'end_time' => $appointment->end_time,
-                    'department' => $appointment->department,
-                    'crewing_dept' => $appointment->crewing_dept,
-                    'operator' => $appointment->operator,
-                    'accounting_task' => $appointment->accounting_task,
-                    'employee' => $appointment->employee,
-                    'purpose' => $appointment->purpose,
-                    'status' => $appointment->status,
-                    'computed_status' => $this->getAppointmentStatus($appointment),
-                    'user' => $appointment->user ? [
-                        'first_name' => $appointment->user->first_name,
-                        'middle_name' => $appointment->user->middle_name,
-                        'last_name' => $appointment->user->last_name,
-                        'email' => $appointment->user->email,
-                        'mobile' => $appointment->user->mobile,
-                        'position' => $appointment->user->position,
-                        'department' => $appointment->user->department,
-                        'availability' => $appointment->user->availability,
-                        'gender' => $appointment->user->gender,
-                        'civil_status' => $appointment->user->civil_status,
-                        'birthday' => $appointment->user->birthday,
-                        'address' => $this->formatAddress($appointment->user),
-                    ] : null,
-                ];
-            });
+            $appointments = Appointment::with('user')
+                ->where('date', '>=', $today)
+                ->orderBy('date', 'asc')
+                ->get()
+                ->map(function ($appointment) {
+                    return [
+                        'id' => $appointment->id,
+                        'user_id' => $appointment->user_id,
+                        'date' => $appointment->date,
+                        'start_time' => $appointment->start_time,
+                        'end_time' => $appointment->end_time,
+                        'department' => $appointment->department,
+                        'crewing_dept' => $appointment->crewing_dept,
+                        'operator' => $appointment->operator,
+                        'accounting_task' => $appointment->accounting_task,
+                        'employee' => $appointment->employee,
+                        'purpose' => $appointment->purpose,
+                        'status' => $appointment->status,
+                        'computed_status' => $this->getAppointmentStatus($appointment),
+                        'user' => $appointment->user ? [
+                            'first_name' => $appointment->user->first_name,
+                            'middle_name' => $appointment->user->middle_name,
+                            'last_name' => $appointment->user->last_name,
+                            'email' => $appointment->user->email,
+                            'mobile' => $appointment->user->mobile,
+                            'position' => $appointment->user->position,
+                            'department' => $appointment->user->department,
+                            'availability' => $appointment->user->availability,
+                            'gender' => $appointment->user->gender,
+                            'civil_status' => $appointment->user->civil_status,
+                            'birthday' => $appointment->user->birthday,
+                            'address' => $this->formatAddress($appointment->user),
+                        ] : null,
+                    ];
+                });
             return response()->json($appointments, 200);
         }
 
-        $appointment = Appointment::where('user_id', $user->id)->first();
+        $appointment = Appointment::where('user_id', $user->id)
+            ->where('date', '>=', $today)
+            ->where('status', '!=', 'completed')
+            ->orderBy('date', 'asc')
+            ->first();
         if ($appointment) {
             return response()->json([
                 'id' => $appointment->id,
@@ -106,57 +115,57 @@ class AppointmentController extends Controller
         return !empty($addressParts) ? implode(', ', $addressParts) : null;
     }
 
-public function getTodayCount(Request $request)
-{
-    $user = JWTAuth::user();
+    public function getTodayCount(Request $request)
+    {
+        $user = JWTAuth::user();
 
-    if ($user->role !== 'admin') {
-        return response()->json(['message' => 'Unauthorized'], 403);
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $employeeName = $user->first_name . ' ' . $user->last_name;
+        $today = Carbon::today()->toDateString();
+
+        $count = Appointment::where('employee', $employeeName)
+            ->where('date', $today)
+            ->where('status', 'booked')
+            ->count();
+
+        return response()->json(['count' => $count], 200);
     }
 
-    $employeeName = $user->first_name . ' ' . $user->last_name;
-    $today = Carbon::today()->toDateString();
+    public function getUpcomingCount(Request $request)
+    {
+        $user = JWTAuth::user();
 
-    $count = Appointment::where('employee', $employeeName)
-        ->where('date', $today)
-        ->where('status', 'booked')
-        ->count();
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
 
-    return response()->json(['count' => $count], 200);
-}
+        $employeeName = $user->first_name . ' ' . $user->last_name;
+        $today = Carbon::today()->startOfDay();
 
-   public function getUpcomingCount(Request $request)
-{
-    $user = JWTAuth::user();
+        $count = Appointment::where('employee', $employeeName)
+            ->where('date', '>=', $today)
+            ->where('status', 'booked')
+            ->count();
 
-    if ($user->role !== 'admin') {
-        return response()->json(['message' => 'Unauthorized'], 403);
+        return response()->json(['count' => $count], 200);
     }
 
-    $employeeName = $user->first_name . ' ' . $user->last_name;
-    $today = Carbon::today()->startOfDay();
+    private function getAppointmentStatus($appointment)
+    {
+        $today = now()->startOfDay();
+        $appointmentDate = Carbon::parse($appointment->date)->startOfDay();
 
-    $count = Appointment::where('employee', $employeeName)
-        ->where('date', '>=', $today)
-        ->where('status', 'booked')
-        ->count();
-
-    return response()->json(['count' => $count], 200);
-}
-
-private function getAppointmentStatus($appointment)
-{
-    $today = now()->startOfDay();
-    $appointmentDate = Carbon::parse($appointment->date)->startOfDay();
-
-    if ($appointmentDate->isToday()) {
-        return 'today';
-    } elseif ($appointmentDate->isPast()) {
-        return 'completed';
-    } else {
-        return 'upcoming';
+        if ($appointmentDate->isToday()) {
+            return 'today';
+        } elseif ($appointmentDate->isPast()) {
+            return 'completed';
+        } else {
+            return 'upcoming';
+        }
     }
-}
 
     public function store(Request $request)
     {
@@ -175,11 +184,26 @@ private function getAppointmentStatus($appointment)
             'purpose' => 'required|string|max:255',
         ]);
 
+        // Prevent overlapping appointments
+        $existing = Appointment::where('user_id', $validated['user_id'])
+            ->where('date', $validated['date'])
+            ->where('status', '!=', 'completed')
+            ->where(function ($query) use ($validated) {
+                $query->whereBetween('start_time', [$validated['start_time'], $validated['end_time']])
+                      ->orWhereBetween('end_time', [$validated['start_time'], $validated['end_time']])
+                      ->orWhere(function ($q) use ($validated) {
+                          $q->where('start_time', '<=', $validated['start_time'])
+                            ->where('end_time', '>=', $validated['end_time']);
+                      });
+            })
+            ->exists();
+        if ($existing) {
+            return response()->json(['message' => 'Appointment time conflicts with an existing appointment'], 400);
+        }
+
         if ($user->role !== 'admin' && $validated['user_id'] != $user->id) {
             return response()->json(['message' => 'Unauthorized: Cannot book for another user'], 403);
         }
-
-        Appointment::where('user_id', $validated['user_id'])->delete();
 
         $appointment = Appointment::create([
             'user_id' => $validated['user_id'],
@@ -231,11 +255,26 @@ private function getAppointmentStatus($appointment)
             'purpose' => 'required|string|max:255',
         ]);
 
+        // Prevent overlapping appointments
+        $existing = Appointment::where('user_id', $validated['user_id'])
+            ->where('date', $validated['date'])
+            ->where('status', '!=', 'completed')
+            ->where(function ($query) use ($validated) {
+                $query->whereBetween('start_time', [$validated['start_time'], $validated['end_time']])
+                      ->orWhereBetween('end_time', [$validated['start_time'], $validated['end_time']])
+                      ->orWhere(function ($q) use ($validated) {
+                          $q->where('start_time', '<=', $validated['start_time'])
+                            ->where('end_time', '>=', $validated['end_time']);
+                      });
+            })
+            ->exists();
+        if ($existing) {
+            return response()->json(['message' => 'Appointment time conflicts with an existing appointment'], 400);
+        }
+
         if ($user->role !== 'admin' && $validated['user_id'] != $user->id) {
             return response()->json(['message' => 'Unauthorized: Cannot book for another user'], 403);
         }
-
-        Appointment::where('user_id', $validated['user_id'])->delete();
 
         $appointment = Appointment::create([
             'user_id' => $validated['user_id'],
@@ -316,6 +355,24 @@ private function getAppointmentStatus($appointment)
             'purpose' => 'required|string|max:255',
         ]);
 
+        // Prevent overlapping appointments
+        $existing = Appointment::where('user_id', $validated['user_id'])
+            ->where('date', $validated['date'])
+            ->where('status', '!=', 'completed')
+            ->where('id', '!=', $id)
+            ->where(function ($query) use ($validated) {
+                $query->whereBetween('start_time', [$validated['start_time'], $validated['end_time']])
+                      ->orWhereBetween('end_time', [$validated['start_time'], $validated['end_time']])
+                      ->orWhere(function ($q) use ($validated) {
+                          $q->where('start_time', '<=', $validated['start_time'])
+                            ->where('end_time', '>=', $validated['end_time']);
+                      });
+            })
+            ->exists();
+        if ($existing) {
+            return response()->json(['message' => 'Appointment time conflicts with an existing appointment'], 400);
+        }
+
         $appointment->update([
             'user_id' => $validated['user_id'],
             'date' => $validated['date'],
@@ -350,19 +407,26 @@ private function getAppointmentStatus($appointment)
         ], 200);
     }
 
-    public function destroy()
+    public function destroy($id)
     {
         $user = JWTAuth::user();
-        $deleted = Appointment::where('user_id', $user->id)->delete();
-        return response()->json(['message' => $deleted ? 'Appointment deleted' : 'No appointment found'], 200);
+        $appointment = Appointment::find($id);
+        if (!$appointment) {
+            return response()->json(['message' => 'Appointment not found'], 404);
+        }
+
+        if ($user->role !== 'admin' && $appointment->user_id != $user->id) {
+            return response()->json(['message' => 'Unauthorized: Cannot delete another user\'s appointment'], 403);
+        }
+
+        $appointment->delete();
+        return response()->json(['message' => 'Appointment deleted successfully'], 200);
     }
 
     public function delete($id)
     {
         $user = JWTAuth::user();
-        if ($user->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+
 
         $appointment = Appointment::find($id);
         if (!$appointment) {
@@ -399,8 +463,26 @@ private function getAppointmentStatus($appointment)
             'operator' => 'required_if:department,crewing|in:fleet crew manager,senior fleet crew operator,crew operator 1,crew operator 2,crew operator 3|nullable',
             'accounting_task' => 'required_if:department,accounting|in:allotment,final balance,check releasing|nullable',
             'employee_name' => 'required|string|max:255',
-            'purpose' => 'sometimes|string|max:255', 
+            'purpose' => 'sometimes|string|max:255',
         ]);
+
+        // Prevent overlapping appointments
+        $existing = Appointment::where('user_id', $validated['user_id'] ?? $appointment->user_id)
+            ->where('date', $validated['date'])
+            ->where('status', '!=', 'completed')
+            ->where('id', '!=', $id)
+            ->where(function ($query) use ($validated) {
+                $query->whereBetween('start_time', [$validated['start_time'], $validated['end_time']])
+                      ->orWhereBetween('end_time', [$validated['start_time'], $validated['end_time']])
+                      ->orWhere(function ($q) use ($validated) {
+                          $q->where('start_time', '<=', $validated['start_time'])
+                            ->where('end_time', '>=', $validated['end_time']);
+                      });
+            })
+            ->exists();
+        if ($existing) {
+            return response()->json(['message' => 'Appointment time conflicts with an existing appointment'], 400);
+        }
 
         $appointment->update([
             'user_id' => $validated['user_id'] ?? $appointment->user_id,
@@ -412,7 +494,7 @@ private function getAppointmentStatus($appointment)
             'operator' => $validated['operator'] ?? null,
             'accounting_task' => $validated['accounting_task'] ?? null,
             'employee' => $validated['employee_name'],
-            'purpose' => $validated['purpose'] ?? $appointment->purpose, 
+            'purpose' => $validated['purpose'] ?? $appointment->purpose,
             'status' => 'booked',
         ]);
 
@@ -556,11 +638,26 @@ private function getAppointmentStatus($appointment)
             'purpose' => 'required|string|max:255',
         ]);
 
+        // Prevent overlapping appointments
+        $existing = Appointment::where('user_id', $validated['user_id'])
+            ->where('date', $validated['date'])
+            ->where('status', '!=', 'completed')
+            ->where(function ($query) use ($validated) {
+                $query->whereBetween('start_time', [$validated['start_time'], $validated['end_time']])
+                      ->orWhereBetween('end_time', [$validated['start_time'], $validated['end_time']])
+                      ->orWhere(function ($q) use ($validated) {
+                          $q->where('start_time', '<=', $validated['start_time'])
+                            ->where('end_time', '>=', $validated['end_time']);
+                      });
+            })
+            ->exists();
+        if ($existing) {
+            return response()->json(['message' => 'Appointment time conflicts with an existing appointment'], 400);
+        }
+
         if ($user->role !== 'admin' && $validated['user_id'] != $user->id) {
             return response()->json(['message' => 'Unauthorized: Cannot book for another user'], 403);
         }
-
-        Appointment::where('user_id', $validated['user_id'])->delete();
 
         $appointment = Appointment::create([
             'user_id' => $validated['user_id'],
@@ -679,14 +776,107 @@ private function getAppointmentStatus($appointment)
         ], 200);
     }
 
-public function getSpecific(Request $request)
-{
-    $user = JWTAuth::user();
-    $employeeName = $user->first_name . ' ' . $user->last_name;
+    public function getSpecific(Request $request)
+    {
+        $user = JWTAuth::user();
+        $employeeName = $user->first_name . ' ' . $user->last_name;
 
-    if ($user->role === 'admin') {
+        if ($user->role === 'admin') {
+            $appointments = Appointment::with('user')
+                ->where('employee', $employeeName)
+                ->where('date', '>=', Carbon::today()->startOfDay())
+                ->orderBy('date', 'asc')
+                ->get()
+                ->map(function ($appointment) {
+                    return [
+                        'id' => $appointment->id,
+                        'user_id' => $appointment->user_id,
+                        'date' => $appointment->date,
+                        'start_time' => $appointment->start_time,
+                        'end_time' => $appointment->end_time,
+                        'department' => $appointment->department,
+                        'crewing_dept' => $appointment->crewing_dept,
+                        'operator' => $appointment->operator,
+                        'accounting_task' => $appointment->accounting_task,
+                        'employee' => $appointment->employee,
+                        'purpose' => $appointment->purpose,
+                        'status' => $appointment->status,
+                        'computed_status' => $this->getAppointmentStatus($appointment),
+                        'user' => $appointment->user ? [
+                            'first_name' => $appointment->user->first_name,
+                            'middle_name' => $appointment->user->middle_name,
+                            'last_name' => $appointment->user->last_name,
+                            'email' => $appointment->user->email,
+                            'mobile' => $appointment->user->mobile,
+                            'position' => $appointment->user->position,
+                            'department' => $appointment->user->department,
+                            'availability' => $appointment->user->availability,
+                            'gender' => $appointment->user->gender,
+                            'civil_status' => $appointment->user->civil_status,
+                            'birthday' => $appointment->user->birthday,
+                            'address' => $this->formatAddress($appointment->user),
+                        ] : null,
+                    ];
+                });
+            return response()->json($appointments, 200);
+        }
+
+        $appointment = Appointment::where('user_id', $user->id)
+            ->where('employee', $employeeName)
+            ->where('date', '>=', Carbon::today()->startOfDay())
+            ->where('status', '!=', 'completed')
+            ->orderBy('date', 'asc')
+            ->first();
+        if ($appointment) {
+            return response()->json([
+                'id' => $appointment->id,
+                'user_id' => $appointment->user_id,
+                'date' => $appointment->date,
+                'start_time' => $appointment->start_time,
+                'end_time' => $appointment->end_time,
+                'department' => $appointment->department,
+                'crewing_dept' => $appointment->crewing_dept,
+                'operator' => $appointment->operator,
+                'accounting_task' => $appointment->accounting_task,
+                'employee' => $appointment->employee,
+                'purpose' => $appointment->purpose,
+                'status' => $appointment->status,
+                'computed_status' => $this->getAppointmentStatus($appointment),
+                'user' => [
+                    'first_name' => $user->first_name,
+                    'middle_name' => $user->middle_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'mobile' => $user->mobile,
+                    'position' => $user->position,
+                    'department' => $user->department,
+                    'availability' => $user->availability,
+                    'gender' => $user->gender,
+                    'civil_status' => $user->civil_status,
+                    'birthday' => $user->birthday,
+                    'address' => $this->formatAddress($user),
+                ],
+            ], 200);
+        }
+
+        return response()->json([], 200);
+    }
+
+    public function getUpcomingSpecific(Request $request)
+    {
+        $user = JWTAuth::user();
+
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $employeeName = $user->first_name . ' ' . $user->last_name;
+
+        $today = Carbon::today()->startOfDay();
         $appointments = Appointment::with('user')
             ->where('employee', $employeeName)
+            ->where('date', '>=', $today)
+            ->orderBy('date', 'asc')
             ->get()
             ->map(function ($appointment) {
                 return [
@@ -719,64 +909,70 @@ public function getSpecific(Request $request)
                     ] : null,
                 ];
             });
+
         return response()->json($appointments, 200);
     }
 
-    $appointment = Appointment::where('user_id', $user->id)
-        ->where('employee', $employeeName)
-        ->first();
-    if ($appointment) {
+    public function getCrewCounts()
+    {
+        $user = JWTAuth::user();
+
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $totalCrewCount = User::where('role', 'user')
+            ->whereNotNull('region')
+            ->where('region', '!=', '')
+            ->count();
+
+        $availableCrewCount = User::where('role', 'user')
+            ->where('availability', 'available')
+            ->whereNotNull('region')
+            ->where('region', '!=', '')
+            ->count();
+
+        $jobTitleCounts = User::where('role', 'user')
+            ->where('availability', 'available')
+            ->whereNotNull('region')
+            ->where('region', '!=', '')
+            ->whereNotNull('position')
+            ->groupBy('position')
+            ->select('position', \DB::raw('count(*) as count'))
+            ->get()
+            ->pluck('count', 'position')
+            ->toArray();
+
         return response()->json([
-            'id' => $appointment->id,
-            'user_id' => $appointment->user_id,
-            'date' => $appointment->date,
-            'start_time' => $appointment->start_time,
-            'end_time' => $appointment->end_time,
-            'department' => $appointment->department,
-            'crewing_dept' => $appointment->crewing_dept,
-            'operator' => $appointment->operator,
-            'accounting_task' => $appointment->accounting_task,
-            'employee' => $appointment->employee,
-            'purpose' => $appointment->purpose,
-            'status' => $appointment->status,
-            'computed_status' => $this->getAppointmentStatus($appointment),
-            'user' => [
-                'first_name' => $user->first_name,
-                'middle_name' => $user->middle_name,
-                'last_name' => $user->last_name,
-                'email' => $user->email,
-                'mobile' => $user->mobile,
-                'position' => $user->position,
-                'department' => $user->department,
-                'availability' => $user->availability,
-                'gender' => $user->gender,
-                'civil_status' => $user->civil_status,
-                'birthday' => $user->birthday,
-                'address' => $this->formatAddress($user),
-            ],
+            'available_crew_count' => $availableCrewCount,
+            'total_crew_count' => $totalCrewCount,
+            'job_title_counts' => $jobTitleCounts,
         ], 200);
     }
 
-    return response()->json([], 200);
-}
-public function getUpcomingSpecific(Request $request)
-{
-    $user = JWTAuth::user();
+    public function complete($id)
+    {
+        $user = JWTAuth::user();
+        if ($user->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
 
-    if ($user->role !== 'admin') {
-        return response()->json(['message' => 'Unauthorized'], 403);
-    }
+        $appointment = Appointment::find($id);
+        if (!$appointment) {
+            return response()->json(['message' => 'Appointment not found'], 404);
+        }
 
-    $employeeName = $user->first_name . ' ' . $user->last_name;
+        if ($appointment->status !== 'booked') {
+            return response()->json(['message' => 'Only booked appointments can be marked as completed'], 400);
+        }
 
-    $today = Carbon::today()->startOfDay();
-    $appointments = Appointment::with('user')
-        ->where('employee', $employeeName)
-        ->where('date', '>=', $today)
-        ->orderBy('date', 'asc')
-        ->get()
-        ->map(function ($appointment) {
-            return [
+        $appointment->update([
+            'status' => 'completed',
+        ]);
+
+        return response()->json([
+            'message' => 'Appointment status updated to completed',
+            'appointment' => [
                 'id' => $appointment->id,
                 'user_id' => $appointment->user_id,
                 'date' => $appointment->date,
@@ -790,102 +986,7 @@ public function getUpcomingSpecific(Request $request)
                 'purpose' => $appointment->purpose,
                 'status' => $appointment->status,
                 'computed_status' => $this->getAppointmentStatus($appointment),
-                'user' => $appointment->user ? [
-                    'first_name' => $appointment->user->first_name,
-                    'middle_name' => $appointment->user->middle_name,
-                    'last_name' => $appointment->user->last_name,
-                    'email' => $appointment->user->email,
-                    'mobile' => $appointment->user->mobile,
-                    'position' => $appointment->user->position,
-                    'department' => $appointment->user->department,
-                    'availability' => $appointment->user->availability,
-                    'gender' => $appointment->user->gender,
-                    'civil_status' => $appointment->user->civil_status,
-                    'birthday' => $appointment->user->birthday,
-                    'address' => $this->formatAddress($appointment->user),
-                ] : null,
-            ];
-        });
-
-    return response()->json($appointments, 200);
-}
-public function getCrewCounts()
-{
-    $user = JWTAuth::user();
-
-    if ($user->role !== 'admin') {
-        return response()->json(['message' => 'Unauthorized'], 403);
+            ],
+        ], 200);
     }
-
-    // Get all users with role 'user', non-null and non-empty region
-    $totalCrewCount = User::where('role', 'user')
-        ->whereNotNull('region')
-        ->where('region', '!=', '')
-        ->count();
-
-    // Get available crew count with role 'user', non-null and non-empty region
-    $availableCrewCount = User::where('role', 'user')
-        ->where('availability', 'available')
-        ->whereNotNull('region')
-        ->where('region', '!=', '')
-        ->count();
-
-    // Get counts of available crew members by job title (position) for users with role 'user', non-null and non-empty region
-    $jobTitleCounts = User::where('role', 'user')
-        ->where('availability', 'available')
-        ->whereNotNull('region')
-        ->where('region', '!=', '')
-        ->whereNotNull('position')
-        ->groupBy('position')
-        ->select('position', \DB::raw('count(*) as count'))
-        ->get()
-        ->pluck('count', 'position')
-        ->toArray();
-
-    return response()->json([
-        'available_crew_count' => $availableCrewCount,
-        'total_crew_count' => $totalCrewCount,
-        'job_title_counts' => $jobTitleCounts,
-    ], 200);
-}
-public function complete($id)
-{
-    $user = JWTAuth::user();
-    if ($user->role !== 'admin') {
-        return response()->json(['message' => 'Unauthorized'], 403);
-    }
-
-    $appointment = Appointment::find($id);
-    if (!$appointment) {
-        return response()->json(['message' => 'Appointment not found'], 404);
-    }
-
-    if ($appointment->status !== 'booked') {
-        return response()->json(['message' => 'Only booked appointments can be marked as completed'], 400);
-    }
-
-    $appointment->update([
-        'status' => 'completed',
-    ]);
-
-    return response()->json([
-        'message' => 'Appointment status updated to completed',
-        'appointment' => [
-            'id' => $appointment->id,
-            'user_id' => $appointment->user_id,
-            'date' => $appointment->date,
-            'start_time' => $appointment->start_time,
-            'end_time' => $appointment->end_time,
-            'department' => $appointment->department,
-            'crewing_dept' => $appointment->crewing_dept,
-            'operator' => $appointment->operator,
-            'accounting_task' => $appointment->accounting_task,
-            'employee' => $appointment->employee,
-            'purpose' => $appointment->purpose,
-            'status' => $appointment->status,
-            'computed_status' => $this->getAppointmentStatus($appointment),
-        ],
-    ], 200);
-}
-
 }
