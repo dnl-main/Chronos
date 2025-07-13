@@ -15,7 +15,21 @@ const useHomeUserLogic = () => {
   }, []);
 
   const [selectedStatus, setSelectedStatus] = useState('');
-  // const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
+  const [appointment, setAppointment] = useState({
+    id: null,
+    date: '',
+    start_time: '',
+    end_time: '',
+    department: '',
+    crewing_dept: '',
+    operator: '',
+    accounting_task: '',
+    employee: '',
+    purpose: '',
+    status: ''
+  });
   const [certificateName, setCertificateName] = useState('');
   const [primaryCertificateType, setPrimaryCertificateType] = useState('');
   const [subCertificateType, setSubCertificateType] = useState('');
@@ -23,13 +37,12 @@ const useHomeUserLogic = () => {
   const [file, setFile] = useState(null);
   const [progress, setProgress] = useState({ percentage: 0, uploaded: 0, total: 4 });
   const [dateError, setDateError] = useState('');
-  // const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
 
   const statusOptions = ['On Board', 'Available', 'Vacation'];
 
   const certificateCategories = {
     Medical: ['Health Check', 'Vaccination', 'Medical Certificate', 'Pre-Employment Medical Examination', 'Firness for Sea Service', 'Health Insurance'],
-    Training: ['Workshop', 'Certification', 'Seaman Training I', 'Leadership Training I', 'Seaman Training II', 'Leadership Training II', 'Leadership Training III', 'Safety Certificates / Basic Safety Training & Crowd Management', 'Deck Cadet', 'Engine Cadet Training', 'Steward Training', 'BRM (Bridge Resource Management)', 'ERM (Engine Room Resource Management)', 'Radar / ARPA / ECDIS', 'LNG Carrier Operations', 'Oil Tanker Familiarization', 'Leadership % Teamwork'],
+    Training: ['Workshop', 'Certification', 'Seaman Training I', 'Leadership Training I', 'Seaman Training II', 'Leadership Training III', 'Safety Certificates / Basic Safety Training & Crowd Management', 'Deck Cadet', 'Engine Cadet Training', 'Steward Training', 'BRM (Bridge Resource Management)', 'ERM (Engine Room Resource Management)', 'Radar / ARPA / ECDIS', 'LNG Carrier Operations', 'Oil Tanker Familiarization', 'Leadership % Teamwork'],
     PDOS: ['Cultural Briefing', 'Financial Literacy', 'Seafarer Safety Awareness', 'Shipboard Emergency Procedures', 'Secual Harassment Awareness', 'COVID Protocol Orientaion'],
     'Employment Document': ['Passport', 'ID Card', 'Contract', 'Pre-Employment Orientation Seminar (PEOS)', 'Seaman’s Book', 'Contract Of Employment', 'Crew ID-Card', 'C1/D Visa', 'Criminal Record Certificates', 'Sea Service Record'],
     SOLAS: ['International Ship Safety Equipment Certificate', 'Minimum Safe Manning Certificate', 'International Ship Construction Certificate', 'Passenger Ship Safety Certificate', 'Cargo Ship Safety Certificate', 'Cargo Ship Safety Construction Certificate', 'Cargo Ship Safety Equipment Certificate', 'Cargo Ship Safety Radio Certificate', 'International Tonnage Certificate', 'International Load Line Certificate', 'Safety Manamgement Certificate', 'Ship Security Certificate', 'International Oil Polution Prevention Certificate', 'International Sewage Pollution Prevention Certificate', 'International Air Pollution Prevention Certificate', 'PST (Personal Survival Techniques)', 'FPFF (Fire Prevention and Fire Fighting)', 'EFA (Elementary First Aid)', 'PSSR (Personal Safety and Social Responsibility)', 'Security Awareness', 'Advanced Fire Fighting', 'PSCRB (Rescue Boats)', 'Enclosed Space Rescue', 'HUET (Helicopter Escape)'],
@@ -39,19 +52,19 @@ const useHomeUserLogic = () => {
 
   const primaryTypes = Object.keys(certificateCategories);
 
-    const hasRun = useRef(false);
+  const hasRun = useRef(false);
 
-    useEffect(() => {
-      if (hasRun.current) return;
-      hasRun.current = true;
+  useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
 
-      if (!token) {
-        navigate('/login');
-        return;
-      }
+    if (!token) {
+      navigate('/login');
+      return;
+    }
 
     setupTokenTimeout(token, storedUser, navigate);
-  }, []);
+  }, [token, storedUser, navigate]);
 
   const {
     data: user,
@@ -98,7 +111,7 @@ const useHomeUserLogic = () => {
     },
     enabled: !!token,
     onError: () => setAppointment({
-  id: null, date: '', start_time: '', end_time: '', department: '', crewing_dept: '',
+id: null, date: '', start_time: '', end_time: '', department: '', crewing_dept: '',
       operator: '', accounting_task: '', employee: '', purpose: '', status: ''
     }),
   });
@@ -124,7 +137,7 @@ const useHomeUserLogic = () => {
       }
     }
   }, [appointmentData, user]);
-
+  
   // const {
   //   data: certificatesData,
   //   isLoading: certificateLoading,
@@ -276,16 +289,41 @@ const useHomeUserLogic = () => {
     uploadCertificateMutation.mutate(formData);
   };
 
+  const rescheduleMutation = useMutation({
+    mutationFn: async (rescheduleData) => {
+      const response = await axios.patch(`${apiUrl}/appointment/${appointment.id}`, rescheduleData, {
+        headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      alert('Appointment rescheduled successfully');
+      setAppointment(data);
+      setIsRescheduleModalOpen(false);
+      queryClient.invalidateQueries(['appointment']);
+    },
+    onError: (error) => alert(error.response?.data.message || 'Failed to reschedule appointment'),
+  });
+
+  const handleRescheduleAppointment = (rescheduleData) => {
+    rescheduleMutation.mutate(rescheduleData);
+  };
+
   return {
     user,
     loadingUser,
     errorUser,
+    appointment,
+    appointmentLoading,
     selectedStatus,
     statusOptions,
     handleStatusChange,
     handleLogout,
-    // isModalOpen,
-    // setIsModalOpen,
+    formatTime,
+    handleAppointmentBooked,
+    capitalize,
+    isModalOpen,
+    setIsModalOpen,
     certificateName,
     setCertificateName,
     primaryTypes,
@@ -301,8 +339,10 @@ const useHomeUserLogic = () => {
     dateError,
     handleSubmitCertificate,
     progress,
-    // isRescheduleModalOpen,
-    // setIsRescheduleModalOpen,
+    isRescheduleModalOpen,
+    setIsRescheduleModalOpen,
+    handleDeleteAppointment,
+    handleRescheduleAppointment,
   };
 };
 
