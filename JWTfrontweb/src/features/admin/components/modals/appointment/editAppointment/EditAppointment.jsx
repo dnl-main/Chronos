@@ -520,7 +520,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
                 <article className="editAppointment-box-in-right-dropdown-date">
                   <label htmlFor="date">Date</label>
                   <input
-                    type="text"
+                    type="date"
                     id="date"
                     value={selectedAppointment?.date || ''}
                     onChange={(e) => {

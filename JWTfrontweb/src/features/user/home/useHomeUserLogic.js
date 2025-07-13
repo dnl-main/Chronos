@@ -9,17 +9,17 @@ const useHomeUserLogic = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const queryClient = useQueryClient();
   const token = useMemo(() => sessionStorage.getItem('token'), []);
-    const storedUser = useMemo(() => {
-      const user = sessionStorage.getItem('user');
-      return user ? JSON.parse(user) : null;
-    }, []);
+  const storedUser = useMemo(() => {
+    const user = sessionStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+  }, []);
 
 
   const [selectedStatus, setSelectedStatus] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [appointment, setAppointment] = useState({
-    date: '', start_time: '', end_time: '', department: '', crewing_dept: '',
+   date: '', start_time: '', end_time: '', department: '', crewing_dept: '',
     operator: '', accounting_task: '', employee: '', purpose: '', status: ''
   });
   const [certificateName, setCertificateName] = useState('');
@@ -44,19 +44,19 @@ const useHomeUserLogic = () => {
 
   const primaryTypes = Object.keys(certificateCategories);
 
-const hasRun = useRef(false);
+  const hasRun = useRef(false);
 
-useEffect(() => {
-  if (hasRun.current) return;
-  hasRun.current = true;
+  useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
 
-  if (!token) {
-    navigate('/login');
-    return;
-  }
+    if (!token) {
+      navigate('/login');
+      return;
+    }
 
-  setupTokenTimeout(token, storedUser, navigate);
-}, []);
+    setupTokenTimeout(token, storedUser, navigate);
+  }, []);
 
 
   const {
@@ -104,14 +104,32 @@ useEffect(() => {
     },
     enabled: !!token,
     onError: () => setAppointment({
-      id: null, date: '', start_time: '', end_time: '', department: '', crewing_dept: '',
+  id: null, date: '', start_time: '', end_time: '', department: '', crewing_dept: '',
       operator: '', accounting_task: '', employee: '', purpose: '', status: ''
     }),
   });
 
   useEffect(() => {
-    if (appointmentData) setAppointment(appointmentData);
-  }, [appointmentData]);
+    if (appointmentData) {
+      if (user?.role !== 'admin' && appointmentData.status === 'completed') {
+        setAppointment({
+          id: null,
+          date: '',
+          start_time: '',
+          end_time: '',
+          department: '',
+          crewing_dept: '',
+          operator: '',
+          accounting_task: '',
+          employee: '',
+          purpose: '',
+          status: '',
+        });
+      } else {
+        setAppointment(appointmentData);
+      }
+    }
+  }, [appointmentData, user]);
 
   // const {
   //   data: certificatesData,
@@ -179,19 +197,21 @@ useEffect(() => {
     return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   };
 
-  const handleAppointmentBooked = (appt) => setAppointment({ ...appt });
+  const handleAppointmentBooked = () => {
+    queryClient.invalidateQueries(['appointment']);
+  };
 
   const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
   const deleteAppointmentMutation = useMutation({
     mutationFn: async () => {
-      await axios.delete(`${apiUrl}/appointment`, {
+      await axios.delete(`${apiUrl}/appointment/${appointment.id}`, {
         headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
       });
     },
     onSuccess: () => {
       setAppointment({
-        id: null, date: '', start_time: '', end_time: '', department: '', crewing_dept: '',
+ id: null, date: '', start_time: '', end_time: '', department: '', crewing_dept: '',
         operator: '', accounting_task: '', employee: '', purpose: '', status: ''
       });
       alert('Appointment deleted successfully');
