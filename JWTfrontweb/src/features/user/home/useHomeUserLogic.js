@@ -14,14 +14,8 @@ const useHomeUserLogic = () => {
     return user ? JSON.parse(user) : null;
   }, []);
 
-
   const [selectedStatus, setSelectedStatus] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
-  const [appointment, setAppointment] = useState({
-   date: '', start_time: '', end_time: '', department: '', crewing_dept: '',
-    operator: '', accounting_task: '', employee: '', purpose: '', status: ''
-  });
+  // const [isModalOpen, setIsModalOpen] = useState(false);
   const [certificateName, setCertificateName] = useState('');
   const [primaryCertificateType, setPrimaryCertificateType] = useState('');
   const [subCertificateType, setSubCertificateType] = useState('');
@@ -29,6 +23,7 @@ const useHomeUserLogic = () => {
   const [file, setFile] = useState(null);
   const [progress, setProgress] = useState({ percentage: 0, uploaded: 0, total: 4 });
   const [dateError, setDateError] = useState('');
+  // const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
 
   const statusOptions = ['On Board', 'Available', 'Vacation'];
 
@@ -44,20 +39,19 @@ const useHomeUserLogic = () => {
 
   const primaryTypes = Object.keys(certificateCategories);
 
-  const hasRun = useRef(false);
+    const hasRun = useRef(false);
 
-  useEffect(() => {
-    if (hasRun.current) return;
-    hasRun.current = true;
+    useEffect(() => {
+      if (hasRun.current) return;
+      hasRun.current = true;
 
-    if (!token) {
-      navigate('/login');
-      return;
-    }
+      if (!token) {
+        navigate('/login');
+        return;
+      }
 
     setupTokenTimeout(token, storedUser, navigate);
   }, []);
-
 
   const {
     data: user,
@@ -282,44 +276,16 @@ const useHomeUserLogic = () => {
     uploadCertificateMutation.mutate(formData);
   };
 
-  const rescheduleMutation = useMutation({
-    mutationFn: async (rescheduleData) => {
-      const response = await axios.patch(`${apiUrl}/appointment/${appointment.id}`, rescheduleData, {
-        headers: { Authorization: `Bearer ${token}`, 'ngrok-skip-browser-warning': 'true' },
-      });
-      return response.data;
-    },
-    onSuccess: (data) => {
-      alert('Appointment rescheduled successfully');
-      setAppointment(data);
-      setIsRescheduleModalOpen(false);
-      queryClient.invalidateQueries(['appointment']);
-    },
-    onError: (error) => alert(error.response?.data.message || 'Failed to reschedule appointment'),
-  });
-
-  const handleRescheduleAppointment = (rescheduleData) => {
-    rescheduleMutation.mutate(rescheduleData);
-  };
-
   return {
     user,
     loadingUser,
     errorUser,
-    appointment,
-    appointmentLoading,
-    // certificatesData,
-    // certificateLoading,
-    // progress,
     selectedStatus,
     statusOptions,
     handleStatusChange,
     handleLogout,
-    formatTime,
-    handleAppointmentBooked,
-    capitalize,
-    isModalOpen,
-    setIsModalOpen,
+    // isModalOpen,
+    // setIsModalOpen,
     certificateName,
     setCertificateName,
     primaryTypes,
@@ -334,10 +300,9 @@ const useHomeUserLogic = () => {
     setFile,
     dateError,
     handleSubmitCertificate,
-    isRescheduleModalOpen,
-    setIsRescheduleModalOpen,
-    handleDeleteAppointment,
-    handleRescheduleAppointment,
+    progress,
+    // isRescheduleModalOpen,
+    // setIsRescheduleModalOpen,
   };
 };
 

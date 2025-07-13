@@ -1,5 +1,5 @@
 //Dependencies imports
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { setupTokenTimeout } from '../../../app/utils/authTimeout';
 import axios from 'axios';
@@ -16,30 +16,24 @@ import './homeUserMQ.css';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
 import House_01 from '../../../assets/icons/House_01.svg?react';
 
-
 import useHomeUserLogic from './useHomeUserLogic';
-
 import HomeUserRight from './ui/rightSide/HomeUserRight';
 import HomeUserLeft from './ui/leftSide/HomeUserLeft';
 
 const HomeUser = () => {
-
   const {
     user,
     loading,
     selectedStatus,
     handleStatusChange,
     handleLogout,
-    formatTime,
     handleAppointmentBooked,
-    handleDeleteAppointment,
     handleCertificateSubmit,
-    isModalOpen,
-    setIsModalOpen,
-    isRescheduleModalOpen,
-    setIsRescheduleModalOpen,
+    // isModalOpen,
+    // setIsModalOpen,
+    // isRescheduleModalOpen,
+    // setIsRescheduleModalOpen,
     appointment,
-    appointmentLoading,
     certificateName,
     setCertificateName,
     primaryCertificateType,
@@ -56,10 +50,8 @@ const HomeUser = () => {
     statusOptions,
     primaryTypes,
     certificateCategories,
-    capitalize,
   } = useHomeUserLogic();
 
- 
   return (
     <div className="homeUser">
       <div className="homeUser-box">
@@ -69,8 +61,8 @@ const HomeUser = () => {
               <div className="homeUser-top-header-left">
                 <House_01
                   style={{
-                    width: '30px',
-                    height: '30px',
+                    width: '3.6vh',
+                    height: '3.6vh',
                     '--stroke-color': 'var(--black-color)',
                     '--stroke-width': '3px',
                     '--fill-color': 'none',
@@ -79,20 +71,7 @@ const HomeUser = () => {
                 <header>Home</header>
               </div>
 
-              {isModalOpen && (
-                <BookAppointmentModal
-                  onClose={() => setIsModalOpen(false)}
-                  onAppointmentBooked={handleAppointmentBooked}
-                />
-              )}
-              {isRescheduleModalOpen && (
-                <BookAppointmentModal
-                  onClose={() => setIsRescheduleModalOpen(false)}
-                  onAppointmentBooked={handleAppointmentBooked}
-                  appointment={appointment}
-                  isReschedule={true}
-                />
-              )}
+              
 
               <div className="homeUser-top-header-right">
                 <div
@@ -137,15 +116,22 @@ const HomeUser = () => {
             </div>
 
             <div className="homeUser-top-core">
-              <HomeUserLeft
-                appointment={appointment}
-                appointmentLoading={appointmentLoading}
-                formatTime={formatTime}
-                handleDeleteAppointment={handleDeleteAppointment}
-                setIsModalOpen={setIsModalOpen}
-                setIsRescheduleModalOpen={setIsRescheduleModalOpen}
-                capitalize={capitalize}
-              />
+              <HomeUserLeft />
+{/* 
+              {isModalOpen && (
+                <BookAppointmentModal
+                  onClose={() => setIsModalOpen(false)}
+                  onAppointmentBooked={handleAppointmentBooked}
+                />
+              )}
+              {isRescheduleModalOpen && (
+                <BookAppointmentModal
+                  onClose={() => setIsRescheduleModalOpen(false)}
+                  onAppointmentBooked={handleAppointmentBooked}
+                  appointment={appointment}
+                  isReschedule={true}
+                />
+              )} */}
 
               <HomeUserRight
                 certificateLoading={certificateLoading}

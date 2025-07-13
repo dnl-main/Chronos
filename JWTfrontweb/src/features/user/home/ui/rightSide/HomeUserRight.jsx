@@ -7,7 +7,7 @@ import Folder_Open from '../../../../../assets/icons/Folder_Open.svg?react';
 import Check from '../../../../../assets/icons/Check.svg?react';
 
 // CSS Imports
-import '../../homeUser.css';
+import './homeUserRight.css';
 
 // Logic hook import
 import useHomeUserLogic from '../../useHomeUserLogic';
