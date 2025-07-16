@@ -95,46 +95,53 @@ private function isUrl($string)
         return response()->json($admins);
     }
     
-    public function getCrewCerts()
-    {
-        if (Auth::user()->role !== 'admin') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        // Fetch users with 'user' role, including certificates
-        $users = User::where('role', 'user')
-            ->with('certificates')
-            ->get();
-
-        $crewMembers = $users->map(function ($user) {
-            $certificates = $user->certificates ?? collect([]);
-            return [
-                'user_id' => $user->id,
-                'user_name' => trim($user->first_name . ' ' . 
-                             ($user->middle_name ? $user->middle_name . ' ' : '') .
-                             $user->last_name),
-                'email' => $user->email, // Add email field
-                'position' => $user->position ?? 'N/A',
-                'total_uploaded' => $certificates->count(),
-                'approved' => $certificates->where('status', 'approved')->count(),
-                'pending' => $certificates->where('status', 'pending')->count(),
-                'certificates' => $certificates->map(function ($cert) {
-                    return [
-                        'id' => $cert->id,
-                        'certificate_name' => $cert->certificate_name,
-                        'certificate_type' => $cert->certificate_type,
-                        'file_path' => $cert->file_path,
-                        'expiration_date' => $cert->expiration_date,
-                        'status' => $cert->status ?? 'pending',
-                    ];
-                })->toArray(),
-            ];
-        })->filter(function ($member) {
-            return $member['position'] !== 'Unregistered';
-        })->values();
-
-        return response()->json(['crew_members' => $crewMembers], 200);
+   public function getCrewCerts()
+{
+    if (Auth::user()->role !== 'admin') {
+        return response()->json(['error' => 'Unauthorized'], 403);
     }
 
+    // Fetch users with 'user' role, including certificates and profile picture
+    $users = User::where('role', 'user')
+        ->with(['certificates', 'profilePicture'])
+        ->get();
+
+    $crewMembers = $users->map(function ($user) {
+        $certificates = $user->certificates ?? collect([]);
+        // Determine the profile picture URL
+        $profilePicture = $user->profilePicture && $user->profilePicture->path
+            ? ($this->isUrl($user->profilePicture->path)
+                ? $user->profilePicture->path
+                : env('APP_URL') . '/storage/' . ltrim($user->profilePicture->path, '/'))
+            : null;
+
+        return [
+            'user_id' => $user->id,
+            'user_name' => trim($user->first_name . ' ' . 
+                         ($user->middle_name ? $user->middle_name . ' ' : '') .
+                         $user->last_name),
+            'email' => $user->email,
+            'position' => $user->position ?? 'N/A',
+            'profilePicture' => $profilePicture, // Add profile picture
+            'total_uploaded' => $certificates->count(),
+            'approved' => $certificates->where('status', 'approved')->count(),
+            'pending' => $certificates->where('status', 'pending')->count(),
+            'certificates' => $certificates->map(function ($cert) {
+                return [
+                    'id' => $cert->id,
+                    'certificate_name' => $cert->certificate_name,
+                    'certificate_type' => $cert->certificate_type,
+                    'file_path' => $cert->file_path,
+                    'expiration_date' => $cert->expiration_date,
+                    'status' => $cert->status ?? 'pending',
+                ];
+            })->toArray(),
+        ];
+    })->filter(function ($member) {
+        return $member['position'] !== 'Unregistered';
+    })->values();
+
+    return response()->json(['crew_members' => $crewMembers], 200);
+}
 
 }

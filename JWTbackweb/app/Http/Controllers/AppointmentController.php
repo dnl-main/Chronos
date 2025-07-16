@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class AppointmentController extends Controller
 {
@@ -16,17 +17,31 @@ class AppointmentController extends Controller
         $this->middleware('auth:api');
     }
 
+    /**
+     * Check if a string is a valid URL
+     */
+    private function isUrl($string)
+    {
+        return filter_var($string, FILTER_VALIDATE_URL) !== false;
+    }
+
     public function index()
     {
         $user = JWTAuth::user();
         $today = Carbon::today()->startOfDay();
 
         if ($user->role === 'admin') {
-            $appointments = Appointment::with('user')
+            $appointments = Appointment::with(['user.profilePicture'])
                 ->where('date', '>=', $today)
                 ->orderBy('date', 'asc')
                 ->get()
                 ->map(function ($appointment) {
+                    $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
+                        ? ($this->isUrl($appointment->user->profilePicture->path)
+                            ? $appointment->user->profilePicture->path
+                            : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
+                        : null;
+
                     return [
                         'id' => $appointment->id,
                         'user_id' => $appointment->user_id,
@@ -54,18 +69,26 @@ class AppointmentController extends Controller
                             'civil_status' => $appointment->user->civil_status,
                             'birthday' => $appointment->user->birthday,
                             'address' => $this->formatAddress($appointment->user),
+                            'profilePicture' => $profilePicture,
                         ] : null,
                     ];
                 });
             return response()->json($appointments, 200);
         }
 
-        $appointment = Appointment::where('user_id', $user->id)
+        $appointment = Appointment::with(['user.profilePicture'])
+            ->where('user_id', $user->id)
             ->where('date', '>=', $today)
             ->where('status', '!=', 'completed')
             ->orderBy('date', 'asc')
             ->first();
         if ($appointment) {
+            $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
+                ? ($this->isUrl($appointment->user->profilePicture->path)
+                    ? $appointment->user->profilePicture->path
+                    : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
+                : null;
+
             return response()->json([
                 'id' => $appointment->id,
                 'user_id' => $appointment->user_id,
@@ -93,6 +116,7 @@ class AppointmentController extends Controller
                     'civil_status' => $user->civil_status,
                     'birthday' => $user->birthday,
                     'address' => $this->formatAddress($user),
+                    'profilePicture' => $profilePicture,
                 ],
             ], 200);
         }
@@ -426,7 +450,7 @@ class AppointmentController extends Controller
     public function delete($id)
     {
         $user = JWTAuth::user();
-
+        
 
         $appointment = Appointment::find($id);
         if (!$appointment) {
@@ -509,7 +533,7 @@ class AppointmentController extends Controller
                 "Department: {$appointment->department}\n" .
                 "Employee: {$appointment->employee}\n" .
                 "Purpose: {$appointment->purpose}\n" .
-                "Please visit your account for more details.".
+                "Please visit your account for more details." .
                 "If you have any questions or need to reschedule, please contact us at: Concorde@fmssupport.com.ph\n\n",
                 function ($message) use ($recipient, $appointment) {
                     $message->to($recipient->email)
@@ -582,11 +606,17 @@ class AppointmentController extends Controller
         }
 
         $today = Carbon::today()->startOfDay();
-        $appointments = Appointment::with('user')
+        $appointments = Appointment::with(['user.profilePicture'])
             ->where('date', '>=', $today)
             ->orderBy('date', 'asc')
             ->get()
             ->map(function ($appointment) {
+                $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
+                    ? ($this->isUrl($appointment->user->profilePicture->path)
+                        ? $appointment->user->profilePicture->path
+                        : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
+                    : null;
+
                 return [
                     'id' => $appointment->id,
                     'user_id' => $appointment->user_id,
@@ -614,6 +644,7 @@ class AppointmentController extends Controller
                         'civil_status' => $appointment->user->civil_status,
                         'birthday' => $appointment->user->birthday,
                         'address' => $this->formatAddress($appointment->user),
+                        'profilePicture' => $profilePicture,
                     ] : null,
                 ];
             });
@@ -684,7 +715,7 @@ class AppointmentController extends Controller
                 "Department: {$appointment->department}\n" .
                 "Employee: {$appointment->employee}\n" .
                 "Purpose: {$appointment->purpose}\n" .
-                "Please visit your account for more details.".
+                "Please visit your account for more details." .
                 "If you have any questions or need to reschedule, please contact us at: Concorde@fmssupport.com.ph\n\n",
                 function ($message) use ($recipient) {
                     $message->to($recipient->email)
@@ -747,7 +778,7 @@ class AppointmentController extends Controller
                 "Department: {$appointment->department}\n" .
                 "Employee: {$appointment->employee}\n" .
                 "Purpose: {$appointment->purpose}\n" .
-                "Please visit your account for more details.".
+                "Please visit your account for more details." .
                 "If you have any questions or concerns, please contact us at: Concorde@fmssupport.com.ph\n\n",
                 function ($message) use ($recipient) {
                     $message->to($recipient->email)
@@ -782,12 +813,18 @@ class AppointmentController extends Controller
         $employeeName = $user->first_name . ' ' . $user->last_name;
 
         if ($user->role === 'admin') {
-            $appointments = Appointment::with('user')
+            $appointments = Appointment::with(['user.profilePicture'])
                 ->where('employee', $employeeName)
                 ->where('date', '>=', Carbon::today()->startOfDay())
                 ->orderBy('date', 'asc')
                 ->get()
                 ->map(function ($appointment) {
+                    $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
+                        ? ($this->isUrl($appointment->user->profilePicture->path)
+                            ? $appointment->user->profilePicture->path
+                            : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
+                        : null;
+
                     return [
                         'id' => $appointment->id,
                         'user_id' => $appointment->user_id,
@@ -815,19 +852,27 @@ class AppointmentController extends Controller
                             'civil_status' => $appointment->user->civil_status,
                             'birthday' => $appointment->user->birthday,
                             'address' => $this->formatAddress($appointment->user),
+                            'profilePicture' => $profilePicture,
                         ] : null,
                     ];
                 });
             return response()->json($appointments, 200);
         }
 
-        $appointment = Appointment::where('user_id', $user->id)
+        $appointment = Appointment::with(['user.profilePicture'])
+            ->where('user_id', $user->id)
             ->where('employee', $employeeName)
             ->where('date', '>=', Carbon::today()->startOfDay())
             ->where('status', '!=', 'completed')
             ->orderBy('date', 'asc')
             ->first();
         if ($appointment) {
+            $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
+                ? ($this->isUrl($appointment->user->profilePicture->path)
+                    ? $appointment->user->profilePicture->path
+                    : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
+                : null;
+
             return response()->json([
                 'id' => $appointment->id,
                 'user_id' => $appointment->user_id,
@@ -855,6 +900,7 @@ class AppointmentController extends Controller
                     'civil_status' => $user->civil_status,
                     'birthday' => $user->birthday,
                     'address' => $this->formatAddress($user),
+                    'profilePicture' => $profilePicture,
                 ],
             ], 200);
         }
@@ -873,12 +919,18 @@ class AppointmentController extends Controller
         $employeeName = $user->first_name . ' ' . $user->last_name;
 
         $today = Carbon::today()->startOfDay();
-        $appointments = Appointment::with('user')
+        $appointments = Appointment::with(['user.profilePicture'])
             ->where('employee', $employeeName)
             ->where('date', '>=', $today)
             ->orderBy('date', 'asc')
             ->get()
             ->map(function ($appointment) {
+                $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
+                    ? ($this->isUrl($appointment->user->profilePicture->path)
+                        ? $appointment->user->profilePicture->path
+                        : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
+                    : null;
+
                 return [
                     'id' => $appointment->id,
                     'user_id' => $appointment->user_id,
@@ -906,6 +958,7 @@ class AppointmentController extends Controller
                         'civil_status' => $appointment->user->civil_status,
                         'birthday' => $appointment->user->birthday,
                         'address' => $this->formatAddress($appointment->user),
+                        'profilePicture' => $profilePicture,
                     ] : null,
                 ];
             });

@@ -7,6 +7,7 @@ import Notebook from '../../../../assets/icons/Notebook.svg?react';
 import Bell from '../../../../assets/icons/Bell.svg?react';
 import More_Horizontal from '../../../../assets/icons/More_Horizontal.svg?react';
 import Note_Search from '../../../../assets/icons/Note_Search.svg?react';
+import DefaultDP from '../../../../assets/photo/defaultdp.png';
 
 const CertificateCard = ({ data, certificates = [], onCertificateClick, onNotifyUpload, onOpenCertificateModal }) => {
   const handleOpenModal = () => {
@@ -21,9 +22,9 @@ const CertificateCard = ({ data, certificates = [], onCertificateClick, onNotify
 
 
   const getIndicatorColor = (data) => {
-  const total = data?.total_uploaded || 0;
-  const pending = data?.pending || 0;
-  const approved = data?.approved || 0;
+    const total = data?.total_uploaded || 0;
+    const pending = data?.pending || 0;
+    const approved = data?.approved || 0;
 
     if (total === 0) {
       return 'var(--red-indicator)';
@@ -47,16 +48,21 @@ const CertificateCard = ({ data, certificates = [], onCertificateClick, onNotify
             : data.approved === data.total_uploaded
             ? 'indicator-green'
             : ''
-          }`}
-        >
+        }`}
+      >
       </section>
 
       <section className="certificate-cards-card-profile">
-        <Circle_Primary style={{ color: "var(--primary-color)", width: "72px", height: "72px" }} />
+        <img
+          src={data.profilePicture || DefaultDP}
+          alt={`${data.user_name || 'Crew Member'}'s profile`}
+          className="certificate-cards-card-profile-picture"
+          style={{ width: '72px', height: '72px', borderRadius: '50%', objectFit: 'cover' }}
+        />
         <div className="certificate-cards-card-profile-info">
           <p className="certificate-cards-card-profile-info-text">{data?.user_name || 'N/A'}</p>
           <div className="certificate-cards-card-profile-info-job">
-            <Circle_Primary style={{ color: "var(--primary-color)", width: "32px", height: "32px" }} />
+   <Circle_Primary style={{ color: "var(--primary-color)", width: "32px", height: "32px" }} />
             <p>{data?.position || 'N/A'}</p>
           </div>
         </div>

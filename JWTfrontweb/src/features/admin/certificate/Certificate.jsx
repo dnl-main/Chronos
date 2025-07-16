@@ -16,6 +16,7 @@ import './certificate.css';
 // Icon import
 import Notebook from '../../../assets/icons/Notebook.svg?react';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
+import DefaultDP from '../../../assets/photo/defaultdp.png'; // Import defaultdp.png
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -227,6 +228,7 @@ const Certificate = () => {
             user_name: item.user_name || 'Unknown',
             email: item.email || 'N/A',
             position: item.position || 'N/A',
+            profilePicture: item.profilePicture || DefaultDP, // Use imported DefaultDP
             total_uploaded: item.total_uploaded || 0,
             approved: item.approved || 0,
             pending: item.pending || 0,
@@ -312,7 +314,7 @@ const Certificate = () => {
                   color: 'white',
                 }}
               >
-                <Circle_Primary/>
+                <Circle_Primary />
               </button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                 <button
@@ -344,7 +346,7 @@ const Certificate = () => {
                   color: 'white',
                 }}
               >
-                <Circle_Primary/>
+                <Circle_Primary />
               </button>
             </div>
           )}

@@ -4,6 +4,7 @@ import './scheduleCard.css';
 import Edit_Pencil_01 from '../../../../assets/icons/Edit_Pencil_01.svg?react';
 import Circle_Primary from '../../../../assets/icons/Circle_Primary.svg?react';
 import Check from '../../../../assets/icons/Check.svg?react';
+import DefaultDP from '../../../../assets/photo/defaultdp.png';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -84,7 +85,7 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
         throw new Error('No authentication token found.');
       }
 
-      const response = await axios.put(
+      await axios.put(
         `${apiUrl}/appointment/${appointment.id}/complete`,
         {},
         {
@@ -96,7 +97,6 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
         }
       );
 
-    
       window.location.reload();
     } catch (error) {
       alert(error.response?.data?.message || 'Failed to mark appointment as completed.');
@@ -107,7 +107,7 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
   const startTime = formatTime(appointment.start_time);
   const endTime = formatTime(appointment.end_time);
 
-  const indicatorClass = appointment.status === 'pending' 
+  const indicatorClass = appointment.status === 'pending'
     ? 'schedule-today-cards-card-indicator schedule-today-cards-card-indicator-pending'
     : appointment.status === 'completed'
     ? 'schedule-today-cards-card-indicator schedule-today-cards-card-indicator-completed'
@@ -132,13 +132,18 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
       </section>
 
       <section className="schedule-today-cards-card-profile">
-        <Circle_Primary className="schedule-today-cards-card-profile-svg" />
+        <img
+          src={user.profilePicture || DefaultDP}
+          alt={`${user.first_name} ${user.last_name}'s profile`}
+          className="schedule-today-cards-card-profile-svg"
+          style={{ width: '72px', height: '72px', borderRadius: '50%', objectFit: 'cover' }}
+        />
         <div className="schedule-today-cards-card-profile-info">
           <p className="schedule-today-cards-card-profile-info-text">
             {`${user.first_name}${user.middle_name ? ` ${user.middle_name.charAt(0)}.` : ''} ${user.last_name}`}
           </p>
           <div className="schedule-today-cards-card-profile-info-job">
-            <Circle_Primary style={{ color: "var(--primary-color)", width: "32px", height: "32px" }} />
+   <Circle_Primary style={{ color: "var(--primary-color)", width: "32px", height: "32px" }} />
             <p>{user.position || 'N/A'}</p>
           </div>
         </div>
@@ -167,10 +172,10 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
           >
             <Check
               style={{
-                color: "var(--white-color)",
-                width: "32px",
-                height: "32px",
-                "--stroke-width": "2px",
+                color: 'var(--white-color)',
+                width: '32px',
+                height: '32px',
+                '--stroke-width': '2px',
               }}
             />
           </button>
@@ -183,10 +188,10 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
           >
             <Check
               style={{
-                color: "var(--white-color)",
-                width: "32px",
-                height: "32px",
-                "--stroke-width": "2px",
+                color: 'var(--white-color)',
+                width: '32px',
+                height: '32px',
+                '--stroke-width': '2px',
               }}
             />
           </button>
@@ -206,10 +211,10 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
           >
             <Edit_Pencil_01
               style={{
-                color: "var(--white-color)",
-                width: "32px",
-                height: "32px",
-                "--stroke-width": "2px",
+                color: 'var(--white-color)',
+                width: '32px',
+                height: '32px',
+                '--stroke-width': '2px',
               }}
             />
           </button>

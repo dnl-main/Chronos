@@ -123,7 +123,7 @@
 }
 
 .certificate-cards-card-indicator {
-  background-color: var(--red-indicator-opacity-30);
+  background-color: var(--primary-color-opacity-45); /* Changed to primary color */
   height: 100%;
   width: 1.8%;
   border-top-left-radius: 20px;
