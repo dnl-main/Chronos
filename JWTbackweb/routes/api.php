@@ -21,7 +21,7 @@ Route::get('/test', function () {
 
 // Auth Routes
 Route::post('/signup', [AuthController::class, 'signup']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:60,1'); // Throttle login attempts
 
 // Password Reset Routes
 Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);

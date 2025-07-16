@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 git clone --single-branch --branch 07/05/2025 https://github.com/Ian-nwb/Concorde-Web.git
 cd Concorde-Web
 cd JWTfrontweb 
@@ -66,6 +65,15 @@ php artisan storage:link
 net start mysql93
 netstat -an | find "3306"
 net stop mysql93
-=======
-# Chronos
->>>>>>> 0aa0dfef11a2177cebc67219e5da7c752c76c89a
+
+php artisan cache:clear         # Flush the application cache
+php artisan cache:forget        # Remove an item from the cache
+php artisan cache:table         # Create a migration for the cache database table
+php artisan config:cache        # Create a cache file for faster config loading
+php artisan config:clear        # Remove the config cache file
+php artisan route:cache         # Create a route cache file
+php artisan route:clear         # Remove the route cache file
+php artisan view:cache          # Compile all of the application's Blade templates
+php artisan view:clear          # Clear all compiled view files
+
+

@@ -396,7 +396,7 @@ class UploadController extends Controller
         }
     }
 
-    public function getExpiringCertificates(Request $request)
+   public function getExpiringCertificates(Request $request)
 {
     try {
         $user = JWTAuth::user();
@@ -421,7 +421,8 @@ class UploadController extends Controller
         $currentMonthEnd = Carbon::now()->endOfMonth();
         $query->whereBetween('expiration_date', [$currentMonthStart, $currentMonthEnd]);
 
-        $certificates = $query->get();
+        // Get the three certificates expiring closest to today
+        $certificates = $query->orderBy('expiration_date', 'asc')->take(3)->get();
 
         return response()->json([
             'message' => 'Expiring certificates retrieved successfully',
