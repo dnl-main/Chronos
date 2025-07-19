@@ -4,7 +4,9 @@ import { ROUTES } from './routes';
 import Spinner from '../../components/ui/Spinner';
 
 // Eager load Landing (fast access)
-// import Landing from '../landing/Landing';
+// // import Landing from '../landing/Landing';
+
+import TokenRefresh from '../../components/ui/TokenRefresh'; // Adjust path as needed
 
 // Lazy public pages
 const Landing = lazy(() => import('../landing/Landing'));
@@ -16,7 +18,7 @@ const Login = lazy(() => import('../landing/onboarding/login/Login'));
 const ProtectedRoutes = lazy(() => import('./ProtectedRoutes'));
 
 const AppRoutes = () => {
-  const location = useLocation();
+   const location = useLocation();
 
   // const isPublicPath = [
   //   ROUTES.LANDING,
@@ -38,7 +40,9 @@ const AppRoutes = () => {
         path="/*"
         element={
           <Suspense fallback={<Spinner />}>
-            <ProtectedRoutes />
+            <TokenRefresh>
+              <ProtectedRoutes />
+            </TokenRefresh>
           </Suspense>
         }
       />

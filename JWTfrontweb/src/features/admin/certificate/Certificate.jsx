@@ -111,7 +111,7 @@ const Certificate = () => {
   }, []);
 
   const handleOpenNotificationModal = useCallback((userId, email) => {
-    console.log('Opening Notification Modal for user_id: ', userId, 'email: ', email);
+    // console.log('Opening Notification Modal for user_id: ', userId, 'email: ', email);
     dispatch({ type: 'SET_SELECTED_USER_ID', payload: userId });
     if (!email || email === 'N/A') {
       dispatch({ type: 'SET_ERROR', payload: 'User email is not available.' });
@@ -122,25 +122,25 @@ const Certificate = () => {
   }, []);
 
   const handleCloseNotificationModal = useCallback(() => {
-    console.log('Closing Notification Modal');
+    // console.log('Closing Notification Modal');
     dispatch({ type: 'SET_NOTIFICATION_MODAL_OPEN', payload: false });
     dispatch({ type: 'SET_SELECTED_USER_ID', payload: null });
     dispatch({ type: 'SET_SELECTED_USER_EMAIL', payload: null });
   }, []);
 
   const handleNotify = useCallback((data) => {
-    console.log('Notify Data:', { ...data, recipientEmail: selectedUserEmail });
+    // console.log('Notify Data:', { ...data, recipientEmail: selectedUserEmail });
     handleCloseNotificationModal();
   }, [selectedUserEmail, handleCloseNotificationModal]);
 
   const handleOpenCertificateModal = useCallback((userId) => {
-    console.log('Opening CertificateModal for user_id:', userId);
+    // console.log('Opening CertificateModal for user_id:', userId);
     dispatch({ type: 'SET_SELECTED_USER_ID', payload: userId });
     dispatch({ type: 'SET_CERTIFICATE_MODAL_OPEN', payload: true });
   }, []);
 
   const handleCloseCertificateModal = useCallback(() => {
-    console.log('Closing CertificateModal');
+    // console.log('Closing CertificateModal');
     dispatch({ type: 'SET_SELECTED_USER_ID', payload: null });
     dispatch({ type: 'SET_CERTIFICATE_MODAL_OPEN', payload: false });
   }, []);
@@ -206,7 +206,7 @@ const Certificate = () => {
         }
         dispatch({ type: 'SET_USER', payload: parsedUser });
       } catch (error) {
-        console.error('Parse User Error:', error);
+        // console.error('Parse User Error:', error);
         navigate('/login');
         return;
       }
@@ -235,17 +235,17 @@ const Certificate = () => {
             certificates: Array.isArray(item.certificates) ? item.certificates : [],
           }))
         : [];
-      console.log('Processed certificateData: ', crewMembers);
+      // console.log('Processed certificateData: ', crewMembers);
       dispatch({ type: 'SET_CERTIFICATE_DATA', payload: crewMembers });
     }
 
     if (isUserError) {
-      console.error('Fetch User Error: ', userError.message);
+      // console.error('Fetch User Error: ', userError.message);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load user data. Please log in again.' });
       navigate('/login');
     }
     if (isCrewCertsError) {
-      console.error('Fetch Crew Certs Error:', crewCertsError.message);
+      // console.error('Fetch Crew Certs Error:', crewCertsError.message);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load crew certificates.' });
     }
 

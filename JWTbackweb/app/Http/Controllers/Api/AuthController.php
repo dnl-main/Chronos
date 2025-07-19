@@ -350,4 +350,39 @@ public function registration(Request $request)
             ], 500);
         }
     }
+
+ 
+    public function refresh(Request $request)
+    {
+        try {
+            $newToken = JWTAuth::refresh(JWTAuth::getToken());
+            $user = JWTAuth::setToken($newToken)->authenticate();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Token refreshed successfully',
+                'token' => $newToken,
+                'user' => $user,
+                'needs_position' => $user->role === 'admin' && empty($user->position),
+            ], 200);
+        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Token has expired and cannot be refreshed',
+            ], 401);
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Invalid token',
+                'error' => $e->getMessage(),
+            ], 401);
+        } catch (Exception $e) {
+            Log::error('Token refresh error:', ['error' => $e->getMessage()]);
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to refresh token',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
