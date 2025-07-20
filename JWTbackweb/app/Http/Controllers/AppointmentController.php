@@ -807,106 +807,114 @@ class AppointmentController extends Controller
         ], 200);
     }
 
-    public function getSpecific(Request $request)
-    {
-        $user = JWTAuth::user();
-        $employeeName = $user->first_name . ' ' . $user->last_name;
+public function getSpecific(Request $request)
+{
+    $user = JWTAuth::user();
+    $employeeName = $user->first_name . ' ' . $user->last_name;
 
-        if ($user->role === 'admin') {
-            $appointments = Appointment::with(['user.profilePicture'])
-                ->where('employee', $employeeName)
-                ->where('date', '>=', Carbon::today()->startOfDay())
-                ->orderBy('date', 'asc')
-                ->get()
-                ->map(function ($appointment) {
-                    $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
-                        ? ($this->isUrl($appointment->user->profilePicture->path)
-                            ? $appointment->user->profilePicture->path
-                            : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
-                        : null;
-
-                    return [
-                        'id' => $appointment->id,
-                        'user_id' => $appointment->user_id,
-                        'date' => $appointment->date,
-                        'start_time' => $appointment->start_time,
-                        'end_time' => $appointment->end_time,
-                        'department' => $appointment->department,
-                        'crewing_dept' => $appointment->crewing_dept,
-                        'operator' => $appointment->operator,
-                        'accounting_task' => $appointment->accounting_task,
-                        'employee' => $appointment->employee,
-                        'purpose' => $appointment->purpose,
-                        'status' => $appointment->status,
-                        'computed_status' => $this->getAppointmentStatus($appointment),
-                        'user' => $appointment->user ? [
-                            'first_name' => $appointment->user->first_name,
-                            'middle_name' => $appointment->user->middle_name,
-                            'last_name' => $appointment->user->last_name,
-                            'email' => $appointment->user->email,
-                            'mobile' => $appointment->user->mobile,
-                            'position' => $appointment->user->position,
-                            'department' => $appointment->user->department,
-                            'availability' => $appointment->user->availability,
-                            'gender' => $appointment->user->gender,
-                            'civil_status' => $appointment->user->civil_status,
-                            'birthday' => $appointment->user->birthday,
-                            'address' => $this->formatAddress($appointment->user),
-                            'profilePicture' => $profilePicture,
-                        ] : null,
-                    ];
-                });
-            return response()->json($appointments, 200);
-        }
-
-        $appointment = Appointment::with(['user.profilePicture'])
-            ->where('user_id', $user->id)
+    if ($user->role === 'admin') {
+        $appointments = Appointment::with(['user.profilePicture'])
             ->where('employee', $employeeName)
-            ->where('date', '>=', Carbon::today()->startOfDay())
-            ->where('status', '!=', 'completed')
+            ->where(function ($query) {
+                // Include all completed appointments, regardless of date
+                $query->where('status', 'completed')
+                    // Include non-completed appointments from today onward
+                    ->orWhere(function ($q) {
+                        $q->where('status', '!=', 'completed')
+                          ->where('date', '>=', Carbon::today()->startOfDay());
+                    });
+            })
             ->orderBy('date', 'asc')
-            ->first();
-        if ($appointment) {
-            $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
-                ? ($this->isUrl($appointment->user->profilePicture->path)
-                    ? $appointment->user->profilePicture->path
-                    : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
-                : null;
+            ->get()
+            ->map(function ($appointment) {
+                $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
+                    ? ($this->isUrl($appointment->user->profilePicture->path)
+                        ? $appointment->user->profilePicture->path
+                        : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
+                    : null;
 
-            return response()->json([
-                'id' => $appointment->id,
-                'user_id' => $appointment->user_id,
-                'date' => $appointment->date,
-                'start_time' => $appointment->start_time,
-                'end_time' => $appointment->end_time,
-                'department' => $appointment->department,
-                'crewing_dept' => $appointment->crewing_dept,
-                'operator' => $appointment->operator,
-                'accounting_task' => $appointment->accounting_task,
-                'employee' => $appointment->employee,
-                'purpose' => $appointment->purpose,
-                'status' => $appointment->status,
-                'computed_status' => $this->getAppointmentStatus($appointment),
-                'user' => [
-                    'first_name' => $user->first_name,
-                    'middle_name' => $user->middle_name,
-                    'last_name' => $user->last_name,
-                    'email' => $user->email,
-                    'mobile' => $user->mobile,
-                    'position' => $user->position,
-                    'department' => $user->department,
-                    'availability' => $user->availability,
-                    'gender' => $user->gender,
-                    'civil_status' => $user->civil_status,
-                    'birthday' => $user->birthday,
-                    'address' => $this->formatAddress($user),
-                    'profilePicture' => $profilePicture,
-                ],
-            ], 200);
-        }
-
-        return response()->json([], 200);
+                return [
+                    'id' => $appointment->id,
+                    'user_id' => $appointment->user_id,
+                    'date' => $appointment->date,
+                    'start_time' => $appointment->start_time,
+                    'end_time' => $appointment->end_time,
+                    'department' => $appointment->department,
+                    'crewing_dept' => $appointment->crewing_dept,
+                    'operator' => $appointment->operator,
+                    'accounting_task' => $appointment->accounting_task,
+                    'employee' => $appointment->employee,
+                    'purpose' => $appointment->purpose,
+                    'status' => $appointment->status,
+                    'computed_status' => $this->getAppointmentStatus($appointment),
+                    'user' => $appointment->user ? [
+                        'first_name' => $appointment->user->first_name,
+                        'middle_name' => $appointment->user->middle_name,
+                        'last_name' => $appointment->user->last_name,
+                        'email' => $appointment->user->email,
+                        'mobile' => $appointment->user->mobile,
+                        'position' => $appointment->user->position,
+                        'department' => $appointment->user->department,
+                        'availability' => $appointment->user->availability,
+                        'gender' => $appointment->user->gender,
+                        'civil_status' => $appointment->user->civil_status,
+                        'birthday' => $appointment->user->birthday,
+                        'address' => $this->formatAddress($appointment->user),
+                        'profilePicture' => $profilePicture,
+                    ] : null,
+                ];
+            });
+        return response()->json($appointments, 200);
     }
+
+    $appointment = Appointment::with(['user.profilePicture'])
+        ->where('user_id', $user->id)
+        ->where('employee', $employeeName)
+        ->where('date', '>=', Carbon::today()->startOfDay())
+        ->where('status', '!=', 'completed')
+        ->orderBy('date', 'asc')
+        ->first();
+    if ($appointment) {
+        $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
+            ? ($this->isUrl($appointment->user->profilePicture->path)
+                ? $appointment->user->profilePicture->path
+                : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
+            : null;
+
+        return response()->json([
+            'id' => $appointment->id,
+            'user_id' => $appointment->user_id,
+            'date' => $appointment->date,
+            'start_time' => $appointment->start_time,
+            'end_time' => $appointment->end_time,
+            'department' => $appointment->department,
+            'crewing_dept' => $appointment->crewing_dept,
+            'operator' => $appointment->operator,
+            'accounting_task' => $appointment->accounting_task,
+            'employee' => $appointment->employee,
+            'purpose' => $appointment->purpose,
+            'status' => $appointment->status,
+            'computed_status' => $this->getAppointmentStatus($appointment),
+            'user' => [
+                'first_name' => $user->first_name,
+                'middle_name' => $user->middle_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'mobile' => $user->mobile,
+                'position' => $user->position,
+                'department' => $user->department,
+                'availability' => $user->availability,
+                'gender' => $user->gender,
+                'civil_status' => $user->civil_status,
+                'birthday' => $user->birthday,
+                'address' => $this->formatAddress($user),
+                'profilePicture' => $profilePicture,
+            ],
+        ], 200);
+    }
+
+    return response()->json([], 200);
+}
 
     public function getUpcomingSpecific(Request $request)
     {

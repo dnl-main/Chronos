@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import { useQueryClient } from '@tanstack/react-query';
 import './scheduleCard.css';
 import Edit_Pencil_01 from '../../../../assets/icons/Edit_Pencil_01.svg?react';
 import Circle_Primary from '../../../../assets/icons/Circle_Primary.svg?react';
@@ -9,6 +10,8 @@ import DefaultDP from '../../../../assets/photo/defaultdp.png';
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) => {
+  const queryClient = useQueryClient();
+
   if (!appointment || !user) {
     return <p>Loading...</p>;
   }
@@ -72,7 +75,7 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
       );
 
       alert('Appointment approved successfully');
-      window.location.reload();
+      queryClient.invalidateQueries(['appointments']);
     } catch (error) {
       alert(error.response?.data?.message || 'Failed to book appointment.');
     }
@@ -97,7 +100,7 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
         }
       );
 
-      window.location.reload();
+      queryClient.invalidateQueries(['appointments']);
     } catch (error) {
       alert(error.response?.data?.message || 'Failed to mark appointment as completed.');
     }
@@ -143,7 +146,7 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
             {`${user.first_name}${user.middle_name ? ` ${user.middle_name.charAt(0)}.` : ''} ${user.last_name}`}
           </p>
           <div className="schedule-today-cards-card-profile-info-job">
-   <Circle_Primary style={{ color: "var(--primary-color)", width: "32px", height: "32px" }} />
+            <Circle_Primary style={{ color: "var(--primary-color)", width: "32px", height: "32px" }} />
             <p>{user.position || 'N/A'}</p>
           </div>
         </div>
