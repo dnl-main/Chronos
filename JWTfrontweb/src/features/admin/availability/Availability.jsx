@@ -1,8 +1,9 @@
 // Dependencies import
-import React, { useReducer, useEffect, useCallback } from 'react';
+import React, { useReducer, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 // Components import
 import AvailabilityCard from './cards/AvailabilityCard';
@@ -74,6 +75,7 @@ const Availability = () => {
     overlayContent,
   } = state;
   const navigate = useNavigate();
+  const parentRef = useRef(null);
 
   // Helper function to check if a member matches a search query
   const matchesSearchQuery = useCallback((member, query) => {
@@ -140,23 +142,26 @@ const Availability = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  // TanStack Query for fetching crew data
+  // TanStack Query for fetching crew data with pagination
+  const fetchCrewData = async (page = 0, limit = 100) => {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      throw new Error('No token found');
+    }
+    const response = await axios.get(`${apiUrl}/crew-members`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true',
+      },
+      params: { page, limit },
+      withCredentials: true,
+    });
+    return Array.isArray(response.data) ? response.data : [response.data].filter(Boolean);
+  };
+
   const { data: crewDataResponse, isLoading: isCrewLoading, isError: isCrewError, error: crewError } = useQuery({
-    queryKey: ['crewMembers'],
-    queryFn: async () => {
-      const token = sessionStorage.getItem('token');
-      if (!token) {
-        throw new Error('No token found');
-      }
-      const response = await axios.get(`${apiUrl}/crew-members`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true',
-        },
-        withCredentials: true,
-      });
-      return Array.isArray(response.data) ? response.data : [response.data].filter(Boolean);
-    },
+    queryKey: ['crewMembers', searchQueryAll],
+    queryFn: () => fetchCrewData(0, 100),
     enabled: !!user && user.role === 'admin',
     retry: 1,
     staleTime: 1000 * 60 * 5,
@@ -184,6 +189,32 @@ const Availability = () => {
     enabled: !!user && user.role === 'admin',
     retry: 1,
     staleTime: 1000 * 60 * 5,
+  });
+
+  // Virtualization setup with debugging
+  const rowVirtualizer = useVirtualizer({
+    getScrollElement: () => parentRef.current,
+    count: filteredCrewDataAvailable.length,
+    estimateSize: () => 174, 
+    overscan: 20, 
+    paddingStart: 20,
+    paddingEnd: 20,
+  });
+  const vacationVirtualizer = useVirtualizer({
+    getScrollElement: () => parentRef.current,
+    count: filteredCrewDataVacation.length,
+    estimateSize: () => 174,
+    overscan: 20,
+    paddingStart: 20,
+    paddingEnd: 20,
+  });
+  const onBoardVirtualizer = useVirtualizer({
+    getScrollElement: () => parentRef.current,
+    count: filteredCrewDataOnBoard.length,
+    estimateSize: () => 174,
+    overscan: 20,
+    paddingStart: 20,
+    paddingEnd: 20,
   });
 
   // Memoized callback functions
@@ -244,6 +275,10 @@ const Availability = () => {
 
     if (crewDataResponse) {
       dispatch({ type: 'SET_CREW_DATA', payload: crewDataResponse });
+      console.log('Filtered Available:', filteredCrewDataAvailable.length); 
+      console.log('Filtered Available Data:', filteredCrewDataAvailable); 
+      console.log('Filtered Vacation:', filteredCrewDataVacation.length);
+      console.log('Filtered OnBoard:', filteredCrewDataOnBoard.length);
     }
 
     if (certificatesData) {
@@ -291,7 +326,7 @@ const Availability = () => {
   return (
     <div className="availability">
       <div className="availability-box">
-        <main className="availability-box-in">
+        <main className="availability-box-in" style={{ rowGap: selectedTab === 'all' ? '0' : '6vh' }}>
           <header className="availability-box-in-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <Users style={{ width: '32px', height: '32px', color: '#14181f', strokeWidth: 2 }} />
@@ -339,60 +374,75 @@ const Availability = () => {
               <header className="availability-box-in-header">
                 <p>Available</p>
               </header>
-              <section className="availability-box-in-cards">
-                {filteredCrewDataAvailable.length === 0 ? (
-                  <p>No available crew members found.</p>
-                ) : (
-                  filteredCrewDataAvailable.map((member) => (
-                    <AvailabilityCard
-                      key={member.id}
-                      data={member}
-                      onOpenAppointment={handleOpenAppointment}
-                    />
-                  ))
-                )}
+              <section className="availability-box-in-cards" ref={parentRef} style={{ overflow: 'auto', paddingTop: '20px', minHeight: '500px' }}>
+                <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, width: '100%' }}>
+                  {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+                    <div
+                      key={virtualRow.index}
+                      style={{
+                        height: `${virtualRow.size}px`,
+                        width: '100%',
+                      }}
+                    >
+                      <AvailabilityCard
+                        data={filteredCrewDataAvailable[virtualRow.index]}
+                        onOpenAppointment={handleOpenAppointment}
+                      />
+                    </div>
+                  ))}
+                </div>
               </section>
             </>
           )}
 
           {(selectedTab === 'all' || selectedTab === 'vacation') && (
             <>
-              <header className="availability-box-in-header">
+              <header className="availability-box-in-header" style={{ marginTop: selectedTab === 'all' ? '0' : '20px' }}>
                 <p>Vacation</p>
               </header>
-              <section className="availability-box-in-cards">
-                {filteredCrewDataVacation.length === 0 ? (
-                  <p>No vacation crew members found.</p>
-                ) : (
-                  filteredCrewDataVacation.map((member) => (
-                    <AvailabilityCard
-                      key={member.id}
-                      data={member}
-                      onOpenAppointment={handleOpenAppointment}
-                    />
-                  ))
-                )}
+              <section className="availability-box-in-cards" ref={parentRef} style={{ overflow: 'auto', paddingTop: selectedTab === 'all' ? '0' : '20px' }}>
+                <div style={{ height: `${vacationVirtualizer.getTotalSize()}px`, width: '100%' }}>
+                  {vacationVirtualizer.getVirtualItems().map((virtualRow) => (
+                    <div
+                      key={virtualRow.index}
+                      style={{
+                        height: `${virtualRow.size}px`,
+                        width: '100%',
+                      }}
+                    >
+                      <AvailabilityCard
+                        data={filteredCrewDataVacation[virtualRow.index]}
+                        onOpenAppointment={handleOpenAppointment}
+                      />
+                    </div>
+                  ))}
+                </div>
               </section>
             </>
           )}
 
           {(selectedTab === 'all' || selectedTab === 'on board') && (
             <>
-              <header className="availability-box-in-header">
+              <header className="availability-box-in-header" style={{ marginTop: selectedTab === 'all' ? '0' : '20px' }}>
                 <p>On Board</p>
               </header>
-              <section className="availability-box-in-cards">
-                {filteredCrewDataOnBoard.length === 0 ? (
-                  <p>No on board crew members found.</p>
-                ) : (
-                  filteredCrewDataOnBoard.map((member) => (
-                    <AvailabilityCard
-                      key={member.id}
-                      data={member}
-                      onOpenAppointment={handleOpenAppointment}
-                    />
-                  ))
-                )}
+              <section className="availability-box-in-cards" ref={parentRef} style={{ overflow: 'auto', paddingTop: selectedTab === 'all' ? '0' : '20px' }}>
+                <div style={{ height: `${onBoardVirtualizer.getTotalSize()}px`, width: '100%' }}>
+                  {onBoardVirtualizer.getVirtualItems().map((virtualRow) => (
+                    <div
+                      key={virtualRow.index}
+                      style={{
+                        height: `${virtualRow.size}px`,
+                        width: '100%',
+                      }}
+                    >
+                      <AvailabilityCard
+                        data={filteredCrewDataOnBoard[virtualRow.index]}
+                        onOpenAppointment={handleOpenAppointment}
+                      />
+                    </div>
+                  ))}
+                </div>
               </section>
             </>
           )}

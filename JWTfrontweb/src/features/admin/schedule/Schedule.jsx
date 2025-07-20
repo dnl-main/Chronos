@@ -1,6 +1,7 @@
-import React, { useReducer, useEffect, useCallback } from 'react';
+import React, { useReducer, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import axios from 'axios';
 
 // Components import
@@ -51,11 +52,12 @@ const Schedule = () => {
   const { appointments, loading, error, selectedTab, isModalOpen, modalData } = state;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const parentRef = useRef(null);
 
   // Handle tab change from search params
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (['today', 'upcoming', 'all', 'pending','completed'].includes(tabParam)) {
+    if (['today', 'upcoming', 'all', 'pending', 'completed'].includes(tabParam)) {
       dispatch({ type: 'SET_SELECTED_TAB', payload: tabParam });
     }
   }, [searchParams]);
@@ -70,6 +72,58 @@ const Schedule = () => {
   const sortAppointmentsByDate = useCallback((a, b) => {
     return new Date(a.date).getTime() - new Date(b.date).getTime();
   }, []);
+
+  // Filtered appointment data for each tab
+  const today = new Date().toISOString().split('T')[0];
+  const filteredAppointmentsToday = appointments
+    .filter((app) => normalizeDate(app.date) === today && app.status !== 'completed' && app.status !== 'pending')
+    .sort(sortAppointmentsByDate);
+  const filteredAppointmentsUpcoming = appointments
+    .filter((app) => normalizeDate(app.date) > today && app.status !== 'completed' && app.status !== 'pending')
+    .sort(sortAppointmentsByDate);
+  const filteredAppointmentsPending = appointments
+    .filter((app) => app.status === 'pending' && normalizeDate(app.date) >= today)
+    .sort(sortAppointmentsByDate);
+  const filteredAppointmentsCompleted = appointments
+    .filter((app) => app.status === 'completed')
+    .sort(sortAppointmentsByDate);
+
+  // Virtualization setup for each tab
+  const todayVirtualizer = useVirtualizer({
+    getScrollElement: () => parentRef.current,
+    count: filteredAppointmentsToday.length,
+    estimateSize: () => 174, 
+    overscan: 20,
+    paddingStart: 20,
+    paddingEnd: 20,
+  });
+
+  const upcomingVirtualizer = useVirtualizer({
+    getScrollElement: () => parentRef.current,
+    count: filteredAppointmentsUpcoming.length,
+    estimateSize: () => 174,
+    overscan: 20,
+    paddingStart: 20,
+    paddingEnd: 20,
+  });
+
+  const pendingVirtualizer = useVirtualizer({
+    getScrollElement: () => parentRef.current,
+    count: filteredAppointmentsPending.length,
+    estimateSize: () => 174,
+    overscan: 20,
+    paddingStart: 20,
+    paddingEnd: 20,
+  });
+
+  const completedVirtualizer = useVirtualizer({
+    getScrollElement: () => parentRef.current,
+    count: filteredAppointmentsCompleted.length,
+    estimateSize: () => 174,
+    overscan: 20,
+    paddingStart: 20,
+    paddingEnd: 20,
+  });
 
   // Memoized callback functions
   const handleEditClick = useCallback((data) => {
@@ -98,7 +152,10 @@ const Schedule = () => {
           });
         })
         .catch((error) => {
-          dispatch({ type: 'SET_ERROR', payload: error.response?.status === 401 ? 'Unauthorized. Please log in again.' : 'Failed to load appointments.' });
+          dispatch({
+            type: 'SET_ERROR',
+            payload: error.response?.status === 401 ? 'Unauthorized. Please log in again.' : 'Failed to load appointments.',
+          });
           if (error.response?.status === 401) {
             navigate('/login');
           }
@@ -220,12 +277,10 @@ const Schedule = () => {
   if (loading) return <Spinner />;
   if (error) return <div className="schedule-error">{error}</div>;
 
-  const today = new Date().toISOString().split('T')[0];
-
   return (
     <div className="schedule">
       <div className="schedule-box">
-        <main className="schedule-box-in">
+        <main className="schedule-box-in" style={{ rowGap: selectedTab === 'all' ? '0' : '6vh' }}>
           <header className="schedule-header">
             <Calendar_Event
               style={{
@@ -239,7 +294,7 @@ const Schedule = () => {
           </header>
 
           <section className="schedule-tabs">
-            {['all', 'today', 'upcoming', 'pending','completed'].map((tab) => (
+            {['all', 'today', 'upcoming', 'pending', 'completed'].map((tab) => (
               <button
                 key={tab}
                 className={`schedule-tabs-${tab} ${selectedTab === tab ? 'schedule-tab-active' : ''}`}
@@ -249,8 +304,6 @@ const Schedule = () => {
                 <p>{tab.charAt(0).toUpperCase() + tab.slice(1)}</p>
               </button>
             ))}
-           
-            
           </section>
 
           {(selectedTab === 'today' || selectedTab === 'all') && (
@@ -258,105 +311,121 @@ const Schedule = () => {
               <header className="schedule-header-today">
                 <p>Today</p>
               </header>
-              <section className="schedule-today">
-                <div className="schedule-today-cards">
-                  {appointments
-                    .filter((app) => normalizeDate(app.date) === today && app.status !== 'completed' && app.status !== 'pending')
-                    .sort(sortAppointmentsByDate)
-                    .map((app) => (
+              <section className="schedule-today" ref={parentRef} style={{ overflow: 'auto', paddingTop: selectedTab === 'all' ? '0' : '20px', minHeight: '500px' }}>
+                <div style={{ height: `${todayVirtualizer.getTotalSize()}px`, width: '100%' }}>
+                  {todayVirtualizer.getVirtualItems().map((virtualRow) => (
+                    <div
+                      key={virtualRow.index}
+                      style={{
+                        height: `${virtualRow.size}px`,
+                        width: '100%',
+                      }}
+                    >
                       <ScheduleCard
-                        key={app.id}
-                        appointment={app}
-                        user={app.user}
+                        appointment={filteredAppointmentsToday[virtualRow.index]}
+                        user={filteredAppointmentsToday[virtualRow.index].user}
                         allAppointments={appointments}
                         onEditClick={handleEditClick}
                       />
-                    ))}
-                  {appointments.filter((app) => normalizeDate(app.date) === today && app.status !== 'completed' && app.status !== 'pending').length === 0 && (
-                    <p style={{ color: '#888', padding: '1rem' }}>No appointments today.</p>
-                  )}
+                    </div>
+                  ))}
                 </div>
+                {filteredAppointmentsToday.length === 0 && (
+                  <p style={{ color: '#888', padding: '1rem' }}>No appointments today.</p>
+                )}
               </section>
             </>
           )}
 
           {(selectedTab === 'upcoming' || selectedTab === 'all') && (
             <>
-              <header className="schedule-header-today">
+              <header className="schedule-header-today" style={{ marginTop: selectedTab === 'all' ? '0' : '20px' }}>
                 <p>Upcoming</p>
               </header>
-              <section className="schedule-today">
-                <div className="schedule-today-cards">
-                  {appointments
-                    .filter((app) => normalizeDate(app.date) > today && app.status !== 'completed' && app.status !== 'pending')
-                    .sort(sortAppointmentsByDate)
-                    .map((app) => (
+              <section className="schedule-today" ref={parentRef} style={{ overflow: 'auto', paddingTop: selectedTab === 'all' ? '0' : '20px', minHeight: '500px' }}>
+                <div style={{ height: `${upcomingVirtualizer.getTotalSize()}px`, width: '100%' }}>
+                  {upcomingVirtualizer.getVirtualItems().map((virtualRow) => (
+                    <div
+                      key={virtualRow.index}
+                      style={{
+                        height: `${virtualRow.size}px`,
+                        width: '100%',
+                      }}
+                    >
                       <ScheduleCard
-                        key={app.id}
-                        appointment={app}
-                        user={app.user}
+                        appointment={filteredAppointmentsUpcoming[virtualRow.index]}
+                        user={filteredAppointmentsUpcoming[virtualRow.index].user}
                         allAppointments={appointments}
                         onEditClick={handleEditClick}
                       />
-                    ))}
-                  {appointments.filter((app) => normalizeDate(app.date) > today && app.status !== 'completed' && app.status !== 'pending').length === 0 && (
-                    <p style={{ color: '#888', padding: '1rem' }}>No upcoming appointments.</p>
-                  )}
+                    </div>
+                  ))}
                 </div>
+                {filteredAppointmentsUpcoming.length === 0 && (
+                  <p style={{ color: '#888', padding: '1rem' }}>No upcoming appointments.</p>
+                )}
               </section>
             </>
           )}
 
           {(selectedTab === 'pending' || selectedTab === 'all') && (
             <>
-              <header className="schedule-header-today">
+              <header className="schedule-header-today" style={{ marginTop: selectedTab === 'all' ? '0' : '20px' }}>
                 <p>Pending</p>
               </header>
-              <section className="schedule-today">
-                <div className="schedule-today-cards">
-                  {appointments
-                    .filter((app) => app.status === 'pending' && normalizeDate(app.date) >= today)
-                    .sort(sortAppointmentsByDate)
-                    .map((app) => (
+              <section className="schedule-today" ref={parentRef} style={{ overflow: 'auto', paddingTop: selectedTab === 'all' ? '0' : '20px', minHeight: '500px' }}>
+                <div style={{ height: `${pendingVirtualizer.getTotalSize()}px`, width: '100%' }}>
+                  {pendingVirtualizer.getVirtualItems().map((virtualRow) => (
+                    <div
+                      key={virtualRow.index}
+                      style={{
+                        height: `${virtualRow.size}px`,
+                        width: '100%',
+                      }}
+                    >
                       <ScheduleCard
-                        key={app.id}
-                        appointment={app}
-                        user={app.user}
+                        appointment={filteredAppointmentsPending[virtualRow.index]}
+                        user={filteredAppointmentsPending[virtualRow.index].user}
                         allAppointments={appointments}
                         onEditClick={handleEditClick}
                       />
-                    ))}
-                  {appointments.filter((app) => app.status === 'pending' && normalizeDate(app.date) >= today).length === 0 && (
-                    <p style={{ color: '#888', padding: '1rem' }}>No pending appointments.</p>
-                  )}
+                    </div>
+                  ))}
                 </div>
+                {filteredAppointmentsPending.length === 0 && (
+                  <p style={{ color: '#888', padding: '1rem' }}>No pending appointments.</p>
+                )}
               </section>
             </>
           )}
 
-          {(selectedTab === 'all' || selectedTab === 'completed') && (
+          {(selectedTab === 'completed' || selectedTab === 'all') && (
             <>
-              <header className="schedule-header-completed">
+              <header className="schedule-header-completed" style={{ marginTop: selectedTab === 'all' ? '0' : '20px' }}>
                 <p>Completed</p>
               </header>
-              <section className="schedule-today">
-                <div className="schedule-today-cards">
-                  {appointments
-                    .filter((app) => app.status === 'completed')
-                    .sort(sortAppointmentsByDate)
-                    .map((app) => (
+              <section className="schedule-today" ref={parentRef} style={{ overflow: 'auto', paddingTop: selectedTab === 'all' ? '0' : '20px', minHeight: '500px' }}>
+                <div style={{ height: `${completedVirtualizer.getTotalSize()}px`, width: '100%' }}>
+                  {completedVirtualizer.getVirtualItems().map((virtualRow) => (
+                    <div
+                      key={virtualRow.index}
+                      style={{
+                        height: `${virtualRow.size}px`,
+                        width: '100%',
+                      }}
+                    >
                       <ScheduleCard
-                        key={app.id}
-                        appointment={app}
-                        user={app.user}
+                        appointment={filteredAppointmentsCompleted[virtualRow.index]}
+                        user={filteredAppointmentsCompleted[virtualRow.index].user}
                         allAppointments={appointments}
                         onEditClick={handleEditClick}
                       />
-                    ))}
-                  {appointments.filter((app) => app.status === 'completed').length === 0 && (
-                    <p style={{ color: '#888', padding: '1rem' }}>No completed appointments.</p>
-                  )}
+                    </div>
+                  ))}
                 </div>
+                {filteredAppointmentsCompleted.length === 0 && (
+                  <p style={{ color: '#888', padding: '1rem' }}>No completed appointments.</p>
+                )}
               </section>
             </>
           )}
