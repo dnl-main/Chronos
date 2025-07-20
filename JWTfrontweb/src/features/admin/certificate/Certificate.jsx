@@ -1,7 +1,8 @@
-import React, { useReducer, useEffect, useCallback } from 'react';
+import React, { useReducer, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 // Components import
 import CertificateCard from './cards/CertificateCard';
@@ -16,7 +17,7 @@ import './certificate.css';
 // Icon import
 import Notebook from '../../../assets/icons/Notebook.svg?react';
 import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
-import DefaultDP from '../../../assets/photo/defaultdp.png'; // Import defaultdp.png
+import DefaultDP from '../../../assets/photo/defaultdp.png'; 
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -80,6 +81,7 @@ const Certificate = () => {
     currentPage,
   } = state;
   const navigate = useNavigate();
+  const parentRef = useRef(null);
   const rowsPerPage = 10;
 
   // Filter certificate data based on search query
@@ -93,6 +95,16 @@ const Certificate = () => {
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const paginatedData = filteredCertificateData.slice(startIndex, endIndex);
+
+  // Virtualization setup
+  const rowVirtualizer = useVirtualizer({
+    getScrollElement: () => parentRef.current,
+    count: paginatedData.length,
+    estimateSize: () => 170, 
+    overscan: 5,
+    paddingStart: 20,
+    paddingEnd: 20,
+  });
 
   // Handle page change
   const handlePageChange = useCallback((page) => {
@@ -111,7 +123,7 @@ const Certificate = () => {
   }, []);
 
   const handleOpenNotificationModal = useCallback((userId, email) => {
-    // console.log('Opening Notification Modal for user_id: ', userId, 'email: ', email);
+    console.log('Opening Notification Modal for user_id: ', userId, 'email: ', email);
     dispatch({ type: 'SET_SELECTED_USER_ID', payload: userId });
     if (!email || email === 'N/A') {
       dispatch({ type: 'SET_ERROR', payload: 'User email is not available.' });
@@ -122,25 +134,25 @@ const Certificate = () => {
   }, []);
 
   const handleCloseNotificationModal = useCallback(() => {
-    // console.log('Closing Notification Modal');
+    console.log('Closing Notification Modal');
     dispatch({ type: 'SET_NOTIFICATION_MODAL_OPEN', payload: false });
     dispatch({ type: 'SET_SELECTED_USER_ID', payload: null });
     dispatch({ type: 'SET_SELECTED_USER_EMAIL', payload: null });
   }, []);
 
   const handleNotify = useCallback((data) => {
-    // console.log('Notify Data:', { ...data, recipientEmail: selectedUserEmail });
+    console.log('Notify Data:', { ...data, recipientEmail: selectedUserEmail });
     handleCloseNotificationModal();
   }, [selectedUserEmail, handleCloseNotificationModal]);
 
   const handleOpenCertificateModal = useCallback((userId) => {
-    // console.log('Opening CertificateModal for user_id:', userId);
+    console.log('Opening CertificateModal for user_id:', userId);
     dispatch({ type: 'SET_SELECTED_USER_ID', payload: userId });
     dispatch({ type: 'SET_CERTIFICATE_MODAL_OPEN', payload: true });
   }, []);
 
   const handleCloseCertificateModal = useCallback(() => {
-    // console.log('Closing CertificateModal');
+    console.log('Closing CertificateModal');
     dispatch({ type: 'SET_SELECTED_USER_ID', payload: null });
     dispatch({ type: 'SET_CERTIFICATE_MODAL_OPEN', payload: false });
   }, []);
@@ -206,7 +218,7 @@ const Certificate = () => {
         }
         dispatch({ type: 'SET_USER', payload: parsedUser });
       } catch (error) {
-        // console.error('Parse User Error:', error);
+        console.error('Parse User Error:', error);
         navigate('/login');
         return;
       }
@@ -228,24 +240,24 @@ const Certificate = () => {
             user_name: item.user_name || 'Unknown',
             email: item.email || 'N/A',
             position: item.position || 'N/A',
-            profilePicture: item.profilePicture || DefaultDP, // Use imported DefaultDP
+            profilePicture: item.profilePicture || DefaultDP, 
             total_uploaded: item.total_uploaded || 0,
             approved: item.approved || 0,
             pending: item.pending || 0,
             certificates: Array.isArray(item.certificates) ? item.certificates : [],
           }))
         : [];
-      // console.log('Processed certificateData: ', crewMembers);
+      console.log('Processed certificateData: ', crewMembers);
       dispatch({ type: 'SET_CERTIFICATE_DATA', payload: crewMembers });
     }
 
     if (isUserError) {
-      // console.error('Fetch User Error: ', userError.message);
+      console.error('Fetch User Error: ', userError.message);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load user data. Please log in again.' });
       navigate('/login');
     }
     if (isCrewCertsError) {
-      // console.error('Fetch Crew Certs Error:', crewCertsError.message);
+      console.error('Fetch Crew Certs Error:', crewCertsError.message);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load crew certificates.' });
     }
 
@@ -281,21 +293,29 @@ const Certificate = () => {
             />
           </section>
 
-          <section className="certificate-cards">
-            {paginatedData.length === 0 ? (
-              <p>No crew members found.</p>
-            ) : (
-              paginatedData.map((data, index) => (
-                <CertificateCard
-                  key={data.user_id || `card-${index}`}
-                  data={data}
-                  certificates={data.certificates}
-                  onCertificateClick={handleCertificateClick}
-                  onNotifyUpload={() => handleOpenNotificationModal(data.user_id, data.email)}
-                  onOpenCertificateModal={() => handleOpenCertificateModal(data.user_id)}
-                />
-              ))
-            )}
+          <section className="certificate-cards" ref={parentRef} style={{ overflow: 'auto', minHeight: '600px', position: 'relative' }}>
+            <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}>
+              {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+                <div
+                  key={virtualRow.index}
+                  style={{
+                    height: `${virtualRow.size}px`,
+                    width: '100%',
+                    position: 'absolute',
+                    top: 0,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <CertificateCard
+                    data={paginatedData[virtualRow.index]}
+                    certificates={paginatedData[virtualRow.index]?.certificates}
+                    onCertificateClick={handleCertificateClick}
+                    onNotifyUpload={() => handleOpenNotificationModal(paginatedData[virtualRow.index].user_id, paginatedData[virtualRow.index].email)}
+                    onOpenCertificateModal={() => handleOpenCertificateModal(paginatedData[virtualRow.index].user_id)}
+                  />
+                </div>
+              ))}
+            </div>
           </section>
 
           {/* Pagination Controls */}
