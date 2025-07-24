@@ -352,37 +352,62 @@ public function registration(Request $request)
     }
 
  
-    public function refresh(Request $request)
-    {
-        try {
-            $newToken = JWTAuth::refresh(JWTAuth::getToken());
-            $user = JWTAuth::setToken($newToken)->authenticate();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Token refreshed successfully',
-                'token' => $newToken,
-                'user' => $user,
-                'needs_position' => $user->role === 'admin' && empty($user->position),
-            ], 200);
-        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+public function refresh(Request $request)
+{
+    try {
+        // Get the current token
+        $currentToken = JWTAuth::getToken();
+        if (!$currentToken) {
             return response()->json([
                 'status' => false,
-                'message' => 'Token has expired and cannot be refreshed',
+                'message' => 'No token provided',
             ], 401);
-        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Invalid token',
-                'error' => $e->getMessage(),
-            ], 401);
-        } catch (Exception $e) {
-            Log::error('Token refresh error:', ['error' => $e->getMessage()]);
-            return response()->json([
-                'status' => false,
-                'message' => 'Failed to refresh token',
-                'error' => $e->getMessage(),
-            ], 500);
         }
+
+        // Parse and validate the current token
+        $payload = JWTAuth::getPayload($currentToken)->toArray();
+        $user = JWTAuth::setToken($currentToken)->authenticate();
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not authenticated',
+            ], 401);
+        }
+
+        // Update the expiration time
+        $ttl = config('jwt.ttl', 30); // Get TTL from config (in minutes)
+        $newExp = now()->addMinutes($ttl)->getTimestamp(); // New expiration timestamp
+        $payload['exp'] = $newExp; // Update exp claim
+
+        // Rebuild the token with the updated payload
+        $newToken = JWTAuth::customClaims($payload)->fromUser($user);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Token expiration refreshed successfully',
+            'token' => $newToken,
+            'user' => $user,
+            'needs_position' => $user->role === 'admin' && empty($user->position),
+        ], 200);
+    } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Token has expired and cannot be refreshed',
+        ], 401);
+    } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+        Log::error('Token refresh error:', ['error' => $e->getMessage()]);
+        return response()->json([
+            'status' => false,
+            'message' => 'Invalid token',
+            'error' => $e->getMessage(),
+        ], 401);
+    } catch (Exception $e) {
+        Log::error('Token refresh error:', ['error' => $e->getMessage()]);
+        return response()->json([
+            'status' => false,
+            'message' => 'Failed to refresh token',
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
 }

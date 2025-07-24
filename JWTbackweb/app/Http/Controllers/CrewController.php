@@ -95,16 +95,85 @@ private function isUrl($string)
         return response()->json($admins);
     }
     
-   public function getCrewCerts()
+//    public function getCrewCerts()
+// {
+//     if (Auth::user()->role !== 'admin') {
+//         return response()->json(['error' => 'Unauthorized'], 403);
+//     }
+
+//     // Fetch users with 'user' role, including certificates and profile picture
+//     $users = User::where('role', 'user')
+//         ->with(['certificates', 'profilePicture'])
+//         ->get();
+
+//     $crewMembers = $users->map(function ($user) {
+//         $certificates = $user->certificates ?? collect([]);
+//         // Determine the profile picture URL
+//         $profilePicture = $user->profilePicture && $user->profilePicture->path
+//             ? ($this->isUrl($user->profilePicture->path)
+//                 ? $user->profilePicture->path
+//                 : env('APP_URL') . '/storage/' . ltrim($user->profilePicture->path, '/'))
+//             : null;
+
+//         return [
+//             'user_id' => $user->id,
+//             'user_name' => trim($user->first_name . ' ' . 
+//                          ($user->middle_name ? $user->middle_name . ' ' : '') .
+//                          $user->last_name),
+//             'email' => $user->email,
+//             'position' => $user->position ?? 'N/A',
+//             'profilePicture' => $profilePicture, // Add profile picture
+//             'total_uploaded' => $certificates->count(),
+//             'approved' => $certificates->where('status', 'approved')->count(),
+//             'pending' => $certificates->where('status', 'pending')->count(),
+//             'certificates' => $certificates->map(function ($cert) {
+//                 return [
+//                     'id' => $cert->id,
+//                     'certificate_name' => $cert->certificate_name,
+//                     'certificate_type' => $cert->certificate_type,
+//                     'file_path' => $cert->file_path,
+//                     'expiration_date' => $cert->expiration_date,
+//                     'status' => $cert->status ?? 'pending',
+//                 ];
+//             })->toArray(),
+//         ];
+//     })->filter(function ($member) {
+//         return $member['position'] !== 'Unregistered';
+//     })->values();
+
+//     return response()->json(['crew_members' => $crewMembers], 200);
+// }
+public function getCrewCerts(Request $request)
 {
     if (Auth::user()->role !== 'admin') {
         return response()->json(['error' => 'Unauthorized'], 403);
     }
 
-    // Fetch users with 'user' role, including certificates and profile picture
-    $users = User::where('role', 'user')
-        ->with(['certificates', 'profilePicture'])
-        ->get();
+    // Get query parameters
+    $page = $request->query('page', 1);
+    $limit = $request->query('limit', 10);
+    $search = $request->query('search', '');
+
+    // Build the query for users with 'user' role
+    $query = User::where('role', 'user')
+        ->where('position', '!=', 'Unregistered')
+        ->with(['certificates', 'profilePicture']);
+
+    // Apply search filter if provided
+    if (!empty($search)) {
+        $query->where(function ($q) use ($search) {
+            $q->whereRaw("CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) ILIKE ?", ['%' . $search . '%'])
+              ->orWhere('position', 'ILIKE', '%' . $search . '%');
+        });
+    }
+
+    // Get total count for pagination metadata
+    $total = $query->count();
+
+    // Apply pagination
+    $users = $query->skip(($page - 1) * $limit)
+                  ->take($limit)
+                  ->get();
 
     $crewMembers = $users->map(function ($user) {
         $certificates = $user->certificates ?? collect([]);
@@ -122,7 +191,7 @@ private function isUrl($string)
                          $user->last_name),
             'email' => $user->email,
             'position' => $user->position ?? 'N/A',
-            'profilePicture' => $profilePicture, // Add profile picture
+            'profilePicture' => $profilePicture,
             'total_uploaded' => $certificates->count(),
             'approved' => $certificates->where('status', 'approved')->count(),
             'pending' => $certificates->where('status', 'pending')->count(),
@@ -137,11 +206,13 @@ private function isUrl($string)
                 ];
             })->toArray(),
         ];
-    })->filter(function ($member) {
-        return $member['position'] !== 'Unregistered';
     })->values();
 
-    return response()->json(['crew_members' => $crewMembers], 200);
+    return response()->json([
+        'crew_members' => $crewMembers,
+        'total' => $total,
+        'page' => (int) $page,
+        'limit' => (int) $limit,
+    ], 200);
 }
-
 }

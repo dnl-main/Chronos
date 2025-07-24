@@ -78,7 +78,7 @@ const useHomeUserLeftLogic = () => {
 
   const deleteAppointmentMutation = useMutation({
     mutationFn: async () => {
-      await axios.delete(`${apiUrl}/appointment`, {
+      await axios.delete(`${apiUrl}/appointment/${appointment.id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'ngrok-skip-browser-warning': 'true',
