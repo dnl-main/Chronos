@@ -102,8 +102,8 @@ const Certificate = () => {
     count: paginatedData.length,
     estimateSize: () => 170, 
     overscan: 5,
-    paddingStart: 20,
-    paddingEnd: 20,
+    paddingStart: 1,
+    paddingEnd: 1,
   });
 
   // Handle page change
