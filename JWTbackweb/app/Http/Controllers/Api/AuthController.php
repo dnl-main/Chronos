@@ -123,19 +123,57 @@ public function signup(Request $request)
     public function logout(Request $request)
     {
         try {
-            JWTAuth::invalidate(JWTAuth::getToken());
+            $token = JWTAuth::getToken();
+            if (!$token) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'No token provided',
+                ], 400);
+            }
+
+            JWTAuth::invalidate($token);
             return response()->json([
                 'status' => true,
                 'message' => 'Logged out successfully',
             ], 200);
-        } catch (Exception $e) {
+        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Failed to logout',
+                'message' => 'Invalid token',
+                'error' => $e->getMessage(),
+            ], 400);
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to delete token',
+                'error' => $e->getMessage(),
+            ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'An error occurred during logout',
                 'error' => $e->getMessage(),
             ], 500);
         }
     }
+
+    
+    //  public function logout(Request $request)
+    // {
+    //     try {
+    //         JWTAuth::invalidate(JWTAuth::getToken());
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'Logged out successfully',
+    //         ], 200);
+    //     } catch (Exception $e) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Failed to logout',
+    //             'error' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
 
     public function getUser(Request $request)
     {
