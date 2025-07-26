@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { debounce } from 'lodash'; // Import debounce from lodash
 
 // Components import
 import AvailabilityCard from './cards/AvailabilityCard';
@@ -76,6 +77,14 @@ const Availability = () => {
   } = state;
   const navigate = useNavigate();
   const parentRef = useRef(null);
+
+  // Debounced search handler
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      dispatch({ type: 'SET_SEARCH_QUERY_ALL', payload: value });
+    }, 300),
+    []
+  );
 
   // Helper function to check if a member matches a search query
   const matchesSearchQuery = useCallback((member, query) => {
@@ -195,8 +204,8 @@ const Availability = () => {
   const rowVirtualizer = useVirtualizer({
     getScrollElement: () => parentRef.current,
     count: filteredCrewDataAvailable.length,
-    estimateSize: () => 174, 
-    overscan: 20, 
+    estimateSize: () => 174,
+    overscan: 20,
     paddingStart: 20,
     paddingEnd: 20,
   });
@@ -230,10 +239,6 @@ const Availability = () => {
 
   const handleTabChange = useCallback((tab) => {
     dispatch({ type: 'SET_SELECTED_TAB', payload: tab });
-  }, []);
-
-  const handleSearchQueryChange = useCallback((query) => {
-    dispatch({ type: 'SET_SEARCH_QUERY_ALL', payload: query });
   }, []);
 
   const handleOverlayContent = useCallback((content) => {
@@ -275,10 +280,10 @@ const Availability = () => {
 
     if (crewDataResponse) {
       dispatch({ type: 'SET_CREW_DATA', payload: crewDataResponse });
-      console.log('Filtered Available:', filteredCrewDataAvailable.length); 
-      console.log('Filtered Available Data:', filteredCrewDataAvailable); 
-      console.log('Filtered Vacation:', filteredCrewDataVacation.length);
-      console.log('Filtered OnBoard:', filteredCrewDataOnBoard.length);
+      // console.log('Filtered Available:', filteredCrewDataAvailable.length);
+      // console.log('Filtered Available Data:', filteredCrewDataAvailable);
+      // console.log('Filtered Vacation:', filteredCrewDataVacation.length);
+      // console.log('Filtered OnBoard:', filteredCrewDataOnBoard.length);
     }
 
     if (certificatesData) {
@@ -286,18 +291,18 @@ const Availability = () => {
     }
 
     if (isUserError) {
-      console.error('Fetch User Error:', userError.message);
+      // console.error('Fetch User Error:', userError.message);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load user data. Please log in again.' });
       navigate('/login');
     }
 
     if (isCrewError) {
-      console.error('Fetch Crew Error:', crewError.message);
+      // console.error('Fetch Crew Error:', crewError.message);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load crew data.' });
     }
 
     if (isCertificatesError) {
-      console.error('Fetch Certificates Error:', certificatesError.message);
+      // console.error('Fetch Certificates Error:', certificatesError.message);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load certificates.' });
     }
 
@@ -335,8 +340,8 @@ const Availability = () => {
             <input
               type="text"
               placeholder="Search all crew by name or position"
-              value={searchQueryAll}
-              onChange={(e) => handleSearchQueryChange(e.target.value)}
+              defaultValue={searchQueryAll}
+              onChange={(e) => debouncedSearch(e.target.value)}
               style={{
                 padding: '8px',
                 borderRadius: '4px',
