@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { debounce } from 'lodash'; // Import debounce from lodash
 
 // Components import
 import CertificateCard from './cards/CertificateCard';
@@ -34,7 +35,7 @@ const initialState = {
   selectedUserEmail: null,
   searchQuery: '',
   currentPage: 1,
-  totalPages: 1, // Added for server-side pagination
+  totalPages: 1,
 };
 
 const reducer = (state, action) => {
@@ -88,12 +89,20 @@ const Certificate = () => {
   const parentRef = useRef(null);
   const rowsPerPage = 10;
 
+  // Debounced search handler
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      dispatch({ type: 'SET_SEARCH_QUERY', payload: value });
+    }, 300),
+    []
+  );
+
   // Virtualization setup
   const rowVirtualizer = useVirtualizer({
     getScrollElement: () => parentRef.current,
     count: certificateData.length,
     estimateSize: () => 170,
-    overscan: 3, // Reduced overscan since max 10 items per page
+    overscan: 3,
     paddingStart: 20,
     paddingEnd: 20,
   });
@@ -247,7 +256,7 @@ const Certificate = () => {
       navigate('/login');
     }
     if (isCrewCertsError) {
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to load crew certificates.' });
+      dispatch({ type: 'SET_ERROR', payload: crewCertsError.message || 'Failed to load crew certificates.' });
     }
 
     dispatch({ type: 'SET_LOADING', payload: isUserLoading || isCrewCertsLoading });
@@ -270,8 +279,8 @@ const Certificate = () => {
             <input
               type="text"
               placeholder="Search by name or position"
-              value={searchQuery}
-              onChange={(e) => dispatch({ type: 'SET_SEARCH_QUERY', payload: e.target.value })}
+              defaultValue={searchQuery}
+              onChange={(e) => debouncedSearch(e.target.value)}
               style={{
                 padding: '8px',
                 borderRadius: '4px',
