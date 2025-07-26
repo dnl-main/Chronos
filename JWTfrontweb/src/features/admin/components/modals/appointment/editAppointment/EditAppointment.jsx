@@ -101,7 +101,7 @@ const ManageAppointment = ({ appointment, user, bookedAppointments = [], onClose
     return timeString; // Already in 12-hour format
   };
 
-  const departmentOptions = ['crewing', 'medical', 'accounting'];
+  const departmentOptions = ['crewing', 'medical', 'accounting','training','support','recruitment','admin'];
   const crewingDepts = ['maran gas', 'maran dry', 'maran tankers'];
   const operators = [
     'fleet crew manager',

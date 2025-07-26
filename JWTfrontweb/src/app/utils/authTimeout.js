@@ -21,7 +21,6 @@ export const setupTokenTimeout = (navigate) => {
 
   // Validate navigate is a function
   if (typeof navigate !== 'function') {
-    console.error('navigate is not a function, received:', navigate);
     return () => {};
   }
 

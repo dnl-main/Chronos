@@ -9,7 +9,7 @@ import Book from '../../../../assets/icons/Book.svg?react';
 import Close_MD from '../../../../assets/icons/Close_MD.svg?react';
 import Calendar_Check from '../../../../assets/icons/Calendar_Check.svg?react';
 
-const departmentOptions = ['Crewing', 'Medical', 'Accounting'];
+const departmentOptions = ['Crewing', 'Medical', 'Accounting', 'Recruitment', 'Admin', 'Training', 'Support'];
 const crewingDepts = ['Maran Gas', 'Maran Dry', 'Maran Tankers'];
 const operators = [
   'Fleet Crew Manager',

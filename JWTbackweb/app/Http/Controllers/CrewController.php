@@ -85,9 +85,6 @@ private function isUrl($string)
 
     public function getAdmin()
     {
-                if (Auth::user()->role !== 'user') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
         $admins = User::where('role', 'admin')
             ->select('first_name', 'last_name', 'department')
             ->get();
