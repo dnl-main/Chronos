@@ -143,7 +143,7 @@ const Availability = () => {
   });
 
   // TanStack Query for fetching crew data with pagination
-  const fetchCrewData = async (page = 0, limit = 10) => {
+  const fetchCrewData = async (page = 0, limit = 100) => {
     const token = sessionStorage.getItem('token');
     if (!token) {
       throw new Error('No token found');
@@ -161,7 +161,7 @@ const Availability = () => {
 
   const { data: crewDataResponse, isLoading: isCrewLoading, isError: isCrewError, error: crewError } = useQuery({
     queryKey: ['crewMembers', searchQueryAll],
-    queryFn: () => fetchCrewData(0, 10),
+    queryFn: () => fetchCrewData(0, 100),
     enabled: !!user && user.role === 'admin',
     retry: 1,
     staleTime: 1000 * 60 * 5,

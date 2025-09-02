@@ -1,28 +1,28 @@
+// src/Home.jsx
 import React, { useReducer, useMemo, useCallback, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQueries, useQuery } from '@tanstack/react-query';
 
 // Components import
 import ScheduleCard from '../schedule/cards/ScheduleCard';
-import Spinner from '../../../components/ui/Spinner';
+import Spinner from '../../../components/ui/Spinner'
 import Appointment from '../components/modals/appointment/manageAppointment/Appointment';
 import EditAppointment from '../components/modals/appointment/editAppointment/EditAppointment';
-import HomeCertAdmin from './ui/ExpiringCertificates';
+import AvailableCrew from './homeComponents/AvailableCrew'
+import TotalCrew from './homeComponents/TotalCrew';
+import ComingToday from './homeComponents/ComingToday';
+import UpcomingAppointment from './homeComponents/UpcomingAppointment';
+import ExpiringCertificates from './homeComponents/ExpiringCertificate';
 
 // CSS import
 import './home.css';
 
 // Icon import
 import Calendar_Event from '../../../assets/icons/Calendar_Event.svg?react';
-import Circle_Primary from '../../../assets/icons/Circle_Primary.svg?react';
-import Arrow_Right_SM from '../../../assets/icons/Arrow_Right_SM.svg?react';
-import Users from '../../../assets/icons/Users.svg?react';
-import Notebook from '../../../assets/icons/Notebook.svg?react';
-import Book from '../../../assets/icons/Book.svg?react';
-import Calendar_Week from '../../../assets/icons/Calendar_Week.svg?react';
-import User_Add from '../../../assets/icons/User_Add.svg?react';
 import More_Grid_Big from '../../../assets/icons/More_Grid_Big.svg?react';
 import Calendar_Check from '../../../assets/icons/Calendar_Check.svg?react';
+import Calendar_Week from '../../../assets/icons/Calendar_Week.svg?react';
+import Arrow_Right_SM from '../../../assets/icons/Arrow_Right_SM.svg?react';
 
 // Reducer for state management
 const initialState = {
@@ -102,8 +102,8 @@ const Home = () => {
       if (!response.ok) throw new Error('Failed to fetch user');
       return response.json();
     },
-    enabled: !!sessionStorage.getItem('token'), 
-    staleTime: 1000 * 60 * 5, 
+    enabled: !!sessionStorage.getItem('token'),
+    staleTime: 1000 * 60 * 5,
   });
 
   // Parallel queries for dashboard data
@@ -123,8 +123,8 @@ const Home = () => {
           if (!response.ok) throw new Error('Failed to fetch today count');
           return response.json();
         },
-        enabled: !!state.user, 
-        staleTime: 1000 * 60, 
+        enabled: !!state.user,
+        staleTime: 1000 * 60,
       },
       {
         queryKey: ['appointments'],
@@ -277,7 +277,15 @@ const Home = () => {
     if (todayCountQuery.error || appointmentsQuery.error || upcomingAppointmentsQuery.error || crewCountsQuery.error) {
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load dashboard data.' });
     }
-    dispatch({ type: 'SET_LOADING', payload: userLoading || todayCountQuery.isLoading || appointmentsQuery.isLoading || upcomingAppointmentsQuery.isLoading || crewCountsQuery.isLoading });
+    dispatch({
+      type: 'SET_LOADING',
+      payload:
+        userLoading ||
+        todayCountQuery.isLoading ||
+        appointmentsQuery.isLoading ||
+        upcomingAppointmentsQuery.isLoading ||
+        crewCountsQuery.isLoading,
+    });
   }, [
     todayCountQuery.data,
     todayCountQuery.error,
@@ -320,10 +328,6 @@ const Home = () => {
   const handleEditModalClose = useCallback(() => {
     dispatch({ type: 'SET_EDIT_MODAL_OPEN', payload: false });
     dispatch({ type: 'SET_SELECTED_APPOINTMENT', payload: null });
-    const token = sessionStorage.getItem('token');
-    if (token) {
-
-    }
   }, []);
 
   // Memoized derived data
@@ -367,7 +371,9 @@ const Home = () => {
           <div className="home-top">
             <header className="home-top-header">
               <div className="home-top-header-heading">
-                <More_Grid_Big style={{ color: "var(--black-color)", width: "32px", height: "32px", "--stroke-width": "1.5px" }} />
+                <More_Grid_Big
+                  style={{ color: 'var(--black-color)', width: '32px', height: '32px', '--stroke-width': '1.5px' }}
+                />
                 <p>Dashboard</p>
               </div>
               <button
@@ -376,152 +382,42 @@ const Home = () => {
               >
                 <Calendar_Check
                   style={{
-                    width: "20px",
-                    height: "20px",
+                    width: '20px',
+                    height: '20px',
                     '--stroke-color': 'var(--white-color)',
                     '--stroke-width': '7px',
                   }}
                 />
                 <p>Book now</p>
               </button>
-              {state.isModalOpen && <Appointment onClose={() => dispatch({ type: 'SET_MODAL_OPEN', payload: false })} />}
+              {state.isModalOpen && (
+                <Appointment onClose={() => dispatch({ type: 'SET_MODAL_OPEN', payload: false })} />
+              )}
             </header>
 
             <main className="home-top-main">
               <section className="home-top-main-left">
-                <main className="home-top-main-left-up">
-                  <div className="home-top-main-left-up-header">
-                    <div className="home-top-main-left-up-header-main">
-                      <header>Available crew</header>
-                      <Users style={{ color: "var(--black-color)", width: "20px", height: "20px" }} />
-                    </div>
-                    <Link to="/admin/availability">
-                      <button className="home-top-main-left-up-header-btn">
-                        <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
-                      </button>
-                    </Link>
-                  </div>
-                  <div className="home-top-main-left-up-data">
-                    <div className="home-top-main-left-up-data-all">
-                      <p>{state.availableCrewCount}</p>
-                    </div>
-                    <div className="home-top-main-left-up-data-complete"></div>
-                  </div>
-                  <div className="home-top-main-left-up-job">
-                    <header className="home-top-main-left-up-job-header">
-                      <p>Job title</p>
-                    </header>
-                    <main className="home-top-main-left-up-job-main">
-                      {jobTitleItems.map(({ title, count }) => (
-                        <div key={title} className="home-top-main-left-up-job-main-card">
-                          <Circle_Primary style={{ color: "var(--black-color-opacity-60)", width: "20px", height: "20px" }} />
-                          <p>{title}</p>
-                          {count > 0 && <p>({count})</p>}
-                        </div>
-                      ))}
-                    </main>
-                  </div>
-                </main>
-                <main className="home-top-main-left-down">
-                  <div className="home-top-main-left-down-header">
-                    <div className="home-top-main-left-down-header-main">
-                      <header>Total Crew</header>
-                      <User_Add style={{ color: "var(--primary-color)", width: "20px", height: "20px", '--stroke-width': '7px' }} />
-                    </div>
-                    <Link to="/admin/availability">
-                      <button className="home-top-main-left-down-header-btn">
-                        <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
-                      </button>
-                    </Link>
-                  </div>
-                  <div className="home-top-main-left-down-data">
-                    <div className="home-top-main-left-down-data-all">
-                      <p>{state.totalCrewCount}</p>
-                    </div>
-                    <div className="home-top-main-left-down-data-complete"></div>
-                  </div>
-                </main>
+                <AvailableCrew
+                  availableCrewCount={state.availableCrewCount}
+                  jobTitleItems={jobTitleItems}
+                />
+                <TotalCrew totalCrewCount={state.totalCrewCount} />
               </section>
 
               <section className="home-top-main-mid">
-                <main className="home-top-main-mid-up">
-                  <div className="home-top-main-mid-up-header">
-                    <div className="home-top-main-mid-up-header-main">
-                      <header>Coming today</header>
-                      <Calendar_Event style={{ color: "var(--black-color)", width: "20px", height: "20px", '--stroke-width': '6px' }} />
-                    </div>
-                    <button onClick={handleRedirectToday}>
-                      <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
-                    </button>
-                  </div>
-                  <div className="home-top-main-mid-up-data">
-                    <p>{state.todayCount}</p>
-                  </div>
-                  <div className="home-top-main-mid-up-time">
-                    <p className="home-top-main-mid-up-time-sub">Arrival time</p>
-                    <p className="home-top-main-mid-up-time-main">
-                      {state.todayAppointments.length > 0
-                        ? new Date(`1970-01-01T${state.todayAppointments[0].start_time}`).toLocaleString('en-US', {
-                            hour: 'numeric',
-                            minute: 'numeric',
-                            hour12: true,
-                          })
-                        : 'N/A'}
-                    </p>
-                  </div>
-                </main>
-                <main className="home-top-main-mid-down">
-                  <div className="home-top-main-mid-down-header">
-                    <div className="home-top-main-mid-down-header-main">
-                      <header>Upcoming appointment</header>
-                      <Book
-                        style={{
-                          color: "var(--black-color)",
-                          width: "20px",
-                          height: "20px",
-                          '--stroke-width': '4',
-                        }}
-                      />
-                    </div>
-                    <button
-                      className="home-top-main-left-down-header-btn"
-                      onClick={handleRedirectUpcoming}
-                    >
-                      <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
-                    </button>
-                  </div>
-                  <div className="home-top-main-mid-down-data">
-                    <p>{state.upcomingCount}</p>
-                  </div>
-                  <div className="home-top-main-mid-down-time">
-                    <p className="home-top-main-mid-down-time-sub">Arrival date</p>
-                    <p className="home-top-main-mid-down-time-main">
-                      {nearestAppointment
-                        ? new Date(nearestAppointment.date).toLocaleDateString('en-US', {
-                            month: 'long',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })
-                        : 'N/A'}
-                    </p>
-                  </div>
-                </main>
+                <ComingToday
+                  todayCount={state.todayCount}
+                  todayAppointments={state.todayAppointments}
+                  onRedirect={handleRedirectToday}
+                />
+                <UpcomingAppointment
+                  upcomingCount={state.upcomingCount}
+                  nearestAppointment={nearestAppointment}
+                  onRedirect={handleRedirectUpcoming}
+                />
               </section>
 
-              <section className="home-top-main-right">
-                <div className="home-top-main-right-header">
-                  <div className="home-top-main-right-header-main">
-                    <header>Expiring Certificates</header>
-                    <Notebook style={{ color: "var(--black-color)", width: "20px", height: "20px" }} />
-                  </div>
-                  <Link to="/admin/certificate">
-                    <button className="home-top-main-right-header-btn">
-                      <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
-                    </button>
-                  </Link>
-                </div>
-                <HomeCertAdmin />
-              </section>
+              <ExpiringCertificates />
             </main>
           </div>
 
@@ -529,8 +425,8 @@ const Home = () => {
             <header className="home-bot-header">
               <Calendar_Week
                 style={{
-                  width: "24px",
-                  height: "24px",
+                  width: '24px',
+                  height: '24px',
                   '--stroke-width': '2px',
                   '--stroke-color': 'var(--black-color)',
                 }}
@@ -556,15 +452,17 @@ const Home = () => {
             <header className="home-bot-header">
               <Calendar_Week
                 style={{
-                  width: "24px",
-                  height: "24px",
+                  width: '24px',
+                  height: '24px',
                   '--stroke-width': '2px',
                   '--stroke-color': 'var(--black-color)',
                 }}
               />
               <p>Pending</p>
               <button onClick={handleRedirectPending}>
-                <Arrow_Right_SM style={{ color: "var(--black-color)", width: "24px", height: "24px", '--stroke-width': '5' }} />
+                <Arrow_Right_SM
+                  style={{ color: 'var(--black-color)', width: '24px', height: '24px', '--stroke-width': '5' }}
+                />
               </button>
             </header>
             <div className="home-bot-cards">

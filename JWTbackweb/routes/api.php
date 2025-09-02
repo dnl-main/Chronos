@@ -20,13 +20,13 @@ Route::get('/test', function () {
     return response()->json(['message' => 'API is working']);
 });
 
-// Auth Routes
-Route::post('/signup', [AuthController::class, 'signup']);
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:60,1');
-Route::post('/refresh', [AuthController::class, 'refresh']);
-// Password Reset Routes
-Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
-Route::post('/reset-password', [PasswordResetController::class, 'reset']);
+    // Auth Routes
+    Route::post('/signup', [AuthController::class, 'signup']);
+   Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:60,1'); // Throttle login attempts
+    Route::post('refresh', [AuthController::class, 'refresh'])->middleware('jwt.auth'); // Token refresh route
+    // Password Reset Routes
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
+    Route::post('/reset-password', [PasswordResetController::class, 'reset']);
 
 // PSGC Routes
 Route::get('/regions', [PSGCController::class, 'getRegions']);
