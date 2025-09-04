@@ -258,3 +258,36 @@
         transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
         box-shadow: var(--shadow-primary-lg);
       }
+
+
+
+
+      .homeUser-top-core-left-up-empty {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        flex-grow: 1;
+        row-gap: 2vh;
+      }
+
+      .homeUser-top-core-left-up-empty-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        
+        background-color: var(--primary-color-opacity-15);
+        border-radius: 0.6rem;
+        height: 100%;
+        width: 100%;
+        /* background-color: red; */
+
+      }
+
+      .homeUser-top-core-left-up-empty-content-svg {
+        
+        height: 36vh;
+        width: 36vh;
+      }
+

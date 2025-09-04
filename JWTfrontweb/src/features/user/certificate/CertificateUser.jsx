@@ -11,6 +11,9 @@ import Cloud_Upload from '../../../assets/icons/Cloud_Upload.svg?react';
 import './CertificateUser.css';
 import './certificateUserMQ.css';
 
+
+import NewCertUpload from './modals/NewCertUpload';
+
 const CertificateUser = () => {
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -161,6 +164,8 @@ const CertificateUser = () => {
                 }}
               />
               <header>Certificates</header>
+              <NewCertUpload onUploadSuccess={() => fetchCertificates(sessionStorage.getItem('token'))} />
+
             </div>
             <div className="certificateUser-top-core">
               <p className="certificateUser-top-core-medium">List of certificates</p>

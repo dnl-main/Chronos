@@ -6,6 +6,8 @@ import Book from '../../../../../assets/icons/Book.svg?react';
 import Users from '../../../../../assets/icons/Users.svg?react';
 import Clock from '../../../../../assets/icons/Clock.svg?react';
 
+import Empty_Schedule from '../../../../../assets/background/Empty_Schedule.svg?react';
+
 import BookAppointmentModal from '../../../components/modals/BookAppointment';
 
 // Logic hook import
@@ -56,8 +58,6 @@ const HomeUserLeft = () => {
     // const capitalizedPurpose = purpose ? capitalize(purpose) : 'your appointment';
     const capitalizedPurpose = purpose ? capitalize(purpose) : 'your appointment';
 
-
-    // Special handling for crewing department with sub-department
     if (department.toLowerCase() === 'crewing' && crewing_dept) {
       // const capitalizedCrewingDept = capitalize(crewing_dept);
       const capitalizedCrewingDept = crewing_dept ? capitalize(crewing_dept) : '';
@@ -66,7 +66,7 @@ const HomeUserLeft = () => {
         <div className="homeUser-top-core-left-down-description">
           <div className="homeUser-top-core-left-down-description-first"> 
             <p className="homeUser-top-core-left-down-description-regular">Please proceed to the</p>
-            <p className="homeUser-top-core-left-down-description-semibold">{capitalizedOperator}</p>
+            <p className="homeUser-top-core-left-down-description-semibold">{operator}</p>
             <p className="homeUser-top-core-left-down-description-regular">of</p>           
           </div>
           <div className="homeUser-top-core-left-down-description-second"> 
@@ -78,8 +78,6 @@ const HomeUserLeft = () => {
         </div>
       );
     }
-
-    // Default instruction for all other departments
     return (
       <div className="homeUser-top-core-left-down-description">
         <div className="homeUser-top-core-left-down-description-first"> 
@@ -92,9 +90,6 @@ const HomeUserLeft = () => {
           <p className="homeUser-top-core-left-down-description-semibold">{capitalizedDepartment} Department</p>
           <p className="homeUser-top-core-left-down-description-regular">for {capitalizedPurpose}</p>
         </div>
-
-        
-        
       </div>
     );
   };
@@ -200,8 +195,36 @@ const HomeUserLeft = () => {
 
   const renderWithoutAppointment = () => (
     <>
-      <div className="homeUser-top-core-left-heading">
-        <p style={{ color: '#888' }}>{renderStatusMessage()}</p>
+      <div className="homeUser-top-core-left-up">
+        <div className="homeUser-top-core-left-up-header">
+          <header>Scheduled appointment</header>
+          <Users style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} />
+        </div> {/* homeUser-top-core-left-up-header */}
+
+        <div className="homeUser-top-core-left-up-status">
+          <p className="homeUser-top-core-left-up-status-bold">{renderStatusMessage()}</p>
+        </div> {/* homeUser-top-core-left-up-status */}
+
+        <div className="homeUser-top-core-left-up-empty">
+          <div className="homeUser-top-core-left-up-empty-content">
+            {/* <Users style={{ color: 'var(--black-color-opacity-60)', width: '20px', height: '20px' }} /> */}
+            <Empty_Schedule className="homeUser-top-core-left-up-empty-content-svg" />
+
+          </div> {/* homeUser-top-core-left-up-empty-content */}
+
+          <div className="homeUser-top-core-left-up-empty-button">
+            <button onClick={() => setIsModalOpen(true)} className="homeUser-top-core-left-btn-button">
+              <Book style={{ color: 'var(--white-color)', width: '20px', height: '20px' }} />
+              Set Appointment
+            </button>
+          </div> {/* homeUser-top-core-left-up-empty-button */}
+        </div> {/* homeUser-top-core-left-up-empty */}
+        
+        
+      </div>
+
+      {/* <div className="homeUser-top-core-left-heading">
+        <p>{renderStatusMessage()}</p>
       </div>
 
       <div className="homeUser-top-core-left-date">
@@ -222,7 +245,7 @@ const HomeUserLeft = () => {
           <Book style={{ color: 'var(--white-color)', width: '20px', height: '20px' }} />
           Set Appointment
         </button>
-      </div>
+      </div> */}
     </>
   );
 

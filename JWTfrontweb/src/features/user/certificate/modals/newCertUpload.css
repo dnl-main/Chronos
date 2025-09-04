@@ -1,0 +1,151 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Overlay */
+.newcert {
+  position: fixed;
+  inset: 0; /* shorthand for top:0, right:0, bottom:0, left:0 */
+  background-color: rgba(0, 0, 0, 0.5); /* backdrop */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal Box */
+.newcert-child1 {
+  background-color: var(--white-color, #fff);
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 600px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
+/* Header */
+.newcert-child1-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.newcert-child1-box-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--black-color, #000);
+}
+
+.newcert-child1-box-close {
+  all: unset;
+  cursor: pointer;
+  color: var(--black-color-opacity-60, #555);
+  font-size: 1.2rem;
+  transition: color 0.2s ease;
+}
+
+.newcert-child1-box-close:hover {
+  color: var(--black-color, #000);
+}
+
+/* Form */
+.newcert-child2 {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
+/* File Upload Section */
+.newcert-child2-file {
+  border: 1px solid var(--black-color-opacity-20, #ccc);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.newcert-child2-file-info {
+  margin-bottom: 0.5rem;
+}
+
+.newcert-child2-file-name {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.newcert-child2-file-remove {
+  cursor: pointer;
+  color: var(--danger-color, #e53e3e);
+  font-size: 0.85rem;
+  transition: color 0.2s ease;
+}
+
+.newcert-child2-file-remove:hover {
+  color: #c53030;
+}
+
+.newcert-child2-file-btn {
+  margin-top: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--secondary-color, #f7f7f7);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.newcert-child2-file-btn:hover {
+  background-color: var(--secondary-color-dark, #ececec);
+}
+
+/* Selects & Inputs */
+.newcert-child2-input,
+.newcert-child2-select {
+  width: 100%;
+  border: 1px solid var(--black-color-opacity-20, #ccc);
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+  font-size: 0.9rem;
+}
+
+.newcert-child2-input:focus,
+.newcert-child2-select:focus {
+  outline: none;
+  border-color: var(--primary-color, #00899A);
+}
+
+/* Date error */
+.newcert-child2-error {
+  color: var(--danger-color, #e53e3e);
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+/* Submit Button */
+.newcert-child2-submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--primary-color, #00899A);
+  color: #fff;
+  border: none;
+  border-radius: 0.6rem;
+  padding: 0.7rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.newcert-child2-submit:hover {
+  background-color: #007788;
+}
