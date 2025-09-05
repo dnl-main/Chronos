@@ -41,6 +41,10 @@ const useHomeUserLeftLogic = () => {
         },
       });
       const appt = Array.isArray(response.data) ? response.data[0] : response.data;
+
+      if (appt?.status === 'cancelled') {
+        return null;
+      }
       return {
         id: appt?.id || null,
         date: appt?.date || '',
@@ -73,7 +77,23 @@ const useHomeUserLeftLogic = () => {
   });
 
   useEffect(() => {
-    if (appointmentData) setAppointment(appointmentData);
+    if (appointmentData) {
+      setAppointment(appointmentData);
+    } else {
+      setAppointment({
+        id: null,
+        date: '',
+        start_time: '',
+        end_time: '',
+        department: '',
+        crewing_dept: '',
+        operator: '',
+        accounting_task: '',
+        employee: '',
+        purpose: '',
+        status: ''
+      });
+    }
   }, [appointmentData]);
 
   const deleteAppointmentMutation = useMutation({
@@ -99,16 +119,16 @@ const useHomeUserLeftLogic = () => {
         purpose: '',
         status: ''
       });
-      alert('Appointment deleted successfully');
+      alert('Appointment cancelled successfully');
       queryClient.invalidateQueries(['appointment']);
     },
     onError: (error) =>
-      alert(error.response?.data.message || 'Failed to delete appointment'),
+      alert(error.response?.data.message || 'Failed to cancel appointment'),
   });
 
   const handleDeleteAppointment = () => {
-    if (!appointment.id) return alert('No appointment to delete');
-    if (window.confirm('Are you sure you want to delete this appointment?')) {
+    if (!appointment.id) return alert('No appointment to cancel');
+    if (window.confirm('Are you sure you want to cancel this appointment?')) {
       deleteAppointmentMutation.mutate();
     }
   };
@@ -158,22 +178,21 @@ const useHomeUserLeftLogic = () => {
     if (typeof str !== 'string' || !str.trim()) return '';
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   };
-
+  
 
   return {
-  appointment,
-  appointmentLoading,
-  handleDeleteAppointment,
-  isModalOpen,
-  setIsModalOpen,
-  handleRescheduleAppointment,
-  isRescheduleModalOpen,
-  setIsRescheduleModalOpen,
-  formatTime,
-  handleAppointmentBooked,
-  capitalize,
-};
-
+    appointment,
+    appointmentLoading,
+    handleDeleteAppointment,
+    isModalOpen,
+    setIsModalOpen,
+    handleRescheduleAppointment,
+    isRescheduleModalOpen,
+    setIsRescheduleModalOpen,
+    formatTime,
+    handleAppointmentBooked,
+    capitalize,
+  };
 };
 
 export default useHomeUserLeftLogic;

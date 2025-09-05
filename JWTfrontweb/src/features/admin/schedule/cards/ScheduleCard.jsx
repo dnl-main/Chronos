@@ -16,12 +16,6 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
     return <p>Loading...</p>;
   }
 
-  const isUpcoming = (dateString) => {
-    const today = new Date();
-    const appointmentDate = new Date(dateString);
-    return appointmentDate > today;
-  };
-
   const isToday = (dateString) => {
     const today = new Date();
     const appointmentDate = new Date(dateString);
@@ -32,11 +26,19 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
     );
   };
 
-  const formatDate = (dateString) => {
+  const isUpcoming = (dateString) => {
+    const today = new Date();
+    const appointmentDate = new Date(dateString);
+    return appointmentDate > today;
+  };
+
+  const formatDate = (dateString, status) => {
     const date = new Date(dateString);
     const isUpcomingAppointment = isUpcoming(dateString);
     return {
-      day: isUpcomingAppointment
+      day: status === 'completed'
+        ? date.toLocaleString('en-US', { month: 'short' })
+        : isUpcomingAppointment
         ? date.toLocaleString('en-US', { month: 'short' })
         : date.toLocaleString('en-US', { weekday: 'short' }),
       date: date.getDate(),
@@ -77,7 +79,7 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
       alert('Appointment approved successfully');
       queryClient.invalidateQueries(['appointments']);
     } catch (error) {
-      alert(error.response?.data?.message || 'Failed to book appointment.');
+      alert(error.response?.data?.message || 'Failed to approve appointment.');
     }
   };
 
@@ -106,14 +108,44 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
     }
   };
 
-  const { day, date } = formatDate(appointment.date);
+  const handleDeleteAppointment = async () => {
+    try {
+      const token = sessionStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found.');
+      }
+
+      await axios.delete(
+        `${apiUrl}/appointment/${appointment.id}/permanent`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
+          withCredentials: true,
+        }
+      );
+
+      alert('Appointment permanently deleted successfully');
+      queryClient.invalidateQueries(['appointments']);
+    } catch (error) {
+      alert(error.response?.data?.message || 'Failed to delete appointment.');
+    }
+  };
+
+  const { day, date } = formatDate(appointment.date, appointment.status);
   const startTime = formatTime(appointment.start_time);
   const endTime = formatTime(appointment.end_time);
 
-  const indicatorClass = appointment.status === 'pending'
+const indicatorClass =
+  appointment.status === 'pending'
     ? 'schedule-today-cards-card-indicator schedule-today-cards-card-indicator-pending'
+    : appointment.status === 'cancelled'
+    ? 'schedule-today-cards-card-indicator schedule-today-cards-card-indicator-cancelled'
     : appointment.status === 'completed'
     ? 'schedule-today-cards-card-indicator schedule-today-cards-card-indicator-completed'
+    : isUpcoming(appointment.date)
+    ? 'schedule-today-cards-card-indicator schedule-today-cards-card-indicator-upcoming'
     : 'schedule-today-cards-card-indicator';
 
   return (
@@ -210,6 +242,7 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
                 ),
               })
             }
+            style={{ marginRight: '10px' }}
             title="Edit Appointment"
           >
             <Edit_Pencil_01
@@ -220,6 +253,15 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
                 '--stroke-width': '2px',
               }}
             />
+          </button>
+        )}
+        {appointment.status === 'cancelled' && (
+          <button
+            onClick={handleDeleteAppointment}
+            style={{ marginRight: '10px' }}
+            title="Permanently Delete Appointment"
+          >
+            <span style={{ color: 'var(--white-color)', fontSize: '24px', fontWeight: 'bold' }}>X</span>
           </button>
         )}
       </section>
