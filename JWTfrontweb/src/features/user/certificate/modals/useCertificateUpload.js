@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';   // 🔹 added useRef
 import axios from 'axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -12,6 +12,9 @@ const useCertificateUpload = (token, apiUrl) => {
   const [file, setFile] = useState(null);
   const [progress, setProgress] = useState({ percentage: 0 });
   const [dateError, setDateError] = useState('');
+
+  // 🔹 NEW: synchronous guard to prevent rapid double submissions
+  const submittingRef = useRef(false);
 
   // Must match Laravel backend categories
   const certificateCategories = {
@@ -145,10 +148,20 @@ const useCertificateUpload = (token, apiUrl) => {
     onError: (error) => {
       alert(error.response?.data.message || '❌ Failed to upload certificate');
     },
+    // 🔹 ensure the ref lock gets cleared no matter what
+    onSettled: () => {
+      submittingRef.current = false;
+    },
   });
 
-  const handleSubmitCertificate = (e) => {
+  // 🔹 made async and added submittingRef guard
+  const handleSubmitCertificate = async (e) => {
     e.preventDefault();
+
+    // 🔹 synchronous guard: block if already in-flight
+    if (submittingRef.current) {
+      return;
+    }
 
     if (!certificateName.trim() || !primaryCertificateType || !subCertificateType || !file) {
       alert('All fields are required');
@@ -173,7 +186,18 @@ const useCertificateUpload = (token, apiUrl) => {
     }
     formData.append('file', file);
 
-    uploadCertificateMutation.mutate(formData);
+    // 🔹 lock immediately before starting mutation
+    submittingRef.current = true;
+
+    try {
+      // 🔹 use mutateAsync so we can await and properly reset
+      await uploadCertificateMutation.mutateAsync(formData);
+    } catch (err) {
+      // handled by onError above
+    } finally {
+      // 🔹 ensure lock is released even if error
+      submittingRef.current = false;
+    }
   };
 
   return {
