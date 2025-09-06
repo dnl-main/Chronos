@@ -216,10 +216,18 @@
 		} 
 
 /* New style for pending appointments */
+.schedule-today-cards-card-indicator-upcoming {
+  background-color: var(--green-indicator-opacity-60); /* Or another color for upcoming appointments */
+}
+
 .schedule-today-cards-card-indicator-pending {
   background-color: var(--yellow-indicator-opacity-60); /* Yellow color for pending status */
 }
 
 .schedule-today-cards-card-indicator-completed {
   background-color: var(--blue-indicator-opacity-60); /* Yellow color for pending status */
+}
+
+.schedule-today-cards-card-indicator-cancelled {
+  background-color: var(--red-indicator-opacity-60); /* Yellow color for pending status */
 }

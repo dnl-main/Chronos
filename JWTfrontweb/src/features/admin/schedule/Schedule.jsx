@@ -57,7 +57,7 @@ const Schedule = () => {
   // Handle tab change from search params
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (['today', 'upcoming', 'all', 'pending', 'completed'].includes(tabParam)) {
+    if (['today', 'upcoming', 'all', 'pending', 'completed', 'cancelled'].includes(tabParam)) {
       dispatch({ type: 'SET_SELECTED_TAB', payload: tabParam });
     }
   }, [searchParams]);
@@ -76,10 +76,10 @@ const Schedule = () => {
   // Filtered appointment data for each tab
   const today = new Date().toISOString().split('T')[0];
   const filteredAppointmentsToday = appointments
-    .filter((app) => normalizeDate(app.date) === today && app.status !== 'completed' && app.status !== 'pending')
+    .filter((app) => normalizeDate(app.date) === today && app.status === 'booked')
     .sort(sortAppointmentsByDate);
   const filteredAppointmentsUpcoming = appointments
-    .filter((app) => normalizeDate(app.date) > today && app.status !== 'completed' && app.status !== 'pending')
+    .filter((app) => normalizeDate(app.date) > today && app.status !== 'completed' && app.status !== 'pending' && app.status !== 'cancelled')
     .sort(sortAppointmentsByDate);
   const filteredAppointmentsPending = appointments
     .filter((app) => app.status === 'pending' && normalizeDate(app.date) >= today)
@@ -87,12 +87,15 @@ const Schedule = () => {
   const filteredAppointmentsCompleted = appointments
     .filter((app) => app.status === 'completed')
     .sort(sortAppointmentsByDate);
+  const filteredAppointmentsCancelled = appointments
+    .filter((app) => app.status === 'cancelled')
+    .sort(sortAppointmentsByDate);
 
   // Virtualization setup for each tab
   const todayVirtualizer = useVirtualizer({
     getScrollElement: () => parentRef.current,
     count: filteredAppointmentsToday.length,
-    estimateSize: () => 174, 
+    estimateSize: () => 174,
     overscan: 20,
     paddingStart: 20,
     paddingEnd: 20,
@@ -119,6 +122,15 @@ const Schedule = () => {
   const completedVirtualizer = useVirtualizer({
     getScrollElement: () => parentRef.current,
     count: filteredAppointmentsCompleted.length,
+    estimateSize: () => 174,
+    overscan: 20,
+    paddingStart: 20,
+    paddingEnd: 20,
+  });
+
+  const cancelledVirtualizer = useVirtualizer({
+    getScrollElement: () => parentRef.current,
+    count: filteredAppointmentsCancelled.length,
     estimateSize: () => 174,
     overscan: 20,
     paddingStart: 20,
@@ -294,13 +306,18 @@ const Schedule = () => {
           </header>
 
           <section className="schedule-tabs">
-            {['all', 'today', 'upcoming', 'pending', 'completed'].map((tab) => (
+            {['all', 'today', 'upcoming', 'pending', 'completed', 'cancelled'].map((tab) => (
               <button
                 key={tab}
                 className={`schedule-tabs-${tab} ${selectedTab === tab ? 'schedule-tab-active' : ''}`}
                 onClick={() => handleTabChange(tab)}
               >
-                <Circle_Primary style={{ width: '20px', height: '20px' }} />
+                <Circle_Primary
+                  style={{
+                    width: '20px',
+                    height: '20px',
+                  }}
+                />
                 <p>{tab.charAt(0).toUpperCase() + tab.slice(1)}</p>
               </button>
             ))}
@@ -425,6 +442,37 @@ const Schedule = () => {
                 </div>
                 {filteredAppointmentsCompleted.length === 0 && (
                   <p style={{ color: '#888', padding: '1rem' }}>No completed appointments.</p>
+                )}
+              </section>
+            </>
+          )}
+
+          {(selectedTab === 'cancelled' || selectedTab === 'all') && (
+            <>
+              <header className="schedule-header-today" style={{ marginTop: selectedTab === 'all' ? '0' : '20px' }}>
+                <p>Cancelled</p>
+              </header>
+              <section className="schedule-today" ref={parentRef} style={{ overflow: 'auto', paddingTop: selectedTab === 'all' ? '0' : '20px', minHeight: '500px' }}>
+                <div style={{ height: `${cancelledVirtualizer.getTotalSize()}px`, width: '100%' }}>
+                  {cancelledVirtualizer.getVirtualItems().map((virtualRow) => (
+                    <div
+                      key={virtualRow.index}
+                      style={{
+                        height: `${virtualRow.size}px`,
+                        width: '100%',
+                      }}
+                    >
+                      <ScheduleCard
+                        appointment={filteredAppointmentsCancelled[virtualRow.index]}
+                        user={filteredAppointmentsCancelled[virtualRow.index].user}
+                        allAppointments={appointments}
+                        onEditClick={handleEditClick}
+                      />
+                    </div>
+                  ))}
+                </div>
+                {filteredAppointmentsCancelled.length === 0 && (
+                  <p style={{ color: '#888', padding: '1rem' }}>No cancelled appointments.</p>
                 )}
               </section>
             </>

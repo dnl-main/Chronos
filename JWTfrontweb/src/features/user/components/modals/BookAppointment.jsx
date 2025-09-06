@@ -404,6 +404,7 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
                     id="employeeName"
                     value={employeeName}
                     onChange={(e) => setEmployeeName(e.target.value)}
+                    disabled={!department} 
                   >
                     <option value="">Select an admin...</option>
                     {filteredAdmins.map((admin) => (
