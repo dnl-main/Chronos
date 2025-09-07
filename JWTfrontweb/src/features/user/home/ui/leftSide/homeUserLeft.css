@@ -4,7 +4,7 @@
   flex-direction: column;
   width: 68%;
   height: 100%;
-  box-shadow: 0px 0px 20px rgba(0, 136, 154, 0.10);
+  /* box-shadow: 0px 0px 20px rgba(0, 136, 154, 0.10); */
 }
   .homeUser-top-core-left-loading {
     /* background-color: forestgreen; */
@@ -289,5 +289,24 @@
         
         height: 36vh;
         width: 36vh;
+      }
+
+      .homeUser-top-core-left-up-empty-button button{
+        all: unset;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0.6vh 3.2vh;
+        height: 5.2vh;
+        column-gap: 0.4rem;
+        background-color: var(--primary-color);
+        border-radius: 500px;
+        /* border: 2px solid var(--white-color-opacity-15); */
+        box-shadow: 0 0 12px rgba(0, 136, 154, 0.15);
+        color: var(--white-color);
+        font-weight: var(--font-weight-medium);
+        font-size: var(--font-size-16);
+        cursor: pointer;
+
       }
 

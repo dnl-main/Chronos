@@ -17,6 +17,8 @@ const HomeUserLeft = () => {
   const {
     appointment,
     appointmentLoading,
+    isDeleting,
+    isRescheduling,
     capitalize,
     formatTime,
     isModalOpen,
@@ -188,6 +190,9 @@ const HomeUserLeft = () => {
           <button onClick={() => setIsRescheduleModalOpen(true)} className="homeUser-top-core-left-down-buttons-reschedule">
             Reschedule Appointment
           </button>
+          {/* <button>
+            Book another appointment
+          </button> */}
         </div> {/* homeUser-top-core-left-down-buttons */}
       </div> {/* homeUser-top-core-left-down */}
     </>
@@ -223,64 +228,50 @@ const HomeUserLeft = () => {
         
       </div>
 
-      {/* <div className="homeUser-top-core-left-heading">
-        <p>{renderStatusMessage()}</p>
-      </div>
-
-      <div className="homeUser-top-core-left-date">
-        <div className="homeUser-top-core-left-date-cal">
-          <p className="homeUser-top-core-left-date-cal-regular">---</p>
-          <p className="homeUser-top-core-left-date-cal-semibold">--</p>
-        </div>
-
-        <div className="homeUser-top-core-left-date-data">
-          <p style={{ padding: '1rem', fontStyle: 'italic' }}>
-            You have no scheduled appointment yet.
-          </p>
-        </div>
-      </div>
-
-      <div className="homeUser-top-core-left-btn">
-        <button onClick={() => setIsModalOpen(true)} className="homeUser-top-core-left-btn-button">
-          <Book style={{ color: 'var(--white-color)', width: '20px', height: '20px' }} />
-          Set Appointment
-        </button>
-      </div> */}
+      
     </>
   );
 
-  return (
-    <div className="homeUser-top-core-left">
-      
+return (
+  <div className="homeUser-top-core-left">
+    {(appointmentLoading || isDeleting || isRescheduling) ? (
+      <div
+        className="homeUser-top-core-left-loading"
+        style={{ padding: '2rem', textAlign: 'center' }}
+      >
+        <Spinner />
+        <p style={{ marginTop: '0.5rem' }}>
+          {isDeleting
+            ? 'Cancelling appointment...'
+            : isRescheduling
+            ? 'Rescheduling appointment...'
+            : 'Loading appointment...'}
+        </p>
+      </div>
+    ) : appointment.date ? (
+      renderWithAppointment()
+    ) : (
+      renderWithoutAppointment()
+    )}
 
-      {appointmentLoading ? (
-        <div className="homeUser-top-core-left-loading" style={{ padding: '1rem', textAlign: 'center' }}>
-          <Spinner className="homeUser-top-core-left-loading" />
+    {isModalOpen && (
+      <BookAppointmentModal
+        onClose={() => setIsModalOpen(false)}
+        onAppointmentBooked={handleAppointmentBooked}
+      />
+    )}
 
-        </div>
-      ) : appointment.date ? (
-        renderWithAppointment()
-      ) : (
-        renderWithoutAppointment()
-      )}
+    {isRescheduleModalOpen && (
+      <BookAppointmentModal
+        onClose={() => setIsRescheduleModalOpen(false)}
+        onAppointmentBooked={handleAppointmentBooked}
+        appointment={appointment}
+        isReschedule={true}
+      />
+    )}
+  </div>
+);
 
-      {isModalOpen && (
-        <BookAppointmentModal
-          onClose={() => setIsModalOpen(false)}
-          onAppointmentBooked={handleAppointmentBooked}
-        />
-      )}
-
-      {isRescheduleModalOpen && (
-        <BookAppointmentModal
-          onClose={() => setIsRescheduleModalOpen(false)}
-          onAppointmentBooked={handleAppointmentBooked}
-          appointment={appointment}
-          isReschedule={true}
-        />
-      )}
-    </div>
-  );
 };
 
 export default HomeUserLeft;

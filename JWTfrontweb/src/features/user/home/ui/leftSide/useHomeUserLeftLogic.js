@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -27,6 +27,8 @@ const useHomeUserLeftLogic = () => {
 
   const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // --- CHANGE: Add local state to explicitly track delete loading ---
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const {
     data: appointmentData,
@@ -119,16 +121,24 @@ const useHomeUserLeftLogic = () => {
         purpose: '',
         status: ''
       });
+      // --- CHANGE: Reset isDeleting state on success ---
+      setIsDeleting(false);
       alert('Appointment cancelled successfully');
       queryClient.invalidateQueries(['appointment']);
+      queryClient.invalidateQueries(['appointmentHistory']); // --- CHANGE: refresh history list too
     },
-    onError: (error) =>
-      alert(error.response?.data.message || 'Failed to cancel appointment'),
+    onError: (error) => {
+      // --- CHANGE: Reset isDeleting state on error ---
+      setIsDeleting(false);
+      alert(error.response?.data.message || 'Failed to cancel appointment');
+    },
   });
 
   const handleDeleteAppointment = () => {
     if (!appointment.id) return alert('No appointment to cancel');
     if (window.confirm('Are you sure you want to cancel this appointment?')) {
+      // --- CHANGE: Set isDeleting to true before mutation ---
+      setIsDeleting(true);
       deleteAppointmentMutation.mutate();
     }
   };
@@ -152,6 +162,7 @@ const useHomeUserLeftLogic = () => {
       setAppointment(data);
       setIsRescheduleModalOpen(false);
       queryClient.invalidateQueries(['appointment']);
+      queryClient.invalidateQueries(['appointmentHistory']); // --- CHANGE: refresh history list too
     },
     onError: (error) =>
       alert(error.response?.data.message || 'Failed to reschedule appointment'),
@@ -172,13 +183,21 @@ const useHomeUserLeftLogic = () => {
     });
   };
 
-  const handleAppointmentBooked = (appt) => setAppointment({ ...appt });
+  // --- CHANGE: Update booking logic to refresh right side instantly ---
+  const handleAppointmentBooked = (appt) => {
+    setAppointment({ ...appt });
+
+    // --- CHANGE: Optimistically update history cache ---
+    queryClient.setQueryData(['appointmentHistory'], (old = []) => [appt, ...old]);
+
+    // --- CHANGE: Invalidate to sync with backend ---
+    queryClient.invalidateQueries(['appointmentHistory']);
+  };
 
   const capitalize = (str) => {
     if (typeof str !== 'string' || !str.trim()) return '';
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   };
-  
 
   return {
     appointment,
@@ -190,8 +209,11 @@ const useHomeUserLeftLogic = () => {
     isRescheduleModalOpen,
     setIsRescheduleModalOpen,
     formatTime,
-    handleAppointmentBooked,
+    handleAppointmentBooked, // --- CHANGE: now updates history too
     capitalize,
+    // --- CHANGE: Return local isDeleting state instead of mutation.isLoading ---
+    isDeleting,
+    isRescheduling: rescheduleMutation.isLoading,
   };
 };
 
