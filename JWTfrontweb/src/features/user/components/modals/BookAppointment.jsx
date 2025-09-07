@@ -41,8 +41,28 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
     operators,
     accountingOptions,
     purposeOptions,
-    formatLocalDate, // Destructure formatLocalDate from the hook
+    formatLocalDate,
   } = useBookAppointment({ appointment, isReschedule, onClose, onAppointmentBooked });
+
+  // ✅ Only show admins for the selected department
+  const departmentAdmins = React.useMemo(() => {
+    if (!department) return [];
+    return filteredAdmins.filter(
+      (admin) => admin.department?.toLowerCase() === department.toLowerCase()
+    );
+  }, [filteredAdmins, department]);
+
+  // ✅ Reset employeeName if it's invalid for the selected department
+  React.useEffect(() => {
+    if (employeeName && departmentAdmins.length > 0) {
+      const isValid = departmentAdmins.some(
+        (admin) => `${admin.first_name} ${admin.last_name}` === employeeName
+      );
+      if (!isValid) {
+        setEmployeeName('');
+      }
+    }
+  }, [department, departmentAdmins, employeeName, setEmployeeName]);
 
   return (
     <div className="bookModalUser">
@@ -82,16 +102,6 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
                         setCrewingDept('');
                         setOperator('');
                         setAccountingOption('');
-                        if (employeeName && filteredAdmins.length > 0) {
-                          const isValidAdmin = filteredAdmins.some(
-                            (admin) =>
-                              `${admin.first_name} ${admin.last_name}` === employeeName &&
-                              (!newDepartment || admin.department?.toLowerCase() === newDepartment.toLowerCase())
-                          );
-                          if (!isValidAdmin) {
-                            setEmployeeName('');
-                          }
-                        }
                       }}
                     >
                       <option value="">Select...</option>
@@ -125,7 +135,7 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
                             {operators.map((op) => (
                               <option key={op} value={op}>
                                 {op}
-                            </option>
+                              </option>
                             ))}
                           </select>
                         </article>
@@ -152,19 +162,21 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
 
                 <article className="bookModalUser-box-in-core-data-dept-name">
                   <label htmlFor="employeeName">Assigned to</label>
-                  <select id="employeeName" value={employeeName} onChange={(e) => setEmployeeName(e.target.value)} disabled={!department}>
+                  <select
+                    id="employeeName"
+                    value={employeeName}
+                    onChange={(e) => setEmployeeName(e.target.value)}
+                    disabled={!department}
+                  >
                     <option value="">Select an admin...</option>
-                    {filteredAdmins
-  .filter((admin) => !department || admin.department?.toLowerCase() === department.toLowerCase())
-  .map((admin) => (
-    <option
-      key={`${admin.first_name}-${admin.last_name}`}
-      value={`${admin.first_name} ${admin.last_name}`}
-    >
-      {`${admin.first_name} ${admin.last_name} (${admin.department || 'No Department'})`}
-    </option>
-  ))}
-
+                    {departmentAdmins.map((admin) => (
+                      <option
+                        key={`${admin.first_name}-${admin.last_name}`}
+                        value={`${admin.first_name} ${admin.last_name}`}
+                      >
+                        {`${admin.first_name} ${admin.last_name} (${admin.department || 'No Department'})`}
+                      </option>
+                    ))}
                   </select>
                 </article>
 
