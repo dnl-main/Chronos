@@ -1,12 +1,9 @@
-import React, { lazy, Suspense } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { ROUTES } from './routes';
 import Spinner from '../../components/ui/Spinner';
-
-// Eager load Landing (fast access)
-// // import Landing from '../landing/Landing';
-
-import TokenRefresh from '../../components/ui/TokenRefresh'; // Adjust path as needed
+// Adjusted path for authTimeout.js
+import { setupTokenTimeout } from '../utils/authTimeout.js';
 
 // Lazy public pages
 const Landing = lazy(() => import('../landing/Landing'));
@@ -18,14 +15,19 @@ const Login = lazy(() => import('../landing/onboarding/login/Login'));
 const ProtectedRoutes = lazy(() => import('./ProtectedRoutes'));
 
 const AppRoutes = () => {
-   const location = useLocation();
-
-  // const isPublicPath = [
+    // const isPublicPath = [
   //   ROUTES.LANDING,
   //   ROUTES.LOGIN,
   //   ROUTES.SIGNUP,
   //   ROUTES.REGISTRATION,
   // ].includes(location.pathname);
+  const navigate = useNavigate();
+
+  // Set up token timeout and cleanup
+  useEffect(() => {
+    const cleanup = setupTokenTimeout(navigate);
+    return cleanup; // Cleanup on unmount
+  }, [navigate]);
 
   return (
     <Routes>
@@ -40,9 +42,7 @@ const AppRoutes = () => {
         path="/*"
         element={
           <Suspense fallback={<Spinner />}>
-            <TokenRefresh>
-              <ProtectedRoutes />
-            </TokenRefresh>
+            <ProtectedRoutes />
           </Suspense>
         }
       />

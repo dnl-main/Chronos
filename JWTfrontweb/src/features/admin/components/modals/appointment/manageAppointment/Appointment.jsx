@@ -9,14 +9,12 @@ import CancelModal from './modals/cancelModal/CancelModal';
 import RescheduleModal from './modals/rescheduleModal/RescheduleModal';
 
 import Circle_Primary from '../../../../../../assets/icons/Circle_Primary.svg?react';
-// import Calendar_Week from '../../../assets/icons/Calendar_Week.svg?react';
-// import Caret_Down_SM from '../../../assets/icons/Caret_Down_SM.svg?react';
 import Calendar_Check from '../../../../../../assets/icons/Calendar_Check.svg?react';
 import Book from '../../../../../../assets/icons/Book.svg?react';
 import Close_MD from '../../../../../../assets/icons/Close_MD.svg?react';
 import Search from '../../../../../../assets/icons/Search.svg?react';
 
-const departmentOptions = ['Crewing', 'Medical', 'Accounting'];
+const departmentOptions = ['Crewing', 'Medical', 'Accounting','Training','Support','Admin','Recruitment'];
 const crewingDepts = ['maran gas', 'maran dry', 'maran tankers'];
 const operators = [
   'fleet crew manager',
@@ -142,9 +140,59 @@ export default function Appointment({ onClose, userId }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState(null);
+  const [admins, setAdmins] = useState([]);
+  const [filteredAdmins, setFilteredAdmins] = useState([]);
+  const [isAdminsLoaded, setIsAdminsLoaded] = useState(false);
   const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
 
   const selectedAppointment = appointments.find(appt => appt.id === selectedId);
+
+  // Fetch admins
+  useEffect(() => {
+    const fetchAdmins = async () => {
+      const token = sessionStorage.getItem('token');
+      try {
+        const response = await axios.get(`${apiUrl}/crew-members/admin`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
+        });
+        setAdmins(response.data);
+        setFilteredAdmins(response.data);
+        setIsAdminsLoaded(true);
+      } catch (error) {
+        console.error('Failed to fetch admins:', error.response?.data || error.message);
+        setError('Unable to fetch admin list. Please try again.');
+        setIsAdminsLoaded(true);
+      }
+    };
+
+    fetchAdmins();
+  }, [apiUrl]);
+
+  // Filter admins based on department
+  useEffect(() => {
+    if (!isAdminsLoaded) return;
+
+    let filtered = admins;
+    if (department) {
+      filtered = admins.filter(admin =>
+        admin.department?.toLowerCase() === department.toLowerCase()
+      );
+    }
+    setFilteredAdmins(filtered);
+
+    // Reset employeeName if it’s no longer valid for the selected department
+    if (employeeName && filtered.length > 0) {
+      const isValidAdmin = filtered.some(admin => 
+        `${admin.first_name} ${admin.last_name}` === employeeName
+      );
+      if (!isValidAdmin) {
+        setEmployeeName('');
+      }
+    }
+  }, [department, admins, isAdminsLoaded]);
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
@@ -328,6 +376,10 @@ export default function Appointment({ onClose, userId }) {
       alert('Please select an Accounting Task.');
       return;
     }
+    if (!employeeName) {
+      alert('Please select an admin.');
+      return;
+    }
     if (!purpose) {
       alert('Please select a Purpose of visit.');
       return;
@@ -351,7 +403,7 @@ export default function Appointment({ onClose, userId }) {
         crewing_dept: department === 'Crewing' && crewingDept ? crewingDept.toLowerCase() : null,
         operator: department === 'Crewing' && operator ? operator.toLowerCase() : null,
         accounting_task: department === 'Accounting' && accountingOption ? accountingOption.toLowerCase() : null,
-        employee_name: employeeName.trim(), 
+        employee_name: employeeName.trim(),
         purpose: purpose === 'Others' ? customPurpose.toLowerCase() : purpose.toLowerCase(),
       };
       if (!payload.start_time || !payload.end_time) {
@@ -403,6 +455,10 @@ export default function Appointment({ onClose, userId }) {
       alert('Please select an Accounting Task.');
       return;
     }
+    if (!employeeName) {
+      alert('Please select an admin.');
+      return;
+    }
     if (!purpose) {
       alert('Please select a Purpose of visit.');
       return;
@@ -431,7 +487,7 @@ export default function Appointment({ onClose, userId }) {
         operator: operator || null,
         accounting_task: accountingOption || null,
         employee_name: employeeName || `${selectedAppointment?.user?.first_name || ''} ${selectedAppointment?.user?.last_name || ''}`.trim() || 'Unknown User',
-        purpose: selectedAppointment.purpose.toLowerCase(),
+        purpose: purpose === 'Others' ? customPurpose.toLowerCase() : purpose.toLowerCase(),
       };
       const response = await axios.put(
         `${apiUrl}/appointment/${selectedId}/reschedule`,
@@ -609,7 +665,7 @@ export default function Appointment({ onClose, userId }) {
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
-                  viewBox="0 0 24 24"
+                  viewBox="0 24 24"
                   stroke="var(--primary-color)"
                   strokeWidth={1.4}
                   width="48"
@@ -645,6 +701,7 @@ export default function Appointment({ onClose, userId }) {
                       setCrewingDept('');
                       setOperator('');
                       setAccountingOption('');
+                      setEmployeeName('');
                       setPurpose('');
                       setCustomPurpose('');
                     }}
@@ -714,14 +771,23 @@ export default function Appointment({ onClose, userId }) {
               </div>
 
               <article className="appointmentModal-box-in-right-dept-name">
-                <label htmlFor="employeeName">Name of employee</label>
-                <input
-                  type="text"
+                <label htmlFor="employeeName">Assigned to</label>
+                <select
                   id="employeeName"
                   value={employeeName}
                   onChange={(e) => setEmployeeName(e.target.value)}
-                  disabled={selectedId === null}
-                />
+                  disabled={selectedId === null || !isAdminsLoaded}
+                >
+                  <option value="">Select an admin...</option>
+                  {filteredAdmins.map((admin) => (
+                    <option
+                      key={`${admin.first_name}-${admin.last_name}`}
+                      value={`${admin.first_name} ${admin.last_name}`}
+                    >
+                      {`${admin.first_name} ${admin.last_name} (${admin.department || 'No Department'})`}
+                    </option>
+                  ))}
+                </select>
               </article>
 
               <div className="appointmentModal-box-in-right-dept-purpose">

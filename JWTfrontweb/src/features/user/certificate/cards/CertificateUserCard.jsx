@@ -53,7 +53,7 @@ const CertificateUserCard = ({ certificate, onFileClick, onDelete }) => {
                 }}
               />
               <div className="certificateUser-top-core-cards-card-up-expiry-btn-box-text">
-                <p className="certificateUser-top-core-cards-card-up-expiry-btn-box-text-light">Expiry date</p>
+                {/* <p className="certificateUser-top-core-cards-card-up-expiry-btn-box-text-light">Expiry date</p> */}
                 <p className="certificateUser-top-core-cards-card-up-expiry-btn-box-text-bold">
                   {certificate.expiration_date ? formatDate(certificate.expiration_date) : 'N/A'}
                 </p>
@@ -63,60 +63,61 @@ const CertificateUserCard = ({ certificate, onFileClick, onDelete }) => {
         </div>
       </div>
       <div className="certificateUser-top-core-cards-card-down">
+        <div className="certificateUser-top-core-cards-card-down-preview">
+          <div className="certificateUser-top-core-cards-card-down-preview-header"> 
+            <File_Add
+              style={{
+                width: '1.4rem',
+                height: '1.4rem',
+                '--stroke-color': 'var(--black-color-opacity-60)',
+                '--stroke-width': '6px',
+                '--fill-color': 'none',
+              }}
+            />
+            <p>File preview</p>       
+          </div> {/* certificateUser-top-core-cards-card-down-preview-header */} 
 
-        <div className="certificateUser-top-core-cards-card-down-upload">
-          <div className="certificateUser-top-core-cards-card-down-text">
-            <div className="certificateUser-top-core-cards-card-down-text-bold">
-              <File_Add
-                style={{
-                  width: '1.4rem',
-                  height: '1.4rem',
-                  '--stroke-color': 'var(--black-color-opacity-60)',
-                  '--stroke-width': '6px',
-                  '--fill-color': 'none',
-                }}
-              />
-              <p>Uploaded file</p>
-            </div>
-          </div>
-          <div
-            className="certificateUser-top-core-cards-card-down-btn"
+          <div 
+            className="certificateUser-top-core-cards-card-down-preview-btn"
             onClick={onFileClick}
-            style={{ cursor: 'pointer' }}
-          >
-            <p style={{ color: 'blue', textDecoration: 'underline', pointerEvents: 'none' }}>
-              {certificate.file_path ? certificate.file_path.split('/').pop() : 'No file uploaded'}
-            </p>
-          </div>
-        </div>
-
-        <div className="certificateUser-top-core-cards-card-down-delete">
-          <div className="certificateUser-top-core-cards-card-down-text">
-            <div className="certificateUser-top-core-cards-card-down-text-bold">
-              <Trash
-                style={{
-                  width: '1.4rem',
-                  height: '1.4rem',
-                  '--stroke-color': 'var(--black-color-opacity-60)',
-                  '--stroke-width': '6px',
-                  '--fill-color': 'none',
-                }}
-              />
-              <p>Delete file</p>
-            </div>
-          </div>
-          <div className="certificateUser-top-core-cards-card-down-btn"
-            onClick={onDelete}
-            style={{ cursor: 'pointer' }}>
-            <p
-              className="certificateUser-top-core-cards-card-down-delete-btn"
-              style={{ cursor: 'pointer', color: 'red', textDecoration: 'underline', marginLeft: '1px' }}
+          >     
+            <p 
+              className="certificateUser-top-core-cards-card-down-preview-btn-regular"
+              // style={{ color: 'blue', textDecoration: 'underline', pointerEvents: 'none' }}
             >
-              Delete
-            </p>
-          </div>
-        </div>
-      </div>
+              {/* {certificate.file_path ? certificate.file_path.split('/').pop() : 'No file uploaded'} */}
+              {certificate.file_path ? certificate.file_path.split('-').pop() : 'No file uploaded'}
+            </p>   
+          </div> {/* certificateUser-top-core-cards-card-down-preview-btn */}     
+        </div> {/* certificateUser-top-core-cards-card-down-preview */}
+
+        <div 
+          className="certificateUser-top-core-cards-card-down-delete"
+          // onClick={onDelete}
+          onClick={() => {
+            if (window.confirm(`Are you sure you want to delete "${certificate.certificate_type}"?`)) {
+              onDelete();
+            }
+          }}
+          style={{ cursor: 'pointer' }}
+        > 
+          <Trash
+            style={{
+              width: '1.4rem',
+              height: '1.4rem',
+              '--stroke-color': 'var(--red-indicator-opacity-60)',
+              '--stroke-width': '6px',
+              '--fill-color': 'none',
+            }}
+          />
+          <p
+            className="certificateUser-top-core-cards-card-down-delete-medium"
+            // style={{ cursor: 'pointer', color: 'red', textDecoration: 'underline', marginLeft: '1px' }}
+          >
+            Delete
+          </p>       
+        </div> {/* certificateUser-top-core-cards-card-down-delete */}        
+      </div> {/* certificateUser-top-core-cards-card-down */}
     </main>
   );
 };

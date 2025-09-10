@@ -117,38 +117,7 @@ const HomeUser = () => {
 
             <div className="homeUser-top-core">
               <HomeUserLeft />
-{/* 
-              {isModalOpen && (
-                <BookAppointmentModal
-                  onClose={() => setIsModalOpen(false)}
-                  onAppointmentBooked={handleAppointmentBooked}
-                />
-              )}
-              {isRescheduleModalOpen && (
-                <BookAppointmentModal
-                  onClose={() => setIsRescheduleModalOpen(false)}
-                  onAppointmentBooked={handleAppointmentBooked}
-                  appointment={appointment}
-                  isReschedule={true}
-                />
-              )} */}
-
               <HomeUserRight
-                certificateLoading={certificateLoading}
-                handleCertificateSubmit={handleCertificateSubmit}
-                file={file}
-                setFile={setFile}
-                primaryCertificateType={primaryCertificateType}
-                setPrimaryCertificateType={setPrimaryCertificateType}
-                subCertificateType={subCertificateType}
-                setSubCertificateType={setSubCertificateType}
-                certificateName={certificateName}
-                setCertificateName={setCertificateName}
-                expirationDate={expirationDate}
-                setExpirationDate={setExpirationDate}
-                dateError={dateError}
-                primaryTypes={primaryTypes}
-                certificateCategories={certificateCategories}
               />
             </div>
           </div>

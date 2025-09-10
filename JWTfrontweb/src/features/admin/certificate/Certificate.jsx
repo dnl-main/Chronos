@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { debounce } from 'lodash'; // Import debounce from lodash
 
 // Components import
 import CertificateCard from './cards/CertificateCard';
@@ -34,6 +35,7 @@ const initialState = {
   selectedUserEmail: null,
   searchQuery: '',
   currentPage: 1,
+  totalPages: 1,
 };
 
 const reducer = (state, action) => {
@@ -84,26 +86,22 @@ const Certificate = () => {
   const parentRef = useRef(null);
   const rowsPerPage = 10;
 
-  // Filter certificate data based on search query
-  const filteredCertificateData = certificateData.filter((data) =>
-    data.user_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    data.position.toLowerCase().includes(searchQuery.toLowerCase())
+  // Debounced search handler
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      dispatch({ type: 'SET_SEARCH_QUERY', payload: value });
+    }, 300),
+    []
   );
-
-  // Calculate paginated data
-  const totalPages = Math.ceil(filteredCertificateData.length / rowsPerPage);
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-  const paginatedData = filteredCertificateData.slice(startIndex, endIndex);
 
   // Virtualization setup
   const rowVirtualizer = useVirtualizer({
     getScrollElement: () => parentRef.current,
-    count: paginatedData.length,
-    estimateSize: () => 170, 
-    overscan: 5,
-    paddingStart: 1,
-    paddingEnd: 1,
+    count: certificateData.length,
+    estimateSize: () => 170,
+    overscan: 3,
+    paddingStart: 20,
+    paddingEnd: 20,
   });
 
   // Handle page change
@@ -257,8 +255,7 @@ const Certificate = () => {
       navigate('/login');
     }
     if (isCrewCertsError) {
-      // console.error('Fetch Crew Certs Error:', crewCertsError.message);
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to load crew certificates.' });
+      dispatch({ type: 'SET_ERROR', payload: crewCertsError.message || 'Failed to load crew certificates.' });
     }
 
     dispatch({ type: 'SET_LOADING', payload: isUserLoading || isCrewCertsLoading });
@@ -281,8 +278,8 @@ const Certificate = () => {
             <input
               type="text"
               placeholder="Search by name or position"
-              value={searchQuery}
-              onChange={(e) => dispatch({ type: 'SET_SEARCH_QUERY', payload: e.target.value })}
+              defaultValue={searchQuery}
+              onChange={(e) => debouncedSearch(e.target.value)}
               style={{
                 padding: '8px',
                 borderRadius: '4px',

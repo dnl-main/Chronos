@@ -8,7 +8,7 @@ import ScheduleCard from '../schedule/cards/ScheduleCard';
 import Spinner from '../../../components/ui/Spinner'
 import Appointment from '../components/modals/appointment/manageAppointment/Appointment';
 import EditAppointment from '../components/modals/appointment/editAppointment/EditAppointment';
-import AvailableCrew from './homeComponents/AvailableCrew'
+import AvailableCrew from './homeComponents/AvailableCrew';
 import TotalCrew from './homeComponents/TotalCrew';
 import ComingToday from './homeComponents/ComingToday';
 import UpcomingAppointment from './homeComponents/UpcomingAppointment';
@@ -243,7 +243,7 @@ const Home = () => {
         type: 'SET_APPOINTMENTS',
         payload: {
           todayAppointments: appointments.filter(
-            (app) => app.computed_status === 'today' && app.status !== 'pending' && app.status !== 'completed'
+            (app) => app.computed_status === 'today' && app.status === 'booked'
           ),
           pendingAppointments: appointments.filter((app) => app.status === 'pending'),
           upcomingAppointments: [],

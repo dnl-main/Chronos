@@ -85,9 +85,6 @@ private function isUrl($string)
 
     public function getAdmin()
     {
-                if (Auth::user()->role !== 'user') {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
         $admins = User::where('role', 'admin')
             ->select('first_name', 'last_name', 'department')
             ->get();
@@ -162,8 +159,8 @@ public function getCrewCerts(Request $request)
     // Apply search filter if provided
     if (!empty($search)) {
         $query->where(function ($q) use ($search) {
-            $q->whereRaw("CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) ILIKE ?", ['%' . $search . '%'])
-              ->orWhere('position', 'ILIKE', '%' . $search . '%');
+            $q->whereRaw("CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) LIKE ?", ['%' . $search . '%'])
+              ->orWhere('position', 'LIKE', '%' . $search . '%');
         });
     }
 

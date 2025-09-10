@@ -71,6 +71,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('/appointment/upcoming/specific', [AppointmentController::class, 'getUpcomingSpecific']);
     Route::get('/appointment/crew-counts', [AppointmentController::class, 'getCrewCounts']);
     Route::put('/appointment/{id}/complete', [AppointmentController::class, 'complete']);
+    Route::get('/appointments/history', [AppointmentController::class, 'history']);
+    Route::delete('/appointment/{id}/permanent', [AppointmentController::class, 'permanentDelete']);
 
     // Profile Picture Upload
     Route::post('/user/upload-profile-picture', [ProfilePicController::class, 'upload']);
