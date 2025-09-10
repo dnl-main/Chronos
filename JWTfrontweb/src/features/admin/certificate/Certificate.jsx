@@ -44,7 +44,7 @@ const reducer = (state, action) => {
     case 'SET_USER':
       return { ...state, user: action.payload };
     case 'SET_CERTIFICATE_DATA':
-      return { ...state, certificateData: action.payload, currentPage: 1 };
+      return { ...state, certificateData: action.payload };
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
     case 'SET_ERROR':
@@ -150,7 +150,6 @@ const Certificate = () => {
   }, []);
 
   const handleOpenNotificationModal = useCallback((userId, email) => {
-    // console.log('Opening Notification Modal for user_id: ', userId, 'email: ', email);
     dispatch({ type: 'SET_SELECTED_USER_ID', payload: userId });
     if (!email || email === 'N/A') {
       dispatch({ type: 'SET_ERROR', payload: 'User email is not available.' });
@@ -161,25 +160,21 @@ const Certificate = () => {
   }, []);
 
   const handleCloseNotificationModal = useCallback(() => {
-    // console.log('Closing Notification Modal');
     dispatch({ type: 'SET_NOTIFICATION_MODAL_OPEN', payload: false });
     dispatch({ type: 'SET_SELECTED_USER_ID', payload: null });
     dispatch({ type: 'SET_SELECTED_USER_EMAIL', payload: null });
   }, []);
 
   const handleNotify = useCallback((data) => {
-    // console.log('Notify Data:', { ...data, recipientEmail: selectedUserEmail });
     handleCloseNotificationModal();
-  }, [selectedUserEmail, handleCloseNotificationModal]);
+  }, [handleCloseNotificationModal]);
 
   const handleOpenCertificateModal = useCallback((userId) => {
-    // console.log('Opening CertificateModal for user_id:', userId);
     dispatch({ type: 'SET_SELECTED_USER_ID', payload: userId });
     dispatch({ type: 'SET_CERTIFICATE_MODAL_OPEN', payload: true });
   }, []);
 
   const handleCloseCertificateModal = useCallback(() => {
-    // console.log('Closing CertificateModal');
     dispatch({ type: 'SET_SELECTED_USER_ID', payload: null });
     dispatch({ type: 'SET_CERTIFICATE_MODAL_OPEN', payload: false });
   }, []);
@@ -208,13 +203,18 @@ const Certificate = () => {
 
   // TanStack Query for fetching crew certificates
   const { data: crewCertsData, isLoading: isCrewCertsLoading, isError: isCrewCertsError, error: crewCertsError } = useQuery({
-    queryKey: ['crewCerts'],
+    queryKey: ['crewCerts', currentPage, searchQuery],
     queryFn: async () => {
       const token = sessionStorage.getItem('token');
       if (!token) {
         throw new Error('No token found');
       }
       const response = await axios.get(`${apiUrl}/crew-certs`, {
+        params: {
+          page: currentPage,
+          limit: rowsPerPage,
+          search: searchQuery,
+        },
         headers: {
           Authorization: `Bearer ${token}`,
           'ngrok-skip-browser-warning': 'true',
@@ -245,7 +245,6 @@ const Certificate = () => {
         }
         dispatch({ type: 'SET_USER', payload: parsedUser });
       } catch (error) {
-        // console.error('Parse User Error:', error);
         navigate('/login');
         return;
       }
@@ -267,7 +266,7 @@ const Certificate = () => {
             user_name: item.user_name || 'Unknown',
             email: item.email || 'N/A',
             position: item.position || 'N/A',
-            profilePicture: item.profilePicture || DefaultDP, 
+            profilePicture: item.profilePicture || DefaultDP,
             total_uploaded: item.total_uploaded || 0,
             approved: item.approved || 0,
             pending: item.pending || 0,
@@ -275,12 +274,11 @@ const Certificate = () => {
             certificates: Array.isArray(item.certificates) ? item.certificates : [],
           }))
         : [];
-      // console.log('Processed certificateData: ', crewMembers);
       dispatch({ type: 'SET_CERTIFICATE_DATA', payload: crewMembers });
+      dispatch({ type: 'SET_TOTAL_PAGES', payload: Math.ceil(crewCertsData.total / rowsPerPage) });
     }
 
     if (isUserError) {
-      // console.error('Fetch User Error: ', userError.message);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load user data. Please log in again.' });
       navigate('/login');
     }
@@ -338,18 +336,17 @@ const Certificate = () => {
                   }}
                 >
                   <CertificateCard
-                    data={paginatedData[virtualRow.index]}
-                    certificates={paginatedData[virtualRow.index]?.certificates}
+                    data={certificateData[virtualRow.index]}
+                    certificates={certificateData[virtualRow.index]?.certificates}
                     onCertificateClick={handleCertificateClick}
-                    onNotifyUpload={() => handleOpenNotificationModal(paginatedData[virtualRow.index].user_id, paginatedData[virtualRow.index].email)}
-                    onOpenCertificateModal={() => handleOpenCertificateModal(paginatedData[virtualRow.index].user_id)}
+                    onNotifyUpload={() => handleOpenNotificationModal(certificateData[virtualRow.index].user_id, certificateData[virtualRow.index].email)}
+                    onOpenCertificateModal={() => handleOpenCertificateModal(certificateData[virtualRow.index].user_id)}
                   />
                 </div>
               ))}
             </div>
           </section>
 
-          {/* Pagination Controls */}
           {totalPages > 1 && (
             <div className="pagination" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px' }}>
               <button

@@ -96,11 +96,10 @@ const Schedule = () => {
   const todayVirtualizer = useVirtualizer({
     getScrollElement: () => parentRef.current,
     count: filteredAppointmentsToday.length,
-<<<<<<< HEAD
+
     estimateSize: () => 174, // Adjust based on ScheduleCard height
-=======
-    estimateSize: () => 174,
->>>>>>> 5ff24e447f6c01b708fc3fae6e8c4590b22c9c31
+
+
     overscan: 20,
     paddingStart: 20,
     paddingEnd: 20,
