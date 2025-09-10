@@ -2,6 +2,7 @@ import React, { useReducer, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './login.css';
+import './loginMQ.css';
 
 import { ROUTES } from '../../../router/routes';
 import ForgotPassword from './modals/forgotPassword/ForgotPassword';

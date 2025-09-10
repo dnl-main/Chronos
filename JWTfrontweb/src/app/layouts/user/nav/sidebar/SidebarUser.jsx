@@ -3,16 +3,18 @@ import './sidebarUser.css';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-// import concorde_logo from '../../assets/logo/concorde_logo.webp';
-// import House_01 from '../../assets/icons/House_01.svg?react';
-// import Notebook from '../../assets/icons/Notebook.svg?react';
+import concorde_logo from '../../../../../assets/logo/concorde_logo.webp';
+import House_01 from '../../../../../assets/icons/House_01.svg?react';
+import Notebook from '../../../../../assets/icons/Notebook.svg?react';
 
 import Circle_Primary from '../../../../../assets/icons/Circle_Primary.svg?react';
-
 
 const SidebarUser = () => {
   const [isOpen, setIsOpen] = useState(false);
   const sidebarRef = useRef(null);
+
+  // 🔹 NEW: ref for hamburger button (to exclude it from outside clicks)
+  const hamburgerRef = useRef(null);
 
   const toggleSidebar = () => setIsOpen(prev => !prev);
 
@@ -28,12 +30,16 @@ const SidebarUser = () => {
         return;
       }
 
-      await axios.post(`${apiUrl}/logout`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'ngrok-skip-browser-warning': 'true',
-        },
-      });
+      await axios.post(
+        `${apiUrl}/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'ngrok-skip-browser-warning': 'true',
+          },
+        }
+      );
 
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('user');
@@ -66,10 +72,37 @@ const SidebarUser = () => {
     };
   }, []);
 
+  // 🔹 NEW: Close sidebar when clicking outside (desktop + mobile)
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isOpen &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target) &&
+        hamburgerRef.current &&
+        !hamburgerRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
     <>
       {/* Hamburger Toggle for Mobile */}
-      <button className="hamburger" onClick={toggleSidebar} aria-label="Toggle sidebar">
+      {/* 🔹 ADDED ref={hamburgerRef} */}
+      <button
+        ref={hamburgerRef}
+        className="hamburger"
+        onClick={toggleSidebar}
+        aria-label="Toggle sidebar"
+      >
         <span></span>
         <span></span>
         <span></span>
@@ -78,15 +111,15 @@ const SidebarUser = () => {
       <div ref={sidebarRef} className={`sidebarUser ${isOpen ? 'open' : ''}`}>
         <div className="sidebarUser-logo">
           <button onClick={handleLogout}>
-            {/* <img src={concorde_logo} alt="main icon" /> */}
-            <Circle_Primary style={{ width: '20px', height: '20px' }} />
+            <img src={concorde_logo} alt="main icon" />
+            {/* <Circle_Primary style={{ width: '20px', height: '20px' }} /> */}
           </button>
         </div>
 
         <div className="sidebarUser-buttons">
           <button>
             <Link to="/user/homeUser">
-              {/* <House_01
+              <House_01
                 style={{
                   color: 'var(--primary-color)',
                   '--stroke-color': 'var(--primary-color)',
@@ -94,22 +127,22 @@ const SidebarUser = () => {
                   height: '32px',
                   '--stroke-width': '4px',
                 }}
-              /> */}
-              <Circle_Primary style={{ width: '20px', height: '20px' }} />
+              />
+              {/* <Circle_Primary style={{ width: '20px', height: '20px' }} /> */}
             </Link>
           </button>
 
           <button>
             <Link to="/user/certificateUser">
-              {/* <Notebook
+              <Notebook
                 style={{
                   color: 'var(--primary-color)',
                   width: '32px',
                   height: '32px',
                   '--stroke-width': '4px',
                 }}
-              /> */}
-              <Circle_Primary style={{ width: '20px', height: '20px' }} />
+              />
+              {/* <Circle_Primary style={{ width: '20px', height: '20px' }} /> */}
             </Link>
           </button>
         </div>

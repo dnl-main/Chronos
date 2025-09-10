@@ -1,4 +1,4 @@
-@media (max-width: 768px) {
+@media (width < 768px) {
 * {
 	margin: 0;
 	padding: 0;

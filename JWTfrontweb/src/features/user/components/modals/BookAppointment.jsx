@@ -69,13 +69,19 @@ const BookAppointmentModal = ({ onClose, onAppointmentBooked, appointment = {}, 
       <div className="bookModalUser-box">
         <div className="bookModalUser-box-in">
           <div className="bookModalUser-box-in-header">
+            
+            <div className="bookModalUser-box-in-header-heading">
+              <Book
+                className="bookModalUser-box-in-header-heading-MQ" 
+                style={{ color: 'var(--black-color-opacity-45)', 
+                  // width: '32px', height: '32px', 
+                  '--stroke-width': '4px' }} 
+              />
+              {isReschedule ? 'Reschedule an appointment' : 'Book an appointment'}
+            </div>
             <button className="bookModalUser-box-in-header-btn" onClick={onClose}>
               <Close_MD style={{ color: 'var(--primary-color)', width: '20px', height: '20px', '--stroke-width': '4px' }} />
             </button>
-            <div className="bookModalUser-box-in-header-heading">
-              <Book style={{ color: 'var(--black-color-opacity-45)', width: '32px', height: '32px', '--stroke-width': '4px' }} />
-              {isReschedule ? 'Reschedule an appointment' : 'Book an appointment'}
-            </div>
           </div>
 
           <div className="bookModalUser-box-in-core">

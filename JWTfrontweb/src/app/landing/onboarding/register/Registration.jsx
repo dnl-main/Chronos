@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -6,6 +6,7 @@ import axios from 'axios';
 import { setupTokenTimeout } from '../../../utils/authTimeout';
 
 import './registration.css';
+import './registrationMQ.css';
 
 const SuccessModal = lazy(() => import('./modals/SuccessModal'));
 

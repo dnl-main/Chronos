@@ -1,5 +1,6 @@
 import React, { useEffect, useState, memo, lazy, Suspense } from 'react';
 import './SuccessModal.css';
+import './SuccessModalMQ.css';
 
 // Lazy import
 const Party_Popper = lazy(() => import('../../../../../assets/icons/Party_Popper.svg?react'));
@@ -39,7 +40,11 @@ const SuccessModal = ({ type = 'signup', userFirstName = 'there', message, onCon
           <div className="success-modal-box-in-header">
             {showPartyPopper ? (
               <Suspense fallback={<div style={{ height: '28vh' }} />}>
-                <Party_Popper style={{ width: '28vh', height: '28vh', color: 'var(--primary-color)' }} />
+                <Party_Popper 
+                  className="popper-size"
+                  style={{
+                    // width: '28vh', height: '28vh', 
+                    color: 'var(--primary-color)' }} />
               </Suspense>
             ) : (
               <div style={{ height: '28vh' }} />
