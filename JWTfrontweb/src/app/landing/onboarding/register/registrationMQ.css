@@ -1,3 +1,4 @@
+@media (width < 768px) {
 * {
 	margin: 0;
 	padding: 0;
@@ -9,29 +10,35 @@
 .registration-box {
   /* background-color: firebrick; */
   background-color: var(--secondary-color);
-	height: 100%;
-  width: 100vw;
+  height: auto;
+  width: 100%;
+  overflow-x: hidden;   /* prevent sideways scroll */
+  overflow-y: auto;
+  
+	
 }
 .registration-box-in {
   /* background-color: brown; */
-  display: block;
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
-  width: 100%;
   padding: 2vh;
+
+  min-height: auto;     /* full viewport height */
+  width: 100%;
 }
   .registration-box-in-header {
     /* background-color: indianred; */
-    display: flex;
+    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    row-gap: 1.2vh;
-    height: 16vh;
+    row-gap: 0.8vh;
+    height: auto;
     width: 100%;
-    padding: 4vh;
+    padding: 0vh;
+    padding-bottom: 2vh;
   }
     .registration-box-in-header-bold {
       /* background-color: lightcoral; */
@@ -54,18 +61,18 @@
     justify-content: center;
     align-items: center;
     row-gap: 4vh;
-    height: 80vh;
+    height: auto;
     width: 100%;
     /* flex-grow: 1; */
-    padding: 6vh 8vh;
-    border-radius: 1rem;
+    padding: 3.2vh 3.2vh;
+    border-radius: 1.4vh;
     box-shadow: 0 0 40px rgba(0, 136, 154, 0.1);
   }
     .registration-box-in-core-header {
       /* background-color: teal; */
       display: flex;
       flex-direction: column;
-      row-gap: 1vh;
+      row-gap: 0.8vh;
       width: 100%;
     }
       .registration-box-in-core-header-regular {
@@ -77,7 +84,7 @@
       .registration-box-in-core-header-medium {
         /* background-color: paleturquoise; */
         font-weight: var(--font-weight-medium);
-        font-size: var(--font-size-20);
+        font-size: var(--font-size-16);
         color: var(--black-color);
       }
 
@@ -87,17 +94,18 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      row-gap: 2vh;
+      row-gap: 4vh;
       width: 100%;
-      height: 100%;
+      height: auto;
     }
       .registration-box-in-core-main-form {
         /* background-color: seagreen; */
         display: flex;
+        flex-direction: column;
         justify-content: center;
-        column-gap: 12vh;
+        row-gap: 8vh;
         width: 100%;
-        height: 100%;
+        height: auto;
       }
 
         .error-message {
@@ -111,7 +119,7 @@
           /* justify-content: center;
           align-items: center; */
           row-gap: 4vh;
-          width: 50%;
+          width: 100%;
           height: 100%;
         }
           .registration-box-in-core-main-form-address-header {
@@ -129,7 +137,7 @@
             /* background-color: darkkhaki; */
             display: flex;
             flex-direction: column;
-            row-gap: 3.2vh;
+            row-gap: 2vh;
             width: 100%;
             height: 100%;
           }
@@ -138,7 +146,8 @@
             .registration-box-in-core-main-form-address-details-top {
               /* background-color: darkblue; */
               display: flex;
-              column-gap: 2vh;
+              flex-direction: column;
+              row-gap: 2vh;
             }
               .registration-box-in-core-main-form-address-details-top-alike {
                 /* background-color: steelblue; */
@@ -148,7 +157,8 @@
             .registration-box-in-core-main-form-address-details-mid {
               /* background-color: darkgreen; */
               display: flex;
-              column-gap: 2vh;
+              flex-direction: column;
+              row-gap: 2vh;
             }
               .registration-box-in-core-main-form-address-details-mid-alike {
                 /* background-color: mediumseagreen; */
@@ -158,7 +168,8 @@
             .registration-box-in-core-main-form-address-details-bot {
               /* background-color: darkred; */
               display: flex;
-              column-gap: 2vh;
+              flex-direction: column;
+              row-gap: 2vh;
             }
               .registration-box-in-core-main-form-address-details-bot-left {
                 /* background-color: firebrick; */
@@ -170,7 +181,8 @@
               .registration-box-in-core-main-form-address-details-bot-right {
                 /* background-color: brown; */
                 display: flex;
-                column-gap: 2vh;
+                flex-direction: column;
+                row-gap: 2vh;
                 width: 100%;
               }
                 .registration-box-in-core-main-form-address-details-bot-right-alike {
@@ -242,7 +254,7 @@
           /* justify-content: center;
           align-items: center; */
           row-gap: 4vh;
-          width: 50%;
+          width: 100%;
           height: 100%;
         }
           .registration-box-in-core-main-form-personal-header {
@@ -259,15 +271,16 @@
           .registration-box-in-core-main-form-personal-content {
             /* background-color: darkkhaki; */
             display: flex;
-            column-gap: 2vh;
+            flex-direction: column;
+            row-gap: 2vh;
             width: 100%;
           }
             .registration-box-in-core-main-form-personal-content-left {
               /* background-color: skyblue; */
               display: flex;
               flex-direction: column;
-              row-gap: 3.2vh;
-              width: 50%;
+              row-gap: 2vh;
+              width: 100%;
             }
 
               .registration-box-in-core-main-form-personal-content-left-alike {
@@ -281,8 +294,8 @@
               /* background-color: cornflowerblue; */
               display: flex;
               flex-direction: column;
-              row-gap: 3.2vh;
-              width: 50%;
+              row-gap: 2vh;
+              width: 100%;
             }
               .registration-box-in-core-main-form-personal-content-right-alike {
                 /* background-color: cornflowerblue; */
@@ -352,7 +365,7 @@
         justify-content: center;
         align-items: center;
         background-color: var(--primary-color);
-        width: 30%;
+        width: 100%;
         height: 6vh;
         padding: 0.6rem;
         border-radius: 500px;
@@ -362,3 +375,5 @@
         cursor: pointer;
         transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
       }
+
+}

@@ -1,6 +1,7 @@
 // Dependencies imports
 import React from 'react';
 import './homeUserLeft.css';
+import './homeUserLeftMQ.css';
 import Spinner from '../../../../../components/ui/Spinner';
 import Book from '../../../../../assets/icons/Book.svg?react';
 import Users from '../../../../../assets/icons/Users.svg?react';
@@ -84,14 +85,18 @@ const HomeUserLeft = () => {
       <div className="homeUser-top-core-left-down-description">
         <div className="homeUser-top-core-left-down-description-first"> 
           <p className="homeUser-top-core-left-down-description-regular">Please proceed to the</p>
-          <p className="homeUser-top-core-left-down-description-semibold">{capitalizedOperator}</p>
-          <p className="homeUser-top-core-left-down-description-regular">of </p>
+          <p className="homeUser-top-core-left-down-description-semibold">{capitalizedDepartment} Department</p>
+          <p className="homeUser-top-core-left-down-description-regular">for </p>
+          <p className="homeUser-top-core-left-down-description-regular">{capitalizedPurpose} </p>
+          
+          {/* <p className="homeUser-top-core-left-down-description-semibold">{capitalizedOperator}</p>
+          <p className="homeUser-top-core-left-down-description-regular">of </p> */}
         </div>
 
-        <div className="homeUser-top-core-left-down-description-second"> 
+        {/* <div className="homeUser-top-core-left-down-description-second"> 
           <p className="homeUser-top-core-left-down-description-semibold">{capitalizedDepartment} Department</p>
           <p className="homeUser-top-core-left-down-description-regular">for {capitalizedPurpose}</p>
-        </div>
+        </div> */}
       </div>
     );
   };
@@ -137,6 +142,7 @@ const HomeUserLeft = () => {
               {/* Start Time Card */}
               <div className="homeUser-top-core-left-up-date-data-cards-start">
                 <Clock
+                  className="homeUser-top-core-left-up-date-data-cards-start-icon"
                   style={{
                     width: '4vh',
                     height: '4vh',
@@ -184,11 +190,12 @@ const HomeUserLeft = () => {
         {/* homeUser-top-core-left-down-description */}
 
         <div className="homeUser-top-core-left-down-buttons">          
-          <button onClick={handleDeleteAppointment} className="homeUser-top-core-left-down-cancel">
-            Delete Appointment
-          </button>
+          
           <button onClick={() => setIsRescheduleModalOpen(true)} className="homeUser-top-core-left-down-buttons-reschedule">
             Reschedule Appointment
+          </button>
+          <button onClick={handleDeleteAppointment} className="homeUser-top-core-left-down-cancel">
+            Delete Appointment
           </button>
           {/* <button>
             Book another appointment

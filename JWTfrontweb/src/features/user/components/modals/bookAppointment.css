@@ -4,6 +4,11 @@
 	box-sizing: border-box;
 }
 
+.bookModalUser-box-in-header-heading-MQ {
+  width: 32px;
+  height: 32px;
+}
+
 .bookModalUser {
 	position: fixed;
 	top: 0;
@@ -45,8 +50,8 @@
 .bookModalUser-box-in-header {
 	display: flex;
 	align-items: center;
+  justify-content: space-between;
 	width: 100%;
-	column-gap: 24%;
 	flex-shrink: 0; /* prevents shrinking when content overflows */
 	padding-bottom: 1rem;
 }

@@ -1,4 +1,6 @@
-* {
+@media (width < 768px) {
+
+  * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
@@ -10,9 +12,11 @@
 }
 
 .login-box {
+  /* background-color: red; */
   background-color: var(--secondary-color);
   display: flex;
-  column-gap: 10vh;
+  flex-direction: column;
+  row-gap: 3.2vh;
   width: 100%;
   height: 100%;
   padding: 2vh;
@@ -22,9 +26,9 @@
   .login-left {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    width: 56%;
-    padding-left: 8vh;
+    height: 4%;
+    width: 100%;
+    padding-left: 0vh;
     min-height: 0;
     /* background-color: aquamarine; */
   }
@@ -45,14 +49,13 @@
     }
   
     .login-left-bottom {
-      display: flex;
+      display: none;
       justify-content: center;
       align-items: center;
       width: 100%;
       height: 100%;
       min-height: 0;
-      background-color: aqua;
-      display: none;
+      /* background-color: aqua; */
     }
   
       .login-left-bottom img {
@@ -64,10 +67,10 @@
   .login-right {
     display: flex;
     flex-direction: column;
-    width: 44%;
-    height: 100%;
-    row-gap: 8vh;
-    padding: 4vh;
+    width: 100%;
+    flex-grow: 1;
+    row-gap: 4vh;
+    padding: 3vh;
     border-radius: var(--border-rem-08);
     box-sizing: border-box;
     background-color: var(--white-color);
@@ -89,7 +92,7 @@
       
       .login-right-header-bold {
         font-weight: var(--font-weight-bold);
-        font-size: var(--font-size-28); 
+        font-size: var(--font-size-20); 
         color: var(--black-color);
       }
   
@@ -105,21 +108,21 @@
     /* background-color: lightgreen; */
     display: flex;
     flex-direction: column;
-    row-gap: 4vh;
+    row-gap: 3vh;
   }
 
     .login-right-form-input-email {
       /* background-color: teal; */
       display: flex;
       flex-direction: column;
-      row-gap: 2vh;
+      row-gap: 1vh;
     }
     .login-right-form-input-password {
       /* background-color: lightseagreen; */
       position: relative;
       display: flex;
       flex-direction: column;
-      row-gap: 2vh;
+      row-gap: 1vh;
     }
 
       .login-right-form-input-password input[type="password"]::-ms-reveal,
@@ -154,19 +157,19 @@
     .login-right-form input {
       height: 8vh;
       width: 100%;
-      padding: 18px; 
+      padding: 0vh 0vh 0vh 2vh; 
       text-align: left;
       background-color: var(--secondary-color);
       border: var(--border-primary-15);
-      border-radius: 7.2px;
+      border-radius: 1vh;
       font-weight: var(--font-weight-regular);
-      font-size: var(--font-size-12);
+      font-size: var(--font-size-11);
       color: var(--black-color);
     }
   
       .login-right-form input::placeholder {
         font-weight: var(--font-weight-light);
-        font-size: var(--font-size-12); 
+        font-size: var(--font-size-11); 
         color: var(--black-color-opacity-60);
       }
 
@@ -182,17 +185,20 @@
       flex-direction: row;
       align-items: center;
       column-gap: 1vh;
-      font-weight: var(--font-weight-medium);
-      font-size: var(--font-size-12); 
-      color: var(--black-color);
     }
 
     .login-right-options-remember input[type="checkbox"] {
-      width: 4vh;
-      height: 4vh;
+      width: 3.2vh;
+      height: 3.2vh;
       border: 2px solid var(--black-color);
       border-radius: var(--border-rem-04);
-  }
+    }
+    .login-right-options-remember label {
+      font-weight: var(--font-weight-medium);
+        font-size: var(--font-size-11); 
+        color: var(--black-color);
+
+    }
     .login-right-options-forgot {
       display: flex;
       align-items: center;
@@ -201,7 +207,7 @@
         /* background-color: paleturquoise; */
         all: unset;
         font-weight: var(--font-weight-medium);
-        font-size: var(--font-size-12); 
+        font-size: var(--font-size-11); 
         color: var(--primary-color);
       }
 
@@ -249,15 +255,17 @@
   .login-right-signup-text {
     /* background-color: yellowgreen; */
     font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-12); 
+    font-size: var(--font-size-11); 
     color: var(--black-color-opacity-60);
   }
   .login-right-signup button {
     all: unset;
     font-weight: var(--font-weight-medium);
-    font-size: var(--font-size-12);
+    font-size: var(--font-size-11);
     color: var(--primary-color);
     cursor: pointer;
   }
 
 
+
+}

@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react'; // ✏️ added useEffect
 import { useNavigate, Link } from 'react-router-dom';
 import './signup.css';
+import './signupMQ.css';
 
 import { ROUTES } from '../../../router/routes';
 
@@ -338,7 +339,7 @@ const Signup = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Enter your password"
+                  placeholder="Enter password"
                   required
                 />
                 <div
@@ -348,9 +349,19 @@ const Signup = () => {
                   title={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
-                    <Show style={{ width: '24px', height: '24px', color: 'var(--primary-color)' }} />
+                    <Show 
+                      style={{ 
+                        // width: '24px', height: '24px', 
+                        color: 'var(--primary-color)' }} 
+                      className="password-toggle-icon-size" 
+                    />
                   ) : (
-                    <Hide style={{ width: '24px', height: '24px', color: 'var(--primary-color)' }} />
+                    <Hide 
+                      style={{ 
+                        // width: '24px', height: '24px', 
+                        color: 'var(--primary-color)' }} 
+                      className="password-toggle-icon-size" 
+                    />
                   )}
                 </div>
               </article> {/* signup-right-form-input-password-iniital */}
@@ -362,7 +373,7 @@ const Signup = () => {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Confirm your password"
+                  placeholder="Confirm password"
                   required
                 />
                 <div
@@ -372,9 +383,19 @@ const Signup = () => {
                   title={showConfirmPasswordLocal ? 'Hide password' : 'Show password'}
                 >
                   {showConfirmPasswordLocal ? (
-                    <Show style={{ width: '24px', height: '24px', color: 'var(--primary-color)' }} />
+                    <Show 
+                      style={{ 
+                        // width: '24px', height: '24px', 
+                        color: 'var(--primary-color)' }} 
+                      className="password-toggle-icon-size"
+                    />
                   ) : (
-                    <Hide style={{ width: '24px', height: '24px', color: 'var(--primary-color)' }} />
+                    <Hide 
+                      style={{ 
+                        // width: '24px', height: '24px', 
+                        color: 'var(--primary-color)' }} 
+                      className="password-toggle-icon-size"
+                    />
                   )}
                 </div>
               </article> {/* signup-right-form-input-password-confirm */}
@@ -383,18 +404,29 @@ const Signup = () => {
           </section> {/* signup-right-form-input */}
 
           <section className="signup-right-form-terms">
+
+            {/* <label htmlFor="terms">
+              By signing up I agree with{' '}
+              <button type="button" id="terms-content" onClick={openModal}>
+                <span className="signup-right-form-terms-content-regular">Terms and Conditions</span>
+                <span className="signup-right-form-terms-content-bold">*</span>
+              </button>
+            </label> */}
+            
+            
+            
             <div className="signup-right-form-terms-checkbox">
               <input type="checkbox" id="terms" required />
               <label htmlFor="terms">By signing up I agree with </label>
-            </div> {/* signup-right-form-terms-checkbox */}
+            </div> 
              
 
             <div className="signup-right-form-terms-content">
               <button type="button" id="terms-content" onClick={openModal}>
-                <p className="signup-right-form-terms-content-regular">Terms and Conditions</p>
-                <p className="signup-right-form-terms-content-bold">*</p>
+                <span className="signup-right-form-terms-content-regular">Terms and Conditions</span>
+                <span className="signup-right-form-terms-content-bold">*</span>
               </button>
-            </div> {/* signup-right-form-terms-content */}
+            </div> 
 
             {/* Terms and Conditions Modal */}
             <TermsModal isVisible={isModalVisible} closeModal={closeModal} />

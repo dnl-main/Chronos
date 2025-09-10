@@ -1,8 +1,13 @@
-@media (max-width: 768px) {	
+@media (width < 768px) {	
 * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+}
+
+.bookModalUser-box-in-header-heading-MQ {
+  width: 20px;
+  height: 20px;
 }
 
 .bookModalUser {
@@ -85,12 +90,11 @@
   /* background-color: aqua; */
 	display: flex;
 	align-items: center;
-	column-gap: 1rem;
+	column-gap: 1vh;
 	color: var(--black-color);
 	font-weight: var(--font-weight-medium);
-	font-size: var(--font-size-20);
+	font-size: var(--font-size-12);
 }
-
 
 	.bookModalUser-box-in-core {
 		/* background-color: darkblue; */

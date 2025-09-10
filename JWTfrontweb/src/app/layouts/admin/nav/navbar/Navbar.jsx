@@ -2,13 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './navbar.css';
 
-// import Search from '../../assets/icons/Search.svg';
-// import Filter from '../../assets/icons/Filter.svg';
+// import Search from '../../../../../assets/icons/Search.svg';
+// import Filter from '../../../../../assets/icons/Filter.svg';
 
-// import Bell from '../../assets/icons/Bell.svg?react';
-// import User_Circle from '../../assets/icons/User_Circle.svg?react';
+// import Bell from '../../../../../assets/icons/Bell.svg?react';
+import User_Circle from '../../../../../assets/icons/User_Circle.svg?react';
 
-import Circle_Primary from '../../../../../assets/icons/Circle_Primary.svg?react';
+// import Circle_Primary from '../../../../../assets/icons/Circle_Primary.svg?react';
 
 export const Navbar = () => {
   return (
@@ -52,15 +52,15 @@ export const Navbar = () => {
 
         <div className="navbar-main-account">
           <Link to="/admin/account"> 
-            {/* <User_Circle 
+            <User_Circle 
               style={{ 
                 color: "var(--primary-color)", 
                 width: "32px", 
                 height: "32px", 
                 "--stroke-width": "5px"  
               }} 
-            /> */}
-            <Circle_Primary style={{ width: '20px', height: '20px' }} />
+            />
+            {/* <Circle_Primary style={{ width: '20px', height: '20px' }} /> */}
           </Link>
         </div> {/* navbar-main-account */}
       </main> {/* navbar-main */}

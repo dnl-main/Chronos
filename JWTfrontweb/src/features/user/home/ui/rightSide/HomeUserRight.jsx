@@ -1,4 +1,9 @@
 import React from 'react';
+import './homeUserRight.css';
+import './homeUserRightMQ.css';
+
+import useRightLogic from './useRightLogic'; 
+
 import Spinner from '../../../../../components/ui/Spinner';
 import Cloud_Upload from '../../../../../assets/icons/Cloud_Upload.svg?react';
 import File_Add from '../../../../../assets/icons/File_Add.svg?react';
@@ -6,8 +11,9 @@ import Folder_Open from '../../../../../assets/icons/Folder_Open.svg?react';
 import Check from '../../../../../assets/icons/Check.svg?react';
 import Circle_Primary from '../../../../../assets/icons/Circle_Primary.svg?react';
 import Bell from '../../../../../assets/icons/Bell.svg?react';
-import useRightLogic from './useRightLogic'; // Kept import as useRightLogic to match file name
-import './homeUserRight.css';
+
+
+
 
 const BookingCard = ({ name, dept, start_time, end_time, date, status }) => {
   const isBooked = status?.toLowerCase() === 'booked';

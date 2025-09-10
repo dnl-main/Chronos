@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import './landing.css';
+import './landingMQ.css';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../router/routes';
 

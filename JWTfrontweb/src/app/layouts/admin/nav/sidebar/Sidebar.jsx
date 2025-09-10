@@ -4,13 +4,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 
-// import concorde_logo from '../../assets/logo/concorde_logo.webp';
-// import Calendar from '../../assets/icons/Calendar.svg';
-// import House_01 from '../../assets/icons/House_01.svg?react';
+import concorde_logo from '../../../../../assets/logo/concorde_logo.webp';
+import Calendar from '../../../../../assets/icons/Calendar.svg';
+import House_01 from '../../../../../assets/icons/House_01.svg?react';
 
-// import Users from '../../assets/icons/Users.svg?react';
-// import Notebook from '../../assets/icons/Notebook.svg?react';
-// import Book from '../../assets/icons/Book.svg?react';
+import Users from '../../../../../assets/icons/Users.svg?react';
+import Notebook from '../../../../../assets/icons/Notebook.svg?react';
+import Book from '../../../../../assets/icons/Book.svg?react';
 
 import Circle_Primary from '../../../../../assets/icons/Circle_Primary.svg?react';
 
@@ -51,8 +51,8 @@ const Sidebar = () => {
       
    
         <button onClick={handleLogout}>
-          {/* <img src={concorde_logo} className="" alt="Search icon" /> */}
-          <Circle_Primary style={{ width: '20px', height: '20px' }} />
+          <img src={concorde_logo} className="" alt="Search icon" />
+          {/* <Circle_Primary style={{ width: '20px', height: '20px' }} /> */}
         </button>
    
     </div> {/* sidebar-logo */}
@@ -60,7 +60,7 @@ const Sidebar = () => {
     <div className="sidebar-buttons">
       <Link to="/admin/home">
         <button>
-          {/* <House_01
+          <House_01
             style={{
               color: "var(--primary-color)",
               '--stroke-color': 'var(--primary-color)',
@@ -68,16 +68,16 @@ const Sidebar = () => {
               height: "32px",
               '--stroke-width': '4px'
             }}
-          /> */}
-          <Circle_Primary style={{ width: '20px', height: '20px' }} />
+          />
+          {/* <Circle_Primary style={{ width: '20px', height: '20px' }} /> */}
         </button>
       </Link>
 
       
       <Link to="/admin/availability">
         <button>
-          {/* <Users style={{ width: "32px", height: "32px", color: "#00889a", strokeWidth: 2 }} /> */}
-          <Circle_Primary style={{ width: '20px', height: '20px' }} />
+          <Users style={{ width: "32px", height: "32px", color: "#00889a", strokeWidth: 2 }} />
+          {/* <Circle_Primary style={{ width: '20px', height: '20px' }} /> */}
         </button>
       </Link>
       
@@ -89,29 +89,29 @@ const Sidebar = () => {
       
       <Link to="/admin/certificate">
       <button>
-        {/* <Notebook 
+        <Notebook 
           style={{ 
             color: "var(--primary-color)", 
             width: "32px", 
             height: "32px", 
             "--stroke-width": "4px"  
           }} 
-        /> */}
-        <Circle_Primary style={{ width: '20px', height: '20px' }} />
+        />
+        {/* <Circle_Primary style={{ width: '20px', height: '20px' }} /> */}
         </button>
       </Link>
 
       <Link to="/admin/schedule">
         <button>  
-          {/* <Book 
+          <Book 
             style={{ 
               color: "var(--primary-color)", 
               width: "32px", 
               height: "32px", 
               '--stroke-width': '4px' // Set the stroke width here
             }} 
-          /> */}
-          <Circle_Primary style={{ width: '20px', height: '20px' }} />
+          />
+          {/* <Circle_Primary style={{ width: '20px', height: '20px' }} /> */}
         </button>
       </Link>
     </div> {/* sidebar-buttons */}

@@ -48,11 +48,11 @@
 		justify-content: space-between;
 	} 
     .homeUser-top-header-left {
-			 /* background-color: lightsalmon;  */
+			/* background-color: lightsalmon;  */
 			display: flex;
 			align-items: center;
 			font-weight: var(--font-weight-medium);
-      font-size: var(--font-size-20);
+      font-size: var(--font-size-16);
       color: var(--black-color);
 			column-gap: 1vh;
 		} 
@@ -60,7 +60,7 @@
 			display: flex;
 			align-items: center;
 			font-weight: var(--font-weight-medium);
-			font-size: var(--font-size-16);
+			font-size: var(--font-size-12);
 			color: var(--black-color);
 			column-gap: 2vh;
 		} 
@@ -99,7 +99,7 @@
 				}
 				  
 			.homeUser-top-header-right-btn {
-				/* background-color: slategrey; */
+				background-color: slategrey;
 				all: unset;
 				display: flex;
 				justify-content: center;
