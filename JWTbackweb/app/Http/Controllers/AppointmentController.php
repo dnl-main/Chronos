@@ -1033,7 +1033,7 @@ class AppointmentController extends Controller
         $appointments = Appointment::with(['user.profilePicture'])
             ->where('employee', $employeeName)
             ->where('date', '>=', $today)
-            ->where('status', '!=', 'cancelled')
+            ->whereNotIn('status', ['completed', 'cancelled'])
             ->orderBy('date', 'asc')
             ->get()
             ->map(function ($appointment) {
