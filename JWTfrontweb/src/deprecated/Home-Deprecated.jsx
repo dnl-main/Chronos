@@ -1,11 +1,11 @@
 // src/Home.jsx
 import React, { useReducer, useMemo, useCallback, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 
 // Components import
 import ScheduleCard from '../schedule/cards/ScheduleCard';
-import Spinner from '../../../components/ui/Spinner'
+import Spinner from '../../../components/ui/Spinner';
 import Appointment from '../components/modals/appointment/manageAppointment/Appointment';
 import EditAppointment from '../components/modals/appointment/editAppointment/EditAppointment';
 import AvailableCrew from './homeComponents/AvailableCrew';
@@ -84,10 +84,9 @@ const reducer = (state, action) => {
 const Home = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
-  // Fetch user data with longer staleTime to reduce calls
+  // Fetch user data with useQuery
   const { data: userData, isLoading: userLoading, error: userError } = useQuery({
     queryKey: ['user'],
     queryFn: async () => {
@@ -104,20 +103,17 @@ const Home = () => {
       return response.json();
     },
     enabled: !!sessionStorage.getItem('token'),
-    staleTime: 1000 * 60 * 30, // 30 minutes - reduce refetches
-    cacheTime: 1000 * 60 * 60, // 1 hour - keep in cache longer
-    refetchOnWindowFocus: false, // Prevent refetch on focus
-    refetchOnMount: false, // Rely on cache and sessionStorage
+    staleTime: 1000 * 60 * 5,
   });
 
-  // Fetch all dashboard data
-  const [todayCountQuery, appointmentsQuery, crewCountsQuery] = useQueries({
+  // Parallel queries for dashboard data
+  const [todayCountQuery, appointmentsQuery, upcomingAppointmentsQuery, crewCountsQuery] = useQueries({
     queries: [
       {
         queryKey: ['todayCount'],
         queryFn: async () => {
           const token = sessionStorage.getItem('token');
-           const response = await fetch(`${apiUrl}/appointment/today/count?_limit=3`, {
+          const response = await fetch(`${apiUrl}/appointment/today/count?_limit=3`, {
             headers: {
               Authorization: `Bearer ${token}`,
               'ngrok-skip-browser-warning': 'true',
@@ -128,15 +124,13 @@ const Home = () => {
           return response.json();
         },
         enabled: !!state.user,
-        staleTime: 1000 * 60 * 5, // 5 minutes
-        cacheTime: 1000 * 60 * 30, // 30 minutes
-        refetchOnWindowFocus: false,
+        staleTime: 1000 * 60,
       },
       {
         queryKey: ['appointments'],
         queryFn: async () => {
           const token = sessionStorage.getItem('token');
-           const response = await fetch(`${apiUrl}/appointment/specific?_limit=3`, {
+          const response = await fetch(`${apiUrl}/appointment/specific?_limit=3`, {
             headers: {
               Authorization: `Bearer ${token}`,
               'ngrok-skip-browser-warning': 'true',
@@ -147,9 +141,24 @@ const Home = () => {
           return response.json();
         },
         enabled: !!state.user,
-        staleTime: 1000 * 60 * 5,
-        cacheTime: 1000 * 60 * 30,
-        refetchOnWindowFocus: false,
+        staleTime: 1000 * 60,
+      },
+      {
+        queryKey: ['upcomingAppointments'],
+        queryFn: async () => {
+          const token = sessionStorage.getItem('token');
+          const response = await fetch(`${apiUrl}/appointment/upcoming/specific?_limit=3`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'ngrok-skip-browser-warning': 'true',
+            },
+            credentials: 'include',
+          });
+          if (!response.ok) throw new Error('Failed to fetch upcoming appointments');
+          return response.json();
+        },
+        enabled: !!state.user,
+        staleTime: 1000 * 60,
       },
       {
         queryKey: ['crewCounts'],
@@ -166,21 +175,12 @@ const Home = () => {
           return response.json();
         },
         enabled: !!state.user,
-        staleTime: 1000 * 60 * 5,
-        cacheTime: 1000 * 60 * 30,
-        refetchOnWindowFocus: false,
+        staleTime: 1000 * 60,
       },
     ],
   });
 
-  // Remove invalidateQueries on mount - this causes unnecessary refetches
-  // useEffect(() => {
-  //   queryClient.invalidateQueries(['todayCount']);
-  //   queryClient.invalidateQueries(['appointments']);
-  //   queryClient.invalidateQueries(['crewCounts']);
-  // }, [queryClient]);
-
-  // Handle user data and redirects - prioritize sessionStorage
+  // Handle user data and redirects
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     const storedUser = sessionStorage.getItem('user');
@@ -191,27 +191,22 @@ const Home = () => {
     }
 
     if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        if (parsedUser.role === 'user') {
-          navigate('/user/homeuser');
-          return;
-        }
-        if (parsedUser.role !== 'admin') {
-          navigate('/login');
-          return;
-        }
-        if (!parsedUser.position || !parsedUser.department) {
-          alert('Please add your Job title and Department to continue');
-          navigate('/admin/account');
-          return;
-        }
-        dispatch({ type: 'SET_USER', payload: parsedUser });
-        dispatch({ type: 'SET_LOADING', payload: false });
-      } catch (error) {
-        // console.error('Failed to parse stored user:', error);
-        // Fall through to fetch from API if parsing fails
+      const parsedUser = JSON.parse(storedUser);
+      if (parsedUser.role === 'user') {
+        navigate('/user/homeuser');
+        return;
       }
+      if (parsedUser.role !== 'admin') {
+        navigate('/login');
+        return;
+      }
+      if (!parsedUser.position || !parsedUser.department) {
+        alert('Please add your Job title and Department to continue');
+        navigate('/admin/account');
+        return;
+      }
+      dispatch({ type: 'SET_USER', payload: parsedUser });
+      dispatch({ type: 'SET_LOADING', payload: false });
     } else if (userData) {
       if (userData.role === 'user') {
         navigate('/user/homeuser');
@@ -244,26 +239,30 @@ const Home = () => {
     }
     if (appointmentsQuery.data) {
       const appointments = Array.isArray(appointmentsQuery.data) ? appointmentsQuery.data : [];
-      const today = new Date().toISOString().split('T')[0];
-      const todayAppointments = appointments
-        .filter((app) => new Date(app.date).toISOString().split('T')[0] === today && app.status === 'booked')
-        .slice(0, 3);
-      const pendingAppointments = appointments.filter((app) => app.status === 'pending').slice(0, 3);
-      const upcomingAppointments = appointments
-        .filter((app) => new Date(app.date).toISOString().split('T')[0] >= today && app.status === 'booked')
-        .slice(0, 3);
       dispatch({
         type: 'SET_APPOINTMENTS',
         payload: {
-          todayAppointments,
-          pendingAppointments,
-          upcomingAppointments,
+          todayAppointments: appointments.filter(
+            (app) => app.computed_status === 'today' && app.status === 'booked'
+          ),
+          pendingAppointments: appointments.filter((app) => app.status === 'pending'),
+          upcomingAppointments: [],
         },
       });
+    }
+    if (upcomingAppointmentsQuery.data) {
+      const upcoming = Array.isArray(upcomingAppointmentsQuery.data)
+        ? upcomingAppointmentsQuery.data.filter((app) => app.status !== 'completed')
+        : [];
       dispatch({
-        type: 'SET_UPCOMING_COUNT',
-        payload: appointments.filter((app) => new Date(app.date).toISOString().split('T')[0] >= today && app.status === 'booked').length
+        type: 'SET_APPOINTMENTS',
+        payload: {
+          todayAppointments: state.todayAppointments,
+          pendingAppointments: state.pendingAppointments,
+          upcomingAppointments: upcoming,
+        },
       });
+      dispatch({ type: 'SET_UPCOMING_COUNT', payload: upcoming.length });
     }
     if (crewCountsQuery.data) {
       dispatch({
@@ -275,7 +274,7 @@ const Home = () => {
         },
       });
     }
-    if (todayCountQuery.error || appointmentsQuery.error || crewCountsQuery.error) {
+    if (todayCountQuery.error || appointmentsQuery.error || upcomingAppointmentsQuery.error || crewCountsQuery.error) {
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load dashboard data.' });
     }
     dispatch({
@@ -284,6 +283,7 @@ const Home = () => {
         userLoading ||
         todayCountQuery.isLoading ||
         appointmentsQuery.isLoading ||
+        upcomingAppointmentsQuery.isLoading ||
         crewCountsQuery.isLoading,
     });
   }, [
@@ -291,12 +291,17 @@ const Home = () => {
     todayCountQuery.error,
     appointmentsQuery.data,
     appointmentsQuery.error,
+    upcomingAppointmentsQuery.data,
+    upcomingAppointmentsQuery.error,
     crewCountsQuery.data,
     crewCountsQuery.error,
     userLoading,
     todayCountQuery.isLoading,
     appointmentsQuery.isLoading,
+    upcomingAppointmentsQuery.isLoading,
     crewCountsQuery.isLoading,
+    state.todayAppointments,
+    state.pendingAppointments,
   ]);
 
   // Memoized event handlers
@@ -427,11 +432,6 @@ const Home = () => {
                 }}
               />
               <p>Coming today</p>
-              <button onClick={handleRedirectToday}>
-                <Arrow_Right_SM
-                  style={{ color: 'var(--black-color)', width: '24px', height: '24px', '--stroke-width': '5' }}
-                />
-              </button>
             </header>
             <div className="home-bot-cards">
               {state.todayAppointments.length > 0 ? (

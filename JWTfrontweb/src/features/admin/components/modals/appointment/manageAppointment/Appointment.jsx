@@ -14,7 +14,7 @@ import Book from '../../../../../../assets/icons/Book.svg?react';
 import Close_MD from '../../../../../../assets/icons/Close_MD.svg?react';
 import Search from '../../../../../../assets/icons/Search.svg?react';
 
-const departmentOptions = ['Crewing', 'Medical', 'Accounting','Training','Support','Admin','Recruitment'];
+const departmentOptions = ['Crewing', 'Medical', 'Accounting', 'Training', 'Support', 'Admin', 'Recruitment'];
 const crewingDepts = ['maran gas', 'maran dry', 'maran tankers'];
 const operators = [
   'fleet crew manager',
@@ -224,7 +224,7 @@ export default function Appointment({ onClose, userId }) {
         const filteredAppointments = data.filter(appointment => {
           if (!appointment.date) return true;
           const appointmentDate = new Date(appointment.date);
-          return appointmentDate >= today;
+          return appointmentDate >= today && !['completed', 'cancelled'].includes(appointment.status?.toLowerCase());
         });
         const mappedAppointments = filteredAppointments.map(mapAppointment);
         setAppointments(mappedAppointments);

@@ -1,3 +1,4 @@
+
 import React, { useReducer, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -95,7 +96,10 @@ const Schedule = () => {
   const todayVirtualizer = useVirtualizer({
     getScrollElement: () => parentRef.current,
     count: filteredAppointmentsToday.length,
-    estimateSize: () => 174,
+
+    estimateSize: () => 174, // Adjust based on ScheduleCard height
+
+
     overscan: 20,
     paddingStart: 20,
     paddingEnd: 20,

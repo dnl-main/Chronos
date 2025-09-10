@@ -77,14 +77,14 @@ const CertificateModalCard = ({ certificate, onCertificateClick, onStatusChange 
   };
 
   const handleDelete = async () => {
-    try {
-      const response = await axios.post(`${apiBaseUrl}/certificates/delete`, { id }, {
+   try {
+      const response = await axios.post(`${apiBaseUrl}/certificates/${certificate.id}/decline`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, 'ngrok-skip-browser-warning': 'true' },
       });
-      onStatusChange({ id, deleted: true }); // Signal deletion to parent
-      alert('Certificate deleted successfully');
+      onStatusChange(response.data.certificate);
+      alert(response.data.message);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to delete certificate');
+      setError(err.response?.data?.message || 'Failed to reject certificate');
     }
   };
 

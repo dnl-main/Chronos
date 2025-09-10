@@ -1,0 +1,41 @@
+@media (max-width: 768px) {
+    * {
+        margin: 0; 
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .newCertUpload-trigger {
+        background-color: indigo;
+        all: unset;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.6vh 3.2vh;
+        height: 5.2vh;
+        column-gap: 0.5rem;
+        background-color: var(--primary-color);
+        border-radius: 10px;
+        box-shadow: 0 0 12px rgba(0, 136, 154, 0.15);
+        color: var(--white-color);
+        font-weight: var(--font-weight-medium);
+        font-size: var(--font-size-12);
+        cursor: pointer;
+        margin: 2vh 0 2vh 1vh;
+        width: 85%;
+    }
+
+    .newCertUpd-box {
+    /* background-color: darkmagenta; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    background-color: var(--white-color);
+    border-radius: 1rem;
+    width: 90vw;
+    height: 80vh;
+    overflow: auto;
+  }
+}

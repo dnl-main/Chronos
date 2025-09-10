@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { debounce } from 'lodash'; // Import debounce from lodash
+import { debounce } from 'lodash';
 
 // Components import
 import CertificateCard from './cards/CertificateCard';
@@ -36,6 +36,7 @@ const initialState = {
   searchQuery: '',
   currentPage: 1,
   totalPages: 1,
+  isSearching: false,
 };
 
 const reducer = (state, action) => {
@@ -64,6 +65,8 @@ const reducer = (state, action) => {
       return { ...state, currentPage: action.payload };
     case 'SET_TOTAL_PAGES':
       return { ...state, totalPages: action.payload };
+    case 'SET_IS_SEARCHING':
+      return { ...state, isSearching: action.payload };
     default:
       return state;
   }
@@ -84,18 +87,41 @@ const Certificate = () => {
     searchQuery,
     currentPage,
     totalPages,
+    isSearching,
   } = state;
   const navigate = useNavigate();
   const parentRef = useRef(null);
+  const searchTimeoutRef = useRef(null);
   const rowsPerPage = 10;
 
-  // Debounced search handler
+  // Debounced search handler with 1-second spinner delay
   const debouncedSearch = useCallback(
     debounce((value) => {
-      dispatch({ type: 'SET_SEARCH_QUERY', payload: value });
+      // Clear previous timeout
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+
+      // Set searching state immediately
+      dispatch({ type: 'SET_IS_SEARCHING', payload: true });
+
+      // Set 1-second timeout for spinner
+      searchTimeoutRef.current = setTimeout(() => {
+        dispatch({ type: 'SET_SEARCH_QUERY', payload: value });
+        dispatch({ type: 'SET_IS_SEARCHING', payload: false });
+      }, 1000); // 1-second delay
     }, 300),
     []
   );
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Virtualization setup
   const rowVirtualizer = useVirtualizer({
@@ -244,6 +270,7 @@ const Certificate = () => {
             total_uploaded: item.total_uploaded || 0,
             approved: item.approved || 0,
             pending: item.pending || 0,
+            expired: item.expired || 0,
             certificates: Array.isArray(item.certificates) ? item.certificates : [],
           }))
         : [];
@@ -262,7 +289,11 @@ const Certificate = () => {
     dispatch({ type: 'SET_LOADING', payload: isUserLoading || isCrewCertsLoading });
   }, [navigate, userData, isUserLoading, isUserError, userError, crewCertsData, isCrewCertsLoading, isCrewCertsError, crewCertsError]);
 
-  if (loading) return <Spinner />;
+  // Show spinner if initial loading or searching for more than 1 second
+  if (loading || (isSearching && searchQuery)) {
+    return <Spinner />;
+  }
+
   if (error) return <div className='certificate-error'>{error}</div>;
 
   return (

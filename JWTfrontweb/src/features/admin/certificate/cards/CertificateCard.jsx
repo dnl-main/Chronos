@@ -22,18 +22,18 @@ const CertificateCard = ({ data, certificates = [], onCertificateClick, onNotify
 
 
   const getIndicatorColor = (data) => {
-    const total = data?.total_uploaded || 0;
+    const total = data?.expired || 0; // Changed from expiring to expired
     const pending = data?.pending || 0;
     const approved = data?.approved || 0;
 
     if (total === 0) {
-      return 'var(--red-indicator)';
+      return 'var(--green-indicator)'; // No expired certificates is a good state
     } else if (pending > 0) {
       return 'var(--yellow-indicator)';
     } else if (approved === total) {
       return 'var(--green-indicator)';
     } else {
-      return 'var(--black-color-opacity-15)'; // fallback or neutral
+      return 'var(--red-indicator)'; // Expired certificates present
     }
   };
 
@@ -41,13 +41,13 @@ const CertificateCard = ({ data, certificates = [], onCertificateClick, onNotify
     <main className="certificate-cards-card">
       <section
         className={`certificate-cards-card-indicator ${
-          data.total_uploaded === 0
-            ? 'indicator-red'
+          data.expired === 0
+            ? 'indicator-green'
             : data.pending > 0
             ? 'indicator-yellow'
-            : data.approved === data.total_uploaded
+            : data.approved === data.expired
             ? 'indicator-green'
-            : ''
+            : 'indicator-red'
         }`}
       >
       </section>
@@ -62,28 +62,13 @@ const CertificateCard = ({ data, certificates = [], onCertificateClick, onNotify
         <div className="certificate-cards-card-profile-info">
           <p className="certificate-cards-card-profile-info-text">{data?.user_name || 'N/A'}</p>
           <div className="certificate-cards-card-profile-info-job">
-   <Circle_Primary style={{ color: "var(--primary-color)", width: "32px", height: "32px" }} />
+            <Circle_Primary style={{ color: "var(--primary-color)", width: "32px", height: "32px" }} />
             <p>{data?.position || 'N/A'}</p>
           </div>
         </div>
       </section>
 
       <section className="certificate-cards-card-certificates">
-        <div className="certificate-cards-card-certificates-total">
-          <div className="certificate-cards-card-certificates-total-sub">
-            <div className="certificate-cards-card-certificates-total-sub-separator"></div>
-            <div className="certificate-cards-card-certificates-total-sub-text">
-              <p className="certificate-cards-card-certificates-total-sub-text-light">Total</p>
-              <p className="certificate-cards-card-certificates-total-sub-text-medium">Upload</p>
-            </div>
-          </div>
-          <div className="certificate-cards-card-certificates-total-count">
-            <div className="certificate-cards-card-certificates-total-count-bg">
-              <p>{data?.total_uploaded || 0}</p>
-            </div>
-          </div>
-        </div>
-
         <div className="certificate-cards-card-certificates-approved">
           <div className="certificate-cards-card-certificates-approved-sub">
             <div className="certificate-cards-card-certificates-approved-sub-separator"></div>
@@ -95,6 +80,21 @@ const CertificateCard = ({ data, certificates = [], onCertificateClick, onNotify
           <div className="certificate-cards-card-certificates-approved-count">
             <div className="certificate-cards-card-certificates-approved-count-bg">
               <p>{data?.approved || 0}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="certificate-cards-card-certificates-total">
+          <div className="certificate-cards-card-certificates-total-sub">
+            <div className="certificate-cards-card-certificates-total-sub-separator"></div>
+            <div className="certificate-cards-card-certificates-total-sub-text">
+              <p className="certificate-cards-card-certificates-total-sub-text-light">Total</p>
+              <p className="certificate-cards-card-certificates-total-sub-text-medium">Expired</p>
+            </div>
+          </div>
+          <div className="certificate-cards-card-certificates-total-count">
+            <div className="certificate-cards-card-certificates-total-count-bg">
+              <p>{data?.expired || 0}</p>
             </div>
           </div>
         </div>
