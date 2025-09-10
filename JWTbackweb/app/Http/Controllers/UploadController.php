@@ -12,105 +12,104 @@ use Illuminate\Support\Facades\Mail;
 
 class UploadController extends Controller
 {
-    function upload(Request $request)
+    public function upload(Request $request)
     {
         // Define valid certificate types
-          $validCertificateTypes = [
-        // Medical
-        'Medical-Health Check',
-        'Medical-Pre-Employment Medical Examination',
-        'Medical-Fitness for Sea Service',
-        'Medical-Medical Certificate / Fitness for Sea Service',
-        'Medical-Health Insurance',
-        'Medical-Medical Certificate',
+        $validCertificateTypes = [
+            // Medical
+            'Medical-Health Check',
+            'Medical-Pre-Employment Medical Examination',
+            'Medical-Fitness for Sea Service',
+            'Medical-Medical Certificate / Fitness for Sea Service',
+            'Medical-Health Insurance',
+            'Medical-Medical Certificate',
 
-        // Training
-        'Training-Workshop',
-        'Training-Certification',
-        'Training-Seaman Training I',
-        'Training-Leadership Training I',
-        'Training-Seaman Training II',
-        'Training-Leadership Training II',
-        'Training-Leadership Training III',
-        'Training-Safety Certificates / Basic Safety Training & Crowd Management',
-        'Training-Deck Cadet',
-        'Training-Engine Cadet Training',
-        'Training-Steward Training',
-        'Training-BRM (Bridge Resource Management)',
-        'Training-ERM (Engine Room Resource Management)',
-        'Training-Radar / ARPA / ECDIS',
-        'Training-LNG Carrier Operations',
-        'Training-Oil Tanker Familiarization',
-        'Training-Leadership & Teamwork',
+            // Training
+            'Training-Workshop',
+            'Training-Certification',
+            'Training-Seaman Training I',
+            'Training-Leadership Training I',
+            'Training-Seaman Training II',
+            'Training-Leadership Training II',
+            'Training-Leadership Training III',
+            'Training-Safety Certificates / Basic Safety Training & Crowd Management',
+            'Training-Deck Cadet',
+            'Training-Engine Cadet Training',
+            'Training-Steward Training',
+            'Training-BRM (Bridge Resource Management)',
+            'Training-ERM (Engine Room Resource Management)',
+            'Training-Radar / ARPA / ECDIS',
+            'Training-LNG Carrier Operations',
+            'Training-Oil Tanker Familiarization',
+            'Training-Leadership & Teamwork',
 
-        // PDOS
-        'PDOS-Cultural Briefing',
-        'PDOS-Financial Literacy',
-        'PDOS-Seafarer Safety Awareness',
-        'PDOS-Shipboard Emergency Procedures',
-        'PDOS-Sexual Harassment Awareness',
-        'PDOS-COVID Protocol Orientation',
+            // PDOS
+            'PDOS-Cultural Briefing',
+            'PDOS-Financial Literacy',
+            'PDOS-Seafarer Safety Awareness',
+            'PDOS-Shipboard Emergency Procedures',
+            'PDOS-Sexual Harassment Awareness',
+            'PDOS-COVID Protocol Orientation',
 
-        // Employee Document
-        'Employee Document-Passport',
-        'Employee Document- Pre-Employment Orientation Seminar (PEOS) ',
-        'Employee Document-ID Card',
-        'Employee Document-Contract',
-        'Employee Document-Seaman’s Book',
-        'Employee Document-Contract of Employment',
-        'Employee Document-Crew ID-Card',
-        'Employee Document-C1/D Visa',
-        'Employee Document-Criminal Record Certificate',
-        'Employee Document-Sea Service Record',
+            // Employee Document
+            'Employee Document-Passport',
+            'Employee Document- Pre-Employment Orientation Seminar (PEOS) ',
+            'Employee Document-ID Card',
+            'Employee Document-Contract',
+            'Employee Document-Seaman’s Book',
+            'Employee Document-Contract of Employment',
+            'Employee Document-Crew ID-Card',
+            'Employee Document-C1/D Visa',
+            'Employee Document-Criminal Record Certificate',
+            'Employee Document-Sea Service Record',
 
-        // SOLAS
-        'SOLAS-International Ship Safety Equipment Certificate',
-        'SOLAS-Minimum Safe Manning Certificate',
-        'SOLAS-International Ship Construction Certificate',
-        'SOLAS-Passenger Ship Safety Certificate',
-        'SOLAS-Cargo Ship Safety Certificate',
-        'SOLAS-Cargo Ship Safety Construction Certificate',
-        'SOLAS-Cargo Ship Safety Equipment Certificate',
-        'SOLAS-Cargo Ship Safety Radio Certificate',
-        'SOLAS-International Tonnage Certificate',
-        'SOLAS-International Load Line Certificate',
-        'SOLAS-Safety Management Certificate',
-        'SOLAS-Ship Security Certificate',
-        'SOLAS-International Oil Pollution Prevention Certificate',
-        'SOLAS-International Sewage Pollution Prevention Certificate',
-        'SOLAS-International Air Pollution Prevention Certificate',
-        'SOLAS-PST (Personal Survival Techniques)',
-        'SOLAS-FPFF (Fire Prevention and Fire Fighting)',
-        'SOLAS-EFA (Elementary First Aid)',
-        'SOLAS-PSSR (Personal Safety and Social Responsibility)',
-        'SOLAS-Security Awareness',
-        'SOLAS-Advanced Fire Fighting',
-        'SOLAS-PSCRB (Rescue Boats)',
-        'SOLAS-Enclosed Space Rescue',
-        'SOLAS-HUET (Helicopter Escape)',
+            // SOLAS
+            'SOLAS-International Ship Safety Equipment Certificate',
+            'SOLAS-Minimum Safe Manning Certificate',
+            'SOLAS-International Ship Construction Certificate',
+            'SOLAS-Passenger Ship Safety Certificate',
+            'SOLAS-Cargo Ship Safety Certificate',
+            'SOLAS-Cargo Ship Safety Construction Certificate',
+            'SOLAS-Cargo Ship Safety Equipment Certificate',
+            'SOLAS-Cargo Ship Safety Radio Certificate',
+            'SOLAS-International Tonnage Certificate',
+            'SOLAS-International Load Line Certificate',
+            'SOLAS-Safety Management Certificate',
+            'SOLAS-Ship Security Certificate',
+            'SOLAS-International Oil Pollution Prevention Certificate',
+            'SOLAS-International Sewage Pollution Prevention Certificate',
+            'SOLAS-International Air Pollution Prevention Certificate',
+            'SOLAS-PST (Personal Survival Techniques)',
+            'SOLAS-FPFF (Fire Prevention and Fire Fighting)',
+            'SOLAS-EFA (Elementary First Aid)',
+            'SOLAS-PSSR (Personal Safety and Social Responsibility)',
+            'SOLAS-Security Awareness',
+            'SOLAS-Advanced Fire Fighting',
+            'SOLAS-PSCRB (Rescue Boats)',
+            'SOLAS-Enclosed Space Rescue',
+            'SOLAS-HUET (Helicopter Escape)',
 
-        // STCW Certifications
-        'STCW Certifications-STCW Basic Safety Training',
-        'STCW Certifications-STCW Proficiency in Survival Craft and Rescue Boats',
-        'STCW Certifications-STCW Proficiency in Fast Rescue Boats',
-        'STCW Certifications-STCW Proficiency in Designated Security Duties',
-        'STCW Certifications-STCW Proficiency in Security Awareness',
-        'STCW Certifications-STCW Proficiency in Crisis Management and Human Behavior',
-        'STCW Certifications-STCW Proficiency in Advanced Fire Fighting',
-        'STCW Certifications-STCW Proficiency in Medical First Aid',
+            // STCW Certifications
+            'STCW Certifications-STCW Basic Safety Training',
+            'STCW Certifications-STCW Proficiency in Survival Craft and Rescue Boats',
+            'STCW Certifications-STCW Proficiency in Fast Rescue Boats',
+            'STCW Certifications-STCW Proficiency in Designated Security Duties',
+            'STCW Certifications-STCW Proficiency in Security Awareness',
+            'STCW Certifications-STCW Proficiency in Crisis Management and Human Behavior',
+            'STCW Certifications-STCW Proficiency in Advanced Fire Fighting',
+            'STCW Certifications-STCW Proficiency in Medical First Aid',
 
-        // Seaman's Passport
-        'Seaman\'s Passport-Able Seaman — Unlimited',
-        'Seaman\'s Passport-Able Seaman — Limited',
-        'Seaman\'s Passport-Able Seaman',
-        'Seaman\'s Passport-STCW Basic Safety (PST, FPFF, EFA, PSSR)',
-        'Seaman\'s Passport-Watchkeeping Certificate',
-        'Seaman\'s Passport-Crowd Management & Crisis Control',
-        'Seaman\'s Passport-Radar Navigation & Collision Avoidance',
-        'Seaman\'s Passport-Ship Security Awareness',
-        'Seaman\'s Passport-Others',
-        
-    ];
+            // Seaman's Passport
+            'Seaman\'s Passport-Able Seaman — Unlimited',
+            'Seaman\'s Passport-Able Seaman — Limited',
+            'Seaman\'s Passport-Able Seaman',
+            'Seaman\'s Passport-STCW Basic Safety (PST, FPFF, EFA, PSSR)',
+            'Seaman\'s Passport-Watchkeeping Certificate',
+            'Seaman\'s Passport-Crowd Management & Crisis Control',
+            'Seaman\'s Passport-Radar Navigation & Collision Avoidance',
+            'Seaman\'s Passport-Ship Security Awareness',
+            'Seaman\'s Passport-Others',
+        ];
 
         // Validate the request
         $validator = Validator::make($request->all(), [
@@ -192,6 +191,7 @@ class UploadController extends Controller
                 'certificate_type' => $request->certificate_type,
                 'file_path' => $relativePath,
                 'expiration_date' => $request->expiration_date ? Carbon::parse($request->expiration_date)->toDateString() : null,
+                'status' => 'pending',
             ]);
 
             return response()->json([
@@ -227,7 +227,7 @@ class UploadController extends Controller
                 }
             }
 
-            $certificates = $query->get();
+            $certificates = $query->orderBy('certificate_name', 'asc')->get();
 
             return response()->json([
                 'message' => 'Certificates retrieved successfully',
@@ -349,14 +349,7 @@ class UploadController extends Controller
 
     public function decline($id)
     {
-        $user = JWTAuth::user();
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
 
-        if ($user->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
 
         $certificate = Certificate::find($id);
         if (!$certificate) {
@@ -364,75 +357,87 @@ class UploadController extends Controller
         }
 
         try {
-            if (Storage::disk('public')->exists($certificate->file_path)) {
-                Storage::disk('public')->delete($certificate->file_path);
-            }
+            // Update certificate status to rejected
+            $certificate->update(['status' => 'rejected']);
 
+    
+
+            // Send email notification
             Mail::raw(
-                "Your Certificate has been declined\n\n" .
+                "Your Certificate has been rejected\n\n" .
                 "Certificate Name: {$certificate->certificate_name}\n" .
                 "Certificate Type: {$certificate->certificate_type}\n" .
-                "Status: Declined\n" .
+                "Status: Rejected\n" .
                 "Please log in to your account to view details.\n\n" .
                 "View Certificates: " . url('/certificates') . "\n\n" .
-                "Please reupload\n\n",
+                "Please reupload a valid certificate if necessary\n\n",
                 function ($message) use ($certificate) {
                     $message->to($certificate->user->email)
-                            ->subject("Certificate {$certificate->certificate_name} Declined");
+                            ->subject("Certificate {$certificate->certificate_name} Rejected");
                 }
             );
 
-            $certificate->delete();
-
             return response()->json([
-                'message' => "Certificate {$certificate->certificate_name} has been declined and deleted",
-                'certificate_id' => $certificate->id,
+                'message' => "Certificate {$certificate->certificate_name} has been rejected",
+                'certificate' => [
+                    'id' => $certificate->id,
+                    'certificate_name' => $certificate->certificate_name,
+                    'certificate_type' => $certificate->certificate_type,
+                    'file_path' => $certificate->file_path,
+                    'user_id' => $certificate->user_id,
+                    'expiration_date' => $certificate->expiration_date,
+                    'status' => $certificate->status,
+                ],
             ], 200);
         } catch (\Exception $e) {
             \Log::error('Decline Certificate Exception:', ['message' => $e->getMessage()]);
             return response()->json([
-                'message' => 'Failed to decline and delete certificate: ' . $e->getMessage(),
+                'message' => 'Failed to reject certificate: ' . $e->getMessage(),
             ], 500);
         }
     }
 
-   public function getExpiringCertificates(Request $request)
-{
-    try {
-        $user = JWTAuth::user();
-        if (!$user) {
-            return response()->json([
-                'message' => 'Unauthorized',
-            ], 401);
-        }
 
-        $query = Certificate::query();
-
-        if ($request->has('user_id')) {
-            $query->where('user_id', $request->input('user_id'));
-        } else {
-            if ($user->role !== 'admin') {
-                $query->where('user_id', $user->id);
+       public function getExpiringCertificates(Request $request)
+    {
+        try {
+            $user = JWTAuth::user();
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Unauthorized',
+                ], 401);
             }
+
+            $query = Certificate::query();
+
+            if ($request->has('user_id')) {
+                $query->where('user_id', $request->input('user_id'));
+            } else {
+                if ($user->role !== 'admin') {
+                    $query->where('user_id', $user->id);
+                }
+            }
+
+            // Filter certificates expiring within the current month
+            $currentMonthStart = Carbon::now()->startOfMonth();
+            $currentMonthEnd = Carbon::now()->endOfMonth();
+            $query->whereBetween('expiration_date', [$currentMonthStart, $currentMonthEnd])
+                  ->whereNotIn('status', ['rejected', 'pending']);
+
+            // Get the three certificates expiring closest to today
+            $certificates = $query->orderBy('expiration_date', 'asc')->take(3)->get();
+
+            return response()->json([
+                'message' => 'Expiring certificates retrieved successfully',
+                'certificates' => $certificates,
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Get Expiring Certificates Exception:', ['message' => $e->getMessage()]);
+            return response()->json([
+                'message' => 'Failed to retrieve expiring certificates: ' . $e->getMessage(),
+            ], 500);
         }
-
-        // Filter certificates expiring in the current month
-        $currentMonthStart = Carbon::now()->startOfMonth();
-        $currentMonthEnd = Carbon::now()->endOfMonth();
-        $query->whereBetween('expiration_date', [$currentMonthStart, $currentMonthEnd]);
-
-        // Get the three certificates expiring closest to today
-        $certificates = $query->orderBy('expiration_date', 'asc')->take(3)->get();
-
-        return response()->json([
-            'message' => 'Expiring certificates retrieved successfully',
-            'certificates' => $certificates,
-        ], 200);
-    } catch (\Exception $e) {
-        \Log::error('Get Expiring Certificates Exception:', ['message' => $e->getMessage()]);
-        return response()->json([
-            'message' => 'Failed to retrieve expiring certificates: ' . $e->getMessage(),
-        ], 500);
     }
-}
+
+     
 }

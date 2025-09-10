@@ -13,44 +13,45 @@ class CrewController extends Controller
         $this->middleware('auth:api');
     }
 
-public function getCrewMembers()
-{
-    if (Auth::user()->role !== 'admin') {
-        return response()->json(['error' => 'Unauthorized'], 403);
+    public function getCrewMembers()
+    {
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $crewMembers = User::where('role', 'user')
+            ->whereNotNull('region')
+            ->where('region', '!=', '')
+            ->whereNotNull('position')
+            ->where('position', '!=', 'unregistered')
+            ->with('profilePicture')
+            ->orderByRaw("CONCAT(first_name, ' ', last_name) ASC")
+            ->get()
+            ->map(function ($user) {
+                // Determine the profile picture URL
+                $profilePicture = $user->profilePicture && $user->profilePicture->path
+                    ? ($this->isUrl($user->profilePicture->path)
+                        ? $user->profilePicture->path
+                        : env('APP_URL') . '/storage/' . ltrim($user->profilePicture->path, '/'))
+                    : null;
+
+                return [
+                    'id' => $user->id,
+                    'first_name' => $user->first_name,
+                    'middle_name' => $user->middle_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'position' => $user->position,
+                    'availability' => $user->availability,
+                    'department' => $user->department,
+                    'mobile' => $user->mobile,
+                    'profilePicture' => $profilePicture,
+                ];
+            });
+
+        return response()->json($crewMembers, 200);
     }
-
-    $crewMembers = User::where('role', 'user')
-        ->whereNotNull('region')
-        ->where('region', '!=', '')
-        ->whereNotNull('position')
-        ->where('position', '!=', 'unregistered')
-        ->with('profilePicture')
-        ->get()
-        ->map(function ($user) {
-            // Determine the profile picture URL
-            $profilePicture = $user->profilePicture && $user->profilePicture->path
-                ? ($this->isUrl($user->profilePicture->path)
-                    ? $user->profilePicture->path
-                    : env('APP_URL') . '/storage/' . ltrim($user->profilePicture->path, '/'))
-                : null;
-
-            return [
-                'id' => $user->id,
-                'first_name' => $user->first_name,
-                'middle_name' => $user->middle_name,
-                'last_name' => $user->last_name,
-                'email' => $user->email,
-                'role' => $user->role,
-                'position' => $user->position,
-                'availability' => $user->availability,
-                'department' => $user->department,
-                'mobile' => $user->mobile,
-                'profilePicture' => $profilePicture,
-            ];
-        });
-
-    return response()->json($crewMembers, 200);
-}
 
 private function isUrl($string)
 {
@@ -141,75 +142,78 @@ private function isUrl($string)
 //     return response()->json(['crew_members' => $crewMembers], 200);
 // }
 public function getCrewCerts(Request $request)
-{
-    if (Auth::user()->role !== 'admin') {
-        return response()->json(['error' => 'Unauthorized'], 403);
+    {
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Get query parameters
+        $page = $request->query('page', 1);
+        $limit = $request->query('limit', 10);
+        $search = $request->query('search', '');
+
+        // Build the query for users with 'user' role
+        $query = User::where('role', 'user')
+            ->where('position', '!=', 'Unregistered')
+            ->with(['certificates', 'profilePicture']);
+
+        // Apply search filter if provided
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw("CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) LIKE ?", ['%' . $search . '%'])
+                  ->orWhere('position', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        // Get total count for pagination metadata
+        $total = $query->count();
+
+        // Apply sorting and pagination
+        $users = $query->orderByRaw("CONCAT(first_name, ' ', last_name) ASC")
+                      ->skip(($page - 1) * $limit)
+                      ->take($limit)
+                      ->get();
+
+        $crewMembers = $users->map(function ($user) {
+            $certificates = $user->certificates ?? collect([]);
+            // Determine the profile picture URL
+            $profilePicture = $user->profilePicture && $user->profilePicture->path
+                ? ($this->isUrl($user->profilePicture->path)
+                    ? $user->profilePicture->path
+                    : env('APP_URL') . '/storage/' . ltrim($user->profilePicture->path, '/'))
+                : null;
+
+            return [
+                'user_id' => $user->id,
+                'user_name' => trim($user->first_name . ' ' . 
+                             ($user->middle_name ? $user->middle_name . ' ' : '') .
+                             $user->last_name),
+                'email' => $user->email,
+                'position' => $user->position ?? 'N/A',
+                'profilePicture' => $profilePicture,
+                'total_uploaded' => $certificates->count(),
+                'approved' => $certificates->where('status', 'approved')->count(),
+                'pending' => $certificates->where('status', 'pending')->count(),
+                'expired' => $certificates->where('status', 'expired')->count(),
+                'certificates' => $certificates->map(function ($cert) {
+                    return [
+                        'id' => $cert->id,
+                        'certificate_name' => $cert->certificate_name,
+                        'certificate_type' => $cert->certificate_type,
+                        'file_path' => $cert->file_path,
+                        'expiration_date' => $cert->expiration_date,
+                        'status' => $cert->status ?? 'pending',
+                    ];
+                })->toArray(),
+            ];
+        })->values();
+
+        return response()->json([
+            'crew_members' => $crewMembers,
+            'total' => $total,
+            'page' => (int) $page,
+            'limit' => (int) $limit,
+        ], 200);
     }
 
-    // Get query parameters
-    $page = $request->query('page', 1);
-    $limit = $request->query('limit', 10);
-    $search = $request->query('search', '');
-
-    // Build the query for users with 'user' role
-    $query = User::where('role', 'user')
-        ->where('position', '!=', 'Unregistered')
-        ->with(['certificates', 'profilePicture']);
-
-    // Apply search filter if provided
-    if (!empty($search)) {
-        $query->where(function ($q) use ($search) {
-            $q->whereRaw("CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) LIKE ?", ['%' . $search . '%'])
-              ->orWhere('position', 'LIKE', '%' . $search . '%');
-        });
-    }
-
-    // Get total count for pagination metadata
-    $total = $query->count();
-
-    // Apply pagination
-    $users = $query->skip(($page - 1) * $limit)
-                  ->take($limit)
-                  ->get();
-
-    $crewMembers = $users->map(function ($user) {
-        $certificates = $user->certificates ?? collect([]);
-        // Determine the profile picture URL
-        $profilePicture = $user->profilePicture && $user->profilePicture->path
-            ? ($this->isUrl($user->profilePicture->path)
-                ? $user->profilePicture->path
-                : env('APP_URL') . '/storage/' . ltrim($user->profilePicture->path, '/'))
-            : null;
-
-        return [
-            'user_id' => $user->id,
-            'user_name' => trim($user->first_name . ' ' . 
-                         ($user->middle_name ? $user->middle_name . ' ' : '') .
-                         $user->last_name),
-            'email' => $user->email,
-            'position' => $user->position ?? 'N/A',
-            'profilePicture' => $profilePicture,
-            'total_uploaded' => $certificates->count(),
-            'approved' => $certificates->where('status', 'approved')->count(),
-            'pending' => $certificates->where('status', 'pending')->count(),
-            'certificates' => $certificates->map(function ($cert) {
-                return [
-                    'id' => $cert->id,
-                    'certificate_name' => $cert->certificate_name,
-                    'certificate_type' => $cert->certificate_type,
-                    'file_path' => $cert->file_path,
-                    'expiration_date' => $cert->expiration_date,
-                    'status' => $cert->status ?? 'pending',
-                ];
-            })->toArray(),
-        ];
-    })->values();
-
-    return response()->json([
-        'crew_members' => $crewMembers,
-        'total' => $total,
-        'page' => (int) $page,
-        'limit' => (int) $limit,
-    ], 200);
-}
 }

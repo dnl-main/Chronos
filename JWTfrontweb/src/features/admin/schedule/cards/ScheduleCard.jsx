@@ -83,30 +83,30 @@ const ScheduleCard = ({ appointment, user, allAppointments = [], onEditClick }) 
     }
   };
 
-  const handleCompleteAppointment = async () => {
-    try {
-      const token = sessionStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found.');
-      }
+  // const handleCompleteAppointment = async () => {
+  //   try {
+  //     const token = sessionStorage.getItem('token');
+  //     if (!token) {
+  //       throw new Error('No authentication token found.');
+  //     }
 
-      await axios.put(
-        `${apiUrl}/appointment/${appointment.id}/complete`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'ngrok-skip-browser-warning': 'true',
-          },
-          withCredentials: true,
-        }
-      );
+  //     await axios.put(
+  //       `${apiUrl}/appointment/${appointment.id}/complete`,
+  //       {},
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           'ngrok-skip-browser-warning': 'true',
+  //         },
+  //         withCredentials: true,
+  //       }
+  //     );
 
-      queryClient.invalidateQueries(['appointments']);
-    } catch (error) {
-      alert(error.response?.data?.message || 'Failed to mark appointment as completed.');
-    }
-  };
+  //     queryClient.invalidateQueries(['appointments']);
+  //   } catch (error) {
+  //     alert(error.response?.data?.message || 'Failed to mark appointment as completed.');
+  //   }
+  // };
 
   const handleDeleteAppointment = async () => {
     try {
@@ -215,7 +215,7 @@ const indicatorClass =
             />
           </button>
         )}
-        {appointment.status === 'booked' && isToday(appointment.date) && (
+        {/* {appointment.status === 'booked' && isToday(appointment.date) && (
           <button
             onClick={handleCompleteAppointment}
             style={{ marginRight: '10px' }}
@@ -230,7 +230,7 @@ const indicatorClass =
               }}
             />
           </button>
-        )}
+        )} */}
         {appointment.status !== 'completed' && (
           <button
             onClick={() =>

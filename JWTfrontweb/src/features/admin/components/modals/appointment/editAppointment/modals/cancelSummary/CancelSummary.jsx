@@ -38,7 +38,7 @@ const CancelSummary = ({ onClose, onConfirm, appointment, user }) => {
             </div>
             <div className="cancel-status">
               <span className="status-dot" />
-              <span className="status-text">Booked</span>
+              <span className="status-text">{appointment?.status}</span>
               <p className="visit-date-label">Scheduled Visit:</p>
               <p className="visit-date-value">{formatDate(appointment?.date)}</p>
             </div>

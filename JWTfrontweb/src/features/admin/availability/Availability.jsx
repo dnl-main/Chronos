@@ -32,6 +32,7 @@ const initialState = {
   selectedUserId: null,
   searchQueryAll: '',
   overlayContent: null,
+  isSearching: false,
 };
 
 const reducer = (state, action) => {
@@ -56,6 +57,8 @@ const reducer = (state, action) => {
       return { ...state, searchQueryAll: action.payload };
     case 'SET_OVERLAY_CONTENT':
       return { ...state, overlayContent: action.payload };
+    case 'SET_IS_SEARCHING':
+      return { ...state, isSearching: action.payload };
     default:
       return state;
   }
@@ -74,17 +77,41 @@ const Availability = () => {
     selectedUserId,
     searchQueryAll,
     overlayContent,
+    isSearching,
   } = state;
   const navigate = useNavigate();
   const parentRef = useRef(null);
+  const searchTimeoutRef = useRef(null);
 
-  // Debounced search handler
+  // Debounced search handler with 1-second spinner delay
   const debouncedSearch = useCallback(
     debounce((value) => {
-      dispatch({ type: 'SET_SEARCH_QUERY_ALL', payload: value });
+      // Clear previous timeout
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+
+      // Set searching state immediately
+      dispatch({ type: 'SET_IS_SEARCHING', payload: true });
+
+      // Set 1-second timeout for spinner
+      searchTimeoutRef.current = setTimeout(() => {
+        // The search processing happens here, but spinner will show after 1 second
+        dispatch({ type: 'SET_SEARCH_QUERY_ALL', payload: value });
+        dispatch({ type: 'SET_IS_SEARCHING', payload: false });
+      }, 1000); // 1-second delay
     }, 300),
     []
   );
+
+  // Cleanup timeout on unmount or search change
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Helper function to check if a member matches a search query
   const matchesSearchQuery = useCallback((member, query) => {
@@ -306,6 +333,7 @@ const Availability = () => {
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load certificates.' });
     }
 
+    // Update loading state excluding search state
     dispatch({ type: 'SET_LOADING', payload: isUserLoading || isCrewLoading || isCertificatesLoading });
   }, [
     navigate,
@@ -323,7 +351,11 @@ const Availability = () => {
     certificatesError,
   ]);
 
-  if (loading) return <Spinner />;
+  // Show spinner if initial loading or searching for more than 3 seconds
+  if (loading || (isSearching && searchQueryAll)) {
+    return <Spinner />;
+  }
+
   if (error) return <div className="availability-error">{error}</div>;
 
   const tabs = ['all', 'available', 'vacation', 'on board'];

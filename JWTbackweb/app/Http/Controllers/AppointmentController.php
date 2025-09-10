@@ -57,105 +57,107 @@ class AppointmentController extends Controller
         }
     }
 
-    public function index()
-    {
-        $this->updatePastBookedAppointments();
-        $user = JWTAuth::user();
-        $today = Carbon::today()->startOfDay();
+   public function index()
+{
+    $this->updatePastBookedAppointments();
+    $user = JWTAuth::user();
+    $today = Carbon::today()->startOfDay();
 
-        if ($user->role === 'admin') {
-            $appointments = Appointment::with(['user.profilePicture'])
-                ->where('date', '>=', $today)
-                ->orderBy('date', 'asc')
-                ->get()
-                ->map(function ($appointment) {
-                    $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
-                        ? ($this->isUrl($appointment->user->profilePicture->path)
-                            ? $appointment->user->profilePicture->path
-                            : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
-                        : null;
-
-                    return [
-                        'id' => $appointment->id,
-                        'user_id' => $appointment->user_id,
-                        'date' => $appointment->date,
-                        'start_time' => $appointment->start_time,
-                        'end_time' => $appointment->end_time,
-                        'department' => $appointment->department,
-                        'crewing_dept' => $appointment->crewing_dept,
-                        'operator' => $appointment->operator,
-                        'accounting_task' => $appointment->accounting_task,
-                        'employee' => $appointment->employee,
-                        'purpose' => $appointment->purpose,
-                        'status' => $appointment->status,
-                        'computed_status' => $this->getAppointmentStatus($appointment),
-                        'user' => $appointment->user ? [
-                            'first_name' => $appointment->user->first_name,
-                            'middle_name' => $appointment->user->middle_name,
-                            'last_name' => $appointment->user->last_name,
-                            'email' => $appointment->user->email,
-                            'mobile' => $appointment->user->mobile,
-                            'position' => $appointment->user->position,
-                            'department' => $appointment->user->department,
-                            'availability' => $appointment->user->availability,
-                            'gender' => $appointment->user->gender,
-                            'civil_status' => $appointment->user->civil_status,
-                            'birthday' => $appointment->user->birthday,
-                            'address' => $this->formatAddress($appointment->user),
-                            'profilePicture' => $profilePicture,
-                        ] : null,
-                    ];
-                });
-            return response()->json($appointments, 200);
-        }
-
-        $appointment = Appointment::with(['user.profilePicture'])
-            ->where('user_id', $user->id)
+    if ($user->role === 'admin') {
+        $appointments = Appointment::with(['user.profilePicture'])
             ->where('date', '>=', $today)
-            ->whereIn('status', ['booked', 'pending'])
             ->orderBy('date', 'asc')
-            ->first();
-        if ($appointment) {
-            $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
-                ? ($this->isUrl($appointment->user->profilePicture->path)
-                    ? $appointment->user->profilePicture->path
-                    : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
-                : null;
+            ->orderBy('start_time', 'asc')
+            ->get()
+            ->map(function ($appointment) {
+                $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
+                    ? ($this->isUrl($appointment->user->profilePicture->path)
+                        ? $appointment->user->profilePicture->path
+                        : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
+                    : null;
 
-            return response()->json([
-                'id' => $appointment->id,
-                'user_id' => $appointment->user_id,
-                'date' => $appointment->date,
-                'start_time' => $appointment->start_time,
-                'end_time' => $appointment->end_time,
-                'department' => $appointment->department,
-                'crewing_dept' => $appointment->crewing_dept,
-                'operator' => $appointment->operator,
-                'accounting_task' => $appointment->accounting_task,
-                'employee' => $appointment->employee,
-                'purpose' => $appointment->purpose,
-                'status' => $appointment->status,
-                'computed_status' => $this->getAppointmentStatus($appointment),
-                'user' => [
-                    'first_name' => $user->first_name,
-                    'middle_name' => $user->middle_name,
-                    'last_name' => $user->last_name,
-                    'email' => $user->email,
-                    'mobile' => $user->mobile,
-                    'position' => $user->position,
-                    'department' => $user->department,
-                    'availability' => $user->availability,
-                    'gender' => $user->gender,
-                    'civil_status' => $user->civil_status,
-                    'birthday' => $user->birthday,
-                    'address' => $this->formatAddress($user),
-                    'profilePicture' => $profilePicture,
-                ],
-            ], 200);
-        }
-
-        return response()->json([], 200);
+                return [
+                    'id' => $appointment->id,
+                    'user_id' => $appointment->user_id,
+                    'date' => $appointment->date,
+                    'start_time' => $appointment->start_time,
+                    'end_time' => $appointment->end_time,
+                    'department' => $appointment->department,
+                    'crewing_dept' => $appointment->crewing_dept,
+                    'operator' => $appointment->operator,
+                    'accounting_task' => $appointment->accounting_task,
+                    'employee' => $appointment->employee,
+                    'purpose' => $appointment->purpose,
+                    'status' => $appointment->status,
+                    'computed_status' => $this->getAppointmentStatus($appointment),
+                    'user' => $appointment->user ? [
+                        'first_name' => $appointment->user->first_name,
+                        'middle_name' => $appointment->user->middle_name,
+                        'last_name' => $appointment->user->last_name,
+                        'email' => $appointment->user->email,
+                        'mobile' => $appointment->user->mobile,
+                        'position' => $appointment->user->position,
+                        'department' => $appointment->user->department,
+                        'availability' => $appointment->user->availability,
+                        'gender' => $appointment->user->gender,
+                        'civil_status' => $appointment->user->civil_status,
+                        'birthday' => $appointment->user->birthday,
+                        'address' => $this->formatAddress($appointment->user),
+                        'profilePicture' => $profilePicture,
+                    ] : null,
+                ];
+            });
+        return response()->json($appointments, 200);
     }
+
+    $appointment = Appointment::with(['user.profilePicture'])
+        ->where('user_id', $user->id)
+        ->where('date', '>=', $today)
+        ->whereIn('status', ['booked', 'pending'])
+        ->orderBy('date', 'asc')
+        ->orderBy('start_time', 'asc')
+        ->first();
+    if ($appointment) {
+        $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
+            ? ($this->isUrl($appointment->user->profilePicture->path)
+                ? $appointment->user->profilePicture->path
+                : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
+            : null;
+
+        return response()->json([
+            'id' => $appointment->id,
+            'user_id' => $appointment->user_id,
+            'date' => $appointment->date,
+            'start_time' => $appointment->start_time,
+            'end_time' => $appointment->end_time,
+            'department' => $appointment->department,
+            'crewing_dept' => $appointment->crewing_dept,
+            'operator' => $appointment->operator,
+            'accounting_task' => $appointment->accounting_task,
+            'employee' => $appointment->employee,
+            'purpose' => $appointment->purpose,
+            'status' => $appointment->status,
+            'computed_status' => $this->getAppointmentStatus($appointment),
+            'user' => [
+                'first_name' => $user->first_name,
+                'middle_name' => $user->middle_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'mobile' => $user->mobile,
+                'position' => $user->position,
+                'department' => $user->department,
+                'availability' => $user->availability,
+                'gender' => $user->gender,
+                'civil_status' => $user->civil_status,
+                'birthday' => $user->birthday,
+                'address' => $this->formatAddress($user),
+                'profilePicture' => $profilePicture,
+            ],
+        ], 200);
+    }
+
+    return response()->json([], 200);
+}
 
     private function formatAddress($user)
     {
@@ -192,7 +194,7 @@ class AppointmentController extends Controller
         return response()->json(['count' => $count], 200);
     }
 
-    public function getUpcomingCount(Request $request)
+   public function getUpcomingCount(Request $request)
     {
         $user = JWTAuth::user();
 
@@ -205,13 +207,20 @@ class AppointmentController extends Controller
         $today = Carbon::today()->startOfDay();
 
         $count = Appointment::where('employee', $employeeName)
-            ->where('date', '>=', $today)
             ->where('status', 'booked')
+            ->where('date', '>=', $today)
             ->count();
+
+        \Log::info('Upcoming Count Query: ' . Appointment::where('employee', $employeeName)
+            ->where('status', 'booked')
+            ->where('date', '>=', $today)->toSql(), 
+            Appointment::where('employee', $employeeName)
+                ->where('status', 'booked')
+                ->where('date', '>=', $today)->getBindings()
+        );
 
         return response()->json(['count' => $count], 200);
     }
-
     private function getAppointmentStatus($appointment)
     {
         $today = now()->startOfDay();
@@ -246,7 +255,7 @@ class AppointmentController extends Controller
         // Prevent overlapping appointments
         $existing = Appointment::where('user_id', $validated['user_id'])
             ->where('date', $validated['date'])
-            ->where('status', '!=', 'completed')
+            ->whereNotIn('status', ['completed', 'cancelled'])
             ->where(function ($query) use ($validated) {
                 $query->whereBetween('start_time', [$validated['start_time'], $validated['end_time']])
                       ->orWhereBetween('end_time', [$validated['start_time'], $validated['end_time']])
@@ -317,7 +326,7 @@ class AppointmentController extends Controller
         // Prevent overlapping appointments
         $existing = Appointment::where('user_id', $validated['user_id'])
             ->where('date', $validated['date'])
-            ->where('status', '!=', 'completed')
+            ->whereNotIn('status', ['completed', 'cancelled'])
             ->where(function ($query) use ($validated) {
                 $query->whereBetween('start_time', [$validated['start_time'], $validated['end_time']])
                       ->orWhereBetween('end_time', [$validated['start_time'], $validated['end_time']])
@@ -418,7 +427,7 @@ class AppointmentController extends Controller
         // Prevent overlapping appointments
         $existing = Appointment::where('user_id', $validated['user_id'])
             ->where('date', $validated['date'])
-            ->where('status', '!=', 'completed')
+            ->whereNotIn('status', ['completed', 'cancelled'])
             ->where('id', '!=', $id)
             ->where(function ($query) use ($validated) {
                 $query->whereBetween('start_time', [$validated['start_time'], $validated['end_time']])
@@ -576,7 +585,7 @@ class AppointmentController extends Controller
         // Prevent overlapping appointments
         $existing = Appointment::where('user_id', $validated['user_id'] ?? $appointment->user_id)
             ->where('date', $validated['date'])
-            ->where('status', '!=', 'completed')
+            ->whereNotIn('status', ['completed', 'cancelled'])
             ->where('id', '!=', $id)
             ->where(function ($query) use ($validated) {
                 $query->whereBetween('start_time', [$validated['start_time'], $validated['end_time']])
@@ -685,62 +694,63 @@ class AppointmentController extends Controller
         return response()->json(['message' => 'Appointment cancelled successfully'], 200);
     }
 
-    public function getUpcomingAppointments()
-    {
-        $this->updatePastBookedAppointments();
-        $user = JWTAuth::user();
+   public function getUpcomingAppointments()
+{
+    $this->updatePastBookedAppointments();
+    $user = JWTAuth::user();
 
-        if ($user->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $today = Carbon::today()->startOfDay();
-        $appointments = Appointment::with(['user.profilePicture'])
-            ->where('date', '>=', $today)
-            ->orderBy('date', 'asc')
-            ->get()
-            ->map(function ($appointment) {
-                $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
-                    ? ($this->isUrl($appointment->user->profilePicture->path)
-                        ? $appointment->user->profilePicture->path
-                        : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
-                    : null;
-
-                return [
-                    'id' => $appointment->id,
-                    'user_id' => $appointment->user_id,
-                    'date' => $appointment->date,
-                    'start_time' => $appointment->start_time,
-                    'end_time' => $appointment->end_time,
-                    'department' => $appointment->department,
-                    'crewing_dept' => $appointment->crewing_dept,
-                    'operator' => $appointment->operator,
-                    'accounting_task' => $appointment->accounting_task,
-                    'employee' => $appointment->employee,
-                    'purpose' => $appointment->purpose,
-                    'status' => $appointment->status,
-                    'computed_status' => $this->getAppointmentStatus($appointment),
-                    'user' => $appointment->user ? [
-                        'first_name' => $appointment->user->first_name,
-                        'middle_name' => $appointment->user->middle_name,
-                        'last_name' => $appointment->user->last_name,
-                        'email' => $appointment->user->email,
-                        'mobile' => $appointment->user->mobile,
-                        'position' => $appointment->user->position,
-                        'department' => $appointment->user->department,
-                        'availability' => $appointment->user->availability,
-                        'gender' => $appointment->user->gender,
-                        'civil_status' => $appointment->user->civil_status,
-                        'birthday' => $appointment->user->birthday,
-                        'address' => $this->formatAddress($appointment->user),
-                        'profilePicture' => $profilePicture,
-                    ] : null,
-                ];
-            });
-
-        return response()->json($appointments, 200);
+    if ($user->role !== 'admin') {
+        return response()->json(['message' => 'Unauthorized'], 403);
     }
 
+    $today = Carbon::today()->startOfDay();
+    $appointments = Appointment::with(['user.profilePicture'])
+        ->where('date', '>=', $today)
+        ->where('status', '!=', 'cancelled')
+        ->orderBy('date', 'asc')
+        ->orderBy('start_time', 'asc')
+        ->get()
+        ->map(function ($appointment) {
+            $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
+                ? ($this->isUrl($appointment->user->profilePicture->path)
+                    ? $appointment->user->profilePicture->path
+                    : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
+                : null;
+
+            return [
+                'id' => $appointment->id,
+                'user_id' => $appointment->user_id,
+                'date' => $appointment->date,
+                'start_time' => $appointment->start_time,
+                'end_time' => $appointment->end_time,
+                'department' => $appointment->department,
+                'crewing_dept' => $appointment->crewing_dept,
+                'operator' => $appointment->operator,
+                'accounting_task' => $appointment->accounting_task,
+                'employee' => $appointment->employee,
+                'purpose' => $appointment->purpose,
+                'status' => $appointment->status,
+                'computed_status' => $this->getAppointmentStatus($appointment),
+                'user' => $appointment->user ? [
+                    'first_name' => $appointment->user->first_name,
+                    'middle_name' => $appointment->user->middle_name,
+                    'last_name' => $appointment->user->last_name,
+                    'email' => $appointment->user->email,
+                    'mobile' => $appointment->user->mobile,
+                    'position' => $appointment->user->position,
+                    'department' => $appointment->user->department,
+                    'availability' => $appointment->user->availability,
+                    'gender' => $appointment->user->gender,
+                    'civil_status' => $appointment->user->civil_status,
+                    'birthday' => $appointment->user->birthday,
+                    'address' => $this->formatAddress($appointment->user),
+                    'profilePicture' => $profilePicture,
+                ] : null,
+            ];
+        });
+
+    return response()->json($appointments, 200);
+}
     public function book(Request $request)
     {
         $user = JWTAuth::user();
@@ -761,7 +771,7 @@ class AppointmentController extends Controller
         // Prevent overlapping appointments
         $existing = Appointment::where('user_id', $validated['user_id'])
             ->where('date', $validated['date'])
-            ->where('status', '!=', 'completed')
+            ->whereNotIn('status', ['completed', 'cancelled'])
             ->where(function ($query) use ($validated) {
                 $query->whereBetween('start_time', [$validated['start_time'], $validated['end_time']])
                       ->orWhereBetween('end_time', [$validated['start_time'], $validated['end_time']])
@@ -896,115 +906,117 @@ class AppointmentController extends Controller
         ], 200);
     }
 
-    public function getSpecific(Request $request)
-    {
-        $this->updatePastBookedAppointments();
-        $user = JWTAuth::user();
-        $employeeName = $user->first_name . ' ' . $user->last_name;
+  public function getSpecific(Request $request)
+{
+    $this->updatePastBookedAppointments();
+    $user = JWTAuth::user();
+    $employeeName = $user->first_name . ' ' . $user->last_name;
 
-        if ($user->role === 'admin') {
-            $appointments = Appointment::with(['user.profilePicture'])
-                ->where('employee', $employeeName)
-                ->where(function ($query) {
-                    // Include all completed appointments, regardless of date
-                    $query->where('status', 'completed')
-                        // Include non-completed appointments from today onward
-                        ->orWhere(function ($q) {
-                            $q->where('status', '!=', 'completed')
-                              ->where('date', '>=', Carbon::today()->startOfDay());
-                        });
-                })
-                ->orderBy('date', 'asc')
-                ->get()
-                ->map(function ($appointment) {
-                    $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
-                        ? ($this->isUrl($appointment->user->profilePicture->path)
-                            ? $appointment->user->profilePicture->path
-                            : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
-                        : null;
-
-                    return [
-                        'id' => $appointment->id,
-                        'user_id' => $appointment->user_id,
-                        'date' => $appointment->date,
-                        'start_time' => $appointment->start_time,
-                        'end_time' => $appointment->end_time,
-                        'department' => $appointment->department,
-                        'crewing_dept' => $appointment->crewing_dept,
-                        'operator' => $appointment->operator,
-                        'accounting_task' => $appointment->accounting_task,
-                        'employee' => $appointment->employee,
-                        'purpose' => $appointment->purpose,
-                        'status' => $appointment->status,
-                        'computed_status' => $this->getAppointmentStatus($appointment),
-                        'user' => $appointment->user ? [
-                            'first_name' => $appointment->user->first_name,
-                            'middle_name' => $appointment->user->middle_name,
-                            'last_name' => $appointment->user->last_name,
-                            'email' => $appointment->user->email,
-                            'mobile' => $appointment->user->mobile,
-                            'position' => $appointment->user->position,
-                            'department' => $appointment->user->department,
-                            'availability' => $appointment->user->availability,
-                            'gender' => $appointment->user->gender,
-                            'civil_status' => $appointment->user->civil_status,
-                            'birthday' => $appointment->user->birthday,
-                            'address' => $this->formatAddress($appointment->user),
-                            'profilePicture' => $profilePicture,
-                        ] : null,
-                    ];
-                });
-            return response()->json($appointments, 200);
-        }
-
-        $appointment = Appointment::with(['user.profilePicture'])
-            ->where('user_id', $user->id)
+    if ($user->role === 'admin') {
+        $appointments = Appointment::with(['user.profilePicture'])
             ->where('employee', $employeeName)
-            ->where('date', '>=', Carbon::today()->startOfDay())
-            ->where('status', '!=', 'completed')
+            ->where(function ($query) {
+                // Include completed and cancelled appointments regardless of date
+                $query->whereIn('status', ['completed', 'cancelled'])
+                      // Include non-completed, non-cancelled appointments from today onward
+                      ->orWhere(function ($q) {
+                          $q->whereNotIn('status', ['completed', 'cancelled'])
+                            ->where('date', '>=', Carbon::today()->startOfDay());
+                      });
+            })
             ->orderBy('date', 'asc')
-            ->first();
-        if ($appointment) {
-            $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
-                ? ($this->isUrl($appointment->user->profilePicture->path)
-                    ? $appointment->user->profilePicture->path
-                    : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
-                : null;
+            ->orderBy('start_time', 'asc')
+            ->get()
+            ->map(function ($appointment) {
+                $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
+                    ? ($this->isUrl($appointment->user->profilePicture->path)
+                        ? $appointment->user->profilePicture->path
+                        : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
+                    : null;
 
-            return response()->json([
-                'id' => $appointment->id,
-                'user_id' => $appointment->user_id,
-                'date' => $appointment->date,
-                'start_time' => $appointment->start_time,
-                'end_time' => $appointment->end_time,
-                'department' => $appointment->department,
-                'crewing_dept' => $appointment->crewing_dept,
-                'operator' => $appointment->operator,
-                'accounting_task' => $appointment->accounting_task,
-                'employee' => $appointment->employee,
-                'purpose' => $appointment->purpose,
-                'status' => $appointment->status,
-                'computed_status' => $this->getAppointmentStatus($appointment),
-                'user' => [
-                    'first_name' => $user->first_name,
-                    'middle_name' => $user->middle_name,
-                    'last_name' => $user->last_name,
-                    'email' => $user->email,
-                    'mobile' => $user->mobile,
-                    'position' => $user->position,
-                    'department' => $user->department,
-                    'availability' => $user->availability,
-                    'gender' => $user->gender,
-                    'civil_status' => $user->civil_status,
-                    'birthday' => $user->birthday,
-                    'address' => $this->formatAddress($user),
-                    'profilePicture' => $profilePicture,
-                ],
-            ], 200);
-        }
-
-        return response()->json([], 200);
+                return [
+                    'id' => $appointment->id,
+                    'user_id' => $appointment->user_id,
+                    'date' => $appointment->date,
+                    'start_time' => $appointment->start_time,
+                    'end_time' => $appointment->end_time,
+                    'department' => $appointment->department,
+                    'crewing_dept' => $appointment->crewing_dept,
+                    'operator' => $appointment->operator,
+                    'accounting_task' => $appointment->accounting_task,
+                    'employee' => $appointment->employee,
+                    'purpose' => $appointment->purpose,
+                    'status' => $appointment->status,
+                    'computed_status' => $this->getAppointmentStatus($appointment),
+                    'user' => $appointment->user ? [
+                        'first_name' => $appointment->user->first_name,
+                        'middle_name' => $appointment->user->middle_name,
+                        'last_name' => $appointment->user->last_name,
+                        'email' => $appointment->user->email,
+                        'mobile' => $appointment->user->mobile,
+                        'position' => $appointment->user->position,
+                        'department' => $appointment->user->department,
+                        'availability' => $appointment->user->availability,
+                        'gender' => $appointment->user->gender,
+                        'civil_status' => $appointment->user->civil_status,
+                        'birthday' => $appointment->user->birthday,
+                        'address' => $this->formatAddress($appointment->user),
+                        'profilePicture' => $profilePicture,
+                    ] : null,
+                ];
+            });
+        return response()->json($appointments, 200);
     }
+
+    $appointment = Appointment::with(['user.profilePicture'])
+        ->where('user_id', $user->id)
+        ->where('employee', $employeeName)
+        ->where('date', '>=', Carbon::today()->startOfDay())
+        ->whereNotIn('status', ['completed', 'cancelled'])
+        ->orderBy('date', 'asc')
+        ->orderBy('start_time', 'asc')
+        ->first();
+    if ($appointment) {
+        $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path
+            ? ($this->isUrl($appointment->user->profilePicture->path)
+                ? $appointment->user->profilePicture->path
+                : env('APP_URL') . '/storage/' . ltrim($appointment->user->profilePicture->path, '/'))
+            : null;
+
+        return response()->json([
+            'id' => $appointment->id,
+            'user_id' => $appointment->user_id,
+            'date' => $appointment->date,
+            'start_time' => $appointment->start_time,
+            'end_time' => $appointment->end_time,
+            'department' => $appointment->department,
+            'crewing_dept' => $appointment->crewing_dept,
+            'operator' => $appointment->operator,
+            'accounting_task' => $appointment->accounting_task,
+            'employee' => $appointment->employee,
+            'purpose' => $appointment->purpose,
+            'status' => $appointment->status,
+            'computed_status' => $this->getAppointmentStatus($appointment),
+            'user' => [
+                'first_name' => $user->first_name,
+                'middle_name' => $user->middle_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'mobile' => $user->mobile,
+                'position' => $user->position,
+                'department' => $user->department,
+                'availability' => $user->availability,
+                'gender' => $user->gender,
+                'civil_status' => $user->civil_status,
+                'birthday' => $user->birthday,
+                'address' => $this->formatAddress($user),
+                'profilePicture' => $profilePicture,
+            ],
+        ], 200);
+    }
+
+    return response()->json([], 200);
+}
 
     public function getUpcomingSpecific(Request $request)
     {
@@ -1035,8 +1047,8 @@ class AppointmentController extends Controller
                     'id' => $appointment->id,
                     'user_id' => $appointment->user_id,
                     'date' => $appointment->date,
-                    'start_time' => $appointment->status === 'cancelled' ? null : $appointment->start_time,
-                    'end_time' => $appointment->status === 'cancelled' ? null : $appointment->end_time,
+                    'start_time' => $appointment->start_time,
+                    'end_time' => $appointment->end_time,
                     'department' => $appointment->department,
                     'crewing_dept' => $appointment->crewing_dept,
                     'operator' => $appointment->operator,
@@ -1143,7 +1155,7 @@ class AppointmentController extends Controller
         ], 200);
     }
 
-    public function history()
+  public function history()
     {
         $this->updatePastBookedAppointments();
         $user = JWTAuth::user();
@@ -1154,7 +1166,9 @@ class AppointmentController extends Controller
 
         $appointments = Appointment::with(['user.profilePicture'])
             ->where('user_id', $user->id)
+            ->orderByRaw("CASE WHEN status = 'booked' THEN 1 ELSE 0 END DESC")
             ->orderBy('date', 'desc')
+            ->orderBy('start_time', 'desc')
             ->get()
             ->map(function ($appointment) {
                 $profilePicture = $appointment->user && $appointment->user->profilePicture && $appointment->user->profilePicture->path

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import './certificateView.css';
 import CertificateModalCard from '../view/cards/CertificateViewCard';
 import CertificatePopup from '../Popup/CertificatePopup';
@@ -13,6 +14,7 @@ const CertificateModal = ({ userId, onClose }) => {
   const [filter, setFilter] = useState('all');
   const [error, setError] = useState(null);
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const queryClient = useQueryClient();
 
   const fetchCertificates = async () => {
     if (!userId || isNaN(userId)) {
@@ -55,13 +57,36 @@ const CertificateModal = ({ userId, onClose }) => {
     setSelectedCertificate(certificate);
   };
 
-  const handleDeleteCertificate = async (certificateId) => {
+  const declineMutation = useMutation({
+    mutationFn: async (certificateId) => {
+      const token = sessionStorage.getItem('token');
+      const response = await axios.post(`${apiUrl}/certificates/${certificateId}/decline`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
+        withCredentials: true,
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['certificates', userId]);
+      queryClient.invalidateQueries(['crewCerts']);
+      fetchCertificates(); // Refresh certificates
+    },
+    onError: (error) => {
+      console.error('Error declining certificate:', error);
+      setError('Failed to decline certificate');
+    },
+  });
+
+  const handleDeclineCertificate = async (certificateId) => {
     setSelectedCertificate(null); // Close popup immediately
-    await fetchCertificates(); // Refresh certificates from backend
+    declineMutation.mutate(certificateId);
   };
 
   const handleStatusChange = async () => {
-    await fetchCertificates(); // Refresh certificates from backend
+    await fetchCertificates(); // Refresh certificates after status change
   };
 
   const filteredCertificates = certificates.filter(cert => {
@@ -115,6 +140,20 @@ const CertificateModal = ({ userId, onClose }) => {
                     <Circle_Primary style={{ color: "var(--yellow-indicator)", width: "1.8rem", height: "1.8rem" }} />
                     <p>Pending</p>
                   </button>
+                  <button
+                    className={`certificateModal-box-in-core-tabs-rejected ${filter === 'rejected' ? 'active' : ''}`}
+                    onClick={() => setFilter('rejected')}
+                  >
+                    <Circle_Primary style={{ color: "var(--orange-indicator)", width: "1.8rem", height: "1.8rem" }} />
+                    <p>Rejected</p>
+                  </button>
+                  <button
+                    className={`certificateModal-box-in-core-tabs-expired ${filter === 'expired' ? 'active' : ''}`}
+                    onClick={() => setFilter('expired')}
+                  >
+                    <Circle_Primary style={{ color: "var(--red-indicator)", width: "1.8rem", height: "1.8rem" }} />
+                    <p>Expired</p>
+                  </button>
                 </div>
                 <div className="certificateModal-box-in-core-cards">
                   {filteredCertificates.length > 0 ? (
@@ -124,11 +163,11 @@ const CertificateModal = ({ userId, onClose }) => {
                         certificate={cert}
                         onCertificateClick={handleCertificateClick}
                         onStatusChange={handleStatusChange}
-                        onDeleteCertificate={handleDeleteCertificate}
+                        onDeclineCertificate={handleDeclineCertificate}
                       />
                     ))
                   ) : (
-                    <p>No certificates available for this user</p>
+                    <p>No certificates available for this filter</p>
                   )}
                 </div>
               </>
@@ -140,7 +179,7 @@ const CertificateModal = ({ userId, onClose }) => {
         <CertificatePopup
           certificate={selectedCertificate}
           onClose={() => setSelectedCertificate(null)}
-          onDelete={handleDeleteCertificate}
+          onDecline={handleDeclineCertificate}
         />
       )}
     </div>
