@@ -5,7 +5,7 @@ import { useQueries, useQuery } from '@tanstack/react-query';
 
 // Components import
 import ScheduleCard from '../schedule/cards/ScheduleCard';
-import Spinner from '../../../components/ui/Spinner';
+import Spinner from '../../../components/ui/Spinner'
 import Appointment from '../components/modals/appointment/manageAppointment/Appointment';
 import EditAppointment from '../components/modals/appointment/editAppointment/EditAppointment';
 import AvailableCrew from './homeComponents/AvailableCrew';
