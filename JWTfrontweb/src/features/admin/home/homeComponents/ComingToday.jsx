@@ -1,34 +1,55 @@
 import React from 'react';
+import { format, parseISO } from 'date-fns';
+import { utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz';
 import Calendar_Event from '../../../../assets/icons/Calendar_Event.svg?react';
 import Arrow_Right_SM from '../../../../assets/icons/Arrow_Right_SM.svg?react';
 
 const ComingToday = ({ todayCount, todayAppointments, onRedirect }) => {
-  // Get the current time
+  // Get the current date in PST
   const now = new Date();
-  const todayDate = now.toISOString().split('T')[0]; // e.g., "2025-09-10"
+  const todayDate = format(utcToZonedTime(now, 'America/Los_Angeles'), 'yyyy-MM-dd'); // e.g., "2025-09-11" in PST
+  console.log('Today Date (PST):', todayDate); // Debug log
+  console.log('Today Appointments:', todayAppointments); // Debug log
 
   // Find the appointment with the closest start_time to now
   const closestAppointment = todayAppointments.length > 0
     ? todayAppointments.reduce((closest, appointment) => {
-        // Combine today's date with appointment start_time
-        const appointmentTime = new Date(`${todayDate}T${appointment.start_time}`);
-        const closestTime = closest ? new Date(`${todayDate}T${closest.start_time}`) : null;
+        try {
+          // Combine today's date (PST) with appointment start_time
+          const appointmentTime = parseISO(`${todayDate}T${appointment.start_time}`);
+          const appointmentTimeInPST = utcToZonedTime(appointmentTime, 'America/Los_Angeles');
+          const appointmentTimeInUTC = zonedTimeToUtc(appointmentTimeInPST, 'America/Los_Angeles');
 
-        // Calculate time difference in milliseconds
-        const currentDiff = Math.abs(now - appointmentTime);
-        const closestDiff = closestTime ? Math.abs(now - closestTime) : Infinity;
+          const closestTime = closest
+            ? zonedTimeToUtc(
+                parseISO(`${todayDate}T${closest.start_time}`),
+                'America/Los_Angeles'
+              )
+            : null;
 
-        return currentDiff < closestDiff ? appointment : closest;
+          // Calculate time difference in milliseconds
+          const currentDiff = Math.abs(now - appointmentTimeInUTC);
+          const closestDiff = closestTime ? Math.abs(now - closestTime) : Infinity;
+
+          return currentDiff < closestDiff ? appointment : closest;
+        } catch (error) {
+          console.error('Error parsing appointment time:', appointment.start_time, error);
+          return closest;
+        }
       }, null)
     : null;
 
-  // Format the closest appointment time
+  console.log('Closest Appointment:', closestAppointment); // Debug log
+
+  // Format the closest appointment time in PHT
   const formattedTime = closestAppointment
-    ? new Date(`${todayDate}T${closestAppointment.start_time}`).toLocaleString('en-US', {
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true,
-      })
+    ? format(
+        utcToZonedTime(
+          parseISO(`${todayDate}T${closestAppointment.start_time}`),
+          'Asia/Manila'
+        ),
+        'h:mm a'
+      )
     : 'N/A';
 
   return (

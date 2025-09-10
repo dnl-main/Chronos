@@ -1,11 +1,12 @@
-// src/Home.jsx
 import React, { useReducer, useMemo, useCallback, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
+import { format, parseISO } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 
 // Components import
 import ScheduleCard from '../schedule/cards/ScheduleCard';
-import Spinner from '../../../components/ui/Spinner'
+import Spinner from '../../../components/ui/Spinner';
 import Appointment from '../components/modals/appointment/manageAppointment/Appointment';
 import EditAppointment from '../components/modals/appointment/editAppointment/EditAppointment';
 import AvailableCrew from './homeComponents/AvailableCrew';
@@ -117,7 +118,7 @@ const Home = () => {
         queryKey: ['todayCount'],
         queryFn: async () => {
           const token = sessionStorage.getItem('token');
-           const response = await fetch(`${apiUrl}/appointment/today/count?_limit=3`, {
+          const response = await fetch(`${apiUrl}/appointment/today/count`, {
             headers: {
               Authorization: `Bearer ${token}`,
               'ngrok-skip-browser-warning': 'true',
@@ -136,7 +137,7 @@ const Home = () => {
         queryKey: ['appointments'],
         queryFn: async () => {
           const token = sessionStorage.getItem('token');
-           const response = await fetch(`${apiUrl}/appointment/specific?_limit=3`, {
+          const response = await fetch(`${apiUrl}/appointment/specific`, {
             headers: {
               Authorization: `Bearer ${token}`,
               'ngrok-skip-browser-warning': 'true',
@@ -172,13 +173,6 @@ const Home = () => {
       },
     ],
   });
-
-  // Remove invalidateQueries on mount - this causes unnecessary refetches
-  // useEffect(() => {
-  //   queryClient.invalidateQueries(['todayCount']);
-  //   queryClient.invalidateQueries(['appointments']);
-  //   queryClient.invalidateQueries(['crewCounts']);
-  // }, [queryClient]);
 
   // Handle user data and redirects - prioritize sessionStorage
   useEffect(() => {
@@ -243,14 +237,26 @@ const Home = () => {
       dispatch({ type: 'SET_TODAY_COUNT', payload: todayCountQuery.data.count || 0 });
     }
     if (appointmentsQuery.data) {
+      console.log('Appointments Data:', appointmentsQuery.data); // Debug log
       const appointments = Array.isArray(appointmentsQuery.data) ? appointmentsQuery.data : [];
-      const today = new Date().toISOString().split('T')[0];
+      const today = format(utcToZonedTime(new Date(), 'America/Los_Angeles'), 'yyyy-MM-dd');
+      const normalizeDate = (dateString) => {
+        try {
+          const date = parseISO(dateString);
+          const dateInPST = utcToZonedTime(date, 'America/Los_Angeles');
+          return format(dateInPST, 'yyyy-MM-dd');
+        } catch (error) {
+          console.error('Error parsing date:', dateString, error);
+          return null;
+        }
+      };
       const todayAppointments = appointments
-        .filter((app) => new Date(app.date).toISOString().split('T')[0] === today && app.status === 'booked')
+        .filter((app) => normalizeDate(app.date) === today && app.status === 'booked')
         .slice(0, 3);
+      console.log('Today Appointments:', todayAppointments); // Debug log
       const pendingAppointments = appointments.filter((app) => app.status === 'pending').slice(0, 3);
       const upcomingAppointments = appointments
-        .filter((app) => new Date(app.date).toISOString().split('T')[0] >= today && app.status === 'booked')
+        .filter((app) => normalizeDate(app.date) >= today && app.status === 'booked')
         .slice(0, 3);
       dispatch({
         type: 'SET_APPOINTMENTS',
@@ -262,7 +268,7 @@ const Home = () => {
       });
       dispatch({
         type: 'SET_UPCOMING_COUNT',
-        payload: appointments.filter((app) => new Date(app.date).toISOString().split('T')[0] >= today && app.status === 'booked').length
+        payload: appointments.filter((app) => normalizeDate(app.date) >= today && app.status === 'booked').length
       });
     }
     if (crewCountsQuery.data) {
@@ -323,7 +329,8 @@ const Home = () => {
   const handleEditModalClose = useCallback(() => {
     dispatch({ type: 'SET_EDIT_MODAL_OPEN', payload: false });
     dispatch({ type: 'SET_SELECTED_APPOINTMENT', payload: null });
-  }, []);
+    queryClient.invalidateQueries(['appointments']); // Invalidate appointments query
+  }, [queryClient]);
 
   // Memoized derived data
   const nearestAppointment = useMemo(() => {

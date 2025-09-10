@@ -1,9 +1,10 @@
-
 import React, { useReducer, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import axios from 'axios';
+import { format, parseISO } from 'date-fns'; // Import date-fns
+import { zonedTimeToUtc, utcToZonedTime } from 'date-fns-tz'; // Import date-fns-tz
 
 // Components import
 import ScheduleCard from './cards/ScheduleCard';
@@ -63,25 +64,32 @@ const Schedule = () => {
     }
   }, [searchParams]);
 
-  // Normalize date to YYYY-MM-DD format
+  // Normalize date to YYYY-MM-DD format in PST
   const normalizeDate = useCallback((dateString) => {
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+    // Parse the date string and convert to PST
+    const date = parseISO(dateString); // Parse the input date string
+    const dateInPST = utcToZonedTime(date, 'America/Los_Angeles'); // Convert to PST
+    return format(dateInPST, 'yyyy-MM-dd'); // Format to YYYY-MM-DD
   }, []);
 
   // Sort appointments by date
   const sortAppointmentsByDate = useCallback((a, b) => {
-    return new Date(a.date).getTime() - new Date(b.date).getTime();
+    // Convert dates to UTC for consistent comparison
+    const dateA = zonedTimeToUtc(parseISO(a.date), 'America/Los_Angeles');
+    const dateB = zonedTimeToUtc(parseISO(b.date), 'America/Los_Angeles');
+    return dateA.getTime() - dateB.getTime();
   }, []);
 
+  // Get today's date in PST
+  const today = format(utcToZonedTime(new Date(), 'America/Los_Angeles'), 'yyyy-MM-dd');
+
   // Filtered appointment data for each tab
-  const today = new Date().toISOString().split('T')[0];
   const filteredAppointmentsToday = appointments
     .filter((app) => normalizeDate(app.date) === today && app.status === 'booked')
     .sort(sortAppointmentsByDate);
-  const filteredAppointmentsUpcoming = appointments
-    .filter((app) => normalizeDate(app.date) > today && app.status !== 'completed' && app.status !== 'pending' && app.status !== 'cancelled')
-    .sort(sortAppointmentsByDate);
+ const filteredAppointmentsUpcoming = appointments
+  .filter((app) => normalizeDate(app.date) >= today && app.status !== 'completed' && app.status !== 'pending' && app.status !== 'cancelled')
+  .sort(sortAppointmentsByDate);
   const filteredAppointmentsPending = appointments
     .filter((app) => app.status === 'pending' && normalizeDate(app.date) >= today)
     .sort(sortAppointmentsByDate);
@@ -96,10 +104,7 @@ const Schedule = () => {
   const todayVirtualizer = useVirtualizer({
     getScrollElement: () => parentRef.current,
     count: filteredAppointmentsToday.length,
-
     estimateSize: () => 174, // Adjust based on ScheduleCard height
-
-
     overscan: 20,
     paddingStart: 20,
     paddingEnd: 20,
