@@ -144,14 +144,14 @@ const CertificateModal = ({ userId, onClose }) => {
                     className={`certificateModal-box-in-core-tabs-rejected ${filter === 'rejected' ? 'active' : ''}`}
                     onClick={() => setFilter('rejected')}
                   >
-                    <Circle_Primary style={{ color: "var(--orange-indicator)", width: "1.8rem", height: "1.8rem" }} />
+                    <Circle_Primary style={{ color: "var(--red-indicator)", width: "1.8rem", height: "1.8rem" }} />
                     <p>Rejected</p>
                   </button>
                   <button
                     className={`certificateModal-box-in-core-tabs-expired ${filter === 'expired' ? 'active' : ''}`}
                     onClick={() => setFilter('expired')}
                   >
-                    <Circle_Primary style={{ color: "var(--red-indicator)", width: "1.8rem", height: "1.8rem" }} />
+                    <Circle_Primary style={{ color: "var(--black-indicator)", width: "1.8rem", height: "1.8rem" }} />
                     <p>Expired</p>
                   </button>
                 </div>

@@ -88,7 +88,8 @@
 .certificateModal-box-in-core-tabs-all,
 .certificateModal-box-in-core-tabs-approved,
 .certificateModal-box-in-core-tabs-pending,
-.certificateModal-box-in-core-tabs-required {
+.certificateModal-box-in-core-tabs-rejected,
+.certificateModal-box-in-core-tabs-expired {
   all: unset;
   display: flex;
   flex-direction: row;
@@ -110,7 +111,8 @@
 
 .certificateModal-box-in-core-tabs-approved,
 .certificateModal-box-in-core-tabs-pending,
-.certificateModal-box-in-core-tabs-required {
+.certificateModal-box-in-core-tabs-expired,
+.certificateModal-box-in-core-tabs-rejected {
   color: var(--black-color);
 }
 

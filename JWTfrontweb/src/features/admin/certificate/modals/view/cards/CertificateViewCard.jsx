@@ -16,24 +16,24 @@ const CertificateModalCard = ({ certificate, onCertificateClick, onStatusChange 
     pending: 'var(--yellow-indicator)',      
     approved: 'var(--green-indicator)',      
     rejected: 'var(--red-indicator)',      
-    booked: 'var(--blue-indicator)',    
-    default: 'var(--black-color)'       
+    expired: 'var(--black-indicator)',    
+    default: 'var(--blue-color)'       
   };
 
   const statusBgColors = {
     pending: 'var(--yellow-indicator-opacity-15)',      
     approved: 'var(--green-indicator-opacity-15)',      
     rejected: 'var(--red-indicator-opacity-15)',      
-    booked: 'var(--blue-indicator-opacity-15)',    
-    default: 'var(--black-color-opacity-15)'       
+    expired: 'var(--black-indicator-opacity-15)',    
+    default: 'var(--blue-color-opacity-15)'       
   };
 
   const statusIndicatorColors = {
     pending: 'var(--yellow-indicator-opacity-60)',      
     approved: 'var(--green-indicator-opacity-60)',      
     rejected: 'var(--red-indicator-opacity-60)',      
-    booked: 'var(--blue-indicator-opacity-60)',    
-    default: 'var(--black-color-opacity-60)'       
+    expired: 'var(--black-indicator-opacity-60)',    
+    default: 'var(--blue-color-opacity-60)'       
   };
 
   const formattedDate = expiration_date
@@ -47,8 +47,9 @@ const CertificateModalCard = ({ certificate, onCertificateClick, onStatusChange 
   const statusColor = {
     approved: 'var(--green-indicator)',
     pending: 'var(--yellow-indicator)',
-    declined: 'var(--red-indicator)',
-  }[status?.toLowerCase()] || 'var(--black-color-opacity-60)';
+    rejected: 'var(--red-indicator)',
+    expired: 'var(--black-indicator)',
+  }[status?.toLowerCase()] || 'var(--blue-color-opacity-60)';
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 

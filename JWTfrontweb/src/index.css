@@ -89,15 +89,17 @@
   --shadow-blue-md: 0px 4px 8px rgba(76, 121, 211, 0.15);
 
   /* indicator color */
-  --red-indicator: #fa6464;
+ --red-indicator: #fa6464;
   --green-indicator: #36c081;
   --yellow-indicator: #ffdc6c;
   --blue-indicator: #4c79d3;
+  --black-indicator: #14181f;
 
   --red-indicator-opacity-15: rgba(250, 100, 100, 0.15);
   --green-indicator-opacity-15: rgba(54, 192, 129, 0.15);
   --yellow-indicator-opacity-15: rgba(255, 220, 108, 0.15); 
   --blue-indicator-opacity-15: rgba(76, 121, 211, 0.15); 
+  --black-indicator-opacity-15: rgba(20, 24, 31, 0.15);
 
   --red-indicator-opacity-30: rgba(250, 100, 100, 0.3);
   --green-indicator-opacity-30: rgba(54, 192, 129, 0.3);
@@ -113,7 +115,8 @@
   --green-indicator-opacity-60: rgba(54, 192, 129, 0.6);
   --yellow-indicator-opacity-60: rgba(255, 220, 108, 0.6); 
   --blue-indicator-opacity-60: rgba(76, 121, 211, 0.6); 
-
+  --black-indicator-opacity-60: rgba(20, 24, 31, 0.6);
+  
   /* Font settings */
   --font-family: 'Inter', sans-serif;
   --font-accent: "Bricolage Grotesque", serif;
